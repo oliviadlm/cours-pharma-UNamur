@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MPHAB287 · Chapitre I · Jongler avec les unités</title>
+<style>
+  :root{
+    --bg:#f7f5f0; --card:#ffffff; --ink:#1f2a2e; --muted:#6b7478; --line:#e4e0d8;
+    --accent:#2f6f62; --accent-soft:#e3efeb; --ok:#2e7d4f; --ok-soft:#e5f4ea;
+    --ko:#b3412f; --ko-soft:#fbe9e5; --warn-soft:#fff6dd;
+    --radius:14px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#191b1c; --card:#232628; --ink:#ecebe7; --muted:#9aa2a5; --line:#34383a;
+      --accent:#7cc4b2; --accent-soft:#24362f; --ok:#7fd29d; --ok-soft:#203628;
+      --ko:#f0907d; --ko-soft:#3a2420; --warn-soft:#3a3320; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  .wrap{max-width:760px;margin:0 auto;padding:20px 16px 48px}
+  header .kicker{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  header h1{font-size:22px;margin:4px 0 2px;line-height:1.25}
+  header p{margin:0;color:var(--muted);font-size:14px}
+  .tabs{display:flex;gap:6px;margin:18px 0 14px;background:var(--card);border:1px solid var(--line);
+    border-radius:999px;padding:4px;width:max-content}
+  .tabs button{border:0;background:none;color:var(--muted);font:inherit;font-size:14px;
+    padding:7px 16px;border-radius:999px;cursor:pointer}
+  .tabs button.on{background:var(--accent);color:#fff}
+  @media (prefers-color-scheme: dark){ .tabs button.on{color:#10201b} }
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+  .progress{display:flex;align-items:center;gap:10px;margin-bottom:14px;font-size:13px;color:var(--muted)}
+  .bar{flex:1;height:6px;background:var(--line);border-radius:6px;overflow:hidden}
+  .bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+  .section{font-size:12px;color:var(--accent);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+  .qtitle{font-size:19px;margin:4px 0 12px}
+  .context{background:var(--accent-soft);border-radius:10px;padding:12px 14px;margin-bottom:14px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:14px;white-space:pre-wrap;line-height:1.5}
+  .question{margin:0 0 14px}
+  .opts{display:grid;gap:8px}
+  .opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:1.5px solid var(--line);
+    background:var(--card);color:var(--ink);border-radius:10px;padding:11px 14px;font:inherit;cursor:pointer;transition:border-color .15s,background .15s}
+  .opt:hover:not(:disabled){border-color:var(--accent)}
+  .opt .n{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;
+    background:var(--line);font-size:13px;font-weight:600}
+  .opt.ok{border-color:var(--ok);background:var(--ok-soft)}
+  .opt.ok .n{background:var(--ok);color:#fff}
+  .opt.ko{border-color:var(--ko);background:var(--ko-soft)}
+  .opt.ko .n{background:var(--ko);color:#fff}
+  .opt:disabled{cursor:default}
+  .feedback{margin-top:14px;font-weight:600}
+  .feedback.ok{color:var(--ok)} .feedback.ko{color:var(--ko)}
+  .solution{margin-top:10px;border-top:1px dashed var(--line);padding-top:12px}
+  .solution summary{cursor:pointer;color:var(--accent);font-weight:600;list-style:none}
+  .solution summary::-webkit-details-marker{display:none}
+  .solution summary::before{content:"▸ ";}
+  .solution[open] summary::before{content:"▾ ";}
+  .steps{margin:10px 0 0;padding-left:20px}
+  .steps li{margin:4px 0}
+  .tip{margin-top:10px;background:var(--warn-soft);border-radius:8px;padding:9px 12px;font-size:14px}
+  .nav{display:flex;justify-content:space-between;gap:10px;margin-top:16px}
+  .btn{border:1.5px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:15px;
+    padding:9px 18px;border-radius:10px;cursor:pointer}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  @media (prefers-color-scheme: dark){ .btn.primary{color:#10201b} }
+  .btn:disabled{opacity:.4;cursor:default}
+  .dots{display:flex;flex-wrap:wrap;gap:5px;margin-top:16px}
+  .dot{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:var(--card);
+    font-size:11px;color:var(--muted);cursor:pointer;padding:0}
+  .dot.cur{border-color:var(--accent);border-width:2px;color:var(--ink)}
+  .dot.ok{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+  .dot.ko{background:var(--ko-soft);border-color:var(--ko);color:var(--ko)}
+  .result{text-align:center}
+  .result .big{font-size:44px;font-weight:700;color:var(--accent);margin:6px 0}
+  .result .btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+  .fiche h2{font-size:17px;margin:0 0 10px}
+  .fiche + .fiche{margin-top:14px}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td,th{padding:7px 10px;border-bottom:1px solid var(--line);text-align:left}
+  th{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+  code{font-family:ui-monospace,Menlo,Consolas,monospace;background:var(--accent-soft);padding:1px 6px;border-radius:5px}
+  .ladder{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:14px;margin-top:4px}
+  .ladder span.u{background:var(--accent-soft);padding:6px 10px;border-radius:8px;font-weight:600}
+  .formula{font-size:17px;text-align:center;margin:8px 0;font-weight:600}
+  .note{font-size:13px;color:var(--muted);margin-top:18px}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kicker">MPHAB287 · Méthodes de calculs appliquées aux sciences pharmaceutiques</div>
+    <h1>Chapitre I · Jongler avec les unités utilisées à l'officine</h1>
+    <p>Séance 1 · 2026-2027 · Exercices interactifs</p>
+  </header>
+
+  <nav class="tabs">
+    <button id="tabQuiz" class="on">Exercices</button>
+    <button id="tabFiches">Fiches de rappel</button>
+  </nav>
+
+  <main id="quizView">
+    <div class="progress"><span id="progTxt"></span><div class="bar"><i id="progBar"></i></div><span id="scoreTxt"></span></div>
+    <div class="card" id="qCard"></div>
+    <div class="nav">
+      <button class="btn" id="prev">← Précédent</button>
+      <button class="btn primary" id="next">Suivant →</button>
+    </div>
+    <div class="dots" id="dots"></div>
+  </main>
+
+  <main id="fichesView" class="hidden">
+    <div class="card fiche">
+      <h2>Les unités de masse</h2>
+      <div class="ladder"><span class="u">g</span> ×10 → <span class="u">dg</span> ×10 → <span class="u">cg</span> ×10 → <span class="u">mg</span></div>
+      <table style="margin-top:12px">
+        <tr><td>1 g</td><td>= 10 dg = 100 cg = 1000 mg</td></tr>
+        <tr><td>1 cg (ou ctg)</td><td>= 10 mg = 0,01 g</td></tr>
+        <tr><td>1 mg</td><td>= 0,1 cg = 0,001 g</td></tr>
+      </table>
+      <div class="tip">Astuce : chaque cran vers la droite multiplie par 10. Entre g et mg, il y a 3 crans, donc ×1000.</div>
+    </div>
+
+    <div class="card fiche">
+      <h2>Abréviations des prescriptions</h2>
+      <table>
+        <tr><th>Abréviation</th><th>Signification</th></tr>
+        <tr><td><code>R\</code> = <code>Rp</code></td><td>Prenez</td></tr>
+        <tr><td><code>S\</code></td><td>Indiquez sur l'étiquette (posologie)</td></tr>
+        <tr><td><code>Pf</code></td><td>Pour faire une pièce de</td></tr>
+        <tr><td><code>Dt (n°)</code></td><td>Donnez (nombre de doses unitaires à délivrer)</td></tr>
+        <tr><td><code>Qs</code></td><td>Autant qu'il en faut (quantum satis)</td></tr>
+        <tr><td><code>Ad</code></td><td>Jusqu'à</td></tr>
+        <tr><td>C à s</td><td>Cuillère à soupe = 15 mL</td></tr>
+        <tr><td>C à d</td><td>Cuillère à dessert = 10 mL</td></tr>
+        <tr><td>C à c</td><td>Cuillère à café = 5 mL</td></tr>
+      </table>
+      <div class="tip">« Rp X 5 mg pf 1 gél dt 60 » signifie : 5 mg de X par gélule, 60 gélules. Il faut donc peser 5 × 60 = 300 mg.</div>
+    </div>
+
+    <div class="card fiche">
+      <h2>Concentrations en %</h2>
+      <table>
+        <tr><td><b>% (m/m)</b></td><td>g de substance pour 100 g de solution</td></tr>
+        <tr><td><b>% (m/V)</b></td><td>g de substance pour 100 mL de solution</td></tr>
+        <tr><td><b>% (V/V)</b></td><td>mL de substance pour 100 mL de solution</td></tr>
+      </table>
+    </div>
+
+    <div class="card fiche">
+      <h2>Densités</h2>
+      <div class="formula">m = V × d &nbsp;&nbsp;·&nbsp;&nbsp; V = m ÷ d</div>
+      <table>
+        <tr><th>Solvant (20 °C)</th><th>Densité</th></tr>
+        <tr><td>Eau</td><td>1</td></tr>
+        <tr><td>Éthanol</td><td>0,79</td></tr>
+        <tr><td>Méthanol</td><td>0,80</td></tr>
+        <tr><td>Propylène glycol</td><td>1,04</td></tr>
+        <tr><td>Isopropanol</td><td>0,79</td></tr>
+        <tr><td>Éther</td><td>0,71</td></tr>
+        <tr><td>Acétone</td><td>0,79</td></tr>
+        <tr><td>Huile de paraffine</td><td>0,86</td></tr>
+      </table>
+      <div class="tip">Pour les liquides visqueux qu'on ne peut pas mesurer au volume, on pèse : la densité permet de passer du volume à la masse.</div>
+    </div>
+
+    <div class="card fiche">
+      <h2>La préparation magistrale</h2>
+      <p style="margin:0 0 8px">Médicament préparé extemporanément à l'officine, sous la surveillance du pharmacien, le plus souvent sur prescription médicale. Elle reste utile pour :</p>
+      <ul style="margin:0;padding-left:20px">
+        <li>individualiser la posologie (âge, évolution de la maladie) ;</li>
+        <li>associer plusieurs principes actifs ;</li>
+        <li>remplacer une spécialité non disponible ;</li>
+        <li>des raisons économiques pour certains patients.</li>
+      </ul>
+    </div>
+  </main>
+
+  <p class="note">Les corrections ont été calculées à partir des énoncés du cours ; compare-les avec la correction donnée en séance.</p>
+</div>
+
+<script>
+const Q = [
+  {id:"1", s:"Unités de pesée", q:"25 cg est égal à", o:["0,025 mg","0,25 mg","2,5 mg","25 mg","250 mg"], a:4,
+   st:["1 cg = 10 mg","25 cg = 25 × 10 mg = <b>250 mg</b>"]},
+  {id:"2", s:"Unités de pesée", q:"1 g est égal à", o:["100 mg","10000 mg","100 cg","1000 cg"], a:2,
+   st:["1 g = 1000 mg (et non 100 ni 10 000)","1 g = 100 cg → réponse <b>100 cg</b>"]},
+  {id:"3", s:"Unités de pesée", q:"12,5 mg est égal à", o:["125 g","1,25 g","0,125 g","0,0125 g","0,00125 g","0,000125 g"], a:3,
+   st:["1 mg = 0,001 g","12,5 mg = 12,5 ÷ 1000 = <b>0,0125 g</b>"]},
+  {id:"4", s:"Unités de pesée", q:"58 cg est égal à", o:["5,8 g","0,58 g","0,058 g","0,0058 g","0,00058 g"], a:1,
+   st:["1 cg = 0,01 g","58 cg = 58 ÷ 100 = <b>0,58 g</b>"]},
+  {id:"5", s:"Préparation magistrale", q:"Combien de principe actif faut-il peser pour réaliser 50 gélules dosées à 10 cg ?",
+   o:["0,01 g","0,05 g","0,10 g","0,50 g","1,00 g","5,00 g","10,00 g","50,00 g"], a:5,
+   st:["Quantité totale = 50 × 10 cg = 500 cg","500 cg = 500 ÷ 100 = <b>5,00 g</b>"]},
+  {id:"6", s:"Préparation magistrale", c:"Rp hydrocortisone 5 mg\n   pf 1 gél dt 60", q:"Quelle quantité d'hydrocortisone faut-il peser ?",
+   o:["0,0003 g","0,0030 g","0,0300 g","0,3000 g","3,000 g","30,000 g"], a:3,
+   st:["« pf 1 gél dt 60 » : 5 mg par gélule, 60 gélules","5 mg × 60 = 300 mg = <b>0,3000 g</b>"]},
+  {id:"7a", s:"Préparation magistrale", c:"Rp Furadantine® 30 mg\n   pf 1 gél dt 60\n\nOn utilise des gélules de Furadantine® 50 mg.",
+   q:"a) Quelle quantité de Furadantine® faut-il peser ?", o:["0,0018 g","0,180 g","0,018 g","18,000 g","1,800 g"], a:4,
+   st:["30 mg × 60 gélules = 1800 mg","1800 mg = <b>1,800 g</b>"]},
+  {id:"7b", s:"Préparation magistrale", c:"Rp Furadantine® 30 mg\n   pf 1 gél dt 60\n\nOn utilise des gélules de Furadantine® 50 mg.",
+   q:"b) Combien de gélules de Furadantine® 50 mg faut-il utiliser ?", o:["24","28","30","34","36","40"], a:4,
+   st:["Il faut 1800 mg de Furadantine® (exercice 7a)","Chaque gélule du commerce en contient 50 mg","1800 ÷ 50 = <b>36 gélules</b>"]},
+  {id:"8a", s:"Préparation magistrale", c:"Rp hydroxyzine 10 mg (utiliser Atarax® 25 mg)\n   prednisolone 5 mg\n   pf 1 gél dt 20",
+   q:"a) Quelle quantité d'hydroxyzine faut-il peser ?", o:["0,010 g","0,020 g","0,100 g","0,200 g","2,000 g","10,000 g"], a:3,
+   st:["10 mg × 20 gélules = 200 mg","200 mg = <b>0,200 g</b>"]},
+  {id:"8b", s:"Préparation magistrale", c:"Rp hydroxyzine 10 mg (utiliser Atarax® 25 mg)\n   prednisolone 5 mg\n   pf 1 gél dt 20",
+   q:"b) Combien de comprimés d'Atarax® 25 mg faut-il peser ?", o:["2","4","6","8","10"], a:3,
+   st:["Il faut 200 mg d'hydroxyzine (exercice 8a)","200 ÷ 25 = <b>8 comprimés</b>"]},
+  {id:"8c", s:"Préparation magistrale", c:"Rp hydroxyzine 10 mg (utiliser Atarax® 25 mg)\n   prednisolone 5 mg\n   pf 1 gél dt 20",
+   q:"c) Quelle quantité de prednisolone faut-il peser ?", o:["1 mg","5 mg","10 mg","50 mg","100 mg","500 mg","1000 mg","5000 mg"], a:4,
+   st:["5 mg × 20 gélules = <b>100 mg</b>"]},
+  {id:"9a", s:"Préparation magistrale", c:"Gabbroral® : 250 mg de paromomycine par comprimé.\nSuspension à 100 mg / 5 mL.\nTraitement de 8 jours, 4 cuillères à café par jour.",
+   q:"a) Combien de comprimés faut-il broyer ?", o:["2","4","13","14","39"], a:2,
+   st:["Volume : 4 c à c × 5 mL = 20 mL par jour, × 8 jours = 160 mL","Concentration : 100 mg / 5 mL = 20 mg/mL","Paromomycine nécessaire : 160 × 20 = 3200 mg","3200 ÷ 250 = 12,8 → on arrondit au comprimé entier supérieur : <b>13 comprimés</b>"]},
+  {id:"9b", s:"Préparation magistrale", c:"Gabbroral® : 250 mg de paromomycine par comprimé.\nSuspension à 100 mg / 5 mL, 160 mL au total.\nLes 13 comprimés broyés pèsent 13 g.",
+   q:"b) Quelle quantité de poudre doit-on enlever pour obtenir le bon dosage ?", o:["0,02 g","0,05 g","0,2 g","0,5 g","2 g","5 g"], a:2,
+   st:["13 comprimés = 13 × 250 = 3250 mg de paromomycine, alors qu'il en faut 3200 mg","Excès : 50 mg = 0,2 comprimé","1 comprimé broyé pèse 13 g ÷ 13 = 1 g, donc 0,2 comprimé = <b>0,2 g de poudre</b>"],
+   tip:"Autre méthode : poudre à garder = 13 g × 3200 / 3250 = 12,8 g, donc 0,2 g à enlever."},
+  {id:"10", s:"Concentrations en %", c:"Rp solution de minoxidil à 3% (m/V)\n   minoxidil x g\n   alcool dénaturé 30 mL\n   alcool isopropylique 30 mL\n   propylène glycol 20 mL\n   aqua q.s. ad 200 mL",
+   q:"Quelle quantité de minoxidil doit-on utiliser ?", o:["300 mg","450 mg","600 mg","1,5 g","3 g","4,5 g","6 g"], a:6,
+   st:["3 % (m/V) = 3 g pour 100 mL","Volume final : « ad 200 mL » → 200 mL","3 × 2 = <b>6 g</b>"],
+   tip:"C'est le volume final (ad 200 mL) qui compte, pas la somme des solvants listés."},
+  {id:"11", s:"Concentrations en %", c:"Solution de Trinitrine : nitroglycérine à 1 % (m/m) dans l'alcool à 90°.\n60 gouttes pèsent 1 g.",
+   q:"Combien de gouttes faut-il pour obtenir une dose de 2 mg de nitroglycérine ?", o:["2","4","6","8","10","12","15"], a:5,
+   st:["1 % (m/m) : 1 g de nitroglycérine pour 100 g de solution","Pour 2 mg de nitroglycérine, il faut 2 × 100 = 200 mg de solution","60 gouttes = 1000 mg → 1 goutte = 1000 ÷ 60 ≈ 16,7 mg","200 ÷ 16,7 = <b>12 gouttes</b>"]},
+  {id:"12a", s:"Concentrations en %", c:"Rp acide benzoïque 18 ctg\n   HCl éthylmorphine 10 ctg\n   phosphate de codéine 25 ctg\n   teinture d'aconit 1,8 g\n   teinture de belladone 1,8 g\n   teinture de drosera 1,8 g\n   alcool 96° 6 g\n   eau 15 g\n   glycérol 30 g\n   sirop simple ad 250 mL",
+   q:"a) Quel est le % (m/V) de l'HCl éthylmorphine dans cette préparation ?", o:["0,40 %","0,25 %","0,10 %","0,04 %"], a:3,
+   st:["10 ctg = 0,10 g dans 250 mL","Pour 100 mL : 0,10 × 100 ÷ 250 = <b>0,04 %</b>"]},
+  {id:"12b", s:"Concentrations en %", c:"Rp acide benzoïque 18 ctg\n   HCl éthylmorphine 10 ctg\n   phosphate de codéine 25 ctg\n   …\n   sirop simple ad 250 mL",
+   q:"b) Quel est le % (m/V) de phosphate de codéine dans cette préparation ?", o:["0,40 %","0,25 %","0,10 %","0,04 %"], a:2,
+   st:["25 ctg = 0,25 g dans 250 mL","Pour 100 mL : 0,25 × 100 ÷ 250 = <b>0,10 %</b>"]},
+  {id:"12c", s:"Concentrations en %", c:"Rp acide benzoïque 18 ctg\n   HCl éthylmorphine 10 ctg\n   phosphate de codéine 25 ctg\n   …\n   sirop simple ad 250 mL",
+   q:"c) Pour une cuillère à café, quelle est la quantité d'HCl éthylmorphine administrée ?", o:["0,002 mg","0,020 mg","0,200 mg","2,000 mg"], a:3,
+   st:["1 c à c = 5 mL","0,04 % (m/V) = 0,04 g pour 100 mL = 0,4 mg/mL","5 mL × 0,4 mg/mL = <b>2,000 mg</b>"]},
+  {id:"12d", s:"Concentrations en %", c:"Rp acide benzoïque 18 ctg\n   HCl éthylmorphine 10 ctg\n   phosphate de codéine 25 ctg\n   …\n   sirop simple ad 250 mL",
+   q:"d) Pour une cuillère à café, quelle est la quantité de phosphate de codéine administrée ?", o:["5,000 mg","0,500 mg","0,050 mg","0,005 mg"], a:0,
+   st:["0,10 % (m/V) = 0,10 g pour 100 mL = 1 mg/mL","5 mL × 1 mg/mL = <b>5,000 mg</b>"]},
+  {id:"13", s:"Densités", q:"L'eau a une densité", o:["inférieure à 1.","supérieure à 1.","égale à 1.","inconnue."], a:2,
+   st:["La densité est mesurée par rapport à l'eau : celle de l'eau vaut donc <b>1</b> (1 mL d'eau pèse 1 g)"]},
+  {id:"14", s:"Densités", c:"Sirop de belladone : 5 % (m/m) de teinture de belladone dans du sirop simple.\nTeinture de belladone : densité 0,9.",
+   q:"Quel volume de teinture de belladone faut-il mesurer pour préparer 540 g de sirop de belladone ?", o:["3 mL","9 mL","15 mL","27 mL","30 mL"], a:4,
+   st:["Masse de teinture : 5 % de 540 g = 27 g","V = m ÷ d = 27 ÷ 0,9 = <b>30 mL</b>"],
+   tip:"Piège : 27 est la masse en grammes, pas le volume."},
+  {id:"15a", s:"Densités", c:"Sirop de 300 mL (densité 1,3). Par cuillère à café :\n* 8 mg de codéine (à partir de sirop de codéine 0,2 % (m/m), densité 1,25)\n* 0,01 g de benzoate sodique\n* 1,5 cg d'eau de laurier-cerise\n* 0,5 cg de teinture de belladone",
+   q:"a) Quelle quantité de sirop de codéine 0,2 % (m/m) faut-il utiliser ?", o:["1 g","4 g","24 g","100 g","240 g","312 g"], a:4,
+   st:["Nombre de c à c : 300 mL ÷ 5 mL = 60","Codéine totale : 8 mg × 60 = 480 mg","0,2 % (m/m) = 2 mg de codéine par g de sirop","480 ÷ 2 = <b>240 g</b> de sirop de codéine"]},
+  {id:"15b", s:"Densités", c:"Sirop de 300 mL (densité 1,3). Par cuillère à café :\n* 8 mg de codéine (à partir de sirop de codéine 0,2 % (m/m), densité 1,25)\n* 0,01 g de benzoate sodique\n* 1,5 cg d'eau de laurier-cerise\n* 0,5 cg de teinture de belladone",
+   q:"b) Quel volume de sirop de codéine 0,2 % (m/m) faudrait-il ajouter à la préparation totale pour qu'elle renferme 20 mg de codéine par 10 mL ?", o:["60,00 mL","48,00 mL","78,00 mL","92,3 mL"], a:1,
+   st:["Nouvelle cible : 20 mg / 10 mL = 2 mg/mL, soit 2 × 300 = 600 mg de codéine pour les 300 mL","Sirop de codéine nécessaire : 600 ÷ 2 mg/g = 300 g, soit 300 ÷ 1,25 = 240 mL","Déjà présent (15a) : 240 g ÷ 1,25 = 192 mL","À ajouter : 240 − 192 = <b>48 mL</b>"],
+   tip:"Hypothèse : le volume final reste 300 mL (on ajuste avec le sirop simple). C'est ce raisonnement qui retombe sur une des propositions."},
+  {id:"15c", s:"Densités", c:"Sirop de 300 mL. Par cuillère à café : 0,01 g de benzoate sodique.",
+   q:"c) Quelle quantité de benzoate sodique faut-il utiliser ?", o:["0,01 g","0,03 g","0,60 g","0,30 g","3,00 g","6,00 g"], a:2,
+   st:["60 c à c dans 300 mL","0,01 g × 60 = <b>0,60 g</b>"]},
+  {id:"15d", s:"Densités", c:"Sirop de 300 mL. Par cuillère à café : 1,5 cg d'eau de laurier-cerise.",
+   q:"d) Quelle quantité d'eau de laurier-cerise faut-il utiliser ?", o:["0,09 g","0,75 g","0,90 g","1,50 g","7,50 g","9,00 g"], a:2,
+   st:["1,5 cg × 60 = 90 cg","90 cg = <b>0,90 g</b>"]},
+  {id:"15e", s:"Densités", c:"Sirop de 300 mL. Par cuillère à café : 0,5 cg de teinture de belladone.",
+   q:"e) Quelle quantité de teinture de belladone faut-il utiliser ?", o:["0,03 g","0,05 g","0,30 g","0,50 g","3,00 g","30,0 g"], a:2,
+   st:["0,5 cg × 60 = 30 cg","30 cg = <b>0,30 g</b>"]}
+];
+
+let order = Q.map((_, i) => i);   // indices into Q for the current round
+let pos = 0;                        // position in order
+let answers = {};                   // Q index -> chosen option
+let showResult = false;
+
+const $ = id => document.getElementById(id);
+
+function save(){ try{ localStorage.setItem("mphab287-ch1", JSON.stringify(answers)); }catch(e){} }
+function load(){ try{ const s = localStorage.getItem("mphab287-ch1"); if(s) answers = JSON.parse(s) || {}; }catch(e){} }
+
+function esc(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
+
+function render(){
+  const done = order.filter(i => i in answers).length;
+  const good = order.filter(i => answers[i] === Q[i].a).length;
+  $("progTxt").textContent = showResult ? "Terminé" : `Exercice ${pos+1} / ${order.length}`;
+  $("progBar").style.width = (done / order.length * 100) + "%";
+  $("scoreTxt").textContent = `${good} ✓`;
+
+  const card = $("qCard");
+  if(showResult){
+    const wrong = order.filter(i => answers[i] !== Q[i].a);
+    card.innerHTML = `<div class="result">
+      <div class="section">Résultat</div>
+      <div class="big">${good} / ${order.length}</div>
+      <div>${good === order.length ? "Tout juste, bravo !" : `${wrong.length} exercice${wrong.length>1?"s":""} à revoir : ${wrong.map(i=>Q[i].id).join(", ")}`}</div>
+      <div class="btns">
+        ${wrong.length ? `<button class="btn primary" id="redoWrong">Refaire les exercices ratés</button>` : ""}
+        <button class="btn" id="redoAll">Tout recommencer</button>
+      </div></div>`;
+    if(wrong.length) $("redoWrong").onclick = () => { wrong.forEach(i => delete answers[i]); order = wrong; pos = 0; showResult = false; save(); render(); };
+    $("redoAll").onclick = () => { answers = {}; order = Q.map((_, i) => i); pos = 0; showResult = false; save(); render(); };
+    $("prev").disabled = false; $("next").disabled = true; $("next").textContent = "Suivant →";
+    renderDots(); return;
+  }
+
+  const qi = order[pos], q = Q[qi], chosen = answers[qi], answered = chosen !== undefined;
+  let html = `<div class="section">${q.s}</div><div class="qtitle">Exercice ${q.id}</div>`;
+  if(q.c) html += `<div class="context">${esc(q.c)}</div>`;
+  html += `<p class="question">${esc(q.q)}</p><div class="opts">`;
+  q.o.forEach((t, k) => {
+    let cls = "";
+    if(answered){ if(k === q.a) cls = "ok"; else if(k === chosen) cls = "ko"; }
+    html += `<button class="opt ${cls}" data-k="${k}" ${answered?"disabled":""}><span class="n">${k+1}</span><span>${esc(t)}</span></button>`;
+  });
+  html += `</div>`;
+  if(answered){
+    const ok = chosen === q.a;
+    html += `<div class="feedback ${ok?"ok":"ko"}">${ok ? "Bonne réponse !" : `Pas tout à fait : la bonne réponse est la n°${q.a+1} (${esc(q.o[q.a])}).`}</div>
+      <details class="solution" ${ok?"":"open"}><summary>Correction détaillée</summary>
+      <ol class="steps">${q.st.map(s=>`<li>${s}</li>`).join("")}</ol>
+      ${q.tip ? `<div class="tip">💡 ${q.tip}</div>` : ""}</details>`;
+  }
+  card.innerHTML = html;
+  card.querySelectorAll(".opt").forEach(b => b.onclick = () => { answers[qi] = +b.dataset.k; save(); render(); });
+
+  $("prev").disabled = pos === 0;
+  $("next").disabled = false;
+  $("next").textContent = pos === order.length - 1 ? "Voir le résultat" : "Suivant →";
+  renderDots();
+}
+
+function renderDots(){
+  const d = $("dots"); d.innerHTML = "";
+  order.forEach((qi, p) => {
+    const b = document.createElement("button");
+    b.className = "dot" + (p === pos && !showResult ? " cur" : "") + (qi in answers ? (answers[qi] === Q[qi].a ? " ok" : " ko") : "");
+    b.textContent = Q[qi].id; b.title = "Exercice " + Q[qi].id;
+    b.onclick = () => { pos = p; showResult = false; render(); };
+    d.appendChild(b);
+  });
+}
+
+$("prev").onclick = () => { if(showResult){ showResult = false; } else if(pos > 0) pos--; render(); };
+$("next").onclick = () => { if(pos < order.length - 1) pos++; else showResult = true; render(); window.scrollTo({top:0,behavior:"smooth"}); };
+
+$("tabQuiz").onclick = () => { $("quizView").classList.remove("hidden"); $("fichesView").classList.add("hidden"); $("tabQuiz").className="on"; $("tabFiches").className=""; };
+$("tabFiches").onclick = () => { $("fichesView").classList.remove("hidden"); $("quizView").classList.add("hidden"); $("tabFiches").className="on"; $("tabQuiz").className=""; };
+
+load(); render();
+</script>
+</body>
+</html>
