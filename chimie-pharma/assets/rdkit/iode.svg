@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='iso-8859-1'?>
+<svg version='1.1' baseProfile='full'
+              xmlns='http://www.w3.org/2000/svg'
+                      xmlns:rdkit='http://www.rdkit.org/xml'
+                      xmlns:xlink='http://www.w3.org/1999/xlink'
+                  xml:space='preserve'
+width='460px' height='360px' viewBox='0 0 460 360'>
+<!-- END OF HEADER -->
+<path class='bond-0 atom-0 atom-1' d='M 45.6,180.0 L 414.4,180.0' style='fill:none;fill-rule:evenodd;stroke:#A01EEF;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='atom-0' d='M 28.7 165.8
+L 32.5 165.8
+L 32.5 194.2
+L 28.7 194.2
+L 28.7 165.8
+' fill='#A01EEF'/>
+<path class='atom-1' d='M 427.5 165.8
+L 431.3 165.8
+L 431.3 194.2
+L 427.5 194.2
+L 427.5 165.8
+' fill='#A01EEF'/>
+</svg>
