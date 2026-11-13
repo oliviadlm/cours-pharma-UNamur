@@ -510,6 +510,11 @@
     };
   }
 
+  // DCI du cours affichée sous la boîte (associations : « BACTRIM® (+ triméthoprime) » → « sulfaméthoxazole + triméthoprime »)
+  function dciBoite(b, m) {
+    const asso = (b.match(/\(\s*\+\s*([^,)]+)/) || [])[1];
+    return asso ? `${m.dci} + ${asso.trim()}` : m.dci;
+  }
   function jeuMemory() {
     main().innerHTML = `${titre("🧠 Memory des boîtes", "Retourne les cartes et associe chaque boîte à sa molécule (structure + DCI). Mémoire visuelle + double codage.")}
       <div class="panneau">${filtreChapHTML("mchap")} <button class="primaire" id="go">Nouvelle partie (6 paires)</button></div><div id="zone"></div>`;
@@ -518,7 +523,7 @@
       const mols = shuffle(C.molecules.filter(m => m.marques && m.marques.length && (!ch || m.chapitre === ch))).slice(0, 6);
       const cartes = shuffle(mols.flatMap(m => [{ m, t: "boite", b: pick(m.marques) }, { m, t: "mol" }]));
       let ouvertes = [], trouvees = 0, coups = 0; const zone = $("#zone");
-      zone.innerHTML = `<div class="hud"><span class="coups">0 coups</span></div><div class="memory">${cartes.map((c, i) => `<button class="mem" data-i="${i}"><div class="dos">?</div><div class="face">${c.t === "boite" ? BOITES.html(c.b, c.m, "petite") : `${c.m.structure_rdkit || c.m.structure_prof ? `<img src="${esc(c.m.structure_rdkit || c.m.structure_prof)}" alt="">` : ""}<b>${esc(c.m.dci)}</b>`}</div></button>`).join("")}</div>`;
+      zone.innerHTML = `<div class="hud"><span class="coups">0 coups</span></div><div class="memory">${cartes.map((c, i) => `<button class="mem" data-i="${i}"><div class="dos">?</div><div class="face">${c.t === "boite" ? `${BOITES.html(c.b, c.m, "petite")}<span class="mem-dci">${esc(dciBoite(c.b, c.m))}</span>` : `${c.m.structure_rdkit || c.m.structure_prof ? `<img src="${esc(c.m.structure_rdkit || c.m.structure_prof)}" alt="">` : ""}<b>${esc(c.m.dci)}</b>`}</div></button>`).join("")}</div>`;
       $$(".mem", zone).forEach(b => b.onclick = () => {
         if (b.classList.contains("ok") || b.classList.contains("vue") || ouvertes.length === 2) return;
         b.classList.add("vue"); ouvertes.push(b);

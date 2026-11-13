@@ -194,3 +194,11 @@ label.bouton { display: inline-block; border: 1px solid var(--trait); border-rad
 .hero-av { position: absolute; right: 1.4rem; top: 1.4rem; width: 92px; height: 92px; border-radius: 50%; background: #fff; border: 4px solid rgba(255,255,255,.6); z-index: 1; }
 .boite img[src^="photos/"] { background: #fff; border-radius: 10px; object-fit: contain; aspect-ratio: 1 / 1; padding: 6px; filter: drop-shadow(0 4px 8px rgba(0,0,0,.15)); }
 @media (max-width: 900px) { .hero-av { width: 64px; height: 64px; } }
+
+/* Memory : DCI lisible sous la boîte */
+.mem { height: 200px; }
+.mem .face .boite img, .mem .face .boite svg { width: auto; max-width: 100%; max-height: 120px; }
+.mem .face .boite img[src^="photos/"] { aspect-ratio: auto; }
+.mem-dci { display: block; font: 700 1rem/1.15 var(--texte, inherit); color: var(--encre, inherit); text-align: center; padding: 0 .2rem; }
+@media (max-width: 700px) { .mem { height: 190px; } .mem-dci { font-size: .9rem; } }
+.mem .face > b { font-size: 1rem; }
