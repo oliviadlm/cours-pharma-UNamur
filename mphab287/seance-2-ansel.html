@@ -12,9 +12,13 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,san
 .left{overflow-y:auto;padding:22px 18px 60px;border-right:1px solid var(--line)}
 .right{display:flex;flex-direction:column;background:#e9e6df}
 .right .bar{padding:8px 12px;font-size:13px;color:var(--muted);display:flex;gap:8px;align-items:center;flex-wrap:wrap;border-bottom:1px solid var(--line);background:var(--bg)}
-.right iframe{flex:1;border:0;width:100%;background:#fff}
+.right .scroll{flex:1;overflow:auto;padding:12px;text-align:center}
+.right canvas{background:#fff;box-shadow:0 1px 6px rgba(0,0,0,.15);max-width:none}
+.vbtn{border:1px solid var(--line);background:#fff;border-radius:7px;padding:3px 9px;cursor:pointer;font-size:13px}
+.close{margin-left:auto}
 .empty{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;padding:30px;color:var(--muted)}
-@media(max-width:900px){.layout{display:block;height:auto}.left{border:0}.right{display:none}}
+@media(max-width:900px){.layout{display:block;height:auto}.left{border:0}.right{display:none}.right.open{display:flex;position:fixed;inset:0;z-index:50}}
+@media(min-width:901px){.close{display:none}}
 .kicker{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);font-weight:700}
 h1{font-size:22px;margin:4px 0 4px}
 .sub{color:var(--muted);font-size:14px;margin:0 0 14px}
@@ -121,44 +125,76 @@ ol li{margin-bottom:6px}
         <li>Marque l'exercice <b>✓ Juste</b>, <b>✗ Faux</b> ou <b>↻ À revoir</b>. Le filtre « Faux » te permet de refaire seulement ceux que tu as ratés.</li>
         <li>Si tu ne comprends pas une notion, le bouton <b>Cours</b> de chaque partie ouvre les pages d'explication avec les exemples résolus.</li>
       </ol>
-      <p class="note">Sur téléphone, le PDF s'ouvre dans un nouvel onglet au lieu de s'afficher à côté.</p>
+      <p class="note">Sur téléphone ou dans un bloc Notion étroit, la page du livre s'ouvre en plein écran : touche « ✕ Fermer » pour revenir aux exercices.</p>
       <p class="note">Ce fichier ne contient ni les énoncés ni les réponses du livre : il renvoie aux pages de ton exemplaire.</p>
     </div>
   </section>
 </div>
-<div class="right">
-  <div class="bar"><span id="viewTxt">Aperçu du livre</span><button class="btn small hidden" id="openTab">Ouvrir dans un onglet</button></div>
+<div class="right" id="right">
+  <div class="bar">
+    <button class="vbtn" id="pPrev" title="Page précédente">◀</button>
+    <span id="viewTxt">Aperçu du livre</span>
+    <button class="vbtn" id="pNext" title="Page suivante">▶</button>
+    <button class="vbtn" id="zOut" title="Dézoomer">−</button><button class="vbtn" id="zIn" title="Zoomer">+</button>
+    <button class="vbtn close" id="vClose">✕ Fermer</button>
+  </div>
   <div class="empty" id="emptyV"><div>📖<br><br>Ouvre ton PDF du livre (bouton à gauche)<br>pour afficher les pages ici, à côté des exercices.</div></div>
-  <iframe id="viewer" class="hidden" title="Livre"></iframe>
+  <div class="scroll hidden" id="scroll"><canvas id="cv"></canvas></div>
 </div>
 </div>
+<script src="lib/pdf.min.js"></script>
 <script>
 const DATA=[{"ch": 3, "t": "Mesures pharmaceutiques : méthode des aliquotes", "en": "Pharmaceutical Measurement", "pp": [48, 64], "ans": [62, 64], "sets": [{"l": "Pesée par la méthode des aliquotes (dilution d'une poudre, même logique que la trituration)", "c": [53, 56]}, {"l": "Mesure de volumes par la méthode des aliquotes", "c": [55, 56]}], "items": [{"id": "3-0-1", "n": 1, "s": 0, "p": [60], "a": [63]}, {"id": "3-0-2", "n": 2, "s": 0, "p": [60], "a": [63]}, {"id": "3-0-3", "n": 3, "s": 0, "p": [60], "a": [63]}, {"id": "3-0-4", "n": 4, "s": 0, "p": [60], "a": [63]}, {"id": "3-0-5", "n": 5, "s": 0, "p": [60], "a": [63]}, {"id": "3-0-6", "n": 6, "s": 0, "p": [60], "a": [63]}, {"id": "3-1-7", "n": 7, "s": 1, "p": [60], "a": [63]}, {"id": "3-1-8", "n": 8, "s": 1, "p": [60], "a": [63]}, {"id": "3-1-9", "n": 9, "s": 1, "p": [60], "a": [63]}]}, {"ch": 15, "t": "Modifier la concentration d'un produit (dilution de poudres et pommades)", "en": "Altering Product Strength, Use of Stock Solutions, and Problem Solving by Alligation", "pp": [309, 328], "ans": [326, 328], "sets": [{"l": "Dilution et enrichissement de pommades, gels et poudres", "c": [315, 316]}, {"l": "Mélange de deux concentrations (alligation)", "c": [316, 318]}], "items": [{"id": "15-0-2", "n": 2, "s": 0, "p": [321], "a": [327]}, {"id": "15-0-4", "n": 4, "s": 0, "p": [321], "a": [327]}, {"id": "15-0-5", "n": 5, "s": 0, "p": [321], "a": [327]}, {"id": "15-0-7", "n": 7, "s": 0, "p": [321], "a": [327]}, {"id": "15-0-20", "n": 20, "s": 0, "p": [322], "a": [327]}, {"id": "15-0-22", "n": 22, "s": 0, "p": [322], "a": [327]}, {"id": "15-0-28", "n": 28, "s": 0, "p": [322], "a": [328]}, {"id": "15-0-31", "n": 31, "s": 0, "p": [322], "a": [328]}, {"id": "15-0-36", "n": 36, "s": 0, "p": [323], "a": [328]}, {"id": "15-0-37", "n": 37, "s": 0, "p": [323], "a": [328]}, {"id": "15-0-38", "n": 38, "s": 0, "p": [323], "a": [328]}, {"id": "15-0-39", "n": 39, "s": 0, "p": [323], "a": [328]}, {"id": "15-0-40", "n": 40, "s": 0, "p": [323], "a": [328]}, {"id": "15-0-42", "n": 42, "s": 0, "p": [323], "a": [328]}, {"id": "15-0-43", "n": 43, "s": 0, "p": [323], "a": [328]}, {"id": "15-0-44", "n": 44, "s": 0, "p": [323], "a": [328]}, {"id": "15-0-51", "n": 51, "s": 0, "p": [324], "a": [328]}, {"id": "15-0-60", "n": 60, "s": 0, "p": [325], "a": [328]}, {"id": "15-1-52", "n": 52, "s": 1, "p": [324], "a": [328]}, {"id": "15-1-53", "n": 53, "s": 1, "p": [324], "a": [328]}]}, {"ch": 16, "t": "Réduire et augmenter une formule", "en": "Reducing and Enlarging Formulas", "pp": [329, 335], "ans": [335, 335], "sets": [{"l": "Adapter une formule au nombre d'unités à préparer", "c": [329, 331]}], "items": [{"id": "16-0-1", "n": 1, "s": 0, "p": [332], "a": [335]}, {"id": "16-0-2", "n": 2, "s": 0, "p": [332], "a": [335]}, {"id": "16-0-3", "n": 3, "s": 0, "p": [332], "a": [335]}, {"id": "16-0-4", "n": 4, "s": 0, "p": [333], "a": [335]}, {"id": "16-0-5", "n": 5, "s": 0, "p": [333], "a": [335]}, {"id": "16-0-6", "n": 6, "s": 0, "p": [333], "a": [335]}, {"id": "16-0-7", "n": 7, "s": 0, "p": [333], "a": [335]}, {"id": "16-0-8", "n": 8, "s": 0, "p": [333], "a": [335]}, {"id": "16-0-9", "n": 9, "s": 0, "p": [333], "a": [335]}, {"id": "16-0-10", "n": 10, "s": 0, "p": [334], "a": [335]}]}, {"ch": 17, "t": "Préparations magistrales : gélules et suppositoires", "en": "Selected Calculations in Contemporary Compounding", "pp": [336, 366], "ans": [361, 365], "sets": [{"l": "Remplissage de gélules et moulage de suppositoires (facteur de déplacement)", "c": [346, 349]}, {"l": "Formule de suppositoires (densité de la base)", "c": [348, 349]}], "items": [{"id": "17-0-39", "n": 39, "s": 0, "p": [355], "a": [363]}, {"id": "17-0-40", "n": 40, "s": 0, "p": [355], "a": [363]}, {"id": "17-0-41", "n": 41, "s": 0, "p": [355], "a": [363]}, {"id": "17-1-52", "n": 52, "s": 1, "p": [357], "a": [363]}]}];
 const KEY="ansel-seance2";const OFF=13;
 let st={};try{st=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){st={}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}}
-let pdfUrl=null,curPage=null,filter="all";
-const isMobile=()=>window.matchMedia("(max-width:900px)").matches;
+let pdfDoc=null,curPage=null,curLabel="",zoom=1,filter="all",task=null;
 const $=id=>document.getElementById(id);
 function bk(p){return p-OFF}
 function fmt(arr){return arr.length>1?`p. ${bk(arr[0])}–${bk(arr[arr.length-1])}`:`p. ${bk(arr[0])}`}
 function fmtPdf(arr){return arr.length>1?`PDF ${arr[0]}–${arr[arr.length-1]}`:`PDF ${arr[0]}`}
-function show(page,label){
-  curPage=page;
-  if(!pdfUrl){alert("Ouvre d'abord ton PDF du livre avec le bouton « Ouvrir mon PDF du livre ».");return}
-  const url=pdfUrl+"#page="+page;
-  if(isMobile()){window.open(url,"_blank");return}
-  const v=$("viewer");v.classList.remove("hidden");$("emptyV").classList.add("hidden");$("openTab").classList.remove("hidden");
-  v.src="about:blank";setTimeout(()=>{v.src=url},40);
-  $("viewTxt").textContent=(label?label+" · ":"")+"livre p. "+bk(page)+" (PDF p. "+page+")";
+function libReady(){return new Promise((res,rej)=>{
+  if(window.pdfjsLib)return res();
+  const sc=document.createElement("script");sc.src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+  sc.onload=()=>{pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";res()};
+  sc.onerror=rej;document.head.appendChild(sc)})}
+if(window.pdfjsLib)pdfjsLib.GlobalWorkerOptions.workerSrc="lib/pdf.worker.min.js";
+async function render(){
+  if(!pdfDoc||!curPage)return;
+  $("emptyV").classList.add("hidden");$("scroll").classList.remove("hidden");
+  const page=await pdfDoc.getPage(curPage);
+  const base=page.getViewport({scale:1});
+  const w=Math.max(280,$("scroll").clientWidth-24);
+  const scale=w/base.width*zoom, dpr=Math.min(window.devicePixelRatio||1,3)*1.5;
+  const vp=page.getViewport({scale:scale*dpr});
+  const cv=$("cv");cv.width=vp.width;cv.height=vp.height;cv.style.width=(vp.width/dpr)+"px";cv.style.height=(vp.height/dpr)+"px";
+  if(task)try{task.cancel()}catch(e){}
+  task=page.render({canvasContext:cv.getContext("2d"),viewport:vp});
+  try{await task.promise}catch(e){}
+  $("viewTxt").textContent=(curLabel?curLabel+" · ":"")+"livre p. "+bk(curPage)+" (PDF p. "+curPage+")";
 }
-$("openTab").onclick=()=>{if(pdfUrl&&curPage)window.open(pdfUrl+"#page="+curPage,"_blank")};
-$("pdfFile").onchange=e=>{const f=e.target.files[0];if(!f)return;if(pdfUrl)URL.revokeObjectURL(pdfUrl);pdfUrl=URL.createObjectURL(f);$("pdfName").textContent="✓ "+f.name;};
+function show(page,label){
+  if(!pdfDoc){alert("Ouvre d'abord ton PDF du livre avec le bouton « Ouvrir mon PDF du livre ».");return}
+  curPage=Math.min(Math.max(1,page),pdfDoc.numPages);curLabel=label||"";
+  $("right").classList.add("open");$("scroll").scrollTop=0;render();
+}
+$("pPrev").onclick=()=>{if(curPage>1){curPage--;curLabel="";render()}};
+$("pNext").onclick=()=>{if(pdfDoc&&curPage<pdfDoc.numPages){curPage++;curLabel="";render()}};
+$("zIn").onclick=()=>{zoom=Math.min(zoom*1.25,4);render()};
+$("zOut").onclick=()=>{zoom=Math.max(zoom/1.25,.5);render()};
+$("vClose").onclick=()=>$("right").classList.remove("open");
+let rT;window.addEventListener("resize",()=>{clearTimeout(rT);rT=setTimeout(render,200)});
+$("pdfFile").onchange=async e=>{const f=e.target.files[0];if(!f)return;
+  $("pdfName").textContent="Chargement…";
+  try{await libReady();const buf=await f.arrayBuffer();pdfDoc=await pdfjsLib.getDocument({data:buf}).promise;
+    $("pdfName").textContent="✓ PDF chargé ("+pdfDoc.numPages+" pages)";$("emptyV").innerHTML="<div>✓ PDF prêt.<br><br>Clique sur « Énoncé », « Réponse » ou « Cours » à gauche.</div>";}
+  catch(err){$("pdfName").textContent="Impossible de lire ce PDF : "+err;}
+};
 function stat(id){return (st[id]&&st[id].s)||""}
 function counts(items){let c={ok:0,ko:0,rev:0,n:items.length};items.forEach(i=>{const s=stat(i.id);if(c[s]!==undefined)c[s]++});return c}
 function bar(el,c){const w=k=>(c[k]/c.n*100)+"%";el.innerHTML=`<i style="width:${w('ok')};background:var(--ok)"></i><i style="width:${w('rev')};background:var(--rev)"></i><i style="width:${w('ko')};background:var(--ko)"></i>`}
 function pass(i){const s=stat(i.id);if(filter==="all")return true;if(filter==="todo")return !s;return s===filter}
-function render(){
+function renderList(){
   const all=DATA.flatMap(c=>c.items);const g=counts(all);
   $("gTxt").textContent=`${g.ok+g.ko+g.rev}/${g.n} faits · ${g.ok} justes`;bar($("gBar"),g);
   const open=new Set([...document.querySelectorAll("details.ch[open]")].map(d=>d.dataset.ch));
@@ -194,15 +230,15 @@ function render(){
 }
 document.addEventListener("click",e=>{
   const g=e.target.closest("[data-go]");if(g){e.preventDefault();show(+g.dataset.go,g.dataset.lab);return}
-  const b=e.target.closest("[data-st]");if(b){const id=b.closest(".row").dataset.id;st[id]=st[id]||{};st[id].s=st[id].s===b.dataset.st?"":b.dataset.st;save();render();}
+  const b=e.target.closest("[data-st]");if(b){const id=b.closest(".row").dataset.id;st[id]=st[id]||{};st[id].s=st[id].s===b.dataset.st?"":b.dataset.st;save();renderList();}
 });
 document.addEventListener("input",e=>{const id=e.target.dataset.in;if(id){st[id]=st[id]||{};st[id].r=e.target.value;save()}});
-$("filters").onclick=e=>{const b=e.target.closest("button");if(!b)return;filter=b.dataset.f;[...$("filters").children].forEach(x=>x.classList.toggle("on",x===b));render()};
+$("filters").onclick=e=>{const b=e.target.closest("button");if(!b)return;filter=b.dataset.f;[...$("filters").children].forEach(x=>x.classList.toggle("on",x===b));renderList()};
 const tabs={tEx:"vEx",tMap:"vMap",tHelp:"vHelp"};
 Object.keys(tabs).forEach(t=>$(t).onclick=()=>{Object.keys(tabs).forEach(k=>{$(k).classList.toggle("on",k===t);$(tabs[k]).classList.toggle("hidden",k!==t)})});
 $("exp").onclick=()=>{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(st)],{type:"application/json"}));a.download=KEY+".json";a.click()};
-$("imp").onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{try{st=JSON.parse(t);save();render()}catch(err){alert("Fichier illisible.")}})};
-$("rst").onclick=()=>{if(confirm("Effacer toutes tes réponses et marques pour cette séance ?")){st={};save();render()}};
+$("imp").onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{try{st=JSON.parse(t);save();renderList()}catch(err){alert("Fichier illisible.")}})};
+$("rst").onclick=()=>{if(confirm("Effacer toutes tes réponses et marques pour cette séance ?")){st={};save();renderList()}};
 // map table
 let m=`<table><tr><th>Chapitre / partie</th><th>Cours</th><th>Exercices</th><th>Réponses</th></tr>`;
 DATA.forEach(c=>{
@@ -214,7 +250,7 @@ DATA.forEach(c=>{
 });
 m+=`</table><p class="note">Numéros de page = pages imprimées du livre. Ajoute 13 pour la page du PDF.</p>`;
 $("mapT").innerHTML=m;
-render();
+renderList();
 </script>
 </body>
 </html>

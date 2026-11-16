@@ -12,9 +12,13 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,san
 .left{overflow-y:auto;padding:22px 18px 60px;border-right:1px solid var(--line)}
 .right{display:flex;flex-direction:column;background:#e9e6df}
 .right .bar{padding:8px 12px;font-size:13px;color:var(--muted);display:flex;gap:8px;align-items:center;flex-wrap:wrap;border-bottom:1px solid var(--line);background:var(--bg)}
-.right iframe{flex:1;border:0;width:100%;background:#fff}
+.right .scroll{flex:1;overflow:auto;padding:12px;text-align:center}
+.right canvas{background:#fff;box-shadow:0 1px 6px rgba(0,0,0,.15);max-width:none}
+.vbtn{border:1px solid var(--line);background:#fff;border-radius:7px;padding:3px 9px;cursor:pointer;font-size:13px}
+.close{margin-left:auto}
 .empty{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;padding:30px;color:var(--muted)}
-@media(max-width:900px){.layout{display:block;height:auto}.left{border:0}.right{display:none}}
+@media(max-width:900px){.layout{display:block;height:auto}.left{border:0}.right{display:none}.right.open{display:flex;position:fixed;inset:0;z-index:50}}
+@media(min-width:901px){.close{display:none}}
 .kicker{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);font-weight:700}
 h1{font-size:22px;margin:4px 0 4px}
 .sub{color:var(--muted);font-size:14px;margin:0 0 14px}
@@ -121,44 +125,76 @@ ol li{margin-bottom:6px}
         <li>Marque l'exercice <b>✓ Juste</b>, <b>✗ Faux</b> ou <b>↻ À revoir</b>. Le filtre « Faux » te permet de refaire seulement ceux que tu as ratés.</li>
         <li>Si tu ne comprends pas une notion, le bouton <b>Cours</b> de chaque partie ouvre les pages d'explication avec les exemples résolus.</li>
       </ol>
-      <p class="note">Sur téléphone, le PDF s'ouvre dans un nouvel onglet au lieu de s'afficher à côté.</p>
+      <p class="note">Sur téléphone ou dans un bloc Notion étroit, la page du livre s'ouvre en plein écran : touche « ✕ Fermer » pour revenir aux exercices.</p>
       <p class="note">Ce fichier ne contient ni les énoncés ni les réponses du livre : il renvoie aux pages de ton exemplaire.</p>
     </div>
   </section>
 </div>
-<div class="right">
-  <div class="bar"><span id="viewTxt">Aperçu du livre</span><button class="btn small hidden" id="openTab">Ouvrir dans un onglet</button></div>
+<div class="right" id="right">
+  <div class="bar">
+    <button class="vbtn" id="pPrev" title="Page précédente">◀</button>
+    <span id="viewTxt">Aperçu du livre</span>
+    <button class="vbtn" id="pNext" title="Page suivante">▶</button>
+    <button class="vbtn" id="zOut" title="Dézoomer">−</button><button class="vbtn" id="zIn" title="Zoomer">+</button>
+    <button class="vbtn close" id="vClose">✕ Fermer</button>
+  </div>
   <div class="empty" id="emptyV"><div>📖<br><br>Ouvre ton PDF du livre (bouton à gauche)<br>pour afficher les pages ici, à côté des exercices.</div></div>
-  <iframe id="viewer" class="hidden" title="Livre"></iframe>
+  <div class="scroll hidden" id="scroll"><canvas id="cv"></canvas></div>
 </div>
 </div>
+<script src="lib/pdf.min.js"></script>
 <script>
 const DATA=[{"ch": 1, "t": "Fondamentaux des calculs pharmaceutiques", "en": "Fundamentals of Pharmaceutical Calculations", "pp": [14, 29], "ans": [27, 29], "sets": [{"l": "Pourcentages", "c": [15, 15]}, {"l": "Rapports, proportions (règle de trois) et analyse dimensionnelle", "c": [16, 20]}, {"l": "Chiffres significatifs", "c": [23, 25]}, {"l": "Estimation (ordre de grandeur)", "c": [26, 26]}], "items": [{"id": "1-0-1", "n": 1, "s": 0, "p": [15], "a": [28]}, {"id": "1-0-2", "n": 2, "s": 0, "p": [15], "a": [28]}, {"id": "1-0-3", "n": 3, "s": 0, "p": [15], "a": [28]}, {"id": "1-0-4", "n": 4, "s": 0, "p": [15], "a": [28]}, {"id": "1-0-5", "n": 5, "s": 0, "p": [15], "a": [28]}, {"id": "1-0-6", "n": 6, "s": 0, "p": [15], "a": [28]}, {"id": "1-1-1", "n": 1, "s": 1, "p": [21], "a": [28]}, {"id": "1-1-2", "n": 2, "s": 1, "p": [21], "a": [28]}, {"id": "1-1-3", "n": 3, "s": 1, "p": [21], "a": [28]}, {"id": "1-1-4", "n": 4, "s": 1, "p": [21], "a": [28]}, {"id": "1-1-5", "n": 5, "s": 1, "p": [21], "a": [28]}, {"id": "1-1-6", "n": 6, "s": 1, "p": [21], "a": [28]}, {"id": "1-1-7", "n": 7, "s": 1, "p": [21], "a": [28]}, {"id": "1-1-8", "n": 8, "s": 1, "p": [21], "a": [28]}, {"id": "1-1-9", "n": 9, "s": 1, "p": [21], "a": [28]}, {"id": "1-1-10", "n": 10, "s": 1, "p": [21], "a": [28]}, {"id": "1-1-11", "n": 11, "s": 1, "p": [21], "a": [28]}, {"id": "1-1-12", "n": 12, "s": 1, "p": [21], "a": [28]}, {"id": "1-1-13", "n": 13, "s": 1, "p": [21], "a": [28]}, {"id": "1-1-14", "n": 14, "s": 1, "p": [21], "a": [28]}, {"id": "1-1-15", "n": 15, "s": 1, "p": [21], "a": [28]}, {"id": "1-1-16", "n": 16, "s": 1, "p": [21], "a": [28]}, {"id": "1-1-17", "n": 17, "s": 1, "p": [21], "a": [28]}, {"id": "1-1-18", "n": 18, "s": 1, "p": [21], "a": [28]}, {"id": "1-1-19", "n": 19, "s": 1, "p": [22], "a": [28]}, {"id": "1-1-20", "n": 20, "s": 1, "p": [22], "a": [28]}, {"id": "1-1-21", "n": 21, "s": 1, "p": [22], "a": [28]}, {"id": "1-1-22", "n": 22, "s": 1, "p": [22], "a": [28]}, {"id": "1-1-23", "n": 23, "s": 1, "p": [22], "a": [28]}, {"id": "1-1-24", "n": 24, "s": 1, "p": [22], "a": [28]}, {"id": "1-1-25", "n": 25, "s": 1, "p": [22], "a": [28]}, {"id": "1-1-26", "n": 26, "s": 1, "p": [22], "a": [28]}, {"id": "1-1-27", "n": 27, "s": 1, "p": [22], "a": [28]}, {"id": "1-1-28", "n": 28, "s": 1, "p": [22], "a": [28]}, {"id": "1-1-29", "n": 29, "s": 1, "p": [22], "a": [28]}, {"id": "1-1-30", "n": 30, "s": 1, "p": [22], "a": [28]}, {"id": "1-1-31", "n": 31, "s": 1, "p": [22], "a": [28]}, {"id": "1-1-32", "n": 32, "s": 1, "p": [22], "a": [28]}, {"id": "1-2-1", "n": 1, "s": 2, "p": [25], "a": [28]}, {"id": "1-2-2", "n": 2, "s": 2, "p": [25], "a": [28]}, {"id": "1-2-3", "n": 3, "s": 2, "p": [25], "a": [28]}, {"id": "1-2-4", "n": 4, "s": 2, "p": [25], "a": [28]}, {"id": "1-2-5", "n": 5, "s": 2, "p": [25], "a": [28]}, {"id": "1-3-1", "n": 1, "s": 3, "p": [26], "a": [28]}, {"id": "1-3-2", "n": 2, "s": 3, "p": [26], "a": [28]}, {"id": "1-3-3", "n": 3, "s": 3, "p": [26], "a": [28]}]}, {"ch": 2, "t": "Système international d'unités (SI)", "en": "International System of Units", "pp": [30, 47], "ans": [46, 47], "sets": [{"l": "Conversions g/mg/µg, L/mL, longueurs ; opérations sur les unités", "c": [30, 40]}], "items": [{"id": "2-0-1", "n": 1, "s": 0, "p": [41], "a": [46]}, {"id": "2-0-2", "n": 2, "s": 0, "p": [41], "a": [46]}, {"id": "2-0-3", "n": 3, "s": 0, "p": [41], "a": [46]}, {"id": "2-0-4", "n": 4, "s": 0, "p": [41], "a": [46]}, {"id": "2-0-5", "n": 5, "s": 0, "p": [41], "a": [46]}, {"id": "2-0-6", "n": 6, "s": 0, "p": [41], "a": [46]}, {"id": "2-0-7", "n": 7, "s": 0, "p": [41], "a": [46]}, {"id": "2-0-8", "n": 8, "s": 0, "p": [41], "a": [46]}, {"id": "2-0-9", "n": 9, "s": 0, "p": [42], "a": [46]}, {"id": "2-0-10", "n": 10, "s": 0, "p": [42], "a": [46]}, {"id": "2-0-11", "n": 11, "s": 0, "p": [42], "a": [46]}, {"id": "2-0-12", "n": 12, "s": 0, "p": [42], "a": [46]}, {"id": "2-0-13", "n": 13, "s": 0, "p": [42], "a": [46]}, {"id": "2-0-14", "n": 14, "s": 0, "p": [42], "a": [46]}, {"id": "2-0-15", "n": 15, "s": 0, "p": [42], "a": [46]}, {"id": "2-0-16", "n": 16, "s": 0, "p": [42], "a": [46]}, {"id": "2-0-17", "n": 17, "s": 0, "p": [42], "a": [46]}, {"id": "2-0-18", "n": 18, "s": 0, "p": [42], "a": [46]}, {"id": "2-0-19", "n": 19, "s": 0, "p": [42], "a": [46]}, {"id": "2-0-20", "n": 20, "s": 0, "p": [42], "a": [46]}, {"id": "2-0-21", "n": 21, "s": 0, "p": [42], "a": [46]}, {"id": "2-0-22", "n": 22, "s": 0, "p": [43], "a": [46]}, {"id": "2-0-23", "n": 23, "s": 0, "p": [43], "a": [46]}, {"id": "2-0-24", "n": 24, "s": 0, "p": [43], "a": [46]}, {"id": "2-0-25", "n": 25, "s": 0, "p": [43], "a": [46]}, {"id": "2-0-26", "n": 26, "s": 0, "p": [43], "a": [46]}, {"id": "2-0-27", "n": 27, "s": 0, "p": [43], "a": [46]}, {"id": "2-0-28", "n": 28, "s": 0, "p": [43], "a": [46]}, {"id": "2-0-29", "n": 29, "s": 0, "p": [43], "a": [46]}, {"id": "2-0-30", "n": 30, "s": 0, "p": [43], "a": [46]}, {"id": "2-0-31", "n": 31, "s": 0, "p": [43], "a": [46]}, {"id": "2-0-32", "n": 32, "s": 0, "p": [43], "a": [46]}, {"id": "2-0-33", "n": 33, "s": 0, "p": [43], "a": [46]}, {"id": "2-0-34", "n": 34, "s": 0, "p": [43], "a": [46]}, {"id": "2-0-35", "n": 35, "s": 0, "p": [43], "a": [46]}, {"id": "2-0-36", "n": 36, "s": 0, "p": [43], "a": [46]}, {"id": "2-0-37", "n": 37, "s": 0, "p": [43], "a": [46]}, {"id": "2-0-38", "n": 38, "s": 0, "p": [44], "a": [46]}, {"id": "2-0-39", "n": 39, "s": 0, "p": [44], "a": [46]}, {"id": "2-0-40", "n": 40, "s": 0, "p": [44], "a": [46]}, {"id": "2-0-41", "n": 41, "s": 0, "p": [44], "a": [46]}, {"id": "2-0-42", "n": 42, "s": 0, "p": [44], "a": [46]}, {"id": "2-0-43", "n": 43, "s": 0, "p": [44], "a": [46]}, {"id": "2-0-44", "n": 44, "s": 0, "p": [44], "a": [46]}, {"id": "2-0-45", "n": 45, "s": 0, "p": [44], "a": [46]}, {"id": "2-0-46", "n": 46, "s": 0, "p": [44], "a": [46]}, {"id": "2-0-47", "n": 47, "s": 0, "p": [44], "a": [46]}, {"id": "2-0-48", "n": 48, "s": 0, "p": [44], "a": [46]}, {"id": "2-0-49", "n": 49, "s": 0, "p": [44], "a": [46]}, {"id": "2-0-50", "n": 50, "s": 0, "p": [45], "a": [46]}]}, {"ch": 4, "t": "Lecture des prescriptions et ordres médicaux", "en": "Interpretation of Prescriptions and Medication Orders", "pp": [65, 89], "ans": [85, 87], "sets": [{"l": "Abréviations et symboles (subscriptio, signa, ordres médicaux)", "c": [76, 79]}, {"l": "Calculs à partir d'une prescription", "c": [79, 81]}, {"l": "Erreurs et omissions dans une prescription", "c": [74, 74]}, {"l": "Traduire / interpréter des prescriptions et notices", "c": [73, 79]}], "items": [{"id": "4-0-1", "n": 1, "s": 0, "p": [82], "a": [85]}, {"id": "4-0-2", "n": 2, "s": 0, "p": [82], "a": [85]}, {"id": "4-0-3", "n": 3, "s": 0, "p": [82], "a": [86]}, {"id": "4-1-4", "n": 4, "s": 1, "p": [83], "a": [86]}, {"id": "4-1-5", "n": 5, "s": 1, "p": [83], "a": [86]}, {"id": "4-1-6", "n": 6, "s": 1, "p": [83], "a": [86]}, {"id": "4-2-7", "n": 7, "s": 2, "p": [83], "a": [86]}, {"id": "4-2-8", "n": 8, "s": 2, "p": [83], "a": [87]}, {"id": "4-2-9", "n": 9, "s": 2, "p": [83], "a": [87]}, {"id": "4-2-10", "n": 10, "s": 2, "p": [83], "a": [87]}, {"id": "4-2-11", "n": 11, "s": 2, "p": [83], "a": [87]}, {"id": "4-3-12", "n": 12, "s": 3, "p": [84], "a": [87]}, {"id": "4-3-13", "n": 13, "s": 3, "p": [84], "a": [87]}, {"id": "4-3-14", "n": 14, "s": 3, "p": [84], "a": [87]}, {"id": "4-3-15", "n": 15, "s": 3, "p": [84], "a": [87]}, {"id": "4-3-16", "n": 16, "s": 3, "p": [84], "a": [87]}, {"id": "4-3-17", "n": 17, "s": 3, "p": [84], "a": [87]}, {"id": "4-3-18", "n": 18, "s": 3, "p": [84], "a": [87]}]}, {"ch": 5, "t": "Masse volumique et densité", "en": "Density and Specific Gravity", "pp": [90, 100], "ans": [100, 100], "sets": [{"l": "Calcul de la masse volumique", "c": [90, 90]}, {"l": "Calcul de la densité", "c": [90, 93]}, {"l": "Masse ou volume à partir de la densité", "c": [94, 94]}, {"l": "Densité et coût au poids / au volume", "c": [95, 95]}], "items": [{"id": "5-0-1", "n": 1, "s": 0, "p": [97], "a": [100]}, {"id": "5-0-2", "n": 2, "s": 0, "p": [97], "a": [100]}, {"id": "5-1-3", "n": 3, "s": 1, "p": [97], "a": [100]}, {"id": "5-1-4", "n": 4, "s": 1, "p": [97], "a": [100]}, {"id": "5-1-5", "n": 5, "s": 1, "p": [97], "a": [100]}, {"id": "5-1-6", "n": 6, "s": 1, "p": [97], "a": [100]}, {"id": "5-1-7", "n": 7, "s": 1, "p": [97], "a": [100]}, {"id": "5-1-8", "n": 8, "s": 1, "p": [97], "a": [100]}, {"id": "5-1-9", "n": 9, "s": 1, "p": [97], "a": [100]}, {"id": "5-2-10", "n": 10, "s": 2, "p": [97], "a": [100]}, {"id": "5-2-11", "n": 11, "s": 2, "p": [97], "a": [100]}, {"id": "5-2-12", "n": 12, "s": 2, "p": [97], "a": [100]}, {"id": "5-2-13", "n": 13, "s": 2, "p": [97], "a": [100]}, {"id": "5-2-14", "n": 14, "s": 2, "p": [97], "a": [100]}, {"id": "5-2-15", "n": 15, "s": 2, "p": [97], "a": [100]}, {"id": "5-2-16", "n": 16, "s": 2, "p": [98], "a": [100]}, {"id": "5-2-17", "n": 17, "s": 2, "p": [98], "a": [100]}, {"id": "5-2-18", "n": 18, "s": 2, "p": [98], "a": [100]}, {"id": "5-2-19", "n": 19, "s": 2, "p": [98], "a": [100]}, {"id": "5-2-20", "n": 20, "s": 2, "p": [98], "a": [100]}, {"id": "5-2-21", "n": 21, "s": 2, "p": [98], "a": [100]}, {"id": "5-2-22", "n": 22, "s": 2, "p": [98], "a": [100]}, {"id": "5-2-23", "n": 23, "s": 2, "p": [98], "a": [100]}, {"id": "5-2-24", "n": 24, "s": 2, "p": [98], "a": [100]}, {"id": "5-2-25", "n": 25, "s": 2, "p": [98], "a": [100]}, {"id": "5-2-26", "n": 26, "s": 2, "p": [99], "a": [100]}, {"id": "5-2-27", "n": 27, "s": 2, "p": [99], "a": [100]}, {"id": "5-2-28", "n": 28, "s": 2, "p": [99], "a": [100]}, {"id": "5-3-29", "n": 29, "s": 3, "p": [99], "a": [100]}, {"id": "5-3-30", "n": 30, "s": 3, "p": [99], "a": [100]}]}, {"ch": 6, "t": "Pourcentages, rapports et autres expressions de concentration", "en": "Percent Strength, Ratio Strength, and Other Expressions of Concentration", "pp": [101, 122], "ans": [120, 122], "sets": [{"l": "Pourcentage poids/volume (% p/v)", "c": [103, 104]}, {"l": "Pourcentage volume/volume (% v/v)", "c": [104, 105]}, {"l": "Pourcentage poids/poids (% p/p)", "c": [105, 107]}, {"l": "Calculs de pourcentages mixtes", "c": [101, 108]}, {"l": "Concentration exprimée en rapport (1:x)", "c": [109, 112]}, {"l": "Parties par million (ppm)", "c": [113, 113]}], "items": [{"id": "6-0-1", "n": 1, "s": 0, "p": [114], "a": [120]}, {"id": "6-0-2", "n": 2, "s": 0, "p": [114], "a": [120]}, {"id": "6-0-3", "n": 3, "s": 0, "p": [114], "a": [120]}, {"id": "6-0-4", "n": 4, "s": 0, "p": [114], "a": [120]}, {"id": "6-0-5", "n": 5, "s": 0, "p": [114], "a": [120]}, {"id": "6-0-6", "n": 6, "s": 0, "p": [114], "a": [120]}, {"id": "6-0-7", "n": 7, "s": 0, "p": [114], "a": [120]}, {"id": "6-0-8", "n": 8, "s": 0, "p": [114], "a": [120]}, {"id": "6-0-9", "n": 9, "s": 0, "p": [114], "a": [120]}, {"id": "6-0-10", "n": 10, "s": 0, "p": [114], "a": [120]}, {"id": "6-0-11", "n": 11, "s": 0, "p": [114], "a": [120]}, {"id": "6-0-12", "n": 12, "s": 0, "p": [115], "a": [120]}, {"id": "6-0-13", "n": 13, "s": 0, "p": [115], "a": [120]}, {"id": "6-0-14", "n": 14, "s": 0, "p": [115], "a": [120]}, {"id": "6-0-15", "n": 15, "s": 0, "p": [115], "a": [120]}, {"id": "6-0-16", "n": 16, "s": 0, "p": [115], "a": [120]}, {"id": "6-0-17", "n": 17, "s": 0, "p": [115], "a": [120]}, {"id": "6-0-18", "n": 18, "s": 0, "p": [115], "a": [120]}, {"id": "6-0-19", "n": 19, "s": 0, "p": [115], "a": [120]}, {"id": "6-0-20", "n": 20, "s": 0, "p": [115], "a": [120]}, {"id": "6-0-21", "n": 21, "s": 0, "p": [115], "a": [120]}, {"id": "6-0-22", "n": 22, "s": 0, "p": [115], "a": [120]}, {"id": "6-0-23", "n": 23, "s": 0, "p": [115, 116], "a": [120]}, {"id": "6-0-24", "n": 24, "s": 0, "p": [115, 116], "a": [120]}, {"id": "6-0-25", "n": 25, "s": 0, "p": [116], "a": [120]}, {"id": "6-0-26", "n": 26, "s": 0, "p": [116], "a": [121]}, {"id": "6-0-27", "n": 27, "s": 0, "p": [116], "a": [121]}, {"id": "6-0-28", "n": 28, "s": 0, "p": [116], "a": [121]}, {"id": "6-0-29", "n": 29, "s": 0, "p": [116], "a": [121]}, {"id": "6-1-30", "n": 30, "s": 1, "p": [116], "a": [121]}, {"id": "6-1-31", "n": 31, "s": 1, "p": [116], "a": [121]}, {"id": "6-1-32", "n": 32, "s": 1, "p": [116], "a": [121]}, {"id": "6-1-33", "n": 33, "s": 1, "p": [116], "a": [121]}, {"id": "6-1-34", "n": 34, "s": 1, "p": [116], "a": [121]}, {"id": "6-2-35", "n": 35, "s": 2, "p": [116], "a": [121]}, {"id": "6-2-36", "n": 36, "s": 2, "p": [116], "a": [121]}, {"id": "6-2-37", "n": 37, "s": 2, "p": [117], "a": [121]}, {"id": "6-2-38", "n": 38, "s": 2, "p": [117], "a": [121]}, {"id": "6-2-39", "n": 39, "s": 2, "p": [117], "a": [121]}, {"id": "6-2-40", "n": 40, "s": 2, "p": [117], "a": [121]}, {"id": "6-2-41", "n": 41, "s": 2, "p": [117], "a": [121]}, {"id": "6-2-42", "n": 42, "s": 2, "p": [117], "a": [121]}, {"id": "6-2-43", "n": 43, "s": 2, "p": [117], "a": [121]}, {"id": "6-2-44", "n": 44, "s": 2, "p": [117], "a": [121]}, {"id": "6-2-45", "n": 45, "s": 2, "p": [117], "a": [121]}, {"id": "6-2-46", "n": 46, "s": 2, "p": [117], "a": [121]}, {"id": "6-2-47", "n": 47, "s": 2, "p": [117], "a": [121]}, {"id": "6-3-48", "n": 48, "s": 3, "p": [117, 118], "a": [121]}, {"id": "6-3-49", "n": 49, "s": 3, "p": [117, 118], "a": [121]}, {"id": "6-4-50", "n": 50, "s": 4, "p": [118], "a": [121]}, {"id": "6-4-51", "n": 51, "s": 4, "p": [118], "a": [121]}, {"id": "6-4-52", "n": 52, "s": 4, "p": [118], "a": [121]}, {"id": "6-4-53", "n": 53, "s": 4, "p": [118], "a": [121]}, {"id": "6-4-54", "n": 54, "s": 4, "p": [118], "a": [121]}, {"id": "6-4-55", "n": 55, "s": 4, "p": [118], "a": [121]}, {"id": "6-4-56", "n": 56, "s": 4, "p": [118], "a": [121]}, {"id": "6-4-57", "n": 57, "s": 4, "p": [118], "a": [121]}, {"id": "6-4-58", "n": 58, "s": 4, "p": [118], "a": [121]}, {"id": "6-4-59", "n": 59, "s": 4, "p": [119], "a": [121]}, {"id": "6-5-60", "n": 60, "s": 5, "p": [119], "a": [121]}, {"id": "6-5-61", "n": 61, "s": 5, "p": [119], "a": [121]}, {"id": "6-5-62", "n": 62, "s": 5, "p": [119], "a": [121]}]}, {"ch": 7, "t": "Calcul des doses : généralités (cuillères et gouttes)", "en": "Calculation of Doses: General Considerations", "pp": [123, 141], "ans": [139, 141], "sets": [{"l": "Doses de formes liquides orales (cuillère à café 5 mL, à soupe 15 mL)", "c": [126, 131]}], "items": [{"id": "7-0-14", "n": 14, "s": 0, "p": [136], "a": [140]}, {"id": "7-0-15", "n": 15, "s": 0, "p": [136], "a": [140]}, {"id": "7-0-16", "n": 16, "s": 0, "p": [136], "a": [140]}, {"id": "7-0-17", "n": 17, "s": 0, "p": [136], "a": [140]}, {"id": "7-0-18", "n": 18, "s": 0, "p": [137], "a": [140]}, {"id": "7-0-19", "n": 19, "s": 0, "p": [137], "a": [140]}, {"id": "7-0-20", "n": 20, "s": 0, "p": [137], "a": [140]}, {"id": "7-0-21", "n": 21, "s": 0, "p": [137], "a": [140]}, {"id": "7-0-22", "n": 22, "s": 0, "p": [137], "a": [140]}, {"id": "7-0-23", "n": 23, "s": 0, "p": [137], "a": [140]}, {"id": "7-0-24", "n": 24, "s": 0, "p": [137], "a": [140]}]}];
 const KEY="ansel-seance1";const OFF=13;
 let st={};try{st=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){st={}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}}
-let pdfUrl=null,curPage=null,filter="all";
-const isMobile=()=>window.matchMedia("(max-width:900px)").matches;
+let pdfDoc=null,curPage=null,curLabel="",zoom=1,filter="all",task=null;
 const $=id=>document.getElementById(id);
 function bk(p){return p-OFF}
 function fmt(arr){return arr.length>1?`p. ${bk(arr[0])}–${bk(arr[arr.length-1])}`:`p. ${bk(arr[0])}`}
 function fmtPdf(arr){return arr.length>1?`PDF ${arr[0]}–${arr[arr.length-1]}`:`PDF ${arr[0]}`}
-function show(page,label){
-  curPage=page;
-  if(!pdfUrl){alert("Ouvre d'abord ton PDF du livre avec le bouton « Ouvrir mon PDF du livre ».");return}
-  const url=pdfUrl+"#page="+page;
-  if(isMobile()){window.open(url,"_blank");return}
-  const v=$("viewer");v.classList.remove("hidden");$("emptyV").classList.add("hidden");$("openTab").classList.remove("hidden");
-  v.src="about:blank";setTimeout(()=>{v.src=url},40);
-  $("viewTxt").textContent=(label?label+" · ":"")+"livre p. "+bk(page)+" (PDF p. "+page+")";
+function libReady(){return new Promise((res,rej)=>{
+  if(window.pdfjsLib)return res();
+  const sc=document.createElement("script");sc.src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+  sc.onload=()=>{pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";res()};
+  sc.onerror=rej;document.head.appendChild(sc)})}
+if(window.pdfjsLib)pdfjsLib.GlobalWorkerOptions.workerSrc="lib/pdf.worker.min.js";
+async function render(){
+  if(!pdfDoc||!curPage)return;
+  $("emptyV").classList.add("hidden");$("scroll").classList.remove("hidden");
+  const page=await pdfDoc.getPage(curPage);
+  const base=page.getViewport({scale:1});
+  const w=Math.max(280,$("scroll").clientWidth-24);
+  const scale=w/base.width*zoom, dpr=Math.min(window.devicePixelRatio||1,3)*1.5;
+  const vp=page.getViewport({scale:scale*dpr});
+  const cv=$("cv");cv.width=vp.width;cv.height=vp.height;cv.style.width=(vp.width/dpr)+"px";cv.style.height=(vp.height/dpr)+"px";
+  if(task)try{task.cancel()}catch(e){}
+  task=page.render({canvasContext:cv.getContext("2d"),viewport:vp});
+  try{await task.promise}catch(e){}
+  $("viewTxt").textContent=(curLabel?curLabel+" · ":"")+"livre p. "+bk(curPage)+" (PDF p. "+curPage+")";
 }
-$("openTab").onclick=()=>{if(pdfUrl&&curPage)window.open(pdfUrl+"#page="+curPage,"_blank")};
-$("pdfFile").onchange=e=>{const f=e.target.files[0];if(!f)return;if(pdfUrl)URL.revokeObjectURL(pdfUrl);pdfUrl=URL.createObjectURL(f);$("pdfName").textContent="✓ "+f.name;};
+function show(page,label){
+  if(!pdfDoc){alert("Ouvre d'abord ton PDF du livre avec le bouton « Ouvrir mon PDF du livre ».");return}
+  curPage=Math.min(Math.max(1,page),pdfDoc.numPages);curLabel=label||"";
+  $("right").classList.add("open");$("scroll").scrollTop=0;render();
+}
+$("pPrev").onclick=()=>{if(curPage>1){curPage--;curLabel="";render()}};
+$("pNext").onclick=()=>{if(pdfDoc&&curPage<pdfDoc.numPages){curPage++;curLabel="";render()}};
+$("zIn").onclick=()=>{zoom=Math.min(zoom*1.25,4);render()};
+$("zOut").onclick=()=>{zoom=Math.max(zoom/1.25,.5);render()};
+$("vClose").onclick=()=>$("right").classList.remove("open");
+let rT;window.addEventListener("resize",()=>{clearTimeout(rT);rT=setTimeout(render,200)});
+$("pdfFile").onchange=async e=>{const f=e.target.files[0];if(!f)return;
+  $("pdfName").textContent="Chargement…";
+  try{await libReady();const buf=await f.arrayBuffer();pdfDoc=await pdfjsLib.getDocument({data:buf}).promise;
+    $("pdfName").textContent="✓ PDF chargé ("+pdfDoc.numPages+" pages)";$("emptyV").innerHTML="<div>✓ PDF prêt.<br><br>Clique sur « Énoncé », « Réponse » ou « Cours » à gauche.</div>";}
+  catch(err){$("pdfName").textContent="Impossible de lire ce PDF : "+err;}
+};
 function stat(id){return (st[id]&&st[id].s)||""}
 function counts(items){let c={ok:0,ko:0,rev:0,n:items.length};items.forEach(i=>{const s=stat(i.id);if(c[s]!==undefined)c[s]++});return c}
 function bar(el,c){const w=k=>(c[k]/c.n*100)+"%";el.innerHTML=`<i style="width:${w('ok')};background:var(--ok)"></i><i style="width:${w('rev')};background:var(--rev)"></i><i style="width:${w('ko')};background:var(--ko)"></i>`}
 function pass(i){const s=stat(i.id);if(filter==="all")return true;if(filter==="todo")return !s;return s===filter}
-function render(){
+function renderList(){
   const all=DATA.flatMap(c=>c.items);const g=counts(all);
   $("gTxt").textContent=`${g.ok+g.ko+g.rev}/${g.n} faits · ${g.ok} justes`;bar($("gBar"),g);
   const open=new Set([...document.querySelectorAll("details.ch[open]")].map(d=>d.dataset.ch));
@@ -194,15 +230,15 @@ function render(){
 }
 document.addEventListener("click",e=>{
   const g=e.target.closest("[data-go]");if(g){e.preventDefault();show(+g.dataset.go,g.dataset.lab);return}
-  const b=e.target.closest("[data-st]");if(b){const id=b.closest(".row").dataset.id;st[id]=st[id]||{};st[id].s=st[id].s===b.dataset.st?"":b.dataset.st;save();render();}
+  const b=e.target.closest("[data-st]");if(b){const id=b.closest(".row").dataset.id;st[id]=st[id]||{};st[id].s=st[id].s===b.dataset.st?"":b.dataset.st;save();renderList();}
 });
 document.addEventListener("input",e=>{const id=e.target.dataset.in;if(id){st[id]=st[id]||{};st[id].r=e.target.value;save()}});
-$("filters").onclick=e=>{const b=e.target.closest("button");if(!b)return;filter=b.dataset.f;[...$("filters").children].forEach(x=>x.classList.toggle("on",x===b));render()};
+$("filters").onclick=e=>{const b=e.target.closest("button");if(!b)return;filter=b.dataset.f;[...$("filters").children].forEach(x=>x.classList.toggle("on",x===b));renderList()};
 const tabs={tEx:"vEx",tMap:"vMap",tHelp:"vHelp"};
 Object.keys(tabs).forEach(t=>$(t).onclick=()=>{Object.keys(tabs).forEach(k=>{$(k).classList.toggle("on",k===t);$(tabs[k]).classList.toggle("hidden",k!==t)})});
 $("exp").onclick=()=>{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(st)],{type:"application/json"}));a.download=KEY+".json";a.click()};
-$("imp").onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{try{st=JSON.parse(t);save();render()}catch(err){alert("Fichier illisible.")}})};
-$("rst").onclick=()=>{if(confirm("Effacer toutes tes réponses et marques pour cette séance ?")){st={};save();render()}};
+$("imp").onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{try{st=JSON.parse(t);save();renderList()}catch(err){alert("Fichier illisible.")}})};
+$("rst").onclick=()=>{if(confirm("Effacer toutes tes réponses et marques pour cette séance ?")){st={};save();renderList()}};
 // map table
 let m=`<table><tr><th>Chapitre / partie</th><th>Cours</th><th>Exercices</th><th>Réponses</th></tr>`;
 DATA.forEach(c=>{
@@ -214,7 +250,7 @@ DATA.forEach(c=>{
 });
 m+=`</table><p class="note">Numéros de page = pages imprimées du livre. Ajoute 13 pour la page du PDF.</p>`;
 $("mapT").innerHTML=m;
-render();
+renderList();
 </script>
 </body>
 </html>
