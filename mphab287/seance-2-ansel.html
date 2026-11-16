@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Séance 2 · Exercices de l'Ansel</title>
+<style>
+:root{--bg:#f7f5f0;--card:#fff;--ink:#1f2a2e;--muted:#6b7478;--line:#e4e0d8;--accent:#2f6f62;--accent-soft:#e6f0ed;--ok:#2e7d4f;--ok-soft:#e3f3e8;--ko:#b3412f;--ko-soft:#fbe6e2;--rev:#a86b00;--rev-soft:#fdf1d8}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.45}
+.layout{display:grid;grid-template-columns:minmax(380px,560px) 1fr;height:100vh}
+.left{overflow-y:auto;padding:22px 18px 60px;border-right:1px solid var(--line)}
+.right{display:flex;flex-direction:column;background:#e9e6df}
+.right .bar{padding:8px 12px;font-size:13px;color:var(--muted);display:flex;gap:8px;align-items:center;flex-wrap:wrap;border-bottom:1px solid var(--line);background:var(--bg)}
+.right iframe{flex:1;border:0;width:100%;background:#fff}
+.empty{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;padding:30px;color:var(--muted)}
+@media(max-width:900px){.layout{display:block;height:auto}.left{border:0}.right{display:none}}
+.kicker{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);font-weight:700}
+h1{font-size:22px;margin:4px 0 4px}
+.sub{color:var(--muted);font-size:14px;margin:0 0 14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:12px}
+.pdfbox{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:14px}
+.btn{border:1px solid var(--line);background:#fff;border-radius:9px;padding:6px 10px;font-size:13px;cursor:pointer;color:var(--ink);white-space:nowrap}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn.small{padding:4px 8px;font-size:12px}
+.tabs{display:flex;gap:6px;margin:10px 0 12px}
+.tabs button{border:0;background:transparent;padding:8px 12px;border-radius:9px;font-weight:600;color:var(--muted);cursor:pointer;font-size:14px}
+.tabs button.on{background:var(--accent-soft);color:var(--accent)}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.filters button{border:1px solid var(--line);background:#fff;border-radius:20px;padding:5px 11px;font-size:13px;cursor:pointer}
+.filters button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.global{display:flex;gap:10px;align-items:center;font-size:14px;margin-bottom:10px}
+.pbar{flex:1;height:8px;background:var(--line);border-radius:6px;overflow:hidden;display:flex}
+.pbar i{display:block;height:100%}
+.ch{margin-bottom:16px}
+.ch>summary{list-style:none;cursor:pointer;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.ch>summary::-webkit-details-marker{display:none}
+.ch[open]>summary{border-radius:14px 14px 0 0}
+.chtitle{font-weight:700;font-size:16px}
+.chen{font-size:12px;color:var(--muted);font-style:italic}
+.chmeta{font-size:12px;color:var(--muted);margin-top:4px;display:flex;gap:10px;flex-wrap:wrap}
+.chbody{background:var(--card);border:1px solid var(--line);border-top:0;border-radius:0 0 14px 14px;padding:4px 14px 12px}
+.set{margin-top:12px}
+.sethead{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--line)}
+.setname{font-weight:600;font-size:14px}
+.row{display:grid;grid-template-columns:52px 1fr;gap:8px;padding:9px 0;border-bottom:1px dashed var(--line)}
+.row:last-child{border-bottom:0}
+.num{font-weight:700;font-size:15px;padding-top:4px}
+.row.ok .num{color:var(--ok)}.row.ko .num{color:var(--ko)}.row.rev .num{color:var(--rev)}
+.line1{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.line2{display:flex;gap:6px;margin-top:6px;align-items:center;flex-wrap:wrap}
+.line2 input{flex:1;min-width:140px;border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:14px;font-family:inherit}
+.st{border:1px solid var(--line);background:#fff;border-radius:8px;padding:5px 9px;cursor:pointer;font-size:13px}
+.st.ok.on{background:var(--ok-soft);border-color:var(--ok);color:var(--ok);font-weight:700}
+.st.ko.on{background:var(--ko-soft);border-color:var(--ko);color:var(--ko);font-weight:700}
+.st.rev.on{background:var(--rev-soft);border-color:var(--rev);color:var(--rev);font-weight:700}
+.pg{font-size:12px;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:7px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.note{font-size:13px;color:var(--muted)}
+.hidden{display:none!important}
+ol li{margin-bottom:6px}
+</style>
+</head>
+<body>
+<div class="layout">
+<div class="left">
+  <div class="kicker">MPHAB287 · Ansel, Pharmaceutical Calculations, 15e éd.</div>
+  <h1>Séance 2 · Exercices du livre</h1>
+  <p class="sub">Triturations (méthode des aliquotes, dilution de poudres et pommades), adaptation des formules, gélules et suppositoires : les exercices de l'Ansel qui correspondent au chapitre II du cours.</p>
+
+  <div class="card">
+    <div class="pdfbox">
+      <label class="btn primary" for="pdfFile">📖 Ouvrir mon PDF du livre</label>
+      <input type="file" id="pdfFile" accept="application/pdf" class="hidden">
+      <span id="pdfName" class="note">Aucun PDF ouvert. Les pages s'affichent à droite une fois le PDF choisi.</span>
+    </div>
+  </div>
+
+  <nav class="tabs">
+    <button id="tEx" class="on">Exercices</button>
+    <button id="tMap">Correspondance des pages</button>
+    <button id="tHelp">Mode d'emploi</button>
+  </nav>
+
+  <section id="vEx">
+    <div class="global"><span id="gTxt"></span><div class="pbar" id="gBar"></div></div>
+    <div class="filters" id="filters">
+      <button data-f="all" class="on">Tous</button>
+      <button data-f="todo">À faire</button>
+      <button data-f="ko">Faux</button>
+      <button data-f="rev">À revoir</button>
+      <button data-f="ok">Justes</button>
+    </div>
+    <div id="list"></div>
+    <div class="card note" style="margin-top:14px">
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn small" id="exp">Exporter ma progression</button>
+        <label class="btn small" for="imp">Importer une progression</label><input type="file" id="imp" accept="application/json" class="hidden">
+        <button class="btn small" id="rst">Tout remettre à zéro</button>
+      </div>
+      <p style="margin:8px 0 0">Ta progression est enregistrée dans ce navigateur. Exporte-la pour la retrouver sur un autre appareil.</p>
+    </div>
+  </section>
+
+  <section id="vMap" class="hidden">
+    <div class="card">
+      <p class="note" style="margin-top:0">Page du PDF = page imprimée du livre + 13. Clique sur une page pour l'afficher.</p>
+      <div id="mapT"></div>
+    </div>
+  </section>
+
+  <section id="vHelp" class="hidden">
+    <div class="card">
+      <ol>
+        <li>Clique sur <b>« Ouvrir mon PDF du livre »</b> et choisis ton fichier de l'Ansel. Il reste sur ton ordinateur : rien n'est envoyé nulle part. À refaire à chaque ouverture de la page.</li>
+        <li>Pour un exercice, clique sur <b>Énoncé</b> : la page s'affiche à droite. Lis l'exercice et résous-le sur papier.</li>
+        <li>Tape ta réponse dans la case, puis clique sur <b>Réponse</b> pour afficher la page des réponses de fin de chapitre et compare.</li>
+        <li>Marque l'exercice <b>✓ Juste</b>, <b>✗ Faux</b> ou <b>↻ À revoir</b>. Le filtre « Faux » te permet de refaire seulement ceux que tu as ratés.</li>
+        <li>Si tu ne comprends pas une notion, le bouton <b>Cours</b> de chaque partie ouvre les pages d'explication avec les exemples résolus.</li>
+      </ol>
+      <p class="note">Sur téléphone, le PDF s'ouvre dans un nouvel onglet au lieu de s'afficher à côté.</p>
+      <p class="note">Ce fichier ne contient ni les énoncés ni les réponses du livre : il renvoie aux pages de ton exemplaire.</p>
+    </div>
+  </section>
+</div>
+<div class="right">
+  <div class="bar"><span id="viewTxt">Aperçu du livre</span><button class="btn small hidden" id="openTab">Ouvrir dans un onglet</button></div>
+  <div class="empty" id="emptyV"><div>📖<br><br>Ouvre ton PDF du livre (bouton à gauche)<br>pour afficher les pages ici, à côté des exercices.</div></div>
+  <iframe id="viewer" class="hidden" title="Livre"></iframe>
+</div>
+</div>
+<script>
+const DATA=[{"ch": 3, "t": "Mesures pharmaceutiques : méthode des aliquotes", "en": "Pharmaceutical Measurement", "pp": [48, 64], "ans": [62, 64], "sets": [{"l": "Pesée par la méthode des aliquotes (dilution d'une poudre, même logique que la trituration)", "c": [53, 56]}, {"l": "Mesure de volumes par la méthode des aliquotes", "c": [55, 56]}], "items": [{"id": "3-0-1", "n": 1, "s": 0, "p": [60], "a": [63]}, {"id": "3-0-2", "n": 2, "s": 0, "p": [60], "a": [63]}, {"id": "3-0-3", "n": 3, "s": 0, "p": [60], "a": [63]}, {"id": "3-0-4", "n": 4, "s": 0, "p": [60], "a": [63]}, {"id": "3-0-5", "n": 5, "s": 0, "p": [60], "a": [63]}, {"id": "3-0-6", "n": 6, "s": 0, "p": [60], "a": [63]}, {"id": "3-1-7", "n": 7, "s": 1, "p": [60], "a": [63]}, {"id": "3-1-8", "n": 8, "s": 1, "p": [60], "a": [63]}, {"id": "3-1-9", "n": 9, "s": 1, "p": [60], "a": [63]}]}, {"ch": 15, "t": "Modifier la concentration d'un produit (dilution de poudres et pommades)", "en": "Altering Product Strength, Use of Stock Solutions, and Problem Solving by Alligation", "pp": [309, 328], "ans": [326, 328], "sets": [{"l": "Dilution et enrichissement de pommades, gels et poudres", "c": [315, 316]}, {"l": "Mélange de deux concentrations (alligation)", "c": [316, 318]}], "items": [{"id": "15-0-2", "n": 2, "s": 0, "p": [321], "a": [327]}, {"id": "15-0-4", "n": 4, "s": 0, "p": [321], "a": [327]}, {"id": "15-0-5", "n": 5, "s": 0, "p": [321], "a": [327]}, {"id": "15-0-7", "n": 7, "s": 0, "p": [321], "a": [327]}, {"id": "15-0-20", "n": 20, "s": 0, "p": [322], "a": [327]}, {"id": "15-0-22", "n": 22, "s": 0, "p": [322], "a": [327]}, {"id": "15-0-28", "n": 28, "s": 0, "p": [322], "a": [328]}, {"id": "15-0-31", "n": 31, "s": 0, "p": [322], "a": [328]}, {"id": "15-0-36", "n": 36, "s": 0, "p": [323], "a": [328]}, {"id": "15-0-37", "n": 37, "s": 0, "p": [323], "a": [328]}, {"id": "15-0-38", "n": 38, "s": 0, "p": [323], "a": [328]}, {"id": "15-0-39", "n": 39, "s": 0, "p": [323], "a": [328]}, {"id": "15-0-40", "n": 40, "s": 0, "p": [323], "a": [328]}, {"id": "15-0-42", "n": 42, "s": 0, "p": [323], "a": [328]}, {"id": "15-0-43", "n": 43, "s": 0, "p": [323], "a": [328]}, {"id": "15-0-44", "n": 44, "s": 0, "p": [323], "a": [328]}, {"id": "15-0-51", "n": 51, "s": 0, "p": [324], "a": [328]}, {"id": "15-0-60", "n": 60, "s": 0, "p": [325], "a": [328]}, {"id": "15-1-52", "n": 52, "s": 1, "p": [324], "a": [328]}, {"id": "15-1-53", "n": 53, "s": 1, "p": [324], "a": [328]}]}, {"ch": 16, "t": "Réduire et augmenter une formule", "en": "Reducing and Enlarging Formulas", "pp": [329, 335], "ans": [335, 335], "sets": [{"l": "Adapter une formule au nombre d'unités à préparer", "c": [329, 331]}], "items": [{"id": "16-0-1", "n": 1, "s": 0, "p": [332], "a": [335]}, {"id": "16-0-2", "n": 2, "s": 0, "p": [332], "a": [335]}, {"id": "16-0-3", "n": 3, "s": 0, "p": [332], "a": [335]}, {"id": "16-0-4", "n": 4, "s": 0, "p": [333], "a": [335]}, {"id": "16-0-5", "n": 5, "s": 0, "p": [333], "a": [335]}, {"id": "16-0-6", "n": 6, "s": 0, "p": [333], "a": [335]}, {"id": "16-0-7", "n": 7, "s": 0, "p": [333], "a": [335]}, {"id": "16-0-8", "n": 8, "s": 0, "p": [333], "a": [335]}, {"id": "16-0-9", "n": 9, "s": 0, "p": [333], "a": [335]}, {"id": "16-0-10", "n": 10, "s": 0, "p": [334], "a": [335]}]}, {"ch": 17, "t": "Préparations magistrales : gélules et suppositoires", "en": "Selected Calculations in Contemporary Compounding", "pp": [336, 366], "ans": [361, 365], "sets": [{"l": "Remplissage de gélules et moulage de suppositoires (facteur de déplacement)", "c": [346, 349]}, {"l": "Formule de suppositoires (densité de la base)", "c": [348, 349]}], "items": [{"id": "17-0-39", "n": 39, "s": 0, "p": [355], "a": [363]}, {"id": "17-0-40", "n": 40, "s": 0, "p": [355], "a": [363]}, {"id": "17-0-41", "n": 41, "s": 0, "p": [355], "a": [363]}, {"id": "17-1-52", "n": 52, "s": 1, "p": [357], "a": [363]}]}];
+const KEY="ansel-seance2";const OFF=13;
+let st={};try{st=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){st={}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}}
+let pdfUrl=null,curPage=null,filter="all";
+const isMobile=()=>window.matchMedia("(max-width:900px)").matches;
+const $=id=>document.getElementById(id);
+function bk(p){return p-OFF}
+function fmt(arr){return arr.length>1?`p. ${bk(arr[0])}–${bk(arr[arr.length-1])}`:`p. ${bk(arr[0])}`}
+function fmtPdf(arr){return arr.length>1?`PDF ${arr[0]}–${arr[arr.length-1]}`:`PDF ${arr[0]}`}
+function show(page,label){
+  curPage=page;
+  if(!pdfUrl){alert("Ouvre d'abord ton PDF du livre avec le bouton « Ouvrir mon PDF du livre ».");return}
+  const url=pdfUrl+"#page="+page;
+  if(isMobile()){window.open(url,"_blank");return}
+  const v=$("viewer");v.classList.remove("hidden");$("emptyV").classList.add("hidden");$("openTab").classList.remove("hidden");
+  v.src="about:blank";setTimeout(()=>{v.src=url},40);
+  $("viewTxt").textContent=(label?label+" · ":"")+"livre p. "+bk(page)+" (PDF p. "+page+")";
+}
+$("openTab").onclick=()=>{if(pdfUrl&&curPage)window.open(pdfUrl+"#page="+curPage,"_blank")};
+$("pdfFile").onchange=e=>{const f=e.target.files[0];if(!f)return;if(pdfUrl)URL.revokeObjectURL(pdfUrl);pdfUrl=URL.createObjectURL(f);$("pdfName").textContent="✓ "+f.name;};
+function stat(id){return (st[id]&&st[id].s)||""}
+function counts(items){let c={ok:0,ko:0,rev:0,n:items.length};items.forEach(i=>{const s=stat(i.id);if(c[s]!==undefined)c[s]++});return c}
+function bar(el,c){const w=k=>(c[k]/c.n*100)+"%";el.innerHTML=`<i style="width:${w('ok')};background:var(--ok)"></i><i style="width:${w('rev')};background:var(--rev)"></i><i style="width:${w('ko')};background:var(--ko)"></i>`}
+function pass(i){const s=stat(i.id);if(filter==="all")return true;if(filter==="todo")return !s;return s===filter}
+function render(){
+  const all=DATA.flatMap(c=>c.items);const g=counts(all);
+  $("gTxt").textContent=`${g.ok+g.ko+g.rev}/${g.n} faits · ${g.ok} justes`;bar($("gBar"),g);
+  const open=new Set([...document.querySelectorAll("details.ch[open]")].map(d=>d.dataset.ch));
+  const first=!document.querySelector("details.ch");
+  let h="";
+  DATA.forEach((c,ci)=>{
+    const cc=counts(c.items);const vis=c.items.filter(pass);
+    h+=`<details class="ch" data-ch="${c.ch}" ${(open.has(String(c.ch))||(first&&ci===0)||filter!=="all")?"open":""}><summary>
+      <div class="chtitle">Chapitre ${c.ch} · ${c.t}</div><div class="chen">${c.en}</div>
+      <div class="chmeta"><span>Chapitre : livre p. ${bk(c.pp[0])}–${bk(c.pp[1])} (PDF ${c.pp[0]}–${c.pp[1]})</span><span>Réponses : ${fmt(c.ans.length>1&&c.ans[0]!==c.ans[1]?c.ans:[c.ans[0]])}</span><span>${cc.ok}/${cc.n} justes · ${cc.ko} faux · ${cc.rev} à revoir</span></div>
+      <div class="pbar" style="margin-top:6px" data-bar="${ci}"></div></summary><div class="chbody">`;
+    c.sets.forEach((s,si)=>{
+      const its=vis.filter(i=>i.s===si);if(!its.length)return;
+      h+=`<div class="set"><div class="sethead"><div><div class="setname">${s.l}</div><div class="pg">Cours à relire : livre ${fmt(s.c[0]===s.c[1]?[s.c[0]]:s.c)} · ${fmtPdf(s.c[0]===s.c[1]?[s.c[0]]:s.c)}</div></div>
+        <button class="btn small" data-go="${s.c[0]}" data-lab="Cours">Cours</button></div>`;
+      its.forEach(i=>{
+        const s0=stat(i.id),ans=(st[i.id]&&st[i.id].r)||"";
+        h+=`<div class="row ${s0}" data-id="${i.id}"><div class="num">Ex. ${i.n}</div><div>
+          <div class="line1"><button class="btn small" data-go="${i.p[0]}" data-lab="Ch. ${c.ch} · énoncé ex. ${i.n}">Énoncé · ${fmt(i.p)}</button>
+          <button class="btn small" data-go="${i.a[0]}" data-lab="Ch. ${c.ch} · réponse ex. ${i.n}">Réponse · ${fmt(i.a)}</button>
+          <span class="pg">${fmtPdf(i.p)}</span></div>
+          <div class="line2"><input placeholder="Ma réponse…" value="${ans.replace(/"/g,'&quot;')}" data-in="${i.id}">
+          <button class="st ok ${s0==='ok'?'on':''}" data-st="ok">✓ Juste</button><button class="st ko ${s0==='ko'?'on':''}" data-st="ko">✗ Faux</button><button class="st rev ${s0==='rev'?'on':''}" data-st="rev">↻ À revoir</button></div>
+        </div></div>`;
+      });
+      h+=`</div>`;
+    });
+    if(!vis.length)h+=`<p class="note">Aucun exercice dans ce filtre.</p>`;
+    h+=`</div></details>`;
+  });
+  $("list").innerHTML=h;
+  DATA.forEach((c,ci)=>bar(document.querySelector(`[data-bar="${ci}"]`),counts(c.items)));
+}
+document.addEventListener("click",e=>{
+  const g=e.target.closest("[data-go]");if(g){e.preventDefault();show(+g.dataset.go,g.dataset.lab);return}
+  const b=e.target.closest("[data-st]");if(b){const id=b.closest(".row").dataset.id;st[id]=st[id]||{};st[id].s=st[id].s===b.dataset.st?"":b.dataset.st;save();render();}
+});
+document.addEventListener("input",e=>{const id=e.target.dataset.in;if(id){st[id]=st[id]||{};st[id].r=e.target.value;save()}});
+$("filters").onclick=e=>{const b=e.target.closest("button");if(!b)return;filter=b.dataset.f;[...$("filters").children].forEach(x=>x.classList.toggle("on",x===b));render()};
+const tabs={tEx:"vEx",tMap:"vMap",tHelp:"vHelp"};
+Object.keys(tabs).forEach(t=>$(t).onclick=()=>{Object.keys(tabs).forEach(k=>{$(k).classList.toggle("on",k===t);$(tabs[k]).classList.toggle("hidden",k!==t)})});
+$("exp").onclick=()=>{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(st)],{type:"application/json"}));a.download=KEY+".json";a.click()};
+$("imp").onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{try{st=JSON.parse(t);save();render()}catch(err){alert("Fichier illisible.")}})};
+$("rst").onclick=()=>{if(confirm("Effacer toutes tes réponses et marques pour cette séance ?")){st={};save();render()}};
+// map table
+let m=`<table><tr><th>Chapitre / partie</th><th>Cours</th><th>Exercices</th><th>Réponses</th></tr>`;
+DATA.forEach(c=>{
+  m+=`<tr><td colspan="4" style="background:var(--accent-soft);font-weight:700">Ch. ${c.ch} · ${c.t}<br><span class="chen">${c.en} · livre p. ${bk(c.pp[0])}–${bk(c.pp[1])} · PDF ${c.pp[0]}–${c.pp[1]}</span></td></tr>`;
+  c.sets.forEach((s,si)=>{const its=c.items.filter(i=>i.s===si);const ps=[...new Set(its.flatMap(i=>i.p))].sort((a,b)=>a-b);const as=[...new Set(its.flatMap(i=>i.a))].sort((a,b)=>a-b);
+    const nums=its.map(i=>i.n);const nTxt=nums.length>3&&nums[nums.length-1]-nums[0]===nums.length-1?`${nums[0]} à ${nums[nums.length-1]}`:nums.join(", ");
+    const lk=arr=>arr.map(p=>`<a href="#" data-go="${p}">${bk(p)}</a>`).join(", ");
+    m+=`<tr><td>${s.l}<br><span class="pg">Ex. ${nTxt}</span></td><td>p. ${s.c[0]===s.c[1]?`<a href="#" data-go="${s.c[0]}">${bk(s.c[0])}</a>`:`<a href="#" data-go="${s.c[0]}">${bk(s.c[0])}</a>–${bk(s.c[1])}`}</td><td>p. ${lk(ps)}</td><td>p. ${lk(as)}</td></tr>`});
+});
+m+=`</table><p class="note">Numéros de page = pages imprimées du livre. Ajoute 13 pour la page du PDF.</p>`;
+$("mapT").innerHTML=m;
+render();
+</script>
+</body>
+</html>
