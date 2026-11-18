@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MPHAB311 · Livre Aulton</title>
+<style>
+:root{
+  --bg:#f6f4ee; --card:#fff; --ink:#1d2629; --muted:#687276; --line:#e3ded3;
+  --accent:#2f6f62; --accent-ink:#fff; --accent-soft:#e2eee9;
+  --ok:#2e7d4f; --ok-soft:#e4f3e9; --ko:#b3412f; --ko-soft:#fbe8e3;
+  --warn:#9a6a00; --warn-soft:#fff4d6; --info-soft:#eaf0fb; --r:14px;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#17191a; --card:#222527; --ink:#ecebe6; --muted:#9aa3a6; --line:#34393b;
+  --accent:#7cc4b2; --accent-ink:#0f201b; --accent-soft:#233630;
+  --ok:#7fd29d; --ok-soft:#1f3527; --ko:#f0907d; --ko-soft:#3a2420;
+  --warn:#f0c869; --warn-soft:#3a3320; --info-soft:#232c3a;}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:820px;margin:0 auto;padding:18px 14px 60px}
+header .kick{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+header h1{font-size:21px;line-height:1.25;margin:3px 0 2px}
+header p{margin:0;color:var(--muted);font-size:14px}
+nav.tabs{display:flex;gap:4px;flex-wrap:wrap;margin:14px 0 14px}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:13.5px;
+  padding:6px 11px;border-radius:999px;cursor:pointer}
+nav.tabs button.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-bottom:12px}
+h2{font-size:18px;margin:0 0 8px} h3{font-size:16px;margin:14px 0 6px}
+.muted{color:var(--muted)} .small{font-size:13.5px}
+.btn{border:1.5px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:15px;
+  padding:8px 15px;border-radius:10px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent}
+.btn.sm{font-size:13.5px;padding:5px 10px}
+.btn:disabled{opacity:.45;cursor:default}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+.tile{border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;background:var(--card);text-align:left;font:inherit;color:inherit}
+.tile:hover{border-color:var(--accent)} .tile b{display:block;margin-bottom:2px} .tile span{font-size:13.5px;color:var(--muted)}
+.pill{display:inline-block;font-size:12px;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-weight:600}
+.bar{height:8px;background:var(--line);border-radius:8px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);transition:width .3s}
+.ctx{background:var(--accent-soft);border-radius:10px;padding:11px 13px;margin:0 0 12px;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:14px;white-space:pre-wrap}
+.q{font-size:17px;margin:4px 0 12px}
+.opts{display:grid;gap:7px}
+.opt{display:flex;gap:11px;align-items:center;text-align:left;width:100%;border:1.5px solid var(--line);background:var(--card);
+  color:var(--ink);border-radius:10px;padding:10px 13px;font:inherit;cursor:pointer}
+.opt .n{flex:none;width:25px;height:25px;border-radius:50%;display:grid;place-items:center;background:var(--line);font-size:12.5px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.ok{border-color:var(--ok);background:var(--ok-soft)} .opt.ok .n{background:var(--ok);color:#fff}
+.opt.ko{border-color:var(--ko);background:var(--ko-soft)} .opt.ko .n{background:var(--ko);color:#fff}
+.opt:disabled{cursor:default}
+input.num,input.txt,textarea{font:inherit;font-size:17px;padding:9px 12px;border:1.5px solid var(--line);border-radius:10px;
+  background:var(--card);color:var(--ink);width:100%}
+input.num:focus,input.txt:focus{outline:none;border-color:var(--accent)}
+input.ok{border-color:var(--ok);background:var(--ok-soft)} input.ko{border-color:var(--ko);background:var(--ko-soft)}
+.conf{margin-top:12px} .conf .lab{font-size:13px;color:var(--muted);margin-bottom:6px}
+.fb{margin-top:12px;padding:11px 13px;border-radius:10px;font-size:15px}
+.fb.ok{background:var(--ok-soft);color:var(--ok)} .fb.ko{background:var(--ko-soft);color:var(--ko)}
+.fb .ex{color:var(--ink);margin-top:6px;font-size:14.5px}
+.hyper{margin-top:10px;background:var(--warn-soft);border-radius:10px;padding:10px 12px;font-size:14px}
+.flash{min-height:150px;display:flex;flex-direction:column;justify-content:center;text-align:center;font-size:19px;gap:8px}
+.flash .back{font-size:17px;color:var(--accent);font-weight:600;border-top:1px dashed var(--line);padding-top:10px;margin-top:6px}
+.grades{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:12px}
+.grades .btn{justify-content:center;font-size:14px;padding:8px 4px}
+.g0{border-color:var(--ko)!important;color:var(--ko)} .g3{border-color:var(--ok)!important;color:var(--ok)}
+.steps{margin:6px 0 0;padding-left:20px} .steps li{margin:5px 0}
+.wk li{margin:9px 0} .wk .blank{display:flex;gap:8px;align-items:center;margin-top:5px} .wk .blank input{max-width:180px}
+.why{font-size:13.5px;color:var(--muted);cursor:pointer;margin-left:4px;text-decoration:underline dotted}
+.whyx{display:block;font-size:14px;background:var(--info-soft);border-radius:8px;padding:6px 10px;margin-top:5px}
+.lesson .content p{margin:6px 0}
+.lesson table,.tbl{width:100%;border-collapse:collapse;font-size:15px;margin:8px 0}
+.lesson td,.lesson th,.tbl td,.tbl th{padding:6px 9px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.lesson th,.tbl th{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.k{transition:filter .2s}
+.hidek .k{filter:blur(6px);cursor:pointer;background:var(--accent-soft);border-radius:4px}
+.hidek .k.shown{filter:none}
+.box{border-radius:10px;padding:10px 12px;margin:10px 0;font-size:14.5px}
+.box.why2{background:var(--info-soft)} .box.trap{background:var(--ko-soft)} .box.talk{background:var(--warn-soft)}
+.box h4{margin:0 0 6px;font-size:14px}
+details summary{cursor:pointer;font-weight:600}
+.formula{font-size:17px;text-align:center;font-weight:700;margin:8px 0;font-family:ui-monospace,Menlo,Consolas,monospace}
+.timer{font-size:34px;font-weight:800;font-variant-numeric:tabular-nums}
+.big{font-size:40px;font-weight:800;color:var(--accent);line-height:1.1}
+.plan{display:flex;gap:6px;flex-wrap:wrap}
+.plan div{flex:1;min-width:84px;border:1.5px solid var(--line);border-radius:10px;padding:8px;text-align:center;font-size:13px}
+.plan div b{display:block;font-size:15px}
+.plan .done{border-color:var(--ok);background:var(--ok-soft)} .plan .today{border-color:var(--accent);border-width:2.5px}
+.mast{display:grid;grid-template-columns:1fr 110px 44px;gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line);font-size:14.5px}
+.lvl{font-size:12px;font-weight:700}
+.src a{color:var(--accent)}
+.kbd{font-family:ui-monospace,Menlo,monospace;background:var(--line);border-radius:5px;padding:1px 6px;font-size:13px}
+.hidden{display:none}
+.method{border-left:4px solid var(--accent);padding:6px 0 6px 12px;margin:12px 0}
+.method b{font-size:15.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kick" id="hKick"></div>
+    <h1 id="hTitle"></h1>
+    <p id="hSub"></p>
+  </header>
+  <nav class="tabs" id="tabs"></nav>
+  <main id="view"></main>
+</div>
+<script>
+/* ================= DONNÉES DU COURS ================= */
+const r10 = x => Math.round(x * 1e10) / 1e10;
+const P = (a, b) => `<span class="pg">p. ${a}${b ? "–" + b : ""}</span>`;
+const FTAB = [["acide acétylsalicylique", 0.67], ["paracétamol", 0.72], ["codéine phosphate", 0.69], ["caféine", 0.67], ["ibuprofène", 0.90], ["bismuth sous-gallate", 0.37], ["oxyde de zinc", 0.16]];
+const DATA = {
+id: "aulton", key: "mphab311-aulton", sumKey: "mphab311-sum-aulton", hubUrl: "index.html",
+kicker: "MPHAB311 · Livre de référence n° 2 (en anglais)",
+title: "Aulton's Pharmaceutics (6e éd., 2021) : guide de lecture",
+sub: "Chapitres et pages à lire pour chaque chapitre du cours · vocabulaire anglais · différences avec le cours · exercices dans le style des « worked examples »",
+
+concepts: [
+{ id: "guide", title: "Mode d'emploi : 6e édition vs 3e édition",
+  html: `<div class="box trap"><b>Édition</b> : le cours cite la <b>3<sup>e</sup> édition</b> (2007). Tu as la <b>6<sup>e</sup></b> (2021) : les <span class="k">numéros de chapitre et de page ne correspondent pas</span>. Cherche toujours par <b>titre de chapitre</b>. Le contenu de base (rhéologie, Stokes, HLB, stérilisation, suppositoires) n'a pas changé ; la 6<sup>e</sup> ajoute des chapitres récents (fabrication continue, voie auriculaire, nanomédecines…) qui ne sont pas au programme.</div>
+  <p>Les pages citées ici sont les <b>numéros imprimés</b> de la 6<sup>e</sup> édition (table des matières p. v–vi). Dans ton PDF, le décalage varie de 25 à 85 pages : utilise la recherche du lecteur PDF avec le titre de la section.</p>
+  <table><tr><th>Partie d'Aulton</th><th>Chapitres</th><th>Chapitres du cours</th></tr>
+  <tr><td>1. Scientific principles of dosage form design</td><td>2 à 7</td><td>Ch. 3, <b>Ch. 4</b>, Ch. 5</td></tr>
+  <tr><td>2. Particle science and powder technology</td><td>8 à 12</td><td><b>Ch. 2</b></td></tr>
+  <tr><td>3. Pharmaceutical microbiology and sterilization</td><td>13 à 17</td><td><b>Ch. 7</b></td></tr>
+  <tr><td>5. Dosage form design and manufacture</td><td>23 à 49</td><td>Ch. 3, Ch. 5, <b>Ch. 8</b>, Ch. 9</td></tr>
+  <tr><td>6. Packaging, stability and regulation</td><td>50 à 54</td><td>Ch. 1, Ch. 3</td></tr></table>
+  <p><b>Exercices</b> : les questions d'auto-évaluation de cette édition sont <span class="k">en ligne (Student Consult)</span>, pas dans le PDF. Le livre contient en revanche des <b>« Worked examples »</b> (encadrés). Les onglets <i>Exercices</i> et <i>Exemples guidés</i> en génèrent des variantes, en français, avec la correction pas à pas.</p>
+  <p><b>Lire en anglais</b> : commence chaque chapitre par l'encadré <b>KEY POINTS</b> puis le <b>Summary</b> final ; lis ensuite seulement les sections listées ci-dessous.</p>`,
+  why: [["Pourquoi Aulton est-il utile si le cours est en français ?", "C'est le livre le plus clair sur la physique des formes (rhéologie, poudres, Stokes) : il explique avec des schémas ce que le cours énonce. C'est aussi le seul des deux livres qui traite vraiment la rhéologie."]],
+  traps: ["Chercher « chapitre 4 » de la 3e édition dans la 6e : la numérotation a changé.", "Confondre « displacement value » (Aulton) et « facteur de déplacement » (cours) : ce sont des inverses (voir Ch. 8)."] },
+
+{ id: "c1", title: "Ch. 1 · Le médicament ↔ Aulton",
+  html: `<table><tr><th></th><th>Chapitre (pages)</th><th>À chercher</th></tr>
+  <tr><td>★</td><td>1. <i>Design of dosage forms</i> ${P(1, 12)}</td><td>Les 3 considérations de conception : propriétés physicochimiques du PA, biopharmacie, thérapeutique ; voies d'administration et formes associées</td></tr>
+  <tr><td>★</td><td>23. <i>Pharmaceutical preformulation</i> ${P(360, 385)}</td><td>Ce qu'on mesure sur un nouveau PA : solubilité, pK<sub>a</sub>, sels, polymorphes, stabilité</td></tr>
+  <tr><td>☆</td><td>50. <i>Packaging</i> ${P(833, 847)}</td><td>Verre (types), plastiques, conditionnement primaire et secondaire</td></tr></table>
+  <div class="box why2"><h4>🔗 Parallèle avec le cours</h4>Le cours définit le médicament (PA + excipients + conditionnement) et ses classifications ; Aulton explique <b>comment on choisit</b> la forme à partir des propriétés du PA. Vocabulaire : <i>drug</i> = principe actif, <i>excipient</i>, <i>dosage form</i> = forme pharmaceutique, <i>medicinal product</i> = médicament.</div>`,
+  why: [["Pourquoi la préformulation commence-t-elle par la solubilité ?", "Un PA doit être dissous pour être absorbé : une solubilité trop faible oriente vers la micronisation, un sel, un cosolvant ou une autre voie dès le départ."]],
+  traps: ["Traduire « drug » par « drogue » : c'est le principe actif."] },
+
+{ id: "c2", title: "Ch. 2 · L'état solide ↔ Aulton",
+  html: `<table><tr><th></th><th>Chapitre (pages)</th><th>À chercher</th></tr>
+  <tr><td>★</td><td>8. <i>Solid-state properties</i> ${P(114, 125)}</td><td>Cristallisation, <b>polymorphism</b>, hydrates/solvates, amorphe, influence sur solubilité et stabilité</td></tr>
+  <tr><td>★</td><td>9. <i>Particle size analysis</i> ${P(126, 142)}</td><td>Diamètres équivalents, distributions, <b>moyennes D[1,0], D[3,2], D[4,3]</b> (encadré « worked example »), méthodes (tamis, microscopie, diffraction laser)</td></tr>
+  <tr><td>★</td><td>11. <i>Mixing</i> ${P(156, 171)}</td><td>Mélange aléatoire, ségrégation, écart type d'un mélange et %CV (worked example p. 160)</td></tr>
+  <tr><td>★</td><td>12. <i>Powder flow</i> ${P(172, 183)}</td><td>Angle de repos, <b>Hausner ratio</b> et <b>Carr's index</b> (p. 180), améliorer l'écoulement (glidants, granulation)</td></tr>
+  <tr><td>☆</td><td>10. <i>Particle size reduction</i> ${P(143, 155)} · 29. <i>Powders, granules and granulation</i> ${P(463, 482)} · 31. <i>Tablets and compaction</i> ${P(501, 541)}</td><td>Broyage, granulation humide/sèche, compression</td></tr></table>
+  <div class="box why2"><h4>🔗 Parallèle avec le cours</h4>Même indice de Carr que le cours : (ρ tassée − ρ versée) / ρ tassée × 100. Aulton donne les repères d'Hausner : <span class="k">&lt; 1,2 bon écoulement</span>, <span class="k">&gt; 1,5 poudre cohésive</span>. Si l'échelle de classes du cours diffère, garde celle du cours.</div>
+  <div class="formula">Hausner = ρ tassée / ρ versée   ·   Carr (%) = (ρ tassée − ρ versée) / ρ tassée × 100</div>`,
+  why: [["Pourquoi le rapport d'Hausner prédit-il l'écoulement ?", "Une poudre qui se tasse beaucoup a de fortes frictions et cohésions entre particules : ce sont les mêmes forces qui l'empêchent de couler."],
+        ["Pourquoi existe-t-il plusieurs « diamètres moyens » pour la même poudre ?", "Selon qu'on s'intéresse au nombre, à la surface (dissolution) ou au volume (dose), on pondère par d, d² ou d³ : les moyennes D[3,2] et D[4,3] sont plus grandes que D[1,0]."]],
+  talk: { prompt: "Calcule Hausner et Carr pour ρ versée = 0,50 et ρ tassée = 0,62 g/mL et interprète.", check: ["Hausner = 0,62 / 0,50 = 1,24", "Carr = 0,12 / 0,62 × 100 = 19,4 %", "Écoulement passable : ni libre (< 1,2) ni cohésif (> 1,5)"] },
+  traps: ["Diviser par la densité versée dans Carr : on divise par la densité tassée."] },
+
+{ id: "c3", title: "Ch. 3 · Substances en solution ↔ Aulton",
+  html: `<table><tr><th></th><th>Chapitre (pages)</th><th>À chercher</th></tr>
+  <tr><td>★</td><td>2. <i>Dissolution and solubility</i> ${P(13, 29)}</td><td>Termes de solubilité, facteurs de la solubilité, <b>Noyes-Whitney</b>, effet de la taille des particules (worked example p. 18)</td></tr>
+  <tr><td>★</td><td>3. <i>Properties of solutions</i> ${P(30, 38)}</td><td>Propriétés colligatives (pression osmotique, abaissement cryoscopique), <b>ionisation</b> et Henderson-Hasselbalch (worked examples p. 35)</td></tr>
+  <tr><td>★</td><td>7. <i>Kinetics</i> ${P(101, 113)}</td><td>Ordres 0 et 1, demi-vie, <b>Arrhenius</b> (worked examples p. 104–105)</td></tr>
+  <tr><td>★</td><td>38. <i>Parenteral drug delivery</i> ${P(626, 640)}</td><td><b>Isotonicity</b> : le plasma et les larmes congèlent à −0,52 °C, équation w = (0,52 − a)/b (p. 635), pH et tonicité des injectables</td></tr>
+  <tr><td>☆</td><td>24. <i>Solutions</i> ${P(386, 396)} · 41. <i>Ocular drug delivery</i> ${P(677, 700)} · 51. <i>Chemical stability</i> ${P(848, 859)}</td><td>Cosolvants, conservateurs ; collyres ; hydrolyse, oxydation, photolyse</td></tr></table>
+  <div class="box why2"><h4>🔗 Parallèle avec le cours</h4>L'équation d'Aulton est la <b>méthode cryoscopique du cours</b> écrite autrement : w (% de NaCl à ajouter) = (0,52 − a) / b, avec a = ΔT de la solution non ajustée et b = ΔT d'une solution de NaCl à 1 %. Aulton ne présente pas White-Vincent : garde les 3 méthodes du cours.</div>
+  <div class="formula">w = (0,52 − a) / b   ·   acide faible : log([HA]/[A⁻]) = pKa − pH   ·   ordre 1 : t½ = 0,693 / k ; t₉₀ = 0,105 / k</div>`,
+  why: [["Pourquoi un acide faible est-il surtout non ionisé dans l'estomac ?", "À pH 2, bien en dessous de son pKa, l'équilibre est déplacé vers la forme HA : l'aspirine (pKa ≈ 3,5) y est ~32 fois plus non ionisée qu'ionisée (exemple du livre)."],
+        ["Pourquoi l'abaissement cryoscopique sert-il à mesurer la tonicité ?", "Comme la pression osmotique, il ne dépend que du nombre de particules dissoutes ; il est beaucoup plus facile à mesurer."]],
+  talk: { prompt: "Explique l'équation w = (0,52 − a)/b et ce que valent a et b.", check: ["0,52 °C : abaissement du plasma et des larmes", "a = ΔT de la solution à ajuster", "b = ΔT d'une solution à 1 % d'agent isotonisant (NaCl, glucose)", "w = % (m/V) d'agent à ajouter"] },
+  traps: ["Utiliser l'équation pour une solution déjà hypertonique : w serait négatif, on ne peut pas isotoniser."] },
+
+{ id: "c4", title: "Ch. 4 · Rhéologie ↔ Aulton (chapitre clé)",
+  html: `<p>C'est <b>le</b> chapitre à lire pour la rhéologie : Le Hir n'en parle presque pas.</p>
+  <table><tr><th></th><th>Chapitre 6. <i>Rheology</i> ${P(81, 100)}</th></tr>
+  <tr><td>★</td><td><b>Viscosity, stress and rate of shear</b> : contrainte de cisaillement τ, vitesse de cisaillement γ̇, loi de Newton η = τ/γ̇, unités (Pa·s)</td></tr>
+  <tr><td>★</td><td><b>Newtonian fluids</b> et leur mesure : viscosimètres capillaires (U-tube), à bille, rotatifs</td></tr>
+  <tr><td>★</td><td><b>Non-Newtonian fluids</b> : <i>plastic</i> (Bingham, seuil d'écoulement / <i>yield value</i>), <i>pseudoplastic</i> (rhéofluidifiant), <i>dilatant</i> (rhéoépaississant)</td></tr>
+  <tr><td>★</td><td><b>Time-dependent behaviour</b> : <span class="k">thixotropy</span> = baisse <b>réversible</b> et <b>dépendante du temps</b> de la viscosité apparente ; boucle d'hystérésis dont l'aire mesure la déstructuration (p. 91)</td></tr>
+  <tr><td>★</td><td><b>Determination of flow properties</b> : pourquoi un viscosimètre à un seul point ne suffit pas pour un fluide non newtonien (cône-plan, cylindres coaxiaux)</td></tr>
+  <tr><td>☆</td><td>Viscoélasticité ; applications aux suspensions, émulsions, gels</td></tr></table>
+  <div class="box why2"><h4>🔗 Parallèle avec le cours</h4>Mêmes notions et mêmes types de fluides que le cours. Vocabulaire : <i>shear stress</i> = contrainte, <i>shear rate</i> = vitesse de cisaillement, <i>apparent viscosity</i> = viscosité apparente, <i>yield stress</i> = seuil d'écoulement, <i>shear-thinning</i> = rhéofluidifiant.</div>
+  <div class="formula">η = τ / γ̇   ·   plastique (Bingham) : τ = τ₀ + η<sub>pl</sub> γ̇</div>`,
+  why: [["Pourquoi un viscosimètre capillaire ne convient-il qu'aux fluides newtoniens ?", "La vitesse de cisaillement n'y est ni uniforme ni contrôlée ; pour un fluide non newtonien, la viscosité dépend de cette vitesse, il faut donc mesurer à plusieurs vitesses (viscosimètre rotatif)."],
+        ["Pourquoi la thixotropie est-elle utile pour une suspension ?", "Au repos, la structure gélifiée empêche la sédimentation ; à l'agitation, la viscosité chute et on peut verser ou injecter ; puis la structure se reforme lentement."]],
+  talk: { prompt: "Dessine de mémoire les rhéogrammes (τ en fonction de γ̇) des 4 types de fluides et donne un exemple pour chacun.", check: ["Newtonien : droite passant par l'origine (eau, glycérol)", "Plastique : droite qui coupe l'axe τ (seuil) (pâtes, suspensions floculées concentrées)", "Pseudoplastique : courbe concave, passe par l'origine (solutions de polymères)", "Dilatant : courbe convexe (suspensions défloculées très concentrées)"] },
+  traps: ["Confondre thixotropie (dépend du temps) et pseudoplasticité (dépend de la vitesse de cisaillement, sans délai)."] },
+
+{ id: "c5", title: "Ch. 5 · Systèmes dispersés ↔ Aulton",
+  html: `<table><tr><th></th><th>Chapitre (pages)</th><th>À chercher</th></tr>
+  <tr><td>★</td><td>4. <i>Surfaces and interfaces</i> ${P(39, 49)}</td><td>Tension superficielle et interfaciale, adsorption des tensioactifs, mouillage, angle de contact</td></tr>
+  <tr><td>★</td><td>5. <i>Disperse systems</i> ${P(50, 80)}</td><td>Colloïdes, double couche électrique, <b>potentiel zêta</b>, théorie DLVO, floculation, micelles et CMC, HLB, <b>Stokes</b></td></tr>
+  <tr><td>★</td><td>26. <i>Suspensions</i> ${P(407, 423)}</td><td>Suspension <b>floculée vs défloculée</b>, agents de suspension, mouillants, croissance des cristaux</td></tr>
+  <tr><td>★</td><td>27. <i>Emulsions and creams</i> ${P(424, 452)}</td><td>Types, émulsifiants, <b>calcul du HLB requis</b> (worked example Tween 80 / Span 80 p. 437), instabilités : <i>creaming, flocculation, coalescence, phase inversion</i>, essais</td></tr></table>
+  <div class="box why2"><h4>🔗 Parallèle avec le cours</h4>Le calcul du mélange de tensioactifs est <b>identique</b> au cours. Aulton approfondit la stabilité des suspensions : une suspension <span class="k">floculée</span> sédimente vite mais se redisperse facilement ; une <span class="k">défloculée</span> sédimente lentement mais forme un dépôt compact (<i>caking</i>) difficile à redisperser.</div>
+  <div class="formula">HLB requis = x · HLB<sub>A</sub> + (1 − x) · HLB<sub>B</sub>  ⇒  x = (HLB requis − HLB<sub>B</sub>) / (HLB<sub>A</sub> − HLB<sub>B</sub>)</div>`,
+  why: [["Pourquoi mélanger deux émulsifiants plutôt qu'en prendre un seul de la bonne HLB ?", "Un couple à HLB basse + haute forme à l'interface un film mixte plus dense et plus stable qu'un émulsifiant seul."],
+        ["Pourquoi une suspension défloculée forme-t-elle un « cake » ?", "Les particules, séparées et petites, sédimentent une à une et s'empilent de façon compacte ; les forces entre elles deviennent trop fortes pour une simple agitation."]],
+  talk: { prompt: "Refais l'exemple du livre : HLB requis 10,5 avec Tween 80 (15) et Span 80 (4,3), 5 g d'émulsifiants.", check: ["x = (10,5 − 4,3) / (15 − 4,3) = 0,58", "Tween 80 : 0,58 × 5 = 2,9 g", "Span 80 : 0,42 × 5 = 2,1 g"] },
+  traps: ["Mettre la HLB basse au numérateur : x est la fraction de l'émulsifiant à HLB élevée quand on soustrait la HLB basse."] },
+
+{ id: "c7", title: "Ch. 7 · Stérilisation ↔ Aulton",
+  html: `<table><tr><th></th><th>Chapitre (pages)</th><th>À chercher</th></tr>
+  <tr><td>★</td><td>16. <i>Principles of sterilization</i> ${P(247, 256)}</td><td>Les <b>5 procédés de la Pharmacopée</b> (vapeur sous pression, chaleur sèche, oxyde d'éthylène, rayonnements ionisants, filtration), <b>D value</b>, <b>Z value</b>, facteur d'inactivation, <b>F value</b></td></tr>
+  <tr><td>★</td><td>17. <i>Sterilization in practice</i> ${P(257, 274)}</td><td>Cycles, choix du procédé par produit (tableau p. 259), validation, indicateurs biologiques, <b>SAL 10<sup>−6</sup></b> (worked example p. 268), essai de stérilité</td></tr>
+  <tr><td>★</td><td>15. <i>Action of physical and chemical agents</i> ${P(229, 246)}</td><td>Cinétique de mort d'ordre 1 : worked example des spores dans des ampoules (p. 231)</td></tr>
+  <tr><td>☆</td><td>13–14 (microbiologie) ${P(184, 228)}</td><td>Spores, endotoxines</td></tr></table>
+  <div class="box why2"><h4>🔗 Parallèle avec le cours</h4>Même logique que le cours et que Le Hir. Vocabulaire : <i>moist heat / steam</i> = chaleur humide, <i>dry heat</i>, <i>ethylene oxide</i>, <i>ionizing radiation</i>, <i>bioburden</i> = charge microbienne initiale, <i>sterility assurance level (SAL)</i> = NAS.</div>
+  <div class="formula">D = temps pour 1 log (90 %) · log N = log N₀ − t / D = log N₀ − k t / 2,303</div>`,
+  why: [["Pourquoi la valeur Z est-elle utile ?", "Elle dit de combien il faut augmenter la température pour diviser D par 10 : on peut ainsi comparer des cycles à des températures différentes (base du calcul de F)."],
+        ["Pourquoi le résultat d'un calcul de survivants peut-il être « 10⁻⁹ spore » ?", "C'est une probabilité : 10⁻⁹ signifie une unité non stérile sur un milliard d'unités traitées."]],
+  talk: { prompt: "Refais le worked example de la p. 268 : charge 10⁴ spores, SAL visé 10⁻⁶, D = 1,5 min.", check: ["Réduction nécessaire : de 10⁴ à 10⁻⁶ = 10 log", "Durée = 10 × 1,5 = 15 min à 121 °C"] },
+  traps: ["Oublier que la charge initiale compte : plus elle est élevée, plus il faut de log de réduction."] },
+
+{ id: "c8", title: "Ch. 8 · Préparations rectales ↔ Aulton",
+  html: `<table><tr><th></th><th>Chapitre 44. <i>Rectal and vaginal drug delivery</i> ${P(735, 751)}</th></tr>
+  <tr><td>★</td><td>Anatomie et physiologie du rectum, absorption, avantages et limites (encadré p. 739)</td></tr>
+  <tr><td>★</td><td><b>Suppository bases</b> : bases grasses (<i>fatty</i>) et hydrosolubles (macrogols, gélatine glycérinée) ; bases semi-synthétiques (Witepsol, Suppocire…)</td></tr>
+  <tr><td>★</td><td><b>Displacement value</b> et worked example (p. 742–743)</td></tr>
+  <tr><td>★</td><td>Additifs (viscosifiants comme la silice colloïdale), fabrication par fusion, essais</td></tr></table>
+  <div class="box trap"><h4>⚠️ Deux différences importantes avec le cours</h4>
+  <p><b>1. Displacement value ≠ facteur de déplacement.</b> Aulton : <span class="k">masse de PA qui déplace 1 g de base</span>. Cours (et Le Hir) : <span class="k">masse de base déplacée par 1 g de PA</span>. Ce sont des <b>inverses</b> : f ≈ 1 / DV. Exemple : bismuth sous-gallate, DV = 3,0 dans Aulton ; f = 0,37 dans la table du cours (≈ 1/2,7, la petite différence vient des sources).</p>
+  <p><b>2. Beurre de cacao.</b> Aulton écrit qu'il <span class="k">n'est plus utilisé</span> (polymorphisme, contraction insuffisante, ramollissement trop bas, instabilité, faible absorption d'eau, coût). Le cours et Le Hir le présentent encore comme la base de référence : à l'examen, suis le cours.</p></div>
+  <div class="formula">Aulton : base = n × E − (masse totale de PA) / DV   ·   Cours : M = E − f·S, × (n + 1)</div>`,
+  why: [["Pourquoi les deux définitions donnent-elles le même résultat ?", "Diviser la masse de PA par DV revient à la multiplier par f = 1/DV : c'est la même masse de base déplacée."],
+        ["Pourquoi ajoute-t-on de la silice colloïdale dans certaines bases ?", "Quand le PA abaisse le point de fusion de la base, elle devient trop fluide à 37 °C ; un viscosifiant compense sans modifier la température de fusion."]],
+  talk: { prompt: "Convertis la méthode d'Aulton en méthode du cours pour 8 suppositoires de 1 g à 200 mg de bismuth sous-gallate (DV = 3).", check: ["Aulton : 1,6 g de PA déplace 1,6/3 = 0,53 g → 8 − 0,53 = 7,47 g", "f = 1/3 = 0,333 → M = 1 − 0,333 × 0,2 = 0,933 g par suppositoire", "Cours : × 9 suppositoires = 8,40 g"] },
+  traps: ["Multiplier par la displacement value comme si c'était f : erreur d'un facteur ≈ 9 sur la masse déplacée.", "Oublier le suppositoire supplémentaire du cours en suivant l'exemple d'Aulton."] },
+
+{ id: "c9", title: "Ch. 9 · Excipients ↔ Aulton",
+  html: `<p>Aulton n'a pas de chapitre « excipients » : ils sont traités <b>forme par forme</b>.</p>
+  <table><tr><th></th><th>Chapitre (pages)</th><th>Excipients traités</th></tr>
+  <tr><td>★</td><td>24. <i>Solutions</i> ${P(386, 396)}</td><td>Cosolvants, tampons, isotonisants, édulcorants, arômes, conservateurs</td></tr>
+  <tr><td>★</td><td>52. <i>Microbial contamination, spoilage and preservation</i> ${P(860, 870)}</td><td><b>Conservateurs</b> antimicrobiens, facteurs de leur efficacité</td></tr>
+  <tr><td>★</td><td>26–27 ${P(407, 452)}</td><td>Agents de suspension, mouillants, émulsifiants, viscosifiants</td></tr>
+  <tr><td>★</td><td>31. <i>Tablets</i> ${P(501, 541)}</td><td>Diluants, liants, délitants (<i>disintegrants</i>), lubrifiants, glidants</td></tr>
+  <tr><td>☆</td><td>28. <i>Ointments, gels…</i> ${P(453, 462)} · 51. <i>Chemical stability</i> ${P(848, 859)}</td><td>Bases de pommades, gélifiants ; antioxydants et chélateurs</td></tr></table>
+  <div class="box why2"><h4>🔗 Parallèle avec le cours</h4>Le classement d'Aulton est <b>par fonction</b>, comme le cours : c'est la meilleure source pour l'onglet Mélange (excipient → catégorie). Vocabulaire : <i>preservative</i> = conservateur, <i>antioxidant</i>, <i>humectant</i>, <i>glidant</i> = lubrifiant d'écoulement, <i>binder</i> = liant.</div>`,
+  why: [["Pourquoi un conservateur peut-il perdre son efficacité dans une émulsion ?", "Il se partage entre les phases et peut se fixer dans les micelles de tensioactif ou sur le conditionnement : la fraction libre dans la phase aqueuse, la seule active, diminue."]],
+  traps: ["Traduire « lubricant » et « glidant » par le même mot : le glidant améliore l'écoulement de la poudre, le lubrifiant réduit la friction contre la matrice."] },
+
+{ id: "calc", title: "Calculs (partie éliminatoire) ↔ Aulton",
+  html: `<table><tr><th>Calcul du cours</th><th>Dans Aulton</th><th>Pages</th></tr>
+  <tr><td>Isotonie</td><td>Méthode cryoscopique seulement : w = (0,52 − a)/b</td><td>${P(635, 635)}</td></tr>
+  <tr><td>Suppositoires</td><td>Displacement value (inverse du f du cours)</td><td>${P(742, 743)}</td></tr>
+  <tr><td>HLB d'un mélange</td><td>Worked example Tween 80 / Span 80</td><td>${P(437, 437)}</td></tr>
+  <tr><td>Écoulement des poudres</td><td>Hausner et Carr</td><td>${P(180, 180)}</td></tr>
+  <tr><td>Stérilisation</td><td>Survivants, D, SAL</td><td>${P(231, 231)}, ${P(268, 268)}</td></tr>
+  <tr><td>Cinétique, ionisation</td><td>Ordres 0 et 1 ; Henderson-Hasselbalch</td><td>${P(104, 105)}, ${P(35, 35)}</td></tr>
+  <tr><td>Triturations, équivalents NaCl, White-Vincent, alcoométrie</td><td>Non traités</td><td>–</td></tr></table>
+  <div class="box">Les calculs d'Aulton sont un bon <b>entraînement de transfert</b> : même raisonnement, présentation différente. Si tu sais refaire l'exemple d'Aulton avec la méthode du cours, tu as vraiment compris.</div>`,
+  traps: ["Utiliser 0,576 (valeur souvent donnée en anglais) ou 0,58 (cours) pour b du NaCl : prends toujours la valeur de l'énoncé."] }
+],
+
+cards: [
+{ c: "guide", front: "Édition citée par le cours vs ton édition ?", back: "3e (2007) vs 6e (2021) : chercher par titre de chapitre" },
+{ c: "guide", front: "Où sont les self-assessment questions de la 6e édition ?", back: "En ligne (Student Consult), pas dans le livre" },
+{ c: "c1", front: "Les 3 considérations de conception d'une forme (ch. 1) ?", back: "Propriétés physicochimiques du PA · biopharmacie · thérapeutique (patient, maladie)" },
+{ c: "c1", front: "« drug » ?", back: "Principe actif" },
+{ c: "c2", front: "Hausner ratio ?", back: "ρ tassée / ρ versée (tapped / poured)" },
+{ c: "c2", front: "Hausner < 1,2 et > 1,5 ?", back: "< 1,2 : écoulement libre · > 1,5 : poudre cohésive" },
+{ c: "c2", front: "Carr's index ?", back: "(ρ tassée − ρ versée) / ρ tassée × 100" },
+{ c: "c2", front: "D[4,3] ?", back: "Σd⁴ / Σd³ : moyenne pondérée en volume" },
+{ c: "c2", front: "D[3,2] ?", back: "Σd³ / Σd² : moyenne pondérée en surface (diamètre de Sauter)" },
+{ c: "c3", front: "Température de congélation du plasma et des larmes ?", back: "−0,52 °C" },
+{ c: "c3", front: "w = (0,52 − a)/b : a et b ?", back: "a = ΔT de la solution non ajustée · b = ΔT d'une solution à 1 % d'agent isotonisant" },
+{ c: "c3", front: "Acide faible : log([HA]/[A⁻]) = ?", back: "pKa − pH" },
+{ c: "c3", front: "Base faible : log([BH⁺]/[B]) = ?", back: "pKa − pH" },
+{ c: "c3", front: "Ordre 1 : t½ et t₉₀ ?", back: "t½ = 0,693/k · t₉₀ = 0,105/k" },
+{ c: "c4", front: "Loi de Newton ?", back: "η = τ / γ̇ (contrainte / vitesse de cisaillement)" },
+{ c: "c4", front: "Thixotropie (Aulton) ?", back: "Diminution réversible et dépendante du temps de la viscosité apparente" },
+{ c: "c4", front: "Que mesure l'aire de la boucle d'hystérésis ?", back: "Le degré de déstructuration (thixotropie)" },
+{ c: "c4", front: "« shear-thinning » ?", back: "Rhéofluidifiant (pseudoplastique)" },
+{ c: "c4", front: "« yield value » ?", back: "Seuil d'écoulement (fluide plastique de Bingham)" },
+{ c: "c4", front: "Fluide dilatant typique ?", back: "Suspension défloculée très concentrée" },
+{ c: "c5", front: "Suspension floculée : sédimentation et redispersion ?", back: "Rapide · redispersion facile, pas de cake" },
+{ c: "c5", front: "Suspension défloculée : sédimentation et redispersion ?", back: "Lente · dépôt compact (caking) difficile à redisperser" },
+{ c: "c5", front: "HLB de Tween 80 et Span 80 (Aulton) ?", back: "15 et 4,3" },
+{ c: "c5", front: "« creaming » ?", back: "Crémage (réversible)" },
+{ c: "c7", front: "D value ?", back: "Temps pour une réduction de 1 log (90 %)" },
+{ c: "c7", front: "Z value ?", back: "Augmentation de température (ou de dose) qui divise D par 10" },
+{ c: "c7", front: "Les 5 procédés de stérilisation de la Pharmacopée (Aulton) ?", back: "Vapeur sous pression, chaleur sèche, oxyde d'éthylène, rayonnements ionisants, filtration" },
+{ c: "c7", front: "« bioburden » ?", back: "Charge microbienne avant stérilisation" },
+{ c: "c8", front: "Displacement value (Aulton) ?", back: "Masse de PA qui déplace 1 g de base" },
+{ c: "c8", front: "Lien entre DV (Aulton) et f (cours) ?", back: "f ≈ 1 / DV" },
+{ c: "c8", front: "DV du bismuth sous-gallate (Aulton) ?", back: "3,0 (f ≈ 0,33)" },
+{ c: "c8", front: "Position d'Aulton sur le beurre de cacao ?", back: "N'est plus utilisé (polymorphisme, faible contraction, instabilité, coût…)" },
+{ c: "c9", front: "« glidant » vs « lubricant » ?", back: "Améliore l'écoulement de la poudre · réduit la friction contre la matrice" }
+],
+
+quiz: [
+{ c: "guide", t: "tf", q: "Vrai ou faux : les numéros de chapitre de la 6e édition d'Aulton correspondent à ceux de la 3e édition citée par le cours.", a: 1, ex: "Faux : cherche par titre de chapitre." },
+{ c: "c1", q: "Selon le chapitre 1, les trois grandes considérations de conception d'une forme sont", o: ["coût, goût, conditionnement", "propriétés physicochimiques du PA, biopharmacie, thérapeutique", "solubilité, stabilité, toxicité", "voie, dose, fréquence"], a: 1, ex: "p. 1–12." },
+{ c: "c2", q: "ρ versée = 0,40 g/mL, ρ tassée = 0,60 g/mL. Rapport d'Hausner ?", o: ["0,67", "1,20", "1,50", "33 %"], a: 2, ex: "0,60 / 0,40 = 1,5 : poudre cohésive (p. 180)." },
+{ c: "c2", q: "Même poudre : indice de Carr ?", o: ["20 %", "33 %", "50 %", "67 %"], a: 1, ex: "(0,60 − 0,40) / 0,60 × 100 = 33 %." },
+{ c: "c2", q: "Trois particules de 1, 2 et 3 µm. Laquelle de ces moyennes est la plus grande ?", o: ["D[1,0]", "D[2,0]", "D[3,2]", "D[4,3]"], a: 3, ex: "2,00 < 2,16 < 2,57 < 2,72 µm : plus on pondère par une puissance élevée, plus la moyenne monte (ch. 9)." },
+{ c: "c2", t: "tf", q: "Vrai ou faux : un rapport d'Hausner inférieur à 1,2 indique une poudre à faible friction interparticulaire.", a: 0, ex: "Vrai : sphères grossières, bon écoulement." },
+{ c: "c3", q: "Dans w = (0,52 − a)/b, b représente", o: ["l'abaissement de la solution non ajustée", "l'abaissement d'une solution à 1 % de l'agent isotonisant", "la masse de PA", "le volume final"], a: 1, ex: "p. 635." },
+{ c: "c3", q: "Aspirine pKa ≈ 3,5 dans l'estomac à pH 2 : rapport [HA]/[A⁻] ?", o: ["≈ 0,03", "≈ 1,5", "≈ 32", "≈ 1,3 × 10⁴"], a: 2, ex: "10^(3,5 − 2) = 10^1,5 ≈ 31,6 (p. 35)." },
+{ c: "c3", q: "Pour une dégradation d'ordre 1 avec k = 0,01 jour⁻¹, t₉₀ vaut", o: ["10,5 jours", "69,3 jours", "105 jours", "1050 jours"], a: 0, ex: "0,105 / 0,01 = 10,5 jours." },
+{ c: "c3", q: "Pour un ordre 0, quel graphique donne une droite ?", o: ["ln C en fonction de t", "C en fonction de t", "1/C en fonction de t", "log C en fonction de log t"], a: 1, ex: "Pente = −k (p. 104)." },
+{ c: "c4", q: "Une suspension dont la viscosité apparente chute à l'agitation puis remonte lentement au repos est", o: ["dilatante", "newtonienne", "thixotrope", "plastique sans seuil"], a: 2, ex: "Baisse réversible et dépendante du temps (p. 91)." },
+{ c: "c4", q: "Le rhéogramme d'un fluide plastique (Bingham)", o: ["passe par l'origine et est droit", "coupe l'axe des contraintes : il y a un seuil d'écoulement", "est convexe", "forme une boucle"], a: 1, ex: "Il faut dépasser la yield value pour qu'il coule." },
+{ c: "c4", q: "Pour caractériser un gel pseudoplastique, on utilise de préférence", o: ["un viscosimètre capillaire", "un viscosimètre rotatif à plusieurs vitesses", "un pycnomètre", "un tamis"], a: 1, ex: "La viscosité dépend de la vitesse de cisaillement : une mesure à un seul point ne suffit pas." },
+{ c: "c4", t: "tf", q: "Vrai ou faux : la pseudoplasticité et la thixotropie sont deux noms du même phénomène.", a: 1, ex: "Faux : la thixotropie dépend du temps, la pseudoplasticité de la vitesse de cisaillement." },
+{ c: "c5", q: "HLB requise 10,5 avec Tween 80 (15) et Span 80 (4,3). Fraction de Tween 80 ?", o: ["0,42", "0,58", "0,70", "0,30"], a: 1, ex: "(10,5 − 4,3)/(15 − 4,3) = 0,58 (p. 437)." },
+{ c: "c5", q: "Une suspension défloculée", o: ["sédimente vite et se redisperse facilement", "sédimente lentement et forme un dépôt compact", "ne sédimente jamais", "est toujours thixotrope"], a: 1, ex: "Risque de caking (ch. 26)." },
+{ c: "c5", q: "Le potentiel zêta renseigne sur", o: ["la viscosité", "la charge des particules et la tendance à floculer", "la taille des micelles", "la HLB"], a: 1, ex: "ch. 5." },
+{ c: "c7", q: "La valeur D est", o: ["la température qui tue 90 % des germes", "le temps qui réduit la population de 90 % (1 log)", "le temps total du cycle", "la dose de rayonnement"], a: 1, ex: "p. 248." },
+{ c: "c7", q: "Charge initiale 10⁴ spores, SAL visé 10⁻⁶, D = 1,5 min. Durée à 121 °C ?", o: ["6 min", "9 min", "15 min", "24 min"], a: 2, ex: "10 log × 1,5 = 15 min (p. 268)." },
+{ c: "c7", q: "Lequel n'est PAS un des cinq procédés de stérilisation de la Pharmacopée cités par Aulton ?", o: ["Oxyde d'éthylène", "Rayonnements ionisants", "Rayonnement UV", "Filtration"], a: 2, ex: "Vapeur, chaleur sèche, oxyde d'éthylène, rayonnements ionisants, filtration." },
+{ c: "c8", q: "La displacement value d'Aulton est", o: ["la masse de base déplacée par 1 g de PA", "la masse de PA qui déplace 1 g de base", "le volume d'une alvéole", "le point de fusion de la base"], a: 1, ex: "C'est l'inverse du facteur f du cours (p. 742)." },
+{ c: "c8", q: "8 suppositoires de 1 g à 200 mg de bismuth sous-gallate (DV = 3,0). Masse de base selon Aulton ?", o: ["7,47 g", "7,40 g", "8,00 g", "6,20 g"], a: 0, ex: "1,6 g / 3 = 0,53 g déplacé ; 8 − 0,53 = 7,47 g (p. 743)." },
+{ c: "c8", q: "Un PA a une displacement value de 1,5. Son facteur de déplacement f (définition du cours) vaut environ", o: ["0,67", "1,5", "2,25", "0,15"], a: 0, ex: "f = 1 / 1,5 = 0,67." },
+{ c: "c8", t: "tf", q: "Vrai ou faux : selon Aulton, le beurre de cacao reste la base de suppositoires la plus utilisée.", a: 1, ex: "Faux : Aulton dit qu'il n'est plus utilisé ; le cours le présente encore, suis le cours à l'examen." },
+{ c: "c9", q: "Un « glidant » sert à", o: ["lier les particules", "améliorer l'écoulement d'une poudre", "accélérer la désagrégation", "colorer"], a: 1, ex: "Ex. silice colloïdale." },
+{ t: "open", c: "c8", q: "Expliquez la différence entre la displacement value d'Aulton et le facteur de déplacement du cours, puis refaites l'exemple d'Aulton (8 suppositoires de 1 g, 200 mg de bismuth sous-gallate, DV = 3) avec la méthode du cours.", a: "Aulton : DV = masse de PA qui déplace 1 g de base. Cours : f = masse de base déplacée par 1 g de PA. f = 1/DV = 0,333. Aulton : 1,6 g de PA / 3 = 0,53 g de base déplacée ; 8 − 0,53 = 7,47 g. Cours : M = 1 − 0,333 × 0,2 = 0,933 g par suppositoire ; × 9 (n + 1) = 8,40 g. (La table du cours donne f = 0,37 pour ce PA : avec cette valeur, M = 0,926 g et 8,33 g pour 9.)", keys: ["DV = PA qui déplace 1 g de base", "f = base déplacée par 1 g de PA", "f = 1/DV", "7,47 g (Aulton)", "n + 1 dans le cours"] },
+{ t: "open", c: "c4", q: "Décrivez les quatre comportements d'écoulement (newtonien, plastique, pseudoplastique, dilatant) et la thixotropie, avec un exemple pharmaceutique pour chacun.", a: "Newtonien : viscosité constante, τ proportionnelle à γ̇ (eau, glycérol, huiles). Plastique (Bingham) : seuil d'écoulement puis relation linéaire (pâtes, suspensions floculées concentrées). Pseudoplastique : viscosité qui diminue quand γ̇ augmente, sans seuil (solutions de polymères : CMC, gommes). Dilatant : viscosité qui augmente avec γ̇ (suspensions défloculées très concentrées). Thixotropie : baisse réversible et dépendante du temps de la viscosité apparente, boucle d'hystérésis (gels de bentonite, suspensions structurées).", keys: ["newtonien : η constante", "plastique : seuil", "pseudoplastique : rhéofluidifiant", "dilatant : rhéoépaississant", "thixotropie : temps, réversible, hystérésis"] },
+{ t: "open", c: "c7", q: "Définissez D, Z et SAL, et calculez la durée de stérilisation pour une charge de 10³ spores (D = 2 min) afin d'atteindre un SAL de 10⁻⁶.", a: "D : temps pour réduire la population de 1 log (90 %) à une température donnée. Z : hausse de température qui divise D par 10. SAL : probabilité qu'une unité reste non stérile, exigée ≤ 10⁻⁶. Réduction nécessaire : de 10³ à 10⁻⁶ = 9 log ; durée = 9 × 2 = 18 min.", keys: ["D = 1 log", "Z = hausse de T pour D/10", "SAL 10⁻⁶", "9 log", "18 min"] }
+],
+
+gens: {
+fpd: { c: "c3", method: "Isotonie : w = (0,52 − a)/b (Aulton)", make() {
+  const pa = pick([["chlorhydrate d'éphédrine", 0.169], ["sulfate d'atropine", 0.073], ["chlorhydrate de lidocaïne", 0.13], ["chlorhydrate de procaïne", 0.122], ["acide borique", 0.288]]); const c = pick([0.5, 1, 2]); const b = pick([0.576, 0.58]); const V = pick([10, 30, 50, 100]);
+  const a = c * pa[1]; if (a >= 0.52) return this.make(); const w = (0.52 - a) / b; const g = w * V / 100;
+  return { q: `${V} mL de ${pa[0]} à ${fmt(c)} % (ΔT à 1 % = ${fmt(pa[1])} °C), isotonisé au NaCl (b = ${fmt(b)}). Masse de NaCl (g) ?`, ans: r10(g), unit: "g", tol: { rel: 0.01 }, steps: [`a = ${fmt(c)} × ${fmt(pa[1])} = ${fmt(a, 4)} °C`, `w = (0,52 − ${fmt(a, 4)}) / ${fmt(b)} = ${fmt(w, 4)} %`, `× ${V} / 100 = <b>${fmt(g, 4)} g</b>`] };
+} },
+dvBase: { c: "c8", method: "Suppositoires : displacement value (Aulton)", make() {
+  const n = pick([6, 8, 10, 12, 20]); const e = pick([1, 2]); const d = pick([0.1, 0.2, 0.25, 0.5]); const DV = pick([1.5, 2, 3, 4, 5, 7]);
+  if (d / DV >= e * 0.6) return this.make(); const base = n * e - n * d / DV;
+  return { q: `${n} suppositoires de ${e} g contenant ${fmt(d * 1000)} mg de PA (displacement value = ${fmt(DV)}). Masse de base selon Aulton (g) ?`, ans: r10(base), unit: "g", tol: { rel: 0.003 }, steps: [`PA total = ${n} × ${fmt(d)} = ${fmt(n * d)} g`, `Base déplacée = ${fmt(n * d)} / ${fmt(DV)} = ${fmt(n * d / DV, 3)} g`, `${n * e} − ${fmt(n * d / DV, 3)} = <b>${fmt(base, 3)} g</b>`] };
+} },
+dvToCourse: { c: "c8", method: "Convertir DV → f puis méthode du cours (n + 1)", make() {
+  const n = pick([6, 8, 10, 12]); const e = pick([1, 2]); const d = pick([0.1, 0.2, 0.25]); const DV = pick([1.25, 1.5, 2, 2.5, 4]); const f = 1 / DV; const M = e - f * d; const ans = M * (n + 1);
+  return { q: `DV = ${fmt(DV)} (Aulton). ${n} suppositoires de ${e} g à ${fmt(d * 1000)} mg. Masse de base à peser selon le cours (n + 1) ?`, ans: r10(ans), unit: "g", tol: { rel: 0.003 }, steps: [`f = 1 / ${fmt(DV)} = ${fmt(f, 4)}`, `M = ${e} − ${fmt(f, 4)} × ${fmt(d)} = ${fmt(M, 4)} g`, `× ${n + 1} = <b>${fmt(ans, 3)} g</b>`] };
+} },
+hlbReq: { c: "c5", method: "HLB requise : fraction de chaque émulsifiant", make() {
+  const hi = pick([["Tween 80", 15], ["Tween 20", 16.7], ["Tween 60", 14.9]]); const lo = pick([["Span 80", 4.3], ["Span 60", 4.7], ["Span 20", 8.6]]); const req = pick([9, 10, 10.5, 11, 12, 13]); const tot = pick([3, 4, 5, 6, 10]);
+  if (req <= lo[1] || req >= hi[1]) return this.make(); const x = (req - lo[1]) / (hi[1] - lo[1]); const gh = x * tot;
+  return { q: `HLB requise ${fmt(req)}, ${tot} g d'émulsifiants : ${hi[0]} (HLB ${fmt(hi[1])}) + ${lo[0]} (HLB ${fmt(lo[1])}). Masse de ${hi[0]} (g) ?`, ans: r10(gh), unit: "g", tol: { rel: 0.01 }, steps: [`x = (${fmt(req)} − ${fmt(lo[1])}) / (${fmt(hi[1])} − ${fmt(lo[1])}) = ${fmt(x, 3)}`, `${hi[0]} : ${fmt(x, 3)} × ${tot} = <b>${fmt(gh, 2)} g</b>`, `${lo[0]} : ${fmt(tot - gh, 2)} g`] };
+} },
+hausner: { c: "c2", method: "Hausner et Carr", make() {
+  const pb = pick([0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6]); const pt = r10(pb * pick([1.08, 1.12, 1.18, 1.25, 1.35, 1.5, 1.6])); const carr = Math.random() < .5;
+  const H = pt / pb, C = (pt - pb) / pt * 100;
+  return carr ? { q: `ρ versée = ${fmt(pb)} g/mL, ρ tassée = ${fmt(pt, 3)} g/mL. Indice de Carr (%) ?`, ans: r10(C), unit: "%", tol: { abs: 0.2 }, steps: [`(${fmt(pt, 3)} − ${fmt(pb)}) / ${fmt(pt, 3)} × 100 = <b>${fmt(C, 1)} %</b>`] }
+    : { q: `ρ versée = ${fmt(pb)} g/mL, ρ tassée = ${fmt(pt, 3)} g/mL. Rapport d'Hausner ?`, ans: r10(H), unit: "", tol: { abs: 0.01 }, steps: [`${fmt(pt, 3)} / ${fmt(pb)} = <b>${fmt(H, 2)}</b>`, H < 1.2 ? "< 1,2 : bon écoulement" : H > 1.5 ? "> 1,5 : poudre cohésive" : "Entre 1,2 et 1,5 : écoulement moyen"] };
+} },
+ionis: { c: "c3", method: "Henderson-Hasselbalch : rapport non ionisé / ionisé", make() {
+  const acid = Math.random() < .6; const pKa = pick([3, 3.5, 4.2, 5, 6.5, 8, 9.2]); const pH = pick([1.5, 2, 5, 6.5, 7.4]); const r = acid ? Math.pow(10, pKa - pH) : Math.pow(10, pH - pKa);
+  return { q: `${acid ? "Acide" : "Base"} faible, pKa = ${fmt(pKa)}, à pH ${fmt(pH)}. log₁₀ du rapport [non ionisé]/[ionisé] ?`, ans: r10(Math.log10(r)), unit: "", tol: { abs: 0.01 }, steps: [acid ? `log([HA]/[A⁻]) = pKa − pH = ${fmt(pKa)} − ${fmt(pH)}` : `log([B]/[BH⁺]) = pH − pKa = ${fmt(pH)} − ${fmt(pKa)}`, `= <b>${fmt(Math.log10(r), 2)}</b> (rapport ≈ ${r >= 100 || r < 0.01 ? r.toExponential(1) : fmt(r, 3)})`] };
+} },
+t90: { c: "c3", method: "Ordre 1 : t½ ou t₉₀", make() {
+  const k = pick([0.002, 0.005, 0.01, 0.02, 0.05, 0.1]); const half = Math.random() < .5; const t = (half ? 0.693 : 0.105) / k;
+  return { q: `Dégradation d'ordre 1, k = ${fmt(k)} jour⁻¹. ${half ? "t½" : "t₉₀ (durée de validité)"} en jours ?`, ans: r10(t), unit: "jours", tol: { rel: 0.01 }, steps: [`${half ? "t½ = 0,693" : "t₉₀ = 0,105"} / ${fmt(k)} = <b>${fmt(t, 1)} jours</b>`] };
+} },
+salTime: { c: "c7", method: "Durée pour atteindre un SAL de 10⁻⁶", make() {
+  const lg = pick([2, 3, 4, 5, 6]); const D = pick([0.5, 1, 1.5, 2, 2.5]); const t = (lg + 6) * D;
+  return { q: `Charge initiale 10^${lg} spores par unité, D₁₂₁ = ${fmt(D)} min. Durée minimale à 121 °C (min) pour un SAL de 10⁻⁶ ?`, ans: r10(t), unit: "min", tol: { rel: 0.005 }, steps: [`Réduction : ${lg} − (−6) = ${lg + 6} log`, `${lg + 6} × ${fmt(D)} = <b>${fmt(t)} min</b>`] };
+} }
+},
+
+worked: [
+{ id: "w1", title: "Suppositoires : de la méthode d'Aulton à celle du cours", gen: "dvToCourse", make() {
+  const n = pick([8, 10]); const d = pick([0.2, 0.25]); const DV = pick([2, 3]); const e = 1; const f = 1 / DV;
+  return { ctx: `${n} suppositoires de ${e} g, ${fmt(d * 1000)} mg de PA chacun, displacement value = ${fmt(DV)}`, q: "Masse de base selon Aulton, puis selon le cours ?", steps: [
+    { label: "PA total (g)", ans: n * d, unit: "g", tol: { rel: 0.001 }, show: `${n} × ${fmt(d)} = ${fmt(n * d)} g`, why: "Aulton raisonne sur tout le lot." },
+    { label: "Base déplacée (g)", ans: n * d / DV, unit: "g", tol: { rel: 0.003 }, show: `${fmt(n * d)} / ${fmt(DV)} = ${fmt(n * d / DV, 3)} g`, why: `${fmt(DV)} g de PA prennent la place de 1 g de base : on divise.` },
+    { label: "Base selon Aulton (g)", ans: n * e - n * d / DV, unit: "g", tol: { rel: 0.003 }, show: `${n} − ${fmt(n * d / DV, 3)} = ${fmt(n * e - n * d / DV, 3)} g`, why: "Contenance du moule moins la base déplacée." },
+    { label: "f du cours", ans: f, unit: "", tol: { rel: 0.005 }, show: `1 / ${fmt(DV)} = ${fmt(f, 3)}`, why: "f = base déplacée par 1 g de PA = inverse de DV." },
+    { label: `Base selon le cours pour ${n + 1} suppositoires (g)`, ans: (e - f * d) * (n + 1), unit: "g", tol: { rel: 0.003 }, show: `(1 − ${fmt(f, 3)} × ${fmt(d)}) × ${n + 1} = ${fmt((e - f * d) * (n + 1), 3)} g`, why: "Règle du cours : un suppositoire supplémentaire." }] };
+} },
+{ id: "w2", title: "Émulsion : mélange de deux émulsifiants", gen: "hlbReq", make() {
+  const req = pick([10, 11, 12]); const tot = pick([4, 5]); const x = (req - 4.3) / (15 - 4.3);
+  return { ctx: `Paraffine liquide 50 g\nÉmulsifiants (HLB requise ${req}) ${tot} g\nEau qsp 100 g\nTween 80 (HLB 15) + Span 80 (HLB 4,3)`, q: "Masses de Tween 80 et de Span 80 ?", steps: [
+    { label: "Équation à poser", ans: req, unit: "(HLB requise)", show: `${req} = x × 15 + (1 − x) × 4,3`, why: "La HLB est additive (pondérée par les fractions massiques)." },
+    { label: "Fraction x de Tween 80", ans: x, unit: "", tol: { abs: 0.005 }, show: `x = (${req} − 4,3) / (15 − 4,3) = ${fmt(x, 3)}`, why: "On isole x." },
+    { label: "Tween 80 (g)", ans: x * tot, unit: "g", tol: { rel: 0.01 }, show: `${fmt(x, 3)} × ${tot} = ${fmt(x * tot, 2)} g`, why: "Fraction × masse totale d'émulsifiants." },
+    { label: "Span 80 (g)", ans: (1 - x) * tot, unit: "g", tol: { rel: 0.01 }, show: `${tot} − ${fmt(x * tot, 2)} = ${fmt((1 - x) * tot, 2)} g`, why: "Le reste." }] };
+} },
+{ id: "w3", title: "Stérilisation : combien de survivants ?", gen: "salTime", make() {
+  const N0 = pick([50, 100, 500]); const k = pick([1.2, 1.6, 2]); const t = 15; const lg = Math.log10(N0) - k * t / 2.303;
+  return { ctx: `Ampoules de 1 mL, ${N0} spores/mL ; mort d'ordre 1, k = ${fmt(k)} min⁻¹ à 121 °C ; cycle 121 °C 15 min`, q: "Le SAL de 10⁻⁶ est-il atteint ?", steps: [
+    { label: "log₁₀ N₀", ans: Math.log10(N0), unit: "", tol: { abs: 0.005 }, show: `log ${N0} = ${fmt(Math.log10(N0), 3)}`, why: "On travaille en logarithmes." },
+    { label: "k t / 2,303", ans: k * t / 2.303, unit: "", tol: { abs: 0.02 }, show: `${fmt(k)} × 15 / 2,303 = ${fmt(k * t / 2.303, 2)}`, why: "Conversion ln → log₁₀." },
+    { label: "log₁₀ N après 15 min", ans: lg, unit: "", tol: { abs: 0.02 }, show: `${fmt(Math.log10(N0), 3)} − ${fmt(k * t / 2.303, 2)} = ${fmt(lg, 2)}`, why: `${lg < -6 ? "Inférieur à −6 : SAL atteint." : "Supérieur à −6 : SAL non atteint."} Même logique que l'exemple p. 231.` }] };
+} }
+],
+
+sprints: [
+{ id: "s1", title: "DV ↔ f", target: 15, make() { const DV = pick([1.25, 1.5, 2, 2.5, 4, 5, 10]); return Math.random() < .5 ? { q: `DV = ${fmt(DV)} → f = ?`, ans: r10(1 / DV), unit: "", tol: { rel: 0.01 } } : { q: `f = ${fmt(r10(1 / DV), 3)} → DV = ?`, ans: DV, unit: "", tol: { rel: 0.01 } }; } },
+{ id: "s2", title: "Hausner express", target: 15, make() { const pb = pick([0.4, 0.5]); const pt = pick([0.44, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8]); if (pt < pb) return this.make(); return { q: `ρ versée ${fmt(pb)}, ρ tassée ${fmt(pt)} → Hausner ?`, ans: r10(pt / pb), unit: "" }; } }
+],
+pretest: ["q2", "q7", "q10", "q14", "q20"]
+};
+
+const METHODS_HTML = `
+<div class="card"><h2>Pourquoi cette page est construite ainsi</h2>
+<p class="small" style="margin-top:0">Chaque outil de cette page applique une méthode dont l'efficacité a été mesurée dans des études contrôlées en psychologie cognitive et en sciences de l'éducation. La grande revue de Dunlosky et al. (2013) a évalué 10 techniques d'étude : <b>se tester</b> (pratique de récupération) et <b>espacer les révisions</b> obtiennent la note d'utilité la plus élevée ; l'<b>entrelacement</b>, l'<b>interrogation élaborative</b> et l'<b>auto-explication</b> une note moyenne ; <b>relire, surligner et résumer</b> une note faible.</p>
+<div class="box trap" style="margin-bottom:0"><b>À éviter :</b> relire le PDF plusieurs fois ou surligner. On a l'impression de savoir parce que le texte est familier, mais on ne s'entraîne pas à le retrouver seule, ce que l'examen exige.</div></div>
+
+<div class="card"><h2>Les méthodes, et où elles sont dans la page</h2>
+<div class="method"><b>1. Se tester plutôt que relire (pratique de récupération)</b><br><span class="small">Flashcards, Quiz, Séance du jour. Dans l'étude de Roediger &amp; Karpicke (2006), les étudiants qui s'étaient testés retenaient nettement plus une semaine plus tard que ceux qui avaient relu. Réponds toujours <b>avant</b> de voir la réponse, même si tu n'es pas sûre.</span></div>
+<div class="method"><b>2. Espacer les séances</b><br><span class="small">Plan J+1, J+3, J+7, J+14, J+30 et boîtes des flashcards. Cepeda et al. (2008, plus de 1 350 participants) montrent que l'intervalle optimal entre deux révisions augmente avec le délai jusqu'à l'examen. Mieux vaut 15 minutes réparties sur 5 jours que 75 minutes la veille.</span></div>
+<div class="method"><b>3. Réapprendre jusqu'au critère, sur plusieurs séances (réapprentissage successif)</b><br><span class="small">Dans les sessions, une question ratée revient jusqu'à ce que tu la réussisses ; puis elle revient les jours suivants. Rawson &amp; Dunlosky recommandent de réussir chaque élément au moins une fois par séance, sur environ 3 séances espacées : c'est ce qui rend le souvenir durable.</span></div>
+<div class="method"><b>4. Mélanger les types de problèmes (entrelacement)</b><br><span class="small">Onglet Mélange et Séance du jour. En maths, des élèves ayant mélangé les types d'exercices ont nettement mieux réussi un test surprise un mois plus tard (61 % contre 38 % dans un essai sur 787 élèves de Rohrer et al.). Le gain vient surtout du fait qu'il faut <b>choisir la méthode</b> : c'est pour cela que l'onglet Mélange te demande d'abord « quelle méthode ? ». C'est plus difficile sur le moment, et c'est normal.</span></div>
+<div class="method"><b>5. Exemples résolus puis aide qui s'estompe</b><br><span class="small">Onglet Exemples guidés. Au début d'un apprentissage, étudier un exemple résolu est plus efficace que de chercher seule (Sweller ; Renkl). Ensuite, on retire les étapes en commençant par la fin (« estompage arrière », Renkl &amp; Atkinson), jusqu'à résoudre seule. Le niveau s'adapte à tes réussites.</span></div>
+<div class="method"><b>6. Se demander « pourquoi ? » et s'expliquer les étapes</b><br><span class="small">Encadrés « Pourquoi ? » de la Leçon active et boutons « pourquoi ? » des exemples. Relier chaque règle à sa raison (interrogation élaborative, auto-explication) aide à comprendre et à transférer à des problèmes nouveaux.</span></div>
+<div class="method"><b>7. Expliquer à voix haute, sans regarder</b><br><span class="small">Encadrés « Explique à voix haute ». C'est une forme de rappel libre et d'auto-explication. La liste à cocher te montre ce que tu as oublié.</span></div>
+<div class="method"><b>8. Se tester avant d'apprendre (pré-test)</b><br><span class="small">Bouton Pré-test. Essayer de répondre avant d'avoir étudié, même en se trompant, améliore la mémorisation de ce qu'on apprend ensuite (Richland, Kornell &amp; Kao, 2009 ; Kornell, Hays &amp; Bjork, 2009).</span></div>
+<div class="method"><b>9. Noter sa certitude et corriger les erreurs « sûres »</b><br><span class="small">Boutons Sûre / Hésitante / Au hasard et tableau de calibration. Les erreurs commises avec une forte confiance sont paradoxalement les mieux corrigées après le feedback (effet d'hypercorrection, Butterfield &amp; Metcalfe, 2001). Comparer ta confiance à tes résultats t'apprend aussi à savoir ce que tu sais vraiment.</span></div>
+<div class="method"><b>10. Rendre les bases automatiques (sprints)</b><br><span class="small">Onglet Sprint. Quand les conversions, abréviations et densités sont instantanées, ta mémoire de travail reste disponible pour le raisonnement. On vise d'abord la précision, ensuite la vitesse. Honnêtement : cette idée est surtout étudiée pour le calcul de base chez les enfants, et une étude n'a pas trouvé d'avantage de rétention au simple entraînement chronométré par rapport à la même quantité de pratique. Utilise donc les sprints en complément, pas à la place des autres méthodes.</span></div>
+<div class="method"><b>11. Une méthode de calcul stable, avec les unités</b><br><span class="small">Dans les corrections, chaque étape garde son unité (mg, g, mL). En formation infirmière, apprendre à poser les calculs de doses avec les unités (analyse dimensionnelle) a amélioré la précision par rapport au calcul classique. Écris toujours l'unité à chaque ligne et vérifie l'ordre de grandeur.</span></div>
+</div>
+
+<div class="card"><h2>Spécial galénique : ce qui change pour ce cours</h2>
+<div class="method"><b>Questions ouvertes : rédiger, pas reconnaître</b><br><span class="small">L'examen comporte des questions ouvertes. Reconnaître la bonne réponse dans un QCM ne prouve pas qu'on sait la produire. Les « Questions d'examen » te font rédiger (ou dire) ta réponse, puis la comparer point par point à la réponse attendue : c'est du rappel libre, la forme de test la plus exigeante et la plus proche de l'examen.</span></div>
+<div class="method"><b>Partie calculs éliminatoire : viser le sur-apprentissage</b><br><span class="small">Une seule erreur de calcul fait échouer tout le cours. Pour cette partie, « réussir une fois » ne suffit pas : continue à t'entraîner après avoir réussi (problèmes mélangés chaque jour, sans calculatrice), et vérifie systématiquement unités et ordre de grandeur. L'entraînement prolongé au-delà de la première réussite ralentit l'oubli à court terme ; l'espacer garde l'effet sur la durée.</span></div>
+<div class="method"><b>Mélanger les chapitres</b><br><span class="small">La « Séance mélangée » et l'« Examen blanc » de la page générale tirent des questions de tous les chapitres : c'est l'entrelacement appliqué au cours entier, comme le jour de l'examen.</span></div></div>
+
+<div class="card"><h2>Mode d'emploi conseillé</h2><ol class="steps">
+<li><b>Un nouveau chapitre</b> (45-60 min) : pré-test → Leçon active (notion par notion : « pourquoi ? », voix haute, « Me tester ») → exemples guidés s'il y en a → questions d'examen.</li>
+<li><b>Les jours suivants</b> (15-20 min par chapitre prévu) : Séance du jour du chapitre, aux dates du plan (J+1, J+3, J+7, J+14, J+30).</li>
+<li><b>Chaque jour</b> : 5 problèmes de calcul mélangés (partie éliminatoire) et, si tu as le temps, un sprint de 60 s.</li>
+<li><b>Notions « En cours »</b> : rouvre-les dans la Leçon (mode « Masquer l'essentiel »), refais leur test.</li>
+<li><b>Les 10 derniers jours</b> : examens blancs et séances mélangées depuis la page générale ; plus de grosse relecture la veille, dors.</li>
+<li><b>Livres</b> (Le Hir, Aulton) : utilise-les pour approfondir une notion ratée, pas pour tout relire.</li></ol></div>
+
+<div class="card src"><h2>Sources</h2><ul class="small">
+<li>Dunlosky, Rawson, Marsh, Nathan &amp; Willingham (2013), <i>Improving Students' Learning With Effective Learning Techniques</i>, Psychological Science in the Public Interest 14(1). <a href="https://doi.org/10.1177/1529100612453266" target="_blank">doi:10.1177/1529100612453266</a></li>
+<li>Roediger &amp; Karpicke (2006), <i>Test-Enhanced Learning</i>, Psychological Science 17(3). <a href="https://psychology.ecu.edu/wp-content/pv-uploads/sites/216/2019/03/Roediger-Karpicke-2006.pdf" target="_blank">PDF</a></li>
+<li>Cepeda, Vul, Rohrer, Wixted &amp; Pashler (2008), <i>Spacing Effects in Learning: A Temporal Ridgeline of Optimal Retention</i>, Psychological Science 19(11). <a href="https://escholarship.org/uc/item/0kp5q19x" target="_blank">eScholarship</a></li>
+<li>Rawson &amp; Dunlosky : réapprentissage successif. <a href="https://journals.sagepub.com/doi/full/10.1177/09637214221100484" target="_blank">Current Directions in Psychological Science</a> · <a href="https://www.retrievalpractice.org/archive/2018/successive-relearning" target="_blank">synthèse retrievalpractice.org</a></li>
+<li>Rohrer, Dedrick, Hartwig &amp; Cheung (2020), <i>A randomized controlled trial of interleaved mathematics practice</i>, Journal of Educational Psychology 112(1) · Rohrer, Dedrick &amp; Burgess (2014), <a href="https://link.springer.com/article/10.3758/s13423-014-0588-3" target="_blank">Psychonomic Bulletin &amp; Review</a></li>
+<li>Renkl, Atkinson, Maier &amp; Staley (2002) ; Atkinson, Renkl &amp; Merrill (2003) : estompage des exemples résolus. <a href="https://en.wikipedia.org/wiki/Worked-example_effect" target="_blank">Synthèse</a></li>
+<li>Butterfield &amp; Metcalfe (2001, 2006) : effet d'hypercorrection. <a href="https://core.ac.uk/download/357328401.pdf" target="_blank">PDF</a></li>
+<li>Richland, Kornell &amp; Kao (2009), <i>The Pretesting Effect</i>. <a href="https://learninglab.uchicago.edu/Pre-Testing_files/RichlandKornellKao.pdf" target="_blank">PDF</a></li>
+<li>Greenfield, Whelan &amp; Cohn (2006), <i>Use of dimensional analysis to reduce medication errors</i>, Journal of Nursing Education 45(2). <a href="https://psnet.ahrq.gov/issue/use-dimensional-analysis-reduce-medication-errors" target="_blank">PSNet</a></li>
+</ul></div>`;
+
+/* ================= MOTEUR ================= */
+const KEY = DATA.key || ("mphab287-theorie-" + DATA.id);
+const INTERVALS = [0, 1, 3, 7, 14, 30, 60];
+const $ = s => document.querySelector(s);
+const V = () => $("#view");
+const rnd = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+function fmt(n, d = 8) {
+  if (typeof n !== "number" || !isFinite(n)) return String(n);
+  let s = (Math.round(n * 10 ** d) / 10 ** d).toFixed(d).replace(/0+$/, "").replace(/\.$/, "");
+  const [i, f] = s.split(".");
+  const ii = i.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  return f ? ii + "," + f : ii;
+}
+function parseNum(s) {
+  if (s == null) return NaN;
+  s = String(s).trim().replace(/\s| /g, "").replace(",", ".");
+  if (s === "½") return 0.5;
+  if (/^-?\d+(\.\d+)?\/\d+(\.\d+)?$/.test(s)) { const [a, b] = s.split("/"); return parseFloat(a) / parseFloat(b); }
+  if (!/^-?(\d+\.?\d*|\.\d+)(e-?\d+)?$/i.test(s)) return NaN;
+  return parseFloat(s);
+}
+function near(x, target, tol) {
+  if (isNaN(x)) return false;
+  if (tol && tol.abs != null) return Math.abs(x - target) <= tol.abs + 1e-12;
+  const rel = tol && tol.rel != null ? tol.rel : 0.005;
+  return Math.abs(x - target) <= Math.max(Math.abs(target) * rel, 1e-12);
+}
+const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+function today() { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+function addDays(iso, n) { const d = new Date(iso + "T12:00:00"); d.setDate(d.getDate() + n); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+function diffDays(a, b) { return Math.round((new Date(b + "T12:00:00") - new Date(a + "T12:00:00")) / 864e5); }
+function frDate(iso) { return new Date(iso + "T12:00:00").toLocaleDateString("fr-BE", { weekday: "short", day: "numeric", month: "short" }); }
+
+/* ---------- état sauvegardé ---------- */
+let S;
+function blank() { return { start: today(), cards: {}, items: {}, gens: {}, sprint: {}, worked: {}, days: [], daily: [], pretest: null, lessons: {}, conf: { sure: [0, 0], mid: [0, 0], guess: [0, 0] } }; }
+function load() { try { S = JSON.parse(localStorage.getItem(KEY)) || blank(); } catch (e) { S = blank(); } const b = blank(); for (const k in b) if (!(k in S)) S[k] = b[k]; }
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { }
+  try { if (DATA.sumKey) { const all = DATA.concepts.map(c => mastery(c.id)); localStorage.setItem(DATA.sumKey, JSON.stringify({ m: all.reduce((a, b) => a + b, 0) / all.length, due: dueCards().length, last: S.days[S.days.length - 1] || null, started: S.days.length > 0 })); } } catch (e) { } }
+function markDay() { const t = today(); if (!S.days.includes(t)) S.days.push(t); save(); }
+
+/* ---------- index du contenu ---------- */
+const CONCEPTS = Object.fromEntries(DATA.concepts.map(c => [c.id, c]));
+const CARDS = DATA.cards.map((c, i) => ({ ...c, id: c.id || "k" + i }));
+const ITEMS = DATA.quiz.map((q, i) => ({ ...q, id: q.id || "q" + i }));
+const GENS = DATA.gens;
+
+/* ---------- répétition espacée (Leitner) ---------- */
+function cardState(id) { return S.cards[id] || { box: 0, due: null, seen: 0, lapses: 0 }; }
+function gradeCard(id, g) { // g: 0 raté, 1 difficile, 2 bien, 3 facile
+  const st = cardState(id); st.seen++;
+  if (g === 0) { st.box = 0; st.lapses++; }
+  else if (g === 1) st.box = Math.max(1, st.box);
+  else if (g === 2) st.box = Math.min(INTERVALS.length - 1, st.box + 1);
+  else st.box = Math.min(INTERVALS.length - 1, st.box + 2);
+  st.due = addDays(today(), g === 0 ? 0 : INTERVALS[st.box]);
+  S.cards[id] = st; save();
+}
+function dueCards() { const t = today(); return CARDS.filter(c => { const s = S.cards[c.id]; return !s || !s.due || s.due <= t; }); }
+function logItem(id, ok) { (S.items[id] = S.items[id] || []).push(ok ? 1 : 0); if (S.items[id].length > 12) S.items[id].shift(); save(); }
+function logGen(id, ok) { (S.gens[id] = S.gens[id] || []).push(ok ? 1 : 0); if (S.gens[id].length > 15) S.gens[id].shift(); save(); }
+function logConf(c, ok) { if (!c) return; S.conf[c][1]++; if (ok) S.conf[c][0]++; save(); }
+
+/* ---------- maîtrise par notion ---------- */
+function mastery(cid) {
+  const parts = [];
+  const cs = CARDS.filter(c => c.c === cid);
+  if (cs.length) parts.push(cs.reduce((a, c) => a + Math.min(cardState(c.id).box, 4) / 4, 0) / cs.length);
+  const qs = ITEMS.filter(q => q.c === cid);
+  if (qs.length) parts.push(qs.reduce((a, q) => { const r = S.items[q.id] || []; const last = r.slice(-3); return a + (last.length ? last.reduce((x, y) => x + y, 0) / 3 : 0); }, 0) / qs.length);
+  const gs = Object.entries(GENS).filter(([k, g]) => g.c === cid);
+  if (gs.length) parts.push(gs.reduce((a, [k]) => { const r = (S.gens[k] || []).slice(-5); return a + (r.length ? r.reduce((x, y) => x + y, 0) / 5 : 0); }, 0) / gs.length);
+  return parts.length ? parts.reduce((a, b) => a + b, 0) / parts.length : 0;
+}
+function lvl(m) { return m >= .85 ? ["Automatique", "var(--ok)"] : m >= .6 ? ["Solide", "var(--accent)"] : m >= .25 ? ["En cours", "var(--warn)"] : ["À découvrir", "var(--muted)"]; }
+
+/* ================= NAVIGATION ================= */
+const TABS = [
+  ["home", "🏠 Accueil"], ["lesson", "📖 Leçon active"], ["cards", "🃏 Flashcards"], ["quiz", "❓ Quiz"],
+  ["worked", "🪜 Exemples guidés"], ["sprint", "⚡ Sprint"], ["mix", "🔀 Mélange"], ["mastery", "📊 Maîtrise"],
+  ["methods", "🧠 Méthodes"], ["settings", "⚙️"]
+].filter(([k]) => !((k === "worked" && !(DATA.worked || []).length) || (k === "sprint" && !(DATA.sprints || []).length) || (k === "mix" && !Object.keys(DATA.gens || {}).length) || (k === "lesson" && DATA.hub)));
+let cur = "home";
+function go(v, arg) { cur = v; stopTimers(); renderTabs(); (VIEWS[v])(arg); window.scrollTo({ top: 0 }); }
+function renderTabs() { $("#tabs").innerHTML = TABS.map(([k, l]) => `<button class="${k === cur ? "on" : ""}" onclick="go('${k}')">${l}</button>`).join(""); }
+let timers = [];
+function stopTimers() { timers.forEach(clearInterval); timers = []; document.onkeydown = null; }
+
+/* ================= LECTEUR DE SESSION (quiz, cartes, problèmes) ================= */
+let P = null; // session courante
+function startSession(title, queue, opts = {}) {
+  stopTimers(); cur = ""; renderTabs(); window.scrollTo({ top: 0 });
+  P = { title, queue: queue.slice(), done: [], i: 0, opts, total: queue.length, retry: {}, results: [] };
+  markDay(); renderItem();
+}
+function renderItem() {
+  stopTimers();
+  if (!P.queue.length) return endSession();
+  const it = P.queue[0];
+  const n = P.done.length, total = n + P.queue.length;
+  let h = `<div class="card"><div class="row" style="justify-content:space-between"><span class="pill">${esc(P.title)}</span>
+    <span class="small muted">${n} / ${total}</span></div>
+    <div class="bar" style="margin:10px 0 14px"><i style="width:${(n / total) * 100}%"></i></div>`;
+  if (it.c && CONCEPTS[it.c]) h += `<div class="small muted">${esc(CONCEPTS[it.c].title)}</div>`;
+  if (it.t === "card") h += cardHTML(it);
+  else if (it.t === "mcq" || it.t === "tf") h += mcqHTML(it);
+  else if (it.t === "num") h += numHTML(it);
+  else if (it.t === "open") h += openHTML(it);
+  h += `</div><div class="row"><button class="btn ghost sm" onclick="endSession()">Terminer la session</button></div>`;
+  V().innerHTML = h;
+  if (it.t === "num") { const inp = $("#ans"); inp && inp.focus({ preventScroll: true }); }
+  if (it.t === "card") document.onkeydown = e => { if (e.key === " " && !it._flip) { e.preventDefault(); flip(); } else if (it._flip && "1234".includes(e.key)) grade(+e.key - 1); };
+  if (it.t === "mcq" || it.t === "tf") document.onkeydown = e => { const k = +e.key; if (!it._ans && k >= 1 && k <= (it.o || ["Vrai", "Faux"]).length) selOpt(k - 1); };
+}
+function cardHTML(it) {
+  return `<div class="flash"><div>${it.front}</div>${it._flip ? `<div class="back">${it.back}</div>` : ""}</div>
+  ${it._flip ? `<div class="small muted" style="text-align:center;margin-top:8px">Sois honnête : ta réponse était-elle juste et rapide ?</div>
+   <div class="grades"><button class="btn g0" onclick="grade(0)">Raté<br><small>revient</small></button><button class="btn" onclick="grade(1)">Difficile</button>
+   <button class="btn" onclick="grade(2)">Bien</button><button class="btn g3" onclick="grade(3)">Facile</button></div>`
+      : `<div class="row" style="justify-content:center;margin-top:12px"><button class="btn primary" onclick="flip()">Retourner <span class="kbd">espace</span></button></div>
+   <div class="small muted" style="text-align:center;margin-top:6px">Réponds d'abord dans ta tête (ou à voix haute) avant de retourner.</div>`}`;
+}
+function openHTML(it) {
+  let h = (it.ctx ? `<div class="ctx">${esc(it.ctx)}</div>` : "") + `<div class="q">${it.q}</div>`;
+  h += `<textarea id="oa" rows="5" placeholder="Rédige ta réponse comme à l'examen (ou réponds à voix haute), puis compare." ${it._show ? "disabled" : ""}>${esc(it._txt || "")}</textarea>`;
+  if (!it._show) h += `<div class="row" style="margin-top:10px"><button class="btn primary" onclick="openShow()">Voir la réponse attendue</button></div>`;
+  else h += `<div class="fb" style="background:var(--info-soft);color:var(--ink)"><b>Réponse attendue</b><div class="ex">${it.a}</div></div>
+    ${it.keys ? `<div class="small" style="margin-top:10px"><b>Coche les éléments que tu avais :</b></div>${it.keys.map(k => `<label class="row small" style="margin:3px 0;flex-wrap:nowrap;align-items:flex-start"><input type="checkbox"> <span>${k}</span></label>`).join("")}` : ""}
+    <div class="grades" style="grid-template-columns:repeat(3,1fr)"><button class="btn g0" onclick="openGrade(0)">Incomplète<br><small>revient</small></button><button class="btn" onclick="openGrade(1)">Presque</button><button class="btn g3" onclick="openGrade(2)">Complète</button></div>`;
+  return h;
+}
+function openShow() { const it = P.queue[0]; it._txt = ($("#oa") || {}).value || ""; it._show = true; renderItem(); }
+function openGrade(g) {
+  const it = P.queue.shift(); logItem(it.id, g === 2); P.results.push({ it, ok: g === 2 });
+  if (g === 0 && !P.opts.noRetry) { P.queue.splice(Math.min(P.queue.length, 4), 0, { ...it, _show: false, _txt: "" }); } else P.done.push(it);
+  renderItem();
+}
+function flip() { P.queue[0]._flip = true; renderItem(); }
+function grade(g) {
+  const it = P.queue.shift(); gradeCard(it.id, g);
+  P.results.push({ it, ok: g >= 2 });
+  if (g === 0) { delete it._flip; P.queue.splice(Math.min(P.queue.length, 3), 0, it); } // rappel successif : revient tant que raté
+  else P.done.push(it);
+  renderItem();
+}
+function confHTML(disabled) {
+  return `<div class="conf"><div class="lab">Valide en indiquant ta certitude :</div><div class="row">
+  <button class="btn primary sm" ${disabled ? "disabled" : ""} onclick="submit('sure')">✅ Sûre</button>
+  <button class="btn sm" ${disabled ? "disabled" : ""} onclick="submit('mid')">🤔 Hésitante</button>
+  <button class="btn sm" ${disabled ? "disabled" : ""} onclick="submit('guess')">🎲 Au hasard</button></div></div>`;
+}
+function mcqHTML(it) {
+  const o = it.o || ["Vrai", "Faux"];
+  let h = (it.ctx ? `<div class="ctx">${esc(it.ctx)}</div>` : "") + `<div class="q">${it.q}</div><div class="opts">`;
+  o.forEach((t, k) => {
+    let cls = "";
+    if (it._ans) { if (k === it.a) cls = "ok"; else if (k === it._sel) cls = "ko"; }
+    else if (k === it._sel) cls = "sel";
+    h += `<button class="opt ${cls}" ${it._ans ? "disabled" : ""} onclick="selOpt(${k})"><span class="n">${k + 1}</span><span>${t}</span></button>`;
+  });
+  h += `</div>`;
+  if (!it._ans) h += confHTML(it._sel == null);
+  else h += fbHTML(it, it._sel === it.a, it.ex);
+  return h;
+}
+function selOpt(k) { P.queue[0]._sel = k; renderItem(); }
+function numHTML(it) {
+  let h = (it.ctx ? `<div class="ctx">${esc(it.ctx)}</div>` : "") + `<div class="q">${it.q}</div>`;
+  h += `<div class="row" style="flex-wrap:nowrap"><input id="ans" class="num ${it._ans ? (it._ok ? "ok" : "ko") : ""}" inputmode="decimal" autocomplete="off"
+     placeholder="ta réponse" ${it._ans ? `value="${esc(it._raw)}" disabled` : ""} onkeydown="if(event.key==='Enter'&&!${!!it._ans})submit('mid')">
+     ${it.unit ? `<b style="min-width:40px">${esc(it.unit)}</b>` : ""}</div>`;
+  if (!it._ans) h += confHTML(false) + `<div class="small muted" style="margin-top:6px">Virgule ou point acceptés. <span class="kbd">Entrée</span> = « hésitante ».</div>`;
+  else h += fbHTML(it, it._ok, (it.steps ? `<ol class="steps">${it.steps.map(s => `<li>${s}</li>`).join("")}</ol>` : "") + (it.ex || ""));
+  return h;
+}
+function fbHTML(it, ok, ex) {
+  const good = it.t === "num" ? `${fmt(it.ans)} ${it.unit || ""}` : (it.o || ["Vrai", "Faux"])[it.a];
+  let h = `<div class="fb ${ok ? "ok" : "ko"}"><b>${ok ? "Juste !" : "Pas encore."}</b> ${ok ? "" : `Réponse : <b>${good}</b>`}
+    ${ex ? `<div class="ex">${ex}</div>` : ""}</div>`;
+  if (!ok && it._conf === "sure") h += `<div class="hyper">💡 <b>Erreur commise avec assurance.</b> C'est justement ce type d'erreur qui se corrige le mieux quand on s'y arrête (effet d'hypercorrection) : relis l'explication et redis-la avec tes mots avant de continuer. Cette question reviendra dans quelques minutes.</div>`;
+  else if (!ok) h += `<div class="small muted" style="margin-top:8px">Cette question reviendra plus loin dans la session jusqu'à ce que tu la réussisses.</div>`;
+  if (ok && it._conf === "guess") h += `<div class="small muted" style="margin-top:8px">Juste, mais au hasard : elle comptera comme « à revoir ».</div>`;
+  h += `<div class="row" style="margin-top:12px"><button class="btn primary" id="nextBtn" onclick="nextItem()">Continuer →</button></div>`;
+  return h;
+}
+function submit(conf) {
+  const it = P.queue[0];
+  if (it.t === "num") {
+    const raw = $("#ans").value; const x = parseNum(raw);
+    if (isNaN(x)) { $("#ans").classList.add("ko"); return; }
+    it._raw = raw; it._ok = near(x, it.ans, it.tol);
+  } else { if (it._sel == null) return; it._ok = it._sel === it.a; }
+  it._ans = true; it._conf = conf; logConf(conf, it._ok);
+  const counted = it._ok && conf !== "guess";
+  if (it.gen) logGen(it.gen, counted); else logItem(it.id, counted);
+  P.results.push({ it, ok: it._ok, conf });
+  renderItem();
+  document.onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); nextItem(); } };
+  const nb = $("#nextBtn"); nb && nb.focus({ preventScroll: true });
+}
+function nextItem() {
+  const it = P.queue.shift();
+  const retry = !it._ok || it._conf === "guess";
+  if (retry && !P.opts.noRetry) {
+    const again = it.gen && GENS[it.gen] ? makeGen(it.gen) : { ...it, _ans: false, _sel: null, _ok: null, _conf: null, _raw: null };
+    P.queue.splice(Math.min(P.queue.length, 4), 0, again);
+  } else P.done.push(it);
+  renderItem();
+}
+function endSession() {
+  stopTimers();
+  const r = P ? P.results : [];
+  const first = {}; r.forEach(x => { const key = x.it.id || x.it.gen + x.it.q; if (!(key in first)) first[key] = x.ok; });
+  const n = Object.keys(first).length, ok = Object.values(first).filter(Boolean).length;
+  const sure = r.filter(x => x.conf === "sure"), sureOk = sure.filter(x => x.ok).length;
+  const misses = r.filter(x => !x.ok).map(x => x.it).filter((v, i, a) => a.findIndex(y => (y.q || y.front) === (v.q || v.front)) === i);
+  if (P && P.opts.onEnd) P.opts.onEnd(ok, n);
+  V().innerHTML = `<div class="card" style="text-align:center"><span class="pill">${esc(P ? P.title : "")}</span>
+   <div class="big" style="margin-top:10px">${ok} / ${n}</div><div class="muted">réussies du premier coup</div>
+   ${sure.length ? `<p class="small">Calibration : quand tu étais <b>sûre</b>, tu avais raison dans <b>${Math.round(sureOk / sure.length * 100)} %</b> des cas ${sureOk / sure.length < .9 ? "→ ta confiance dépasse encore ta maîtrise, continue à t'auto-tester." : "→ ta confiance est fiable."}</p>` : ""}
+   ${misses.length ? `<div style="text-align:left"><h3>À retravailler</h3><ul class="small">${misses.slice(0, 12).map(m => `<li>${m.q || m.front}</li>`).join("")}</ul></div>` : ""}
+   <div class="row" style="justify-content:center;margin-top:10px"><button class="btn primary" onclick="go('home')">Retour à l'accueil</button>
+   ${P && P.opts.again ? `<button class="btn" onclick="(${P.opts.again})()">Recommencer</button>` : ""}</div></div>`;
+  P = null;
+}
+function makeGen(id) { const g = GENS[id]; const x = g.make(); return { t: "num", gen: id, c: g.c, ...x }; }
+
+/* ================= VUES ================= */
+const VIEWS = {};
+
+VIEWS.home = () => {
+  const dc = dueCards().length;
+  const all = DATA.concepts.map(c => mastery(c.id)); const glob = all.reduce((a, b) => a + b, 0) / all.length;
+  const start = S.start, t = today();
+  const plan = [0, 1, 3, 7, 14, 30].map(d => { const day = addDays(start, d); return { d, day, done: S.daily.includes(day) || (d === 0 && S.days.includes(start)), today: day === t }; });
+  const streak = (() => { let n = 0, d = t; while (S.days.includes(d)) { n++; d = addDays(d, -1); } return n; })();
+  const firstTime = !S.pretest && !Object.keys(S.cards).length;
+  V().innerHTML = `
+  <div class="card">
+    <div class="row" style="justify-content:space-between;align-items:flex-start">
+      <div><h2 style="margin-bottom:2px">Séance du jour</h2>
+      <div class="muted small">${dc} flashcard${dc > 1 ? "s" : ""} à revoir · problèmes mélangés · questions sur tes notions faibles</div></div>
+      <div style="text-align:right"><div class="big" style="font-size:30px">${Math.round(glob * 100)} %</div><div class="small muted">maîtrise globale</div></div>
+    </div>
+    <div class="bar" style="margin:12px 0"><i style="width:${glob * 100}%"></i></div>
+    <div class="row"><button class="btn primary" onclick="daily()">▶ Lancer la séance du jour (~15 min)</button>${DATA.hubUrl ? `<a class="btn ghost sm" href="${DATA.hubUrl}" target="_top">↖ Page générale du cours</a>` : ""}
+    ${streak ? `<span class="small muted">🔥 ${streak} jour${streak > 1 ? "s" : ""} d'affilée</span>` : ""}</div>
+  </div>
+  ${firstTime ? `<div class="card" style="border-color:var(--accent)"><h2>Première fois ? Suis cet ordre</h2>
+    <ol class="steps"><li><b>Pré-test</b> (5 min) : réponds sans avoir révisé. Se tromper avant d'apprendre aide à mieux retenir ensuite.</li>
+    <li><b>Leçon active</b> : lis chaque notion, réponds aux « pourquoi ? », explique-la à voix haute, puis teste-toi.</li>
+    ${(DATA.worked || []).length ? `<li><b>Exemples guidés</b> : un exemple complet, puis de moins en moins d'aide jusqu'à le faire seule.</li>` : `<li><b>Questions d'examen</b> : rédige ta réponse, puis compare-la à la réponse attendue.</li>`}
+    <li><b>Séance du jour</b> : à refaire selon le plan ci-dessous (J+1, J+3, J+7…).</li></ol>
+    <div class="row" style="margin-top:8px"><button class="btn primary" onclick="pretest()">🎯 Commencer par le pré-test</button><button class="btn" onclick="go('lesson')">Aller à la leçon</button></div></div>` : ""}
+  <div class="card"><h2>Plan de révision espacée</h2>
+    <div class="small muted" style="margin-bottom:8px">Départ : ${frDate(start)}. Chaque case = une séance du jour. Les intervalles s'allongent : c'est l'oubli partiel entre deux séances qui rend le rappel efficace.</div>
+    <div class="plan">${plan.map(p => `<div class="${p.done ? "done" : ""} ${p.today ? "today" : ""}"><b>J+${p.d}</b>${frDate(p.day)}${p.done ? "<br>✓" : ""}</div>`).join("")}</div>
+    <div class="small muted" style="margin-top:8px">Avant l'examen : une séance la veille et l'avant-veille, surtout sur les notions « En cours ».</div>
+  </div>
+  <div class="grid2">
+    <button class="tile" onclick="pretest()"><b>🎯 Pré-test</b><span>${S.pretest ? `Fait : ${S.pretest.ok}/${S.pretest.n}. À refaire pour mesurer tes progrès.` : "Teste-toi avant d'apprendre"}</span></button>
+    ${(DATA.sprints || []).length ? `<button class="tile" onclick="go('sprint')"><b>⚡ Sprint d'automatisme</b><span>60 secondes chrono, objectif : réponse juste et immédiate</span></button>` : ""}
+    ${gk0() ? `<button class="tile" onclick="go('mix')"><b>🔀 Problèmes mélangés</b><span>Identifier la bonne méthode puis calculer</span></button>` : `<button class="tile" onclick="go('quiz')"><b>✍️ Questions d'examen</b><span>Réponses rédigées, comparées à la réponse attendue</span></button>`}
+    <button class="tile" onclick="go('mastery')"><b>📊 Ma maîtrise</b><span>Notion par notion, et prochaines révisions</span></button>
+  </div>`;
+};
+function gk0() { return Object.keys(GENS).length > 0; }
+function daily() {
+  const due = shuffle(dueCards()).slice(0, 18).map(c => ({ t: "card", ...c }));
+  const weak = DATA.concepts.slice().sort((a, b) => mastery(a.id) - mastery(b.id)).slice(0, 4).map(c => c.id);
+  const qs = shuffle(ITEMS.filter(q => weak.includes(q.c) && q.t !== "open")).slice(0, gk0() ? 6 : 9).map(q => ({ ...q, t: q.t || "mcq" }));
+  const op = shuffle(ITEMS.filter(q => q.t === "open")).slice(0, 2);
+  const gk = Object.keys(GENS); const probs = []; if (gk.length) for (let i = 0; i < 6; i++) probs.push(makeGen(gk[i % gk.length]));
+  const q = shuffle([...qs, ...probs]).concat(op); const mixed = [];
+  // entrelacer : cartes et questions alternées
+  while (due.length || q.length) { if (due.length) mixed.push(due.shift()); if (due.length) mixed.push(due.shift()); if (q.length) mixed.push(q.shift()); }
+  startSession("Séance du jour", mixed, { onEnd: () => { const t = today(); if (!S.daily.includes(t)) S.daily.push(t); save(); } });
+}
+function pretest() {
+  const ids = DATA.pretest;
+  const qs = ids.map(id => { const q = ITEMS.find(x => x.id === id); return q ? { ...q, t: q.t || "mcq" } : (GENS[id] ? makeGen(id) : null); }).filter(Boolean);
+  startSession("Pré-test", qs, { noRetry: true, onEnd: (ok, n) => { S.pretest = { ok, n, date: today() }; save(); } });
+}
+
+/* ---------- Leçon active ---------- */
+VIEWS.lesson = (open) => {
+  let h = `<div class="card"><h2>Leçon active</h2><p class="small muted" style="margin:0">Ne relis pas passivement. Pour chaque notion : lis une fois, active <b>« Masquer l'essentiel »</b> et essaie de retrouver les éléments floutés, réponds aux <b>pourquoi ?</b>, explique la notion <b>à voix haute</b> sans regarder, puis <b>teste-toi</b>.</p>
+  <div class="row" style="margin-top:10px"><label class="row small"><input type="checkbox" id="hk" onchange="document.body.classList.toggle('hidek',this.checked)" ${document.body.classList.contains("hidek") ? "checked" : ""}> Masquer l'essentiel (mode rappel)</label></div></div>`;
+  DATA.concepts.forEach((c, i) => {
+    const m = mastery(c.id), [l, col] = lvl(m);
+    h += `<details class="card lesson" ${open === c.id || (!open && i === 0) ? "open" : ""}><summary>${i + 1}. ${c.title} <span class="lvl" style="color:${col};margin-left:6px">${l}</span></summary>
+    <div class="content">${c.html}</div>
+    ${c.why && c.why.length ? `<div class="box why2"><h4>🤔 Pourquoi ? (interrogation élaborative)</h4>${c.why.map((w, j) => `<div style="margin:6px 0"><b>${w[0]}</b> <span class="why" onclick="this.nextElementSibling.classList.toggle('hidden')">voir une réponse</span><span class="whyx hidden">${w[1]}</span></div>`).join("")}</div>` : ""}
+    ${c.talk ? `<div class="box talk"><h4>🗣️ Explique à voix haute, sans regarder</h4><p style="margin:4px 0">${c.talk.prompt}</p>
+      <div class="small">Puis vérifie que tu as bien dit :</div>${c.talk.check.map(x => `<label class="row small" style="margin:3px 0;flex-wrap:nowrap;align-items:flex-start"><input type="checkbox"> <span>${x}</span></label>`).join("")}</div>` : ""}
+    ${c.traps && c.traps.length ? `<div class="box trap"><h4>⚠️ Pièges classiques</h4><ul style="margin:4px 0;padding-left:18px">${c.traps.map(x => `<li>${x}</li>`).join("")}</ul></div>` : ""}
+    <div class="row"><button class="btn primary sm" onclick="testConcept('${c.id}')">🧪 Me tester sur cette notion</button></div></details>`;
+  });
+  V().innerHTML = h;
+  V().querySelectorAll(".k").forEach(k => k.onclick = () => k.classList.toggle("shown"));
+};
+function testConcept(cid) {
+  const cards = CARDS.filter(c => c.c === cid).map(c => ({ t: "card", ...c }));
+  const qs = ITEMS.filter(q => q.c === cid).map(q => ({ ...q, t: q.t || "mcq" }));
+  const gs = Object.keys(GENS).filter(k => GENS[k].c === cid).slice(0, 3).map(makeGen);
+  S.lessons[cid] = today(); save();
+  startSession(CONCEPTS[cid].title, shuffle([...cards, ...qs]).concat(gs), { again: `()=>testConcept('${cid}')` });
+}
+
+/* ---------- Flashcards ---------- */
+VIEWS.cards = () => {
+  const due = dueCards();
+  const boxes = [0, 0, 0, 0, 0, 0, 0]; CARDS.forEach(c => boxes[cardState(c.id).box]++);
+  V().innerHTML = `<div class="card"><h2>Flashcards à répétition espacée</h2>
+  <p class="small muted" style="margin-top:0">Chaque carte revient selon ta réponse : <b>Raté</b> → elle revient dans la session jusqu'à ce que tu la réussisses ; <b>Bien</b> → 1, 3, 7, 14, 30 puis 60 jours. Réponds toujours <b>avant</b> de retourner : c'est l'effort de rappel qui fixe la mémoire.</p>
+  <div class="small">Boîtes : ${boxes.map((b, i) => `<span class="pill" style="margin:2px">${i === 0 ? "Nouvelles/ratées" : "+" + INTERVALS[i] + " j"} : ${b}</span>`).join("")}</div>
+  <div class="row" style="margin-top:12px"><button class="btn primary" ${due.length ? "" : "disabled"} onclick="startSession('Flashcards', shuffle(dueCards()).map(c=>({t:'card',...c})))">Réviser les ${due.length} cartes dues</button>
+  <button class="btn" onclick="startSession('Toutes les cartes', shuffle(CARDS).map(c=>({t:'card',...c})))">Toutes les cartes (${CARDS.length})</button></div></div>
+  <div class="card"><h3 style="margin-top:0">Par notion</h3><div class="grid2">${DATA.concepts.map(c => { const n = CARDS.filter(k => k.c === c.id).length; return n ? `<button class="tile" onclick="startSession('${esc(c.title).replace(/'/g, "\\'")}', shuffle(CARDS.filter(k=>k.c==='${c.id}')).map(c=>({t:'card',...c})))"><b>${c.title}</b><span>${n} cartes</span></button>` : ""; }).join("")}</div></div>`;
+};
+
+/* ---------- Quiz ---------- */
+VIEWS.quiz = () => {
+  V().innerHTML = `<div class="card"><h2>Quiz de théorie</h2>
+  <p class="small muted" style="margin-top:0">Avant de valider, indique ta <b>certitude</b>. Tu verras à la fin si ta confiance est bien calibrée. Les erreurs reviennent dans la session jusqu'à être corrigées.</p>
+  <div class="row"><button class="btn primary" onclick="startSession('Quiz complet', shuffle(ITEMS).map(q=>({...q,t:q.t||'mcq'})))">Tout le quiz (${ITEMS.length} questions, ordre mélangé)</button>
+  <button class="btn" onclick="startSession('Quiz express', shuffle(ITEMS.filter(q=>q.t!=='open')).slice(0,10).map(q=>({...q,t:q.t||'mcq'})))">Express : 10 questions</button>
+  ${ITEMS.some(q => q.t === "open") ? `<button class="btn" onclick="startSession('Questions d\\'examen', shuffle(ITEMS.filter(q=>q.t==='open')))">✍️ Questions ouvertes d'examen (${ITEMS.filter(q => q.t === "open").length})</button>` : ""}</div></div>
+  <div class="card"><h3 style="margin-top:0">Par notion</h3><div class="grid2">${DATA.concepts.map(c => { const n = ITEMS.filter(k => k.c === c.id).length; return n ? `<button class="tile" onclick="startSession('Quiz', shuffle(ITEMS.filter(k=>k.c==='${c.id}')).map(q=>({...q,t:q.t||'mcq'})))"><b>${c.title}</b><span>${n} questions</span></button>` : ""; }).join("")}</div></div>`;
+};
+
+/* ---------- Exemples guidés (estompage) ---------- */
+const FADE = ["Exemple complet", "Dernière étape à faire", "Deux dernières étapes", "Seule, toutes les étapes"];
+VIEWS.worked = () => {
+  V().innerHTML = `<div class="card"><h2>Exemples guidés à estompage progressif</h2>
+  <p class="small muted" style="margin-top:0">On commence par un exemple entièrement résolu (tu expliques chaque étape), puis l'aide disparaît <b>en partant de la fin</b> : d'abord la dernière étape à faire toi-même, puis les deux dernières, puis tout. Tu montes d'un niveau quand tu réussis, tu redescends si tu bloques. Chaque exemple a de nouveaux nombres.</p></div>
+  <div class="grid2">${DATA.worked.map((w, i) => { const l = S.worked[w.id] || 0; return `<button class="tile" onclick="worked(${i})"><b>${w.title}</b><span>Niveau ${l + 1}/4 · ${FADE[l]}</span></button>`; }).join("")}</div>`;
+};
+let W = null;
+function worked(i) {
+  markDay();
+  const w = DATA.worked[i]; const level = S.worked[w.id] || 0; const ex = w.make();
+  const nBlank = level === 0 ? 0 : level === 1 ? 1 : level === 2 ? Math.min(2, ex.steps.length) : ex.steps.length;
+  W = { i, w, ex, level, blanks: ex.steps.map((s, k) => k >= ex.steps.length - nBlank), checked: false };
+  renderWorked();
+}
+function renderWorked() {
+  const { w, ex, level, blanks, checked } = W;
+  let h = `<div class="card"><div class="row" style="justify-content:space-between"><span class="pill">${w.title}</span><span class="small muted">Niveau ${level + 1}/4 · ${FADE[level]}</span></div>
+   <div class="ctx" style="margin-top:12px">${esc(ex.ctx)}</div><div class="q">${ex.q}</div><ol class="wk">`;
+  ex.steps.forEach((s, k) => {
+    h += `<li><b>${s.label}</b>`;
+    if (!blanks[k]) h += `<div>${s.show} <span class="why" onclick="this.nextElementSibling.classList.toggle('hidden')">pourquoi ?</span><span class="whyx hidden">${s.why}</span></div>`;
+    else {
+      const st = W.res && W.res[k];
+      h += `<div class="blank"><input class="num ${checked ? (st ? "ok" : "ko") : ""}" id="w${k}" inputmode="decimal" autocomplete="off" ${checked ? "disabled" : ""} value="${checked ? esc(W.raw[k]) : ""}"> <b>${s.unit || ""}</b></div>
+       ${checked && !st ? `<div class="small" style="color:var(--ko)">Attendu : ${s.show}</div>` : ""}${checked ? `<div class="whyx">${s.why}</div>` : ""}`;
+    }
+    h += `</li>`;
+  });
+  h += `</ol>`;
+  if (level === 0 && !checked) h += `<div class="box talk"><b>Auto-explication :</b> avant de continuer, dis à voix haute pourquoi chaque étape est nécessaire. Clique « pourquoi ? » seulement pour vérifier.</div>
+     <div class="row"><button class="btn primary" onclick="W.checked=true;W.ok=true;finishWorked()">J'ai compris chaque étape → niveau suivant</button></div>`;
+  else if (!checked) h += `<div class="row"><button class="btn primary" onclick="checkWorked()">Vérifier</button></div>`;
+  else h += `<div class="fb ${W.ok ? "ok" : "ko"}"><b>${W.ok ? "Bravo, niveau suivant débloqué." : "Pas encore : on reste à ce niveau (ou on redescend) pour consolider."}</b></div>
+     <div class="row" style="margin-top:10px"><button class="btn primary" onclick="worked(${W.i})">Nouvel exemple →</button><button class="btn" onclick="go('worked')">Autre procédure</button></div>`;
+  h += `</div>`;
+  V().innerHTML = h;
+  const f = V().querySelector("input.num:not([disabled])"); f && f.focus({ preventScroll: true });
+  V().querySelectorAll("input.num").forEach(inp => inp.onkeydown = e => { if (e.key === "Enter") checkWorked(); });
+}
+function checkWorked() {
+  if (W.checked) return;
+  W.res = {}; W.raw = {}; let ok = true;
+  W.ex.steps.forEach((s, k) => { if (!W.blanks[k]) return; const raw = $("#w" + k).value; W.raw[k] = raw; const r = near(parseNum(raw), s.ans, s.tol); W.res[k] = r; if (!r) ok = false; });
+  W.checked = true; W.ok = ok; finishWorked();
+}
+function finishWorked() {
+  const id = W.w.id; const l = S.worked[id] || 0;
+  S.worked[id] = W.ok ? Math.min(3, l + 1) : Math.max(0, l - (l === 3 ? 1 : 0));
+  if (W.w.gen) logGen(W.w.gen, W.ok && W.level === 3);
+  save(); if (W.level === 0) worked(W.i); else renderWorked();
+}
+
+/* ---------- Sprint d'automatisme ---------- */
+VIEWS.sprint = () => {
+  V().innerHTML = `<div class="card"><h2>Sprint d'automatisme</h2>
+  <p class="small muted" style="margin-top:0">60 secondes, un maximum de réponses <b>justes</b>. Le but n'est pas la vitesse pour elle-même : quand ces bases deviennent instantanées, ta mémoire de travail reste libre pour le raisonnement des exercices. Objectif indiqué pour chaque série ; ne vise la vitesse qu'une fois la précision acquise.</p></div>
+  <div class="grid2">${DATA.sprints.map((s, i) => { const h = S.sprint[s.id] || []; const best = h.reduce((a, b) => Math.max(a, b.ok - b.ko), 0); return `<button class="tile" onclick="sprint(${i})"><b>${s.title}</b><span>Objectif : ${s.target} justes / min · record : ${best}${best >= s.target ? " ✅" : ""}</span></button>`; }).join("")}</div>`;
+};
+let SP = null;
+function sprint(i) {
+  markDay(); const s = DATA.sprints[i];
+  SP = { s, i, end: Date.now() + 60000, ok: 0, ko: 0, misses: [], cur: s.make() };
+  renderSprint();
+  timers.push(setInterval(() => { const left = Math.max(0, Math.ceil((SP.end - Date.now()) / 1000)); const t = $("#tm"); if (t) t.textContent = left; if (left <= 0) endSprint(); }, 200));
+}
+function renderSprint() {
+  const it = SP.cur;
+  let h = `<div class="card" style="text-align:center"><div class="row" style="justify-content:space-between"><span class="pill">${SP.s.title}</span><span class="timer" id="tm">${Math.ceil((SP.end - Date.now()) / 1000)}</span></div>
+   <div class="small muted">✅ ${SP.ok} · ❌ ${SP.ko}</div><div class="q" style="font-size:22px;margin:18px 0">${it.q}</div>`;
+  if (it.o) { h += `<div class="opts">${it.o.map((t, k) => `<button class="opt" onclick="spAns(${k})"><span class="n">${k + 1}</span><span>${t}</span></button>`).join("")}</div>`; }
+  else h += `<div class="row" style="justify-content:center;flex-wrap:nowrap"><input id="sp" class="num" style="max-width:220px;text-align:center" inputmode="decimal" autocomplete="off"><b>${it.unit || ""}</b></div><div class="small muted" style="margin-top:6px"><span class="kbd">Entrée</span> pour valider</div>`;
+  h += `<div id="spfb" style="min-height:24px;margin-top:10px"></div></div>`;
+  V().innerHTML = h;
+  if (!it.o) { const inp = $("#sp"); inp.focus({ preventScroll: true }); inp.onkeydown = e => { if (e.key === "Enter") spAns(inp.value); }; }
+  else document.onkeydown = e => { const k = +e.key; if (k >= 1 && k <= it.o.length) spAns(k - 1); };
+}
+function spAns(v) {
+  const it = SP.cur; let ok;
+  if (it.o) ok = v === it.a; else { const x = parseNum(v); if (isNaN(x)) return; ok = near(x, it.ans, it.tol); }
+  if (ok) SP.ok++; else { SP.ko++; SP.misses.push(`${it.q} → <b>${it.o ? it.o[it.a] : fmt(it.ans) + " " + (it.unit || "")}</b>`); }
+  SP.cur = SP.s.make(); renderSprint();
+  const fb = $("#spfb"); if (fb) fb.innerHTML = ok ? `<span style="color:var(--ok)">✓</span>` : `<span style="color:var(--ko)">✗ ${SP.misses[SP.misses.length - 1]}</span>`;
+}
+function endSprint() {
+  stopTimers(); const s = SP.s; (S.sprint[s.id] = S.sprint[s.id] || []).push({ d: today(), ok: SP.ok, ko: SP.ko }); save();
+  const hist = S.sprint[s.id].slice(-8); const score = SP.ok - SP.ko;
+  V().innerHTML = `<div class="card" style="text-align:center"><span class="pill">${s.title}</span><div class="big" style="margin-top:10px">${SP.ok} ✓ · ${SP.ko} ✗</div>
+  <p>${SP.ko === 0 && SP.ok >= s.target ? "🎯 Objectif atteint sans erreur : cette base devient automatique. Refais un sprint dans quelques jours pour vérifier que ça tient." : SP.ko > 2 ? "Trop d'erreurs : ralentis et vise d'abord 100 % de justes, la vitesse viendra." : `Objectif : ${s.target} justes en 60 s, zéro erreur.`}</p>
+  <div class="small muted">Tes derniers sprints : ${hist.map(x => `${x.ok}/${x.ko}`).join(" · ")}</div>
+  ${SP.misses.length ? `<div style="text-align:left"><h3>Erreurs à retenir</h3><ul class="small">${SP.misses.map(m => `<li>${m}</li>`).join("")}</ul></div>` : ""}
+  <div class="row" style="justify-content:center"><button class="btn primary" onclick="sprint(${SP.i})">Relancer</button><button class="btn" onclick="go('sprint')">Autre série</button></div></div>`;
+}
+
+/* ---------- Mélange (entrelacement + discrimination de méthode) ---------- */
+let MX = null;
+VIEWS.mix = () => {
+  MX = { n: 0, ok: 0 }; markDay(); nextMix();
+};
+function nextMix() {
+  const keys = Object.keys(GENS); let k; do { k = pick(keys); } while (MX.last === k && keys.length > 1); MX.last = k;
+  MX.cur = makeGen(k); MX.stage = 0; MX.methodOk = null; renderMix();
+}
+function renderMix() {
+  const it = MX.cur; const fams = [...new Set(Object.values(GENS).map(g => g.method))];
+  let h = `<div class="card"><div class="row" style="justify-content:space-between"><span class="pill">Problèmes mélangés</span><span class="small muted">${MX.ok} / ${MX.n} justes</span></div>
+  <p class="small muted">Les types de problèmes arrivent dans le désordre, comme à l'examen. D'abord : <b>quelle méthode ?</b> Ensuite seulement : le calcul.</p>
+  ${it.ctx ? `<div class="ctx">${esc(it.ctx)}</div>` : ""}<div class="q">${it.q}</div>`;
+  if (MX.stage === 0) {
+    MX.opts = MX.opts && MX.optsFor === it ? MX.opts : shuffle(fams).slice(0, 4); if (!MX.opts.includes(GENS[it.gen].method)) MX.opts[rnd(0, MX.opts.length - 1)] = GENS[it.gen].method; MX.optsFor = it;
+    h += `<div class="small" style="margin-bottom:6px"><b>Étape 1 :</b> quelle méthode s'applique ?</div><div class="opts">${MX.opts.map((m, k) => `<button class="opt" onclick="mixMethod(${k})"><span class="n">${k + 1}</span><span>${m}</span></button>`).join("")}</div>`;
+    document.onkeydown = e => { const k = +e.key; if (k >= 1 && k <= MX.opts.length) mixMethod(k - 1); };
+  } else {
+    h += `<div class="small" style="margin:0 0 8px;color:${MX.methodOk ? "var(--ok)" : "var(--ko)"}">${MX.methodOk ? "✓ Bonne méthode" : "✗ La méthode était"} : ${GENS[it.gen].method}</div>`;
+    h += `<div class="row" style="flex-wrap:nowrap"><input id="mx" class="num ${MX.stage === 2 ? (MX.calcOk ? "ok" : "ko") : ""}" inputmode="decimal" autocomplete="off" ${MX.stage === 2 ? `disabled value="${esc(MX.raw)}"` : ""}> <b>${it.unit || ""}</b></div>`;
+    if (MX.stage === 1) h += `<div class="row" style="margin-top:10px"><button class="btn primary" onclick="mixCalc()">Valider le calcul</button></div>`;
+    else h += `<div class="fb ${MX.calcOk ? "ok" : "ko"}"><b>${MX.calcOk ? "Juste !" : "Réponse : " + fmt(it.ans) + " " + (it.unit || "")}</b><div class="ex"><ol class="steps">${(it.steps || []).map(s => `<li>${s}</li>`).join("")}</ol></div></div>
+      <div class="row" style="margin-top:10px"><button class="btn primary" id="mxn" onclick="nextMix()">Problème suivant →</button><button class="btn ghost" onclick="go('home')">Arrêter</button></div>`;
+  }
+  h += `</div>`; V().innerHTML = h;
+  const inp = $("#mx"); if (inp && MX.stage === 1) { inp.focus({ preventScroll: true }); inp.onkeydown = e => { if (e.key === "Enter") mixCalc(); }; }
+  if (MX.stage === 2) { const b = $("#mxn"); b && b.focus({ preventScroll: true }); }
+}
+function mixMethod(k) { MX.methodOk = MX.opts[k] === GENS[MX.cur.gen].method; MX.stage = 1; document.onkeydown = null; renderMix(); }
+function mixCalc() { const raw = $("#mx").value; const x = parseNum(raw); if (isNaN(x)) return; MX.raw = raw; MX.calcOk = near(x, MX.cur.ans, MX.cur.tol); MX.n++; if (MX.calcOk && MX.methodOk) MX.ok++; logGen(MX.cur.gen, MX.calcOk && MX.methodOk); MX.stage = 2; renderMix(); }
+
+/* ---------- Maîtrise ---------- */
+VIEWS.mastery = () => {
+  const t = today(); const next = [];
+  for (let d = 0; d < 7; d++) { const day = addDays(t, d); next.push([day, CARDS.filter(c => { const s = S.cards[c.id]; return d === 0 ? (!s || !s.due || s.due <= day) : s && s.due === day; }).length]); }
+  const c = S.conf; const pc = a => a[1] ? Math.round(a[0] / a[1] * 100) + " %" : "–";
+  V().innerHTML = `<div class="card"><h2>Ma maîtrise</h2><p class="small muted" style="margin-top:0">Score par notion = flashcards (boîte atteinte) + quiz (3 dernières réponses) + problèmes (5 derniers). « Automatique » = au moins 85 %. Une réponse juste « au hasard » ne compte pas.</p>
+  ${DATA.concepts.map(x => { const m = mastery(x.id); const [l, col] = lvl(m); return `<div class="mast"><a href="#" onclick="go('lesson','${x.id}');return false" style="color:inherit">${x.title}</a><div class="bar"><i style="width:${m * 100}%;background:${col}"></i></div><span class="lvl" style="color:${col}">${Math.round(m * 100)}%</span></div>`; }).join("")}
+  </div>
+  <div class="card"><h3 style="margin-top:0">Calibration de ta confiance</h3><table class="tbl"><tr><th>Quand tu dis…</th><th>tu as raison</th><th>réponses</th></tr>
+  <tr><td>✅ Sûre</td><td>${pc(c.sure)}</td><td>${c.sure[1]}</td></tr><tr><td>🤔 Hésitante</td><td>${pc(c.mid)}</td><td>${c.mid[1]}</td></tr><tr><td>🎲 Au hasard</td><td>${pc(c.guess)}</td><td>${c.guess[1]}</td></tr></table>
+  <div class="small muted">Idéal : « Sûre » proche de 100 %. Si c'est plus bas, tu surestimes ce que tu sais : c'est le signal pour te tester davantage plutôt que relire.</div></div>
+  <div class="card"><h3 style="margin-top:0">Flashcards à revoir les 7 prochains jours</h3><div class="plan">${next.map(([d, n]) => `<div class="${d === t ? "today" : ""}"><b>${n}</b>${frDate(d)}</div>`).join("")}</div></div>
+  <div class="card"><h3 style="margin-top:0">Exemples guidés</h3>${DATA.worked.map(w => `<div class="mast"><span>${w.title}</span><div class="bar"><i style="width:${((S.worked[w.id] || 0) / 3) * 100}%"></i></div><span class="lvl">${(S.worked[w.id] || 0) + 1}/4</span></div>`).join("")}</div>`;
+};
+
+/* ---------- Méthodes (science de l'apprentissage) ---------- */
+VIEWS.methods = () => { V().innerHTML = METHODS_HTML; };
+
+/* ---------- Réglages ---------- */
+VIEWS.settings = () => {
+  V().innerHTML = `<div class="card"><h2>Sauvegarde de ta progression</h2>
+  <p class="small muted" style="margin-top:0">Ta progression est enregistrée dans ce navigateur. Dans Notion, la page intégrée a sa propre mémoire, distincte de la page ouverte directement. Pour changer d'appareil : copie le code ci-dessous et colle-le de l'autre côté.</p>
+  <textarea id="exp" rows="4" style="font-size:12px">${esc(JSON.stringify(S))}</textarea>
+  <div class="row" style="margin-top:8px"><button class="btn" onclick="navigator.clipboard&&navigator.clipboard.writeText($('#exp').value);this.textContent='Copié ✓'">Copier</button>
+  <button class="btn" onclick="try{S=JSON.parse($('#exp').value);save();go('home')}catch(e){alert('Code invalide')}">Importer le code collé</button></div></div>
+  <div class="card"><h2>Recommencer</h2><p class="small muted" style="margin-top:0">Efface toute la progression de cette séance (cartes, scores, plan).</p>
+  <button class="btn" style="border-color:var(--ko);color:var(--ko)" onclick="if(confirm('Tout effacer ?')){S=blank();save();go('home')}">Tout effacer</button></div>
+  <div class="card small muted">Raccourcis clavier : <span class="kbd">espace</span> retourner une carte · <span class="kbd">1</span>–<span class="kbd">4</span> noter une carte ou choisir une option · <span class="kbd">Entrée</span> valider / continuer.</div>`;
+};
+
+/* ================= DÉMARRAGE ================= */
+if (DATA.hub && typeof HUB_HOME === "function") VIEWS.home = HUB_HOME;
+load();
+$("#hKick").textContent = DATA.kicker; $("#hTitle").textContent = DATA.title; $("#hSub").textContent = DATA.sub;
+go("home");
+</script>
+</body>
+</html>
