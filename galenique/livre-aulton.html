@@ -189,5 +189,41 @@ function zoom(d) { scale = Math.max(0.4, (scale || 1) + d); go(cur); }
 document.addEventListener("keydown", e => { if (e.target.tagName === "INPUT") return; if (e.key === "ArrowRight") go(cur + 1); if (e.key === "ArrowLeft") go(cur - 1); });
 loadSaved().then(f => { if (f) openFile(f); });
 </script>
+<style>
+#viewer{position:fixed;inset:0;z-index:1000;background:#f6f4ef;display:none;flex-direction:column}
+#viewer .vbar{display:flex;align-items:center;gap:10px;padding:6px 10px;background:#fff;border-bottom:1px solid #e3e0d8;font:14px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+#viewer .vbar button{border:1.5px solid #2f5d8a;background:#e8f0f8;color:#2f5d8a;border-radius:8px;padding:5px 12px;font:inherit;font-weight:600;cursor:pointer}
+#viewer iframe{flex:1;border:0;width:100%;background:#f6f4ef}
+</style>
+<script>
+/* Navigation interne sans quitter le cadre Notion : les pages s'ouvrent dans une vue intégrée */
+(function () {
+  const top_ = (() => { try { return window.parent !== window && window.parent.__galNav ? window.parent : null; } catch (e) { return null; } })();
+  window.__galNav = true;
+  window.openViewer = function (u) {
+    if (top_) return top_.openViewer(u);
+    let v = document.getElementById("viewer");
+    if (!v) { v = document.createElement("div"); v.id = "viewer"; v.innerHTML = '<div class="vbar"><button onclick="closeViewer()">← Retour à la page générale</button><span class="vt"></span></div><iframe title="page"></iframe>'; document.body.appendChild(v); }
+    const f = v.querySelector("iframe"); f.onload = () => { try { v.querySelector(".vt").textContent = f.contentDocument.title; } catch (e) {} };
+    f.src = u; v.style.display = "flex"; document.documentElement.style.overflow = "hidden";
+  };
+  window.closeViewer = function () {
+    if (top_) return top_.closeViewer();
+    const v = document.getElementById("viewer"); if (v) { v.style.display = "none"; v.querySelector("iframe").src = "about:blank"; }
+    document.documentElement.style.overflow = "";
+    if (typeof go === "function" && typeof VIEWS !== "undefined" && VIEWS.home) { try { go("home"); } catch (e) {} }
+  };
+  document.addEventListener("click", e => {
+    const a = e.target.closest && e.target.closest("a"); if (!a) return;
+    const h = a.getAttribute("href"); if (!h || a.target || /^(https?:|#|mailto:|javascript:)/i.test(h)) return;
+    e.preventDefault();
+    const url = new URL(h, location.href);
+    const isHome = /\/galenique\/(index\.html)?$/.test(url.pathname);
+    if (isHome) { const v = document.getElementById("viewer"); if (top_) top_.closeViewer(); else if (v && v.style.display === "flex") closeViewer(); else openViewer(url.href); return; }
+    openViewer(url.href);
+  }, true);
+})();
+</script>
+
 </body>
 </html>
