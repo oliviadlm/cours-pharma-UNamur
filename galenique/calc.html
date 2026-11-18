@@ -147,7 +147,7 @@ concepts: [
   <tr><td>%</td><td><span class="k">m/m g/100 g · m/V g/100 mL · V/V mL/100 mL</span> ; 1 % m/V = 10 mg/mL</td></tr>
   <tr><td>Densité</td><td><span class="k">m = V × d · V = m / d</span> ; éthanol 0,79 · méthanol 0,80 · <span class="k">PG 1,04</span> · isopropanol 0,79 · éther 0,71 · acétone 0,79 · huile de paraffine 0,86</td></tr>
   <tr><td>Chiffres romains</td><td>V 5 · X 10 · L 50 · C 100 ; IV 4, IX 9, XL 40, XC 90</td></tr></table>
-  <p>Pour t'entraîner à fond sur ces bases : <a href="../mphab287/theorie-seance-1.html" target="_blank" rel="noopener">Séance 1</a> et <a href="../mphab287/theorie-seance-2.html" target="_blank" rel="noopener">Séance 2</a> de MPHAB287 (mêmes exercices que le syllabus de galénique).</p>`,
+  <p>Pour t'entraîner à fond sur ces bases : <a href="../mphab287/theorie-seance-1.html">Séance 1</a> et <a href="../mphab287/theorie-seance-2.html">Séance 2</a> de MPHAB287 (mêmes exercices que le syllabus de galénique).</p>`,
   why: [["Pourquoi s'entraîner sans calculatrice ?", "Le cours annonce des règles de 3 simples sans machine : il faut pouvoir poser chaque calcul à la main, avec les unités, et vérifier l'ordre de grandeur."]],
   talk: { prompt: "Récite les conversions, les cuillères, les abréviations et les densités du tableau.", check: ["g/cg/mg/µg", "15/10/5 mL", "pf, dt, qs, ad", "m/m, m/V, V/V", "m = V·d ; les 7 densités"] },
   traps: ["Oublier qu'une seule erreur de calcul = échec : toujours vérifier l'ordre de grandeur et les unités."] },
@@ -662,7 +662,7 @@ VIEWS.home = () => {
       <div style="text-align:right"><div class="big" style="font-size:30px">${Math.round(glob * 100)} %</div><div class="small muted">maîtrise globale</div></div>
     </div>
     <div class="bar" style="margin:12px 0"><i style="width:${glob * 100}%"></i></div>
-    <div class="row"><button class="btn primary" onclick="daily()">▶ Lancer la séance du jour (~15 min)</button>${DATA.hubUrl ? `<a class="btn ghost sm" href="${DATA.hubUrl}" target="_blank" rel="noopener">↖ Page générale du cours</a>` : ""}
+    <div class="row"><button class="btn primary" onclick="daily()">▶ Lancer la séance du jour (~15 min)</button>${DATA.hubUrl ? `<a class="btn ghost sm" href="${DATA.hubUrl}">↖ Page générale du cours</a>` : ""}
     ${streak ? `<span class="small muted">🔥 ${streak} jour${streak > 1 ? "s" : ""} d'affilée</span>` : ""}</div>
   </div>
   ${firstTime ? `<div class="card" style="border-color:var(--accent)"><h2>Première fois ? Suis cet ordre</h2>

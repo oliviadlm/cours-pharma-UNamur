@@ -149,7 +149,7 @@ concepts: [
   <tr><td>%</td><td><span class="k">m/m g/100 g · m/V g/100 mL · V/V mL/100 mL</span> ; 1 % m/V = 10 mg/mL</td></tr>
   <tr><td>Densité</td><td><span class="k">m = V × d · V = m / d</span> ; éthanol 0,79 · méthanol 0,80 · <span class="k">PG 1,04</span> · isopropanol 0,79 · éther 0,71 · acétone 0,79 · huile de paraffine 0,86</td></tr>
   <tr><td>Chiffres romains</td><td>V 5 · X 10 · L 50 · C 100 ; IV 4, IX 9, XL 40, XC 90</td></tr></table>
-  <p>Pour t'entraîner à fond sur ces bases : <a href="../mphab287/theorie-seance-1.html" target="_blank" rel="noopener">Séance 1</a> et <a href="../mphab287/theorie-seance-2.html" target="_blank" rel="noopener">Séance 2</a> de MPHAB287 (mêmes exercices que le syllabus de galénique).</p>`,
+  <p>Pour t'entraîner à fond sur ces bases : <a href="../mphab287/theorie-seance-1.html">Séance 1</a> et <a href="../mphab287/theorie-seance-2.html">Séance 2</a> de MPHAB287 (mêmes exercices que le syllabus de galénique).</p>`,
   why: [["Pourquoi s'entraîner sans calculatrice ?", "Le cours annonce des règles de 3 simples sans machine : il faut pouvoir poser chaque calcul à la main, avec les unités, et vérifier l'ordre de grandeur."]],
   talk: { prompt: "Récite les conversions, les cuillères, les abréviations et les densités du tableau.", check: ["g/cg/mg/µg", "15/10/5 mL", "pf, dt, qs, ad", "m/m, m/V, V/V", "m = V·d ; les 7 densités"] },
   traps: ["Oublier qu'une seule erreur de calcul = échec : toujours vérifier l'ordre de grandeur et les unités."] },
@@ -1713,21 +1713,21 @@ function buildPlan(start) {
 function HUB_HOME() {
   const t = today(); const left = diffDays(t, EXAM); const start = S.start; const { plan } = buildPlan(start); const dToday = diffDays(start, t);
   const rows = ORDER.map(id => { const s = readSum(id); const m = s ? s.m : 0; const [l, col] = lvl(m);
-    return `<div class="mast" style="grid-template-columns:1fr 100px 46px 90px"><span>${id === "calc" ? "⚠️ " : ""}${CHINFO[id][0]}${s && s.due ? ` <span class="pill">${s.due} à revoir</span>` : ""}</span><div class="bar"><i style="width:${m * 100}%;background:${col}"></i></div><span class="lvl" style="color:${col}">${Math.round(m * 100)}%</span><a class="btn sm" href="${CHINFO[id][1]}" target="_blank" rel="noopener">Ouvrir</a></div>`; }).join("");
+    return `<div class="mast" style="grid-template-columns:1fr 100px 46px 90px"><span>${id === "calc" ? "⚠️ " : ""}${CHINFO[id][0]}${s && s.due ? ` <span class="pill">${s.due} à revoir</span>` : ""}</span><div class="bar"><i style="width:${m * 100}%;background:${col}"></i></div><span class="lvl" style="color:${col}">${Math.round(m * 100)}%</span><a class="btn sm" href="${CHINFO[id][1]}">Ouvrir</a></div>`; }).join("");
   const label = ([k, id]) => k === "new" ? `📖 Découvrir <b>${CHINFO[id][0]}</b> : pré-test, leçon active, test` : k === "rev" ? `🔁 Séance du jour de <b>${CHINFO[id][0]}</b>` : `📝 Examen blanc + séance mélangée (ici)`;
   const days = []; for (let d = Math.max(0, dToday); d < Math.max(0, dToday) + 10; d++) { if (diffDays(addDays(start, d), EXAM) < 0) break; const tasks = (plan[d] || []); days.push(`<div style="padding:8px 0;border-bottom:1px solid var(--line)"><b>${d === dToday ? "Aujourd'hui" : frDate(addDays(start, d))}</b><ul class="small" style="margin:4px 0 0;padding-left:18px">${tasks.length ? tasks.map(x => `<li>${label(x)}</li>`).join("") : ""}<li>🧮 5 problèmes de calcul mélangés (onglet Mélange) : la partie éliminatoire se travaille tous les jours</li></ul></div>`); }
   V().innerHTML = `
   <div class="card" style="border-color:var(--accent)"><div class="row" style="justify-content:space-between;align-items:flex-start">
     <div><h2 style="margin-bottom:2px">Examen le vendredi 22 janvier 2027</h2><div class="small muted">Écrit : questions ouvertes + QCM éventuel. Livres de référence : Le Hir (8ᵉ éd.) et Aulton's Pharmaceutics (3ᵉ éd.).</div></div>
     <div style="text-align:right"><div class="big" style="font-size:32px">J−${Math.max(0, left)}</div><div class="small muted">jours restants</div></div></div>
-    <div class="box trap"><b>Partie calculs éliminatoire</b> : une réponse incorrecte à la question d'exercice = échec pour tout le cours. Objectif : 100 % de réussite, sans calculatrice, plusieurs jours d'affilée (<a href="calc.html" target="_blank" rel="noopener">page Calculs</a>).</div>
+    <div class="box trap"><b>Partie calculs éliminatoire</b> : une réponse incorrecte à la question d'exercice = échec pour tout le cours. Objectif : 100 % de réussite, sans calculatrice, plusieurs jours d'affilée (<a href="calc.html">page Calculs</a>).</div>
     <div class="row"><button class="btn primary" onclick="daily()">▶ Séance mélangée du jour (~20 min)</button><button class="btn" onclick="examBlanc()">📝 Examen blanc</button></div></div>
   <div class="card"><h2>Tes chapitres</h2><div class="small muted" style="margin-bottom:6px">Maîtrise enregistrée dans chaque page de chapitre (ce navigateur).</div>${rows}</div>
   <div class="card"><h2>Ton plan des 10 prochains jours</h2><div class="small muted">Calculé depuis ton premier jour (${frDate(start)}) jusqu'à l'examen : un nouveau chapitre tous les ${Math.max(1, Math.floor(Math.max(ORDER.length, Math.floor(Math.max(7, diffDays(start, EXAM)) * 0.6)) / ORDER.length))} jours, chaque chapitre revu à J+1, J+3, J+7, J+14, J+30, puis 10 derniers jours d'examens blancs.</div>${days.join("")}</div>
-  <div class="card" style="border-color:var(--accent)"><h2>📝 Anciens examens (2008 → 2022)</h2><div class="small muted" style="margin-bottom:6px">Exercices, QCM et questions ouvertes des sessions passées, avec corrections, et un examen blanc chronométré.</div><a class="btn primary" href="examens.html" target="_blank" rel="noopener">Ouvrir les anciens examens</a></div>
+  <div class="card" style="border-color:var(--accent)"><h2>📝 Anciens examens (2008 → 2022)</h2><div class="small muted" style="margin-bottom:6px">Exercices, QCM et questions ouvertes des sessions passées, avec corrections, et un examen blanc chronométré.</div><a class="btn primary" href="examens.html">Ouvrir les anciens examens</a></div>
   <div class="card"><h2>📚 Livres de référence</h2><div class="small muted" style="margin-bottom:6px">Pages à lire pour chaque chapitre, différences avec le cours, exercices dans le style de chaque livre.</div>
-    <div class="grid2"><a class="tile" style="display:block;text-decoration:none" href="livre-le-hir.html" target="_blank" rel="noopener"><b>Le Hir · Pharmacie galénique (9ᵉ éd.)</b><span>En français · le cours cite la 8ᵉ éd.</span></a>
-    <a class="tile" style="display:block;text-decoration:none" href="livre-aulton.html" target="_blank" rel="noopener"><b>Aulton's Pharmaceutics (6ᵉ éd.)</b><span>En anglais · le cours cite la 3ᵉ éd. · indispensable pour la rhéologie</span></a></div></div>
+    <div class="grid2"><a class="tile" style="display:block;text-decoration:none" href="livre-le-hir.html"><b>Le Hir · Pharmacie galénique (9ᵉ éd.)</b><span>En français · le cours cite la 8ᵉ éd.</span></a>
+    <a class="tile" style="display:block;text-decoration:none" href="livre-aulton.html"><b>Aulton's Pharmaceutics (6ᵉ éd.)</b><span>En anglais · le cours cite la 3ᵉ éd. · indispensable pour la rhéologie</span></a></div></div>
   <div class="grid2"><button class="tile" onclick="go('methods')"><b>🧠 La méthode</b><span>Pourquoi ces outils, ce que dit la recherche, comment t'organiser</span></button>
   <button class="tile" onclick="go('mix')"><b>🔀 Problèmes mélangés</b><span>Tous les calculs du cours, dans le désordre</span></button></div>`;
 }
@@ -2030,7 +2030,7 @@ VIEWS.home = () => {
       <div style="text-align:right"><div class="big" style="font-size:30px">${Math.round(glob * 100)} %</div><div class="small muted">maîtrise globale</div></div>
     </div>
     <div class="bar" style="margin:12px 0"><i style="width:${glob * 100}%"></i></div>
-    <div class="row"><button class="btn primary" onclick="daily()">▶ Lancer la séance du jour (~15 min)</button>${DATA.hubUrl ? `<a class="btn ghost sm" href="${DATA.hubUrl}" target="_blank" rel="noopener">↖ Page générale du cours</a>` : ""}
+    <div class="row"><button class="btn primary" onclick="daily()">▶ Lancer la séance du jour (~15 min)</button>${DATA.hubUrl ? `<a class="btn ghost sm" href="${DATA.hubUrl}">↖ Page générale du cours</a>` : ""}
     ${streak ? `<span class="small muted">🔥 ${streak} jour${streak > 1 ? "s" : ""} d'affilée</span>` : ""}</div>
   </div>
   ${firstTime ? `<div class="card" style="border-color:var(--accent)"><h2>Première fois ? Suis cet ordre</h2>

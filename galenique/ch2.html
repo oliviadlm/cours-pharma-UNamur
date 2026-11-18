@@ -655,7 +655,7 @@ VIEWS.home = () => {
       <div style="text-align:right"><div class="big" style="font-size:30px">${Math.round(glob * 100)} %</div><div class="small muted">maîtrise globale</div></div>
     </div>
     <div class="bar" style="margin:12px 0"><i style="width:${glob * 100}%"></i></div>
-    <div class="row"><button class="btn primary" onclick="daily()">▶ Lancer la séance du jour (~15 min)</button>${DATA.hubUrl ? `<a class="btn ghost sm" href="${DATA.hubUrl}" target="_blank" rel="noopener">↖ Page générale du cours</a>` : ""}
+    <div class="row"><button class="btn primary" onclick="daily()">▶ Lancer la séance du jour (~15 min)</button>${DATA.hubUrl ? `<a class="btn ghost sm" href="${DATA.hubUrl}">↖ Page générale du cours</a>` : ""}
     ${streak ? `<span class="small muted">🔥 ${streak} jour${streak > 1 ? "s" : ""} d'affilée</span>` : ""}</div>
   </div>
   ${firstTime ? `<div class="card" style="border-color:var(--accent)"><h2>Première fois ? Suis cet ordre</h2>
