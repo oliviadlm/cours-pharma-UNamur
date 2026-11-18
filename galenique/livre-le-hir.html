@@ -113,7 +113,7 @@ details summary{cursor:pointer;font-weight:600}
 /* ================= DONNÉES DU COURS ================= */
 const r10 = x => Math.round(x * 1e10) / 1e10;
 const FTAB = [["acide acétylsalicylique", 0.67], ["paracétamol", 0.72], ["codéine phosphate", 0.69], ["caféine", 0.67], ["ibuprofène", 0.90], ["bismuth sous-gallate", 0.37], ["oxyde de zinc", 0.16]];
-const P = (a, b) => `<span class="pg">p. ${a}${b ? "–" + b : ""}</span>`;
+const PG = (a, b) => `<span class="pg">p. ${a}${b ? "–" + b : ""}</span>`;
 const DATA = {
 id: "lehir", key: "mphab311-lehir", sumKey: "mphab311-sum-lehir", hubUrl: "index.html",
 kicker: "MPHAB311 · Livre de référence n° 1",
@@ -126,10 +126,10 @@ concepts: [
   <div class="box trap"><b>Édition</b> : le cours cite la <b>8<sup>e</sup> édition</b> ; tu as la <b>9<sup>e</sup></b>. Le plan est le même, mais les numéros de page peuvent être décalés de quelques pages : cherche par titre de section.</div>
   <div class="box"><b>Numéros de page</b> : toutes les pages citées ici sont les <b>numéros imprimés</b> en haut des pages du livre. Dans ton PDF, ajoute <b>12</b> (p. 323 du livre = page 335 du PDF).</div>
   <table><tr><th>Partie du livre</th><th>Pages</th><th>Chapitres du cours concernés</th></tr>
-  <tr><td>1. Vie d'un médicament, BPF</td><td>${P(1, 35)}</td><td>Ch. 1 (conception, formulation : p. 1–5)</td></tr>
-  <tr><td>2. Excipients et conditionnement</td><td>${P(36, 117)}</td><td>Ch. 1, Ch. 5 (surfactifs), Ch. 8 (glycérides), <b>Ch. 9</b></td></tr>
-  <tr><td>3. Opérations pharmaceutiques</td><td>${P(118, 225)}</td><td>Ch. 2, Ch. 3, Ch. 5, <b>Ch. 7</b></td></tr>
-  <tr><td>4. Formes pharmaceutiques</td><td>${P(226, 375)}</td><td>Ch. 3 (isotonie), <b>Ch. 8</b>, calculs</td></tr></table>
+  <tr><td>1. Vie d'un médicament, BPF</td><td>${PG(1, 35)}</td><td>Ch. 1 (conception, formulation : p. 1–5)</td></tr>
+  <tr><td>2. Excipients et conditionnement</td><td>${PG(36, 117)}</td><td>Ch. 1, Ch. 5 (surfactifs), Ch. 8 (glycérides), <b>Ch. 9</b></td></tr>
+  <tr><td>3. Opérations pharmaceutiques</td><td>${PG(118, 225)}</td><td>Ch. 2, Ch. 3, Ch. 5, <b>Ch. 7</b></td></tr>
+  <tr><td>4. Formes pharmaceutiques</td><td>${PG(226, 375)}</td><td>Ch. 3 (isotonie), <b>Ch. 8</b>, calculs</td></tr></table>
   <p><b>Comment lire</b> : 1) fais d'abord la séance du chapitre dans la page du cours ; 2) lis les pages <span class="k">★ indispensables</span> ci-dessous ; 3) fais le quiz « Le Hir » de ce chapitre ; 4) les pages ☆ sont des compléments si tu as le temps.</p>
   <p><b>Exercices</b> : le livre ne contient pas de séries d'exercices, seulement des <span class="k">exemples chiffrés</span> (isotonie, facteur de déplacement, HLB, F<sub>0</sub>). Les onglets <i>Exercices</i> et <i>Exemples guidés</i> génèrent des variantes de ces exemples à l'infini.</p>`,
   why: [["Pourquoi lire le livre si le cours suffit pour l'examen ?", "Le livre donne le « pourquoi » derrière les règles du cours (ex. pourquoi on ne dépasse pas 40 °C pour le beurre de cacao). Comprendre le mécanisme te permet de reconstruire une réponse que tu as oubliée."]],
@@ -137,11 +137,11 @@ concepts: [
 
 { id: "c1", title: "Ch. 1 · Le médicament ↔ Le Hir",
   html: `<table><tr><th></th><th>Pages</th><th>À chercher</th></tr>
-  <tr><td>★</td><td>${P(2, 5)}</td><td>Connaissance du principe actif (propriétés physiques, chimiques, devenir dans l'organisme), puis les choix de <b>formulation</b> : PA → voie → forme → excipients → conditionnement → procédé</td></tr>
-  <tr><td>★</td><td>${P(36, 37)}</td><td>Définitions <b>excipient / véhicule / base</b> et la seule propriété commune à tous les excipients : <span class="k">l'inertie</span> (vis-à-vis du PA, du conditionnement et de l'organisme)</td></tr>
-  <tr><td>★</td><td>${P(93, 96)}</td><td>Le <b>verre</b> : composition (SiO<sub>2</sub> vitrifiant, Na<sub>2</sub>O fondant, CaO stabilisant), rôle du B<sub>2</sub>O<sub>3</sub>, structure semi-organisée</td></tr>
-  <tr><td>☆</td><td>${P(96, 117)}</td><td>Plastiques, élastomères, métaux et <b>essais</b> des matériaux de conditionnement</td></tr>
-  <tr><td>☆</td><td>${P(6, 35)}</td><td>Assurance qualité, BPF, libération des lots (culture générale)</td></tr></table>
+  <tr><td>★</td><td>${PG(2, 5)}</td><td>Connaissance du principe actif (propriétés physiques, chimiques, devenir dans l'organisme), puis les choix de <b>formulation</b> : PA → voie → forme → excipients → conditionnement → procédé</td></tr>
+  <tr><td>★</td><td>${PG(36, 37)}</td><td>Définitions <b>excipient / véhicule / base</b> et la seule propriété commune à tous les excipients : <span class="k">l'inertie</span> (vis-à-vis du PA, du conditionnement et de l'organisme)</td></tr>
+  <tr><td>★</td><td>${PG(93, 96)}</td><td>Le <b>verre</b> : composition (SiO<sub>2</sub> vitrifiant, Na<sub>2</sub>O fondant, CaO stabilisant), rôle du B<sub>2</sub>O<sub>3</sub>, structure semi-organisée</td></tr>
+  <tr><td>☆</td><td>${PG(96, 117)}</td><td>Plastiques, élastomères, métaux et <b>essais</b> des matériaux de conditionnement</td></tr>
+  <tr><td>☆</td><td>${PG(6, 35)}</td><td>Assurance qualité, BPF, libération des lots (culture générale)</td></tr></table>
   <div class="box why2"><h4>🔗 Parallèle avec le cours</h4>Le cours définit le médicament comme <b>PA + excipient + conditionnement</b> : c'est exactement le plan du chapitre 2 du livre (p. 36). Le livre insiste davantage sur le fait qu'on ne <span class="k">remplace jamais un excipient par un autre sans étude</span> : certains retiennent le PA, d'autres en augmentent l'activité.</div>`,
   why: [["Pourquoi l'inertie est-elle la seule propriété commune ?", "Chaque excipient a une fonction différente (diluant, conservateur, émulsionnant…), mais aucun ne doit modifier l'effet du PA, interagir avec le récipient ou avoir un effet propre sur le patient."],
         ["Pourquoi ajoute-t-on du B₂O₃ dans le verre pharmaceutique ?", "Il remplace une partie de la silice, diminue le coefficient de dilatation (le verre supporte mieux les chocs thermiques, ex. autoclave) et rend le verre plus neutre chimiquement."]],
@@ -150,12 +150,12 @@ concepts: [
 
 { id: "c2", title: "Ch. 2 · L'état solide ↔ Le Hir",
   html: `<table><tr><th></th><th>Pages</th><th>À chercher</th></tr>
-  <tr><td>★</td><td>${P(119, 125)}</td><td><b>Pulvérisation</b> : opérations préliminaires, appareils de broyage</td></tr>
-  <tr><td>★</td><td>${P(125, 130)}</td><td><b>Tamisage</b> et contrôle granulométrique : numéro de tamis = côté de la maille en µm</td></tr>
-  <tr><td>★</td><td>${P(130, 136)}</td><td><b>Mélange</b> des poudres : facteurs, mélangeurs, contrôle de l'homogénéité (un mélange parfaitement homogène n'existe pas), eutectiques</td></tr>
-  <tr><td>★</td><td>${P(184, 191)}</td><td><b>Granulés</b> : granulation humide/sèche, densité apparente avant et après tassement, porosité, <b>surface spécifique</b> (m²/g, par adsorption de gaz), friabilité</td></tr>
-  <tr><td>★</td><td>${P(137, 137)}</td><td>Polymorphisme et solubilité : la forme <span class="k">la moins stable</span> est la plus soluble ; l'amorphe est plus soluble que le cristallin</td></tr>
-  <tr><td>☆</td><td>${P(237, 262)}</td><td><b>Comprimés</b> : compression, lubrifiants, délitants, essais</td></tr></table>
+  <tr><td>★</td><td>${PG(119, 125)}</td><td><b>Pulvérisation</b> : opérations préliminaires, appareils de broyage</td></tr>
+  <tr><td>★</td><td>${PG(125, 130)}</td><td><b>Tamisage</b> et contrôle granulométrique : numéro de tamis = côté de la maille en µm</td></tr>
+  <tr><td>★</td><td>${PG(130, 136)}</td><td><b>Mélange</b> des poudres : facteurs, mélangeurs, contrôle de l'homogénéité (un mélange parfaitement homogène n'existe pas), eutectiques</td></tr>
+  <tr><td>★</td><td>${PG(184, 191)}</td><td><b>Granulés</b> : granulation humide/sèche, densité apparente avant et après tassement, porosité, <b>surface spécifique</b> (m²/g, par adsorption de gaz), friabilité</td></tr>
+  <tr><td>★</td><td>${PG(137, 137)}</td><td>Polymorphisme et solubilité : la forme <span class="k">la moins stable</span> est la plus soluble ; l'amorphe est plus soluble que le cristallin</td></tr>
+  <tr><td>☆</td><td>${PG(237, 262)}</td><td><b>Comprimés</b> : compression, lubrifiants, délitants, essais</td></tr></table>
   <div class="box why2"><h4>🔗 Parallèle avec le cours</h4>Le cours présente l'indice de Carr et le rapport d'Hausner ; Le Hir parle surtout du <b>volume apparent avant et après tassement</b> (p. 188) sans les nommer. Pour les seuils chiffrés d'écoulement, utilise le cours ou Aulton (ch. 12).</div>`,
   why: [["Pourquoi un mélange de poudres n'est-il jamais parfaitement homogène ?", "La répartition des particules est aléatoire : on ne peut parler que d'une probabilité d'avoir la bonne teneur, et l'écart dépend de la taille de l'échantillon. On prend donc la dose unitaire comme taille d'échantillon."],
         ["Pourquoi la surface spécifique d'un granulé poreux est-elle plus grande que celle de ses grains ?", "Elle inclut la surface des pores internes, mesurée par adsorption d'une couche monomoléculaire de gaz (azote, argon)."]],
@@ -164,12 +164,12 @@ concepts: [
 
 { id: "c3", title: "Ch. 3 · Substances en solution ↔ Le Hir",
   html: `<table><tr><th></th><th>Pages</th><th>À chercher</th></tr>
-  <tr><td>★</td><td>${P(136, 139)}</td><td><b>Dissolution</b> : solubilité vs vitesse de dissolution, termes descriptifs de la Pharmacopée (tableau 3.3), température, pH, polymorphisme, additifs, <b>Noyes-Whitney</b></td></tr>
-  <tr><td>★</td><td>${P(294, 298)}</td><td><b>Isotonie</b> des injectables : hématies dans NaCl 9 ‰ / 50 ‰ / 4 ‰, osmolalité, <span class="k">279 mOsm/kg</span>, abaissement cryoscopique <span class="k">0,52 °C</span>, calcul pour le glucose et le NaCl, contrôle par hématies</td></tr>
-  <tr><td>★</td><td>${P(293, 295)}</td><td><b>pH</b> des injectables : tolérance pH 4–10 sans tampon, pourquoi une solution tamponnée est <span class="k">moins bien tolérée</span>, tampons utilisables</td></tr>
-  <tr><td>★</td><td>${P(336, 338)}</td><td><b>Collyres</b> : isotonie, pH, conservateurs des multidoses, adjuvants</td></tr>
-  <tr><td>☆</td><td>${P(71, 72)}</td><td><b>Cyclodextrines</b> (solubilisation par inclusion)</td></tr>
-  <tr><td>☆</td><td>${P(91, 92)}</td><td><b>Antioxydants</b> et conservateurs antimicrobiens</td></tr></table>
+  <tr><td>★</td><td>${PG(136, 139)}</td><td><b>Dissolution</b> : solubilité vs vitesse de dissolution, termes descriptifs de la Pharmacopée (tableau 3.3), température, pH, polymorphisme, additifs, <b>Noyes-Whitney</b></td></tr>
+  <tr><td>★</td><td>${PG(294, 298)}</td><td><b>Isotonie</b> des injectables : hématies dans NaCl 9 ‰ / 50 ‰ / 4 ‰, osmolalité, <span class="k">279 mOsm/kg</span>, abaissement cryoscopique <span class="k">0,52 °C</span>, calcul pour le glucose et le NaCl, contrôle par hématies</td></tr>
+  <tr><td>★</td><td>${PG(293, 295)}</td><td><b>pH</b> des injectables : tolérance pH 4–10 sans tampon, pourquoi une solution tamponnée est <span class="k">moins bien tolérée</span>, tampons utilisables</td></tr>
+  <tr><td>★</td><td>${PG(336, 338)}</td><td><b>Collyres</b> : isotonie, pH, conservateurs des multidoses, adjuvants</td></tr>
+  <tr><td>☆</td><td>${PG(71, 72)}</td><td><b>Cyclodextrines</b> (solubilisation par inclusion)</td></tr>
+  <tr><td>☆</td><td>${PG(91, 92)}</td><td><b>Antioxydants</b> et conservateurs antimicrobiens</td></tr></table>
   <div class="box why2"><h4>🔗 Parallèle avec le cours</h4>Le cours donne 3 méthodes d'isotonisation (cryoscopique, équivalents NaCl, White-Vincent). Le Hir en présente une <b>4<sup>e</sup></b> : compter les <span class="k">milliosmoles</span> et compléter jusqu'à 279 mOsm/kg. Le résultat est le même, c'est une bonne façon de vérifier tes calculs (onglet Exercices).</div>
   <div class="formula">ξ (mOsm/kg) = ΔT / 1,86 × 1000   ·   C isotonique (g/L) ≈ 0,279 × M / i</div>`,
   why: [["Pourquoi une solution tamponnée à pH non physiologique fait-elle plus mal ?", "Le tampon de la solution entre en compétition avec celui des tissus : le retour à la neutralité est plus lent, la douleur dure et les tissus peuvent être lésés. Sans tampon, l'organisme neutralise vite."],
@@ -181,20 +181,20 @@ concepts: [
 { id: "c4", title: "Ch. 4 · Rhéologie ↔ Le Hir",
   html: `<div class="box trap">Le Hir n'a <b>pas de chapitre de rhéologie</b>. Pour ce chapitre, le meilleur livre est <b>Aulton, ch. 6</b> (p. 81–100) : voir la page Aulton.</div>
   <table><tr><th></th><th>Pages</th><th>À chercher</th></tr>
-  <tr><td>★</td><td>${P(158, 159)}</td><td>Essais des émulsions : viscosimètre à mobile tournant, fluides <b>plastique, pseudoplastique, dilatant</b>, <b>thixotropie</b> ; pour les émulsions épaisses, on mesure la dureté (pénétromètre)</td></tr>
-  <tr><td>★</td><td>${P(70, 75)}</td><td><b>Viscosifiants</b> : gommes arabique et adragante, celluloses (méthylcellulose, CMC sodique)</td></tr>
-  <tr><td>☆</td><td>${P(78, 80)}</td><td><b>Macrogols (PEG)</b> : liquides sous PM 600, solides au-delà de 1000, viscosité qui augmente avec le PM</td></tr>
-  <tr><td>☆</td><td>${P(138, 139)}</td><td>La viscosité <span class="k">ralentit la dissolution</span> (elle réduit la diffusion)</td></tr></table>
+  <tr><td>★</td><td>${PG(158, 159)}</td><td>Essais des émulsions : viscosimètre à mobile tournant, fluides <b>plastique, pseudoplastique, dilatant</b>, <b>thixotropie</b> ; pour les émulsions épaisses, on mesure la dureté (pénétromètre)</td></tr>
+  <tr><td>★</td><td>${PG(70, 75)}</td><td><b>Viscosifiants</b> : gommes arabique et adragante, celluloses (méthylcellulose, CMC sodique)</td></tr>
+  <tr><td>☆</td><td>${PG(78, 80)}</td><td><b>Macrogols (PEG)</b> : liquides sous PM 600, solides au-delà de 1000, viscosité qui augmente avec le PM</td></tr>
+  <tr><td>☆</td><td>${PG(138, 139)}</td><td>La viscosité <span class="k">ralentit la dissolution</span> (elle réduit la diffusion)</td></tr></table>
   <div class="box why2"><h4>🔗 Parallèle avec le cours</h4>Le livre utilise la viscosité comme <b>outil</b> : stabiliser une émulsion (Stokes), ralentir la croissance des cristaux d'une suspension, prolonger l'action d'un collyre. C'est le « pourquoi » des agents viscosifiants du cours.</div>`,
   why: [["Pourquoi la viscosité freine-t-elle la dissolution ?", "Le coefficient de diffusion D est inversement proportionnel à la viscosité : les molécules quittent moins vite la couche de diffusion autour du solide."]],
   traps: ["Chercher la loi de Newton ou les rhéogrammes dans Le Hir : ils n'y sont pas."] },
 
 { id: "c5", title: "Ch. 5 · Systèmes dispersés ↔ Le Hir",
   html: `<table><tr><th></th><th>Pages</th><th>À chercher</th></tr>
-  <tr><td>★</td><td>${P(83, 90)}</td><td><b>Surfactifs</b> : classes anioniques/cationiques/non ioniques, leurs incompatibilités, et la <b>HLB</b> de Griffin (tableau 2.4, formules HLB = E/5 et HLB = 20(1 − S/A), additivité, domaines d'utilisation)</td></tr>
-  <tr><td>★</td><td>${P(151, 159)}</td><td><b>Émulsions</b> : L/H et H/L, rupture par <span class="k">coalescence</span> (irréversible) ou <span class="k">crémage/sédimentation</span> (réversible), loi de <b>Stokes</b>, émulsionnants, diagrammes ternaires, préparation, essais (type, homogénéité, stabilité)</td></tr>
-  <tr><td>★</td><td>${P(159, 163)}</td><td><b>Suspensions</b> : préparation, croissance des cristaux, sédimentation</td></tr>
-  <tr><td>☆</td><td>${P(163, 164)}</td><td>Solutions micellaires, mousses, aérosols</td></tr></table>
+  <tr><td>★</td><td>${PG(83, 90)}</td><td><b>Surfactifs</b> : classes anioniques/cationiques/non ioniques, leurs incompatibilités, et la <b>HLB</b> de Griffin (tableau 2.4, formules HLB = E/5 et HLB = 20(1 − S/A), additivité, domaines d'utilisation)</td></tr>
+  <tr><td>★</td><td>${PG(151, 159)}</td><td><b>Émulsions</b> : L/H et H/L, rupture par <span class="k">coalescence</span> (irréversible) ou <span class="k">crémage/sédimentation</span> (réversible), loi de <b>Stokes</b>, émulsionnants, diagrammes ternaires, préparation, essais (type, homogénéité, stabilité)</td></tr>
+  <tr><td>★</td><td>${PG(159, 163)}</td><td><b>Suspensions</b> : préparation, croissance des cristaux, sédimentation</td></tr>
+  <tr><td>☆</td><td>${PG(163, 164)}</td><td>Solutions micellaires, mousses, aérosols</td></tr></table>
   <div class="box why2"><h4>🔗 Parallèle avec le cours</h4>Même logique que le cours : Stokes explique les 3 leviers de stabilité (petits globules, densités proches, phase continue visqueuse). Le Hir ajoute la façon de <b>déterminer le type</b> d'émulsion : dilution, colorants (Soudan III liposoluble), microscope et <span class="k">conductivité</span> (méthode de la Pharmacopée : une L/H conduit le courant).</div>
   <div class="formula">HLB mélange = Σ (fraction × HLB)   ·   v = 2 r² g (D₁ − D₂) / 9 η</div>`,
   why: [["Pourquoi le crémage est-il réversible et la coalescence non ?", "Au crémage, les globules restent séparés par leur film d'émulsionnant : une agitation les redisperse. À la coalescence, les globules fusionnent et les phases se séparent : il faut refaire l'émulsion."],
@@ -205,11 +205,11 @@ concepts: [
 
 { id: "c7", title: "Ch. 7 · Stérilisation ↔ Le Hir",
   html: `<table><tr><th></th><th>Pages</th><th>À chercher</th></tr>
-  <tr><td>★</td><td>${P(194, 199)}</td><td>Mécanismes (chaleur humide : hydrolyse et dénaturation des protéines ; rayonnements : oxydation ; gaz : alkylation), sensibilité des micro-organismes, <b>valeur D</b>, <b>NAS &lt; 10<sup>−6</sup></b>, valeur stérilisatrice <b>F<sub>0</sub></b> (z = 10 °C, réf. 121 °C, F<sub>0</sub> ≥ 8 min) et tableau 3.8</td></tr>
-  <tr><td>★</td><td>${P(202, 207)}</td><td><b>Chaleur sèche</b> (≈ 180 °C ; 250–350 °C pour dépyrogéner) et <b>autoclave</b> : correspondances pression/température, 121 °C 15 min, 134 °C 10 min pour le matériel, 18 min si risque de prions (ATNC : le livre écrit 121 °C, la recommandation française actuelle est 134 °C pendant 18 min), purge d'air, validation</td></tr>
-  <tr><td>★</td><td>${P(207, 210)}</td><td><b>Filtration stérilisante</b> : 0,22 µm, germe de référence <i>Pseudomonas diminuta</i>, limites (virus, mycoplasmes)</td></tr>
-  <tr><td>★</td><td>${P(210, 214)}</td><td><b>Rayonnements</b> (UV peu pénétrants, rayonnements ionisants) et <b>gaz</b> (formol, oxyde d'éthylène explosif de 3 à 83 % dans l'air)</td></tr>
-  <tr><td>☆</td><td>${P(214, 225)}</td><td>Conditionnement aseptique, zones à atmosphère contrôlée, essai de stérilité, indicateurs biologiques</td></tr></table>
+  <tr><td>★</td><td>${PG(194, 199)}</td><td>Mécanismes (chaleur humide : hydrolyse et dénaturation des protéines ; rayonnements : oxydation ; gaz : alkylation), sensibilité des micro-organismes, <b>valeur D</b>, <b>NAS &lt; 10<sup>−6</sup></b>, valeur stérilisatrice <b>F<sub>0</sub></b> (z = 10 °C, réf. 121 °C, F<sub>0</sub> ≥ 8 min) et tableau 3.8</td></tr>
+  <tr><td>★</td><td>${PG(202, 207)}</td><td><b>Chaleur sèche</b> (≈ 180 °C ; 250–350 °C pour dépyrogéner) et <b>autoclave</b> : correspondances pression/température, 121 °C 15 min, 134 °C 10 min pour le matériel, 18 min si risque de prions (ATNC : le livre écrit 121 °C, la recommandation française actuelle est 134 °C pendant 18 min), purge d'air, validation</td></tr>
+  <tr><td>★</td><td>${PG(207, 210)}</td><td><b>Filtration stérilisante</b> : 0,22 µm, germe de référence <i>Pseudomonas diminuta</i>, limites (virus, mycoplasmes)</td></tr>
+  <tr><td>★</td><td>${PG(210, 214)}</td><td><b>Rayonnements</b> (UV peu pénétrants, rayonnements ionisants) et <b>gaz</b> (formol, oxyde d'éthylène explosif de 3 à 83 % dans l'air)</td></tr>
+  <tr><td>☆</td><td>${PG(214, 225)}</td><td>Conditionnement aseptique, zones à atmosphère contrôlée, essai de stérilité, indicateurs biologiques</td></tr></table>
   <div class="box why2"><h4>🔗 Parallèle avec le cours</h4>Le cours liste les méthodes et les préparations concernées ; Le Hir explique <b>pourquoi la stérilité absolue n'existe pas</b> : la courbe de survie est logarithmique, d'où une probabilité (NAS) et l'intérêt de partir d'une charge microbienne la plus faible possible.</div>
   <div class="formula">L = 10<sup>(T − 121)/10</sup>   ·   temps pour F₀ = 8 : t = 8 / L   ·   N = N₀ × 10<sup>−t/D</sup></div>`,
   why: [["Pourquoi purger l'air de l'autoclave ?", "L'air conduit mal la chaleur : il retarde l'homogénéisation de la température, et un mélange air-vapeur n'atteint pas la température de la vapeur saturante à la même pression."],
@@ -220,11 +220,11 @@ concepts: [
 
 { id: "c8", title: "Ch. 8 · Préparations rectales ↔ Le Hir",
   html: `<table><tr><th></th><th>Pages</th><th>À chercher</th></tr>
-  <tr><td>★</td><td>${P(318, 320)}</td><td>Actions <b>mécanique, locale, systémique</b> ; absorption : veines hémorroïdales supérieures → veine porte (foie), moyennes et inférieures → circulation générale ; biodisponibilité (fusion, diffusion, absorption) ; avantages et limites</td></tr>
-  <tr><td>★</td><td>${P(320, 322)}</td><td>Qualités d'un excipient ; <b>beurre de cacao</b> (polymorphisme : seule la forme β est stable et fond à 32–35 °C, ne jamais dépasser 40 °C), huiles hydrogénées, <b>glycérides hémisynthétiques</b> (les plus utilisés), macrogolglycérides</td></tr>
-  <tr><td>★</td><td>${P(323, 323)}</td><td><b>Facteur de déplacement</b> : même définition que le cours, formule M = F − f·S, exemple du phénobarbital sodique (f = 0,62) et méthode si f est inconnu</td></tr>
-  <tr><td>★</td><td>${P(324, 328)}</td><td>Fabrication (fondoir, coulée, refroidissement, moules-emballages) et <b>essais</b> : uniformité de masse, résistance à la rupture (&gt; 20 N), désagrégation (30 min gras / 60 min hydrosolubles), temps de ramollissement à 36 °C</td></tr>
-  <tr><td>☆</td><td>${P(57, 60)}</td><td>Beurre de cacao et glycérides comme matières premières</td></tr></table>
+  <tr><td>★</td><td>${PG(318, 320)}</td><td>Actions <b>mécanique, locale, systémique</b> ; absorption : veines hémorroïdales supérieures → veine porte (foie), moyennes et inférieures → circulation générale ; biodisponibilité (fusion, diffusion, absorption) ; avantages et limites</td></tr>
+  <tr><td>★</td><td>${PG(320, 322)}</td><td>Qualités d'un excipient ; <b>beurre de cacao</b> (polymorphisme : seule la forme β est stable et fond à 32–35 °C, ne jamais dépasser 40 °C), huiles hydrogénées, <b>glycérides hémisynthétiques</b> (les plus utilisés), macrogolglycérides</td></tr>
+  <tr><td>★</td><td>${PG(323, 323)}</td><td><b>Facteur de déplacement</b> : même définition que le cours, formule M = F − f·S, exemple du phénobarbital sodique (f = 0,62) et méthode si f est inconnu</td></tr>
+  <tr><td>★</td><td>${PG(324, 328)}</td><td>Fabrication (fondoir, coulée, refroidissement, moules-emballages) et <b>essais</b> : uniformité de masse, résistance à la rupture (&gt; 20 N), désagrégation (30 min gras / 60 min hydrosolubles), temps de ramollissement à 36 °C</td></tr>
+  <tr><td>☆</td><td>${PG(57, 60)}</td><td>Beurre de cacao et glycérides comme matières premières</td></tr></table>
   <div class="box trap"><h4>⚠️ Différence avec le cours</h4>Le Hir calcule l'excipient pour <b>le nombre exact</b> de suppositoires (M = F − f·S, avec F = contenance totale du moule). Le cours demande de prévoir <span class="k">un suppositoire supplémentaire (n + 1)</span>. À l'examen, applique la règle du cours.</div>
   <div class="formula">M = F − f·S   (plusieurs PA : M = F − Σ fᵢ·Sᵢ)</div>`,
   why: [["Pourquoi ne faut-il pas fondre complètement le beurre de cacao ?", "Fondu en entier, il recristallise en un mélange de formes instables qui fond vers 23–24 °C : les suppositoires ne se démoulent pas. Fondu partiellement vers 35–36 °C, les cristaux β restants servent de germes à la forme stable."],
@@ -236,11 +236,11 @@ concepts: [
 { id: "c9", title: "Ch. 9 · Excipients ↔ Le Hir",
   html: `<p>C'est le chapitre du cours le mieux couvert : la <b>partie 2 du livre</b> est entièrement consacrée aux excipients.</p>
   <table><tr><th></th><th>Pages</th><th>À chercher</th></tr>
-  <tr><td>★</td><td>${P(38, 52)}</td><td><b>Eau</b> : distillation, permutation, osmose inverse, ultrafiltration ; eau purifiée, hautement purifiée, <b>eau ppi</b></td></tr>
-  <tr><td>★</td><td>${P(52, 54)}</td><td>Éthanol, propylène-glycol, glycérol</td></tr>
-  <tr><td>★</td><td>${P(54, 67)}</td><td>Glycérides, cires (graisse de laine), paraffines, vaseline, silicones</td></tr>
-  <tr><td>★</td><td>${P(67, 81)}</td><td>Sucres, <b>amidons</b> (empois au-delà de 80 °C), gommes, cyclodextrines, <b>celluloses</b>, gélatine, polyvidone, <b>macrogols</b></td></tr>
-  <tr><td>★</td><td>${P(81, 93)}</td><td>Silice, talc, oxyde de titane ; <b>surfactifs et HLB</b> ; antioxydants, conservateurs, colorants, aromatisants</td></tr></table>
+  <tr><td>★</td><td>${PG(38, 52)}</td><td><b>Eau</b> : distillation, permutation, osmose inverse, ultrafiltration ; eau purifiée, hautement purifiée, <b>eau ppi</b></td></tr>
+  <tr><td>★</td><td>${PG(52, 54)}</td><td>Éthanol, propylène-glycol, glycérol</td></tr>
+  <tr><td>★</td><td>${PG(54, 67)}</td><td>Glycérides, cires (graisse de laine), paraffines, vaseline, silicones</td></tr>
+  <tr><td>★</td><td>${PG(67, 81)}</td><td>Sucres, <b>amidons</b> (empois au-delà de 80 °C), gommes, cyclodextrines, <b>celluloses</b>, gélatine, polyvidone, <b>macrogols</b></td></tr>
+  <tr><td>★</td><td>${PG(81, 93)}</td><td>Silice, talc, oxyde de titane ; <b>surfactifs et HLB</b> ; antioxydants, conservateurs, colorants, aromatisants</td></tr></table>
   <div class="box why2"><h4>🔗 Parallèle avec le cours</h4>Le cours classe les excipients par <b>fonction</b> (solvant, conservateur, isotonisant…) ; le livre les classe par <b>nature chimique</b>. Exercice utile : pour chaque excipient lu dans le livre, retrouve sa catégorie dans le cours (onglet Mélange).</div>`,
   why: [["Pourquoi le sorbitol est-il intéressant avec les acides aminés ?", "Ce n'est pas un sucre réducteur : il ne donne pas la réaction de Maillard (brunissement, perte d'activité) contrairement au glucose."],
         ["Pourquoi les PEG ne sont-ils pas tous des liquides ?", "Leur état dépend du poids moléculaire : liquides sous 600, solides cireux au-dessus de 1000, d'où leur emploi comme bases de suppositoires hydrosolubles ou de pommades."]],
@@ -248,10 +248,10 @@ concepts: [
 
 { id: "calc", title: "Calculs (partie éliminatoire) ↔ Le Hir",
   html: `<table><tr><th>Calcul du cours</th><th>Dans Le Hir</th><th>Pages</th></tr>
-  <tr><td>Isotonie (3 méthodes)</td><td>Méthode des <b>milliosmoles</b> (279 mOsm/kg) et méthode cryoscopique (0,52 °C) ; pas d'équivalents NaCl ni de White-Vincent</td><td>${P(296, 297)}</td></tr>
-  <tr><td>Suppositoires</td><td>M = F − f·S, sans le suppositoire supplémentaire</td><td>${P(323, 323)}</td></tr>
-  <tr><td>HLB d'un mélange</td><td>Additivité, exemple avec 70 % / 30 %</td><td>${P(90, 90)}</td></tr>
-  <tr><td>Stérilisation</td><td>Tableau des valeurs L et temps équivalents à F<sub>0</sub> = 8</td><td>${P(199, 199)}</td></tr>
+  <tr><td>Isotonie (3 méthodes)</td><td>Méthode des <b>milliosmoles</b> (279 mOsm/kg) et méthode cryoscopique (0,52 °C) ; pas d'équivalents NaCl ni de White-Vincent</td><td>${PG(296, 297)}</td></tr>
+  <tr><td>Suppositoires</td><td>M = F − f·S, sans le suppositoire supplémentaire</td><td>${PG(323, 323)}</td></tr>
+  <tr><td>HLB d'un mélange</td><td>Additivité, exemple avec 70 % / 30 %</td><td>${PG(90, 90)}</td></tr>
+  <tr><td>Stérilisation</td><td>Tableau des valeurs L et temps équivalents à F<sub>0</sub> = 8</td><td>${PG(199, 199)}</td></tr>
   <tr><td>Triturations, alcoométrie</td><td>Non traités</td><td>–</td></tr></table>
   <div class="box"><b>Stratégie</b> : utilise la méthode des milliosmoles comme <b>contre-vérification</b> d'un calcul d'isotonie fait par la méthode du cours. Si les deux résultats sont proches, ton calcul est bon.</div>`,
   why: [["Pourquoi les méthodes donnent-elles des résultats légèrement différents ?", "Elles reposent sur des approximations différentes (coefficient i, ΔT expérimental, équivalent E). Le livre conseille de contrôler au cryoscope ou à l'osmomètre après le calcul."]],

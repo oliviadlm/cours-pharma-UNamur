@@ -112,7 +112,7 @@ details summary{cursor:pointer;font-weight:600}
 <script>
 /* ================= DONNÉES DU COURS ================= */
 const r10 = x => Math.round(x * 1e10) / 1e10;
-const P = (a, b) => `<span class="pg">p. ${a}${b ? "–" + b : ""}</span>`;
+const PG = (a, b) => `<span class="pg">p. ${a}${b ? "–" + b : ""}</span>`;
 const FTAB = [["acide acétylsalicylique", 0.67], ["paracétamol", 0.72], ["codéine phosphate", 0.69], ["caféine", 0.67], ["ibuprofène", 0.90], ["bismuth sous-gallate", 0.37], ["oxyde de zinc", 0.16]];
 const DATA = {
 id: "aulton", key: "mphab311-aulton", sumKey: "mphab311-sum-aulton", hubUrl: "index.html",
@@ -137,20 +137,20 @@ concepts: [
 
 { id: "c1", title: "Ch. 1 · Le médicament ↔ Aulton",
   html: `<table><tr><th></th><th>Chapitre (pages)</th><th>À chercher</th></tr>
-  <tr><td>★</td><td>1. <i>Design of dosage forms</i> ${P(1, 12)}</td><td>Les 3 considérations de conception : propriétés physicochimiques du PA, biopharmacie, thérapeutique ; voies d'administration et formes associées</td></tr>
-  <tr><td>★</td><td>23. <i>Pharmaceutical preformulation</i> ${P(360, 385)}</td><td>Ce qu'on mesure sur un nouveau PA : solubilité, pK<sub>a</sub>, sels, polymorphes, stabilité</td></tr>
-  <tr><td>☆</td><td>50. <i>Packaging</i> ${P(833, 847)}</td><td>Verre (types), plastiques, conditionnement primaire et secondaire</td></tr></table>
+  <tr><td>★</td><td>1. <i>Design of dosage forms</i> ${PG(1, 12)}</td><td>Les 3 considérations de conception : propriétés physicochimiques du PA, biopharmacie, thérapeutique ; voies d'administration et formes associées</td></tr>
+  <tr><td>★</td><td>23. <i>Pharmaceutical preformulation</i> ${PG(360, 385)}</td><td>Ce qu'on mesure sur un nouveau PA : solubilité, pK<sub>a</sub>, sels, polymorphes, stabilité</td></tr>
+  <tr><td>☆</td><td>50. <i>Packaging</i> ${PG(833, 847)}</td><td>Verre (types), plastiques, conditionnement primaire et secondaire</td></tr></table>
   <div class="box why2"><h4>🔗 Parallèle avec le cours</h4>Le cours définit le médicament (PA + excipients + conditionnement) et ses classifications ; Aulton explique <b>comment on choisit</b> la forme à partir des propriétés du PA. Vocabulaire : <i>drug</i> = principe actif, <i>excipient</i>, <i>dosage form</i> = forme pharmaceutique, <i>medicinal product</i> = médicament.</div>`,
   why: [["Pourquoi la préformulation commence-t-elle par la solubilité ?", "Un PA doit être dissous pour être absorbé : une solubilité trop faible oriente vers la micronisation, un sel, un cosolvant ou une autre voie dès le départ."]],
   traps: ["Traduire « drug » par « drogue » : c'est le principe actif."] },
 
 { id: "c2", title: "Ch. 2 · L'état solide ↔ Aulton",
   html: `<table><tr><th></th><th>Chapitre (pages)</th><th>À chercher</th></tr>
-  <tr><td>★</td><td>8. <i>Solid-state properties</i> ${P(114, 125)}</td><td>Cristallisation, <b>polymorphism</b>, hydrates/solvates, amorphe, influence sur solubilité et stabilité</td></tr>
-  <tr><td>★</td><td>9. <i>Particle size analysis</i> ${P(126, 142)}</td><td>Diamètres équivalents, distributions, <b>moyennes D[1,0], D[3,2], D[4,3]</b> (encadré « worked example »), méthodes (tamis, microscopie, diffraction laser)</td></tr>
-  <tr><td>★</td><td>11. <i>Mixing</i> ${P(156, 171)}</td><td>Mélange aléatoire, ségrégation, écart type d'un mélange et %CV (worked example p. 160)</td></tr>
-  <tr><td>★</td><td>12. <i>Powder flow</i> ${P(172, 183)}</td><td>Angle de repos, <b>Hausner ratio</b> et <b>Carr's index</b> (p. 180), améliorer l'écoulement (glidants, granulation)</td></tr>
-  <tr><td>☆</td><td>10. <i>Particle size reduction</i> ${P(143, 155)} · 29. <i>Powders, granules and granulation</i> ${P(463, 482)} · 31. <i>Tablets and compaction</i> ${P(501, 541)}</td><td>Broyage, granulation humide/sèche, compression</td></tr></table>
+  <tr><td>★</td><td>8. <i>Solid-state properties</i> ${PG(114, 125)}</td><td>Cristallisation, <b>polymorphism</b>, hydrates/solvates, amorphe, influence sur solubilité et stabilité</td></tr>
+  <tr><td>★</td><td>9. <i>Particle size analysis</i> ${PG(126, 142)}</td><td>Diamètres équivalents, distributions, <b>moyennes D[1,0], D[3,2], D[4,3]</b> (encadré « worked example »), méthodes (tamis, microscopie, diffraction laser)</td></tr>
+  <tr><td>★</td><td>11. <i>Mixing</i> ${PG(156, 171)}</td><td>Mélange aléatoire, ségrégation, écart type d'un mélange et %CV (worked example p. 160)</td></tr>
+  <tr><td>★</td><td>12. <i>Powder flow</i> ${PG(172, 183)}</td><td>Angle de repos, <b>Hausner ratio</b> et <b>Carr's index</b> (p. 180), améliorer l'écoulement (glidants, granulation)</td></tr>
+  <tr><td>☆</td><td>10. <i>Particle size reduction</i> ${PG(143, 155)} · 29. <i>Powders, granules and granulation</i> ${PG(463, 482)} · 31. <i>Tablets and compaction</i> ${PG(501, 541)}</td><td>Broyage, granulation humide/sèche, compression</td></tr></table>
   <div class="box why2"><h4>🔗 Parallèle avec le cours</h4>Même indice de Carr que le cours : (ρ tassée − ρ versée) / ρ tassée × 100. Aulton donne les repères d'Hausner : <span class="k">&lt; 1,2 bon écoulement</span>, <span class="k">&gt; 1,5 poudre cohésive</span>. Si l'échelle de classes du cours diffère, garde celle du cours.</div>
   <div class="formula">Hausner = ρ tassée / ρ versée   ·   Carr (%) = (ρ tassée − ρ versée) / ρ tassée × 100</div>`,
   why: [["Pourquoi le rapport d'Hausner prédit-il l'écoulement ?", "Une poudre qui se tasse beaucoup a de fortes frictions et cohésions entre particules : ce sont les mêmes forces qui l'empêchent de couler."],
@@ -160,11 +160,11 @@ concepts: [
 
 { id: "c3", title: "Ch. 3 · Substances en solution ↔ Aulton",
   html: `<table><tr><th></th><th>Chapitre (pages)</th><th>À chercher</th></tr>
-  <tr><td>★</td><td>2. <i>Dissolution and solubility</i> ${P(13, 29)}</td><td>Termes de solubilité, facteurs de la solubilité, <b>Noyes-Whitney</b>, effet de la taille des particules (worked example p. 18)</td></tr>
-  <tr><td>★</td><td>3. <i>Properties of solutions</i> ${P(30, 38)}</td><td>Propriétés colligatives (pression osmotique, abaissement cryoscopique), <b>ionisation</b> et Henderson-Hasselbalch (worked examples p. 35)</td></tr>
-  <tr><td>★</td><td>7. <i>Kinetics</i> ${P(101, 113)}</td><td>Ordres 0 et 1, demi-vie, <b>Arrhenius</b> (worked examples p. 104–105)</td></tr>
-  <tr><td>★</td><td>38. <i>Parenteral drug delivery</i> ${P(626, 640)}</td><td><b>Isotonicity</b> : le plasma et les larmes congèlent à −0,52 °C, équation w = (0,52 − a)/b (p. 635), pH et tonicité des injectables</td></tr>
-  <tr><td>☆</td><td>24. <i>Solutions</i> ${P(386, 396)} · 41. <i>Ocular drug delivery</i> ${P(677, 700)} · 51. <i>Chemical stability</i> ${P(848, 859)}</td><td>Cosolvants, conservateurs ; collyres ; hydrolyse, oxydation, photolyse</td></tr></table>
+  <tr><td>★</td><td>2. <i>Dissolution and solubility</i> ${PG(13, 29)}</td><td>Termes de solubilité, facteurs de la solubilité, <b>Noyes-Whitney</b>, effet de la taille des particules (worked example p. 18)</td></tr>
+  <tr><td>★</td><td>3. <i>Properties of solutions</i> ${PG(30, 38)}</td><td>Propriétés colligatives (pression osmotique, abaissement cryoscopique), <b>ionisation</b> et Henderson-Hasselbalch (worked examples p. 35)</td></tr>
+  <tr><td>★</td><td>7. <i>Kinetics</i> ${PG(101, 113)}</td><td>Ordres 0 et 1, demi-vie, <b>Arrhenius</b> (worked examples p. 104–105)</td></tr>
+  <tr><td>★</td><td>38. <i>Parenteral drug delivery</i> ${PG(626, 640)}</td><td><b>Isotonicity</b> : le plasma et les larmes congèlent à −0,52 °C, équation w = (0,52 − a)/b (p. 635), pH et tonicité des injectables</td></tr>
+  <tr><td>☆</td><td>24. <i>Solutions</i> ${PG(386, 396)} · 41. <i>Ocular drug delivery</i> ${PG(677, 700)} · 51. <i>Chemical stability</i> ${PG(848, 859)}</td><td>Cosolvants, conservateurs ; collyres ; hydrolyse, oxydation, photolyse</td></tr></table>
   <div class="box why2"><h4>🔗 Parallèle avec le cours</h4>L'équation d'Aulton est la <b>méthode cryoscopique du cours</b> écrite autrement : w (% de NaCl à ajouter) = (0,52 − a) / b, avec a = ΔT de la solution non ajustée et b = ΔT d'une solution de NaCl à 1 %. Aulton ne présente pas White-Vincent : garde les 3 méthodes du cours.</div>
   <div class="formula">w = (0,52 − a) / b   ·   acide faible : log([HA]/[A⁻]) = pKa − pH   ·   ordre 1 : t½ = 0,693 / k ; t₉₀ = 0,105 / k</div>`,
   why: [["Pourquoi un acide faible est-il surtout non ionisé dans l'estomac ?", "À pH 2, bien en dessous de son pKa, l'équilibre est déplacé vers la forme HA : l'aspirine (pKa ≈ 3,5) y est ~32 fois plus non ionisée qu'ionisée (exemple du livre)."],
@@ -174,7 +174,7 @@ concepts: [
 
 { id: "c4", title: "Ch. 4 · Rhéologie ↔ Aulton (chapitre clé)",
   html: `<p>C'est <b>le</b> chapitre à lire pour la rhéologie : Le Hir n'en parle presque pas.</p>
-  <table><tr><th></th><th>Chapitre 6. <i>Rheology</i> ${P(81, 100)}</th></tr>
+  <table><tr><th></th><th>Chapitre 6. <i>Rheology</i> ${PG(81, 100)}</th></tr>
   <tr><td>★</td><td><b>Viscosity, stress and rate of shear</b> : contrainte de cisaillement τ, vitesse de cisaillement γ̇, loi de Newton η = τ/γ̇, unités (Pa·s)</td></tr>
   <tr><td>★</td><td><b>Newtonian fluids</b> et leur mesure : viscosimètres capillaires (U-tube), à bille, rotatifs</td></tr>
   <tr><td>★</td><td><b>Non-Newtonian fluids</b> : <i>plastic</i> (Bingham, seuil d'écoulement / <i>yield value</i>), <i>pseudoplastic</i> (rhéofluidifiant), <i>dilatant</i> (rhéoépaississant)</td></tr>
@@ -190,10 +190,10 @@ concepts: [
 
 { id: "c5", title: "Ch. 5 · Systèmes dispersés ↔ Aulton",
   html: `<table><tr><th></th><th>Chapitre (pages)</th><th>À chercher</th></tr>
-  <tr><td>★</td><td>4. <i>Surfaces and interfaces</i> ${P(39, 49)}</td><td>Tension superficielle et interfaciale, adsorption des tensioactifs, mouillage, angle de contact</td></tr>
-  <tr><td>★</td><td>5. <i>Disperse systems</i> ${P(50, 80)}</td><td>Colloïdes, double couche électrique, <b>potentiel zêta</b>, théorie DLVO, floculation, micelles et CMC, HLB, <b>Stokes</b></td></tr>
-  <tr><td>★</td><td>26. <i>Suspensions</i> ${P(407, 423)}</td><td>Suspension <b>floculée vs défloculée</b>, agents de suspension, mouillants, croissance des cristaux</td></tr>
-  <tr><td>★</td><td>27. <i>Emulsions and creams</i> ${P(424, 452)}</td><td>Types, émulsifiants, <b>calcul du HLB requis</b> (worked example Tween 80 / Span 80 p. 437), instabilités : <i>creaming, flocculation, coalescence, phase inversion</i>, essais</td></tr></table>
+  <tr><td>★</td><td>4. <i>Surfaces and interfaces</i> ${PG(39, 49)}</td><td>Tension superficielle et interfaciale, adsorption des tensioactifs, mouillage, angle de contact</td></tr>
+  <tr><td>★</td><td>5. <i>Disperse systems</i> ${PG(50, 80)}</td><td>Colloïdes, double couche électrique, <b>potentiel zêta</b>, théorie DLVO, floculation, micelles et CMC, HLB, <b>Stokes</b></td></tr>
+  <tr><td>★</td><td>26. <i>Suspensions</i> ${PG(407, 423)}</td><td>Suspension <b>floculée vs défloculée</b>, agents de suspension, mouillants, croissance des cristaux</td></tr>
+  <tr><td>★</td><td>27. <i>Emulsions and creams</i> ${PG(424, 452)}</td><td>Types, émulsifiants, <b>calcul du HLB requis</b> (worked example Tween 80 / Span 80 p. 437), instabilités : <i>creaming, flocculation, coalescence, phase inversion</i>, essais</td></tr></table>
   <div class="box why2"><h4>🔗 Parallèle avec le cours</h4>Le calcul du mélange de tensioactifs est <b>identique</b> au cours. Aulton approfondit la stabilité des suspensions : une suspension <span class="k">floculée</span> sédimente vite mais se redisperse facilement ; une <span class="k">défloculée</span> sédimente lentement mais forme un dépôt compact (<i>caking</i>) difficile à redisperser.</div>
   <div class="formula">HLB requis = x · HLB<sub>A</sub> + (1 − x) · HLB<sub>B</sub>  ⇒  x = (HLB requis − HLB<sub>B</sub>) / (HLB<sub>A</sub> − HLB<sub>B</sub>)</div>`,
   why: [["Pourquoi mélanger deux émulsifiants plutôt qu'en prendre un seul de la bonne HLB ?", "Un couple à HLB basse + haute forme à l'interface un film mixte plus dense et plus stable qu'un émulsifiant seul."],
@@ -203,10 +203,10 @@ concepts: [
 
 { id: "c7", title: "Ch. 7 · Stérilisation ↔ Aulton",
   html: `<table><tr><th></th><th>Chapitre (pages)</th><th>À chercher</th></tr>
-  <tr><td>★</td><td>16. <i>Principles of sterilization</i> ${P(247, 256)}</td><td>Les <b>5 procédés de la Pharmacopée</b> (vapeur sous pression, chaleur sèche, oxyde d'éthylène, rayonnements ionisants, filtration), <b>D value</b>, <b>Z value</b>, facteur d'inactivation, <b>F value</b></td></tr>
-  <tr><td>★</td><td>17. <i>Sterilization in practice</i> ${P(257, 274)}</td><td>Cycles, choix du procédé par produit (tableau p. 259), validation, indicateurs biologiques, <b>SAL 10<sup>−6</sup></b> (worked example p. 268), essai de stérilité</td></tr>
-  <tr><td>★</td><td>15. <i>Action of physical and chemical agents</i> ${P(229, 246)}</td><td>Cinétique de mort d'ordre 1 : worked example des spores dans des ampoules (p. 231)</td></tr>
-  <tr><td>☆</td><td>13–14 (microbiologie) ${P(184, 228)}</td><td>Spores, endotoxines</td></tr></table>
+  <tr><td>★</td><td>16. <i>Principles of sterilization</i> ${PG(247, 256)}</td><td>Les <b>5 procédés de la Pharmacopée</b> (vapeur sous pression, chaleur sèche, oxyde d'éthylène, rayonnements ionisants, filtration), <b>D value</b>, <b>Z value</b>, facteur d'inactivation, <b>F value</b></td></tr>
+  <tr><td>★</td><td>17. <i>Sterilization in practice</i> ${PG(257, 274)}</td><td>Cycles, choix du procédé par produit (tableau p. 259), validation, indicateurs biologiques, <b>SAL 10<sup>−6</sup></b> (worked example p. 268), essai de stérilité</td></tr>
+  <tr><td>★</td><td>15. <i>Action of physical and chemical agents</i> ${PG(229, 246)}</td><td>Cinétique de mort d'ordre 1 : worked example des spores dans des ampoules (p. 231)</td></tr>
+  <tr><td>☆</td><td>13–14 (microbiologie) ${PG(184, 228)}</td><td>Spores, endotoxines</td></tr></table>
   <div class="box why2"><h4>🔗 Parallèle avec le cours</h4>Même logique que le cours et que Le Hir. Vocabulaire : <i>moist heat / steam</i> = chaleur humide, <i>dry heat</i>, <i>ethylene oxide</i>, <i>ionizing radiation</i>, <i>bioburden</i> = charge microbienne initiale, <i>sterility assurance level (SAL)</i> = NAS.</div>
   <div class="formula">D = temps pour 1 log (90 %) · log N = log N₀ − t / D = log N₀ − k t / 2,303</div>`,
   why: [["Pourquoi la valeur Z est-elle utile ?", "Elle dit de combien il faut augmenter la température pour diviser D par 10 : on peut ainsi comparer des cycles à des températures différentes (base du calcul de F)."],
@@ -215,7 +215,7 @@ concepts: [
   traps: ["Oublier que la charge initiale compte : plus elle est élevée, plus il faut de log de réduction."] },
 
 { id: "c8", title: "Ch. 8 · Préparations rectales ↔ Aulton",
-  html: `<table><tr><th></th><th>Chapitre 44. <i>Rectal and vaginal drug delivery</i> ${P(735, 751)}</th></tr>
+  html: `<table><tr><th></th><th>Chapitre 44. <i>Rectal and vaginal drug delivery</i> ${PG(735, 751)}</th></tr>
   <tr><td>★</td><td>Anatomie et physiologie du rectum, absorption, avantages et limites (encadré p. 739)</td></tr>
   <tr><td>★</td><td><b>Suppository bases</b> : bases grasses (<i>fatty</i>) et hydrosolubles (macrogols, gélatine glycérinée) ; bases semi-synthétiques (Witepsol, Suppocire…)</td></tr>
   <tr><td>★</td><td><b>Displacement value</b> et worked example (p. 742–743)</td></tr>
@@ -232,23 +232,23 @@ concepts: [
 { id: "c9", title: "Ch. 9 · Excipients ↔ Aulton",
   html: `<p>Aulton n'a pas de chapitre « excipients » : ils sont traités <b>forme par forme</b>.</p>
   <table><tr><th></th><th>Chapitre (pages)</th><th>Excipients traités</th></tr>
-  <tr><td>★</td><td>24. <i>Solutions</i> ${P(386, 396)}</td><td>Cosolvants, tampons, isotonisants, édulcorants, arômes, conservateurs</td></tr>
-  <tr><td>★</td><td>52. <i>Microbial contamination, spoilage and preservation</i> ${P(860, 870)}</td><td><b>Conservateurs</b> antimicrobiens, facteurs de leur efficacité</td></tr>
-  <tr><td>★</td><td>26–27 ${P(407, 452)}</td><td>Agents de suspension, mouillants, émulsifiants, viscosifiants</td></tr>
-  <tr><td>★</td><td>31. <i>Tablets</i> ${P(501, 541)}</td><td>Diluants, liants, délitants (<i>disintegrants</i>), lubrifiants, glidants</td></tr>
-  <tr><td>☆</td><td>28. <i>Ointments, gels…</i> ${P(453, 462)} · 51. <i>Chemical stability</i> ${P(848, 859)}</td><td>Bases de pommades, gélifiants ; antioxydants et chélateurs</td></tr></table>
+  <tr><td>★</td><td>24. <i>Solutions</i> ${PG(386, 396)}</td><td>Cosolvants, tampons, isotonisants, édulcorants, arômes, conservateurs</td></tr>
+  <tr><td>★</td><td>52. <i>Microbial contamination, spoilage and preservation</i> ${PG(860, 870)}</td><td><b>Conservateurs</b> antimicrobiens, facteurs de leur efficacité</td></tr>
+  <tr><td>★</td><td>26–27 ${PG(407, 452)}</td><td>Agents de suspension, mouillants, émulsifiants, viscosifiants</td></tr>
+  <tr><td>★</td><td>31. <i>Tablets</i> ${PG(501, 541)}</td><td>Diluants, liants, délitants (<i>disintegrants</i>), lubrifiants, glidants</td></tr>
+  <tr><td>☆</td><td>28. <i>Ointments, gels…</i> ${PG(453, 462)} · 51. <i>Chemical stability</i> ${PG(848, 859)}</td><td>Bases de pommades, gélifiants ; antioxydants et chélateurs</td></tr></table>
   <div class="box why2"><h4>🔗 Parallèle avec le cours</h4>Le classement d'Aulton est <b>par fonction</b>, comme le cours : c'est la meilleure source pour l'onglet Mélange (excipient → catégorie). Vocabulaire : <i>preservative</i> = conservateur, <i>antioxidant</i>, <i>humectant</i>, <i>glidant</i> = lubrifiant d'écoulement, <i>binder</i> = liant.</div>`,
   why: [["Pourquoi un conservateur peut-il perdre son efficacité dans une émulsion ?", "Il se partage entre les phases et peut se fixer dans les micelles de tensioactif ou sur le conditionnement : la fraction libre dans la phase aqueuse, la seule active, diminue."]],
   traps: ["Traduire « lubricant » et « glidant » par le même mot : le glidant améliore l'écoulement de la poudre, le lubrifiant réduit la friction contre la matrice."] },
 
 { id: "calc", title: "Calculs (partie éliminatoire) ↔ Aulton",
   html: `<table><tr><th>Calcul du cours</th><th>Dans Aulton</th><th>Pages</th></tr>
-  <tr><td>Isotonie</td><td>Méthode cryoscopique seulement : w = (0,52 − a)/b</td><td>${P(635, 635)}</td></tr>
-  <tr><td>Suppositoires</td><td>Displacement value (inverse du f du cours)</td><td>${P(742, 743)}</td></tr>
-  <tr><td>HLB d'un mélange</td><td>Worked example Tween 80 / Span 80</td><td>${P(437, 437)}</td></tr>
-  <tr><td>Écoulement des poudres</td><td>Hausner et Carr</td><td>${P(180, 180)}</td></tr>
-  <tr><td>Stérilisation</td><td>Survivants, D, SAL</td><td>${P(231, 231)}, ${P(268, 268)}</td></tr>
-  <tr><td>Cinétique, ionisation</td><td>Ordres 0 et 1 ; Henderson-Hasselbalch</td><td>${P(104, 105)}, ${P(35, 35)}</td></tr>
+  <tr><td>Isotonie</td><td>Méthode cryoscopique seulement : w = (0,52 − a)/b</td><td>${PG(635, 635)}</td></tr>
+  <tr><td>Suppositoires</td><td>Displacement value (inverse du f du cours)</td><td>${PG(742, 743)}</td></tr>
+  <tr><td>HLB d'un mélange</td><td>Worked example Tween 80 / Span 80</td><td>${PG(437, 437)}</td></tr>
+  <tr><td>Écoulement des poudres</td><td>Hausner et Carr</td><td>${PG(180, 180)}</td></tr>
+  <tr><td>Stérilisation</td><td>Survivants, D, SAL</td><td>${PG(231, 231)}, ${PG(268, 268)}</td></tr>
+  <tr><td>Cinétique, ionisation</td><td>Ordres 0 et 1 ; Henderson-Hasselbalch</td><td>${PG(104, 105)}, ${PG(35, 35)}</td></tr>
   <tr><td>Triturations, équivalents NaCl, White-Vincent, alcoométrie</td><td>Non traités</td><td>–</td></tr></table>
   <div class="box">Les calculs d'Aulton sont un bon <b>entraînement de transfert</b> : même raisonnement, présentation différente. Si tu sais refaire l'exemple d'Aulton avec la méthode du cours, tu as vraiment compris.</div>`,
   traps: ["Utiliser 0,576 (valeur souvent donnée en anglais) ou 0,58 (cours) pour b du NaCl : prends toujours la valeur de l'énoncé."] }
