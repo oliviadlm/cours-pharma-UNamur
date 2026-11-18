@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MPHAB311 · Anciens examens</title>
+<style>
+:root{--bg:#f6f4ef;--card:#fff;--ink:#1f2328;--muted:#6b6f76;--line:#e3e0d8;--accent:#2f5d8a;--accent-soft:#e8f0f8;--ok:#2e7d4f;--ok-soft:#e6f4ec;--ko:#b3412e;--ko-soft:#fbeae6;--warn:#9a6a00;--warn-soft:#fff5dc}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15.5px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:920px;margin:0 auto;padding:16px 14px 60px}
+.kick{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+h1{font-size:23px;margin:2px 0 4px} h2{font-size:18px;margin:4px 0 8px} h3{font-size:16px;margin:2px 0 6px}
+.sub{color:var(--muted);font-size:14px}
+nav{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0;position:sticky;top:0;background:var(--bg);padding:6px 0;z-index:5}
+nav button{border:1.5px solid var(--line);background:var(--card);border-radius:9px;padding:7px 11px;font:inherit;font-size:14px;cursor:pointer}
+nav button.on{border-color:var(--accent);background:var(--accent-soft);font-weight:600}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:10px 0}
+.box{border-radius:9px;padding:9px 12px;margin:8px 0;font-size:14.5px}
+.box.warn{background:var(--warn-soft)} .box.ko{background:var(--ko-soft)} .box.ok{background:var(--ok-soft)} .box.info{background:var(--accent-soft)}
+.pill{display:inline-block;font-size:12px;border-radius:20px;padding:1px 9px;background:var(--accent-soft);color:var(--accent);margin-right:4px;white-space:nowrap}
+.pill.th{background:#efeae0;color:#6a5a3a}
+.stars{color:#c98a00;letter-spacing:1px}
+table{border-collapse:collapse;width:100%;font-size:14px} td,th{border-bottom:1px solid var(--line);padding:7px 6px;text-align:left;vertical-align:top}
+pre{white-space:pre-wrap;background:#faf8f3;border:1px solid var(--line);border-radius:8px;padding:9px 11px;font:14px/1.5 ui-monospace,Menlo,Consolas,monospace;margin:8px 0}
+.step{display:grid;grid-template-columns:1fr auto auto;gap:6px 8px;align-items:center;padding:7px 0;border-top:1px dashed var(--line)}
+.step input{width:130px;font:inherit;padding:5px 8px;border:1.5px solid var(--line);border-radius:7px}
+.step input.good{border-color:var(--ok);background:var(--ok-soft)} .step input.bad{border-color:var(--ko);background:var(--ko-soft)}
+.step .u{color:var(--muted);font-size:13px;min-width:46px}
+.corr{grid-column:1/-1;background:var(--accent-soft);border-radius:8px;padding:6px 10px;font-size:14px}
+.btn{border:1.5px solid var(--line);background:var(--card);border-radius:8px;padding:6px 12px;font:inherit;font-size:14px;cursor:pointer;margin:4px 4px 0 0}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.opt{display:block;width:100%;text-align:left;border:1.5px solid var(--line);background:var(--card);border-radius:9px;padding:8px 11px;margin:6px 0;font:inherit;cursor:pointer}
+.opt:hover{border-color:var(--accent)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)} .opt.wrong{border-color:var(--ko);background:var(--ko-soft)}
+.opt .vf{display:block;font-size:13.5px;color:var(--muted);margin-top:3px}
+.opt.done{cursor:default}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+select{font:inherit;padding:5px 8px;border-radius:8px;border:1.5px solid var(--line)}
+textarea{width:100%;min-height:150px;font:inherit;padding:9px;border:1.5px solid var(--line);border-radius:9px}
+.keys label{display:flex;gap:8px;align-items:flex-start;margin:4px 0;font-size:14.5px}
+.score{font-size:28px;font-weight:700}
+.bar{height:8px;background:#e9e6df;border-radius:9px;overflow:hidden} .bar i{display:block;height:100%;background:var(--accent)}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:10px 12px}
+.stat b{font-size:20px;display:block}
+.timer{font-variant-numeric:tabular-nums;font-weight:700}
+.hidden{display:none}
+@media (max-width:600px){.step{grid-template-columns:1fr auto}.step .u{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kick">MPHAB311 · Introduction à la galénique</div>
+  <h1>Anciens examens et tuyaux</h1>
+  <div class="sub">Toutes les questions retrouvées de 2008 à janvier 2022 (examens de janvier et d'août, souvenirs d'étudiants, dias annotées « tuyau »), avec corrections pas à pas fondées sur le cours. <a href="index.html" target="_top">↖ Page générale du cours</a></div>
+  <nav id="nav"></nav>
+  <div id="view"></div>
+</div>
+<script>
+function fmt(n, d = 8) {
+  if (typeof n !== "number" || !isFinite(n)) return String(n);
+  let s = (Math.round(n * 10 ** d) / 10 ** d).toFixed(d).replace(/0+$/, "").replace(/\.$/, "");
+  const [i, f] = s.split(".");
+  return f ? i.replace(/\B(?=(\d{3})+(?!\d))/g, " ") + "," + f : i.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+}
+function parseNum(s) { if (s == null) return NaN; s = String(s).trim().replace(/\s| /g, "").replace(",", "."); if (!/^-?(\d+\.?\d*|\.\d+)(e-?\d+)?$/i.test(s)) return NaN; return parseFloat(s); }
+function near(x, t, tol) { if (isNaN(x)) return false; if (tol && tol.abs != null) return Math.abs(x - t) <= tol.abs + 1e-12; const rel = tol && tol.rel != null ? tol.rel : 0.005; return Math.abs(x - t) <= Math.max(Math.abs(t) * rel, 1e-12); }
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+// ===== Anciens examens MPHAB311 (sources : fichiers « Examens » envoyés par Olivia) =====
+// Sessions disponibles : 2008 → 2013 (souvenirs d'étudiants), janv. 2018, janv. + août 2019, janv. + août 2020, janv. 2021, janv. 2022.
+const R = x => Math.round(x * 1e10) / 1e10;
+
+// ---------- Fréquence des sujets ----------
+const FREQ = [
+  { t: "Augmenter la solubilité : facteurs + 7 moyens (+ suspension si échec)", s: "2008, 2009, 2010, 2011, 2012, 2013, 2019, 2022", p: 3, note: "Tuyau : « cette question tombe une fois sur deux (janvier ou août), ne pas zapper »." },
+  { t: "Graphique du palmitate de chloramphénicol : polymorphisme + sursaturation", s: "2010, 2011, 2013, 2018 ?, 2019, août 2019, 2022", p: 3, note: "Marqué « EXAM !! » sur la dia 56." },
+  { t: "Voies d'administration + un exemple de forme pour chacune", s: "2013, 2018, 2019, août 2019, 2022", p: 3, note: "" },
+  { t: "Isotonie (équivalents NaCl, cryoscopie, White-Vincent)", s: "chaque session depuis 2008", p: 3, note: "Exercice de la partie éliminatoire." },
+  { t: "Triturations (éthinylestradiol, dexaméthasone…)", s: "2009, 2011, 2012, 2020, 2021", p: 3, note: "Exercice de la partie éliminatoire." },
+  { t: "Gabbroral® / préparation à partir de comprimés broyés", s: "2013, 2018 (oméprazole), 2019, 2022", p: 3, note: "Exercice de la partie éliminatoire." },
+  { t: "Taille des particules : influences + loi de Stokes + viscosité", s: "2008, 2010, 2011, 2012, août 2019", p: 2, note: "" },
+  { t: "Les fluides en rhéologie (graphiques) + comment viscosifier", s: "2009, 2012, 2013", p: 2, note: "Annotation du chapitre 4 : « Question d'examen ! Bien connaître les graphiques »." },
+  { t: "Préparations magistrale et officinale + intérêts de la magistrale", s: "2008, 2009, 2010, 2011", p: 2, note: "" },
+  { t: "Suppositoires : facteur de déplacement", s: "2021", p: 2, note: "Exercice de la partie éliminatoire." },
+  { t: "Alcoométrie (titre pondéral, coupage d'alcools)", s: "2021", p: 2, note: "Exercice de la partie éliminatoire." },
+  { t: "QCM : Stokes, HLB, isotonie, stérilisation, dégradation", s: "2019 → 2022 (questions reprises presque à l'identique)", p: 3, note: "Les mêmes QCM reviennent d'une session à l'autre." },
+  { t: "Excipients à effet notoire (exemples de la liste)", s: "2018", p: 1, note: "" },
+  { t: "Échelle de taille des particules dans les voies aériennes", s: "tuyau (dia 67)", p: 1, note: "Annotation : « Examen : savoir replacer l'échelle de taille ! »." }
+];
+
+// ---------- Exercices (partie éliminatoire) ----------
+const pick = a => a[Math.floor(Math.random() * a.length)];
+function supEx(dose, n, mPure, nPure, mMed, nMed, pa) {
+  const E = mPure / nPure, u = mMed / nMed, M = 0.9 * u, S = 0.1 * u, f = (E - M) / S, base = (E - f * dose / 1000) * (n + 1);
+  return { ctx: `Rp/ ${pa} ${dose} mg\n    excipient q.s.\n    pf 1 suppositoire dt ${n}\n\n${nPure} suppositoires de masse pure pèsent ${fmt(mPure)} g ; ${nMed} suppositoires à 10 % de PA pèsent ${fmt(mMed)} g.`,
+    q: "a) Facteur de déplacement f ? b) Masse d'excipient à peser en pratique ?",
+    steps: [
+      { label: "E : masse d'un suppositoire de masse pure (g)", ans: E, unit: "g", tol: { rel: 0.002 }, show: `${fmt(mPure)} / ${nPure} = ${fmt(E, 4)} g`, why: "1re coulée : on étalonne le moule." },
+      { label: "Masse d'un suppositoire à 10 % (g)", ans: u, unit: "g", tol: { rel: 0.002 }, show: `${fmt(mMed)} / ${nMed} = ${fmt(u, 5)} g`, why: "2e coulée, avec arbitrairement 10 % de PA." },
+      { label: "M : masse d'excipient dans ce suppositoire (g)", ans: M, unit: "g", tol: { rel: 0.003 }, show: `${fmt(u, 5)} × 0,9 = ${fmt(M, 4)} g`, why: "90 % d'excipient." },
+      { label: "S : masse de PA dans ce suppositoire (g)", ans: S, unit: "g", tol: { rel: 0.003 }, show: `${fmt(u, 5)} × 0,1 = ${fmt(S, 4)} g`, why: "10 % de PA." },
+      { label: "a) f = (E − M) / S", ans: f, unit: "", tol: { abs: 0.01 }, show: `(${fmt(E, 4)} − ${fmt(M, 4)}) / ${fmt(S, 4)} = ${fmt(f, 3)}`, why: "Masse d'excipient déplacée par 1 g de PA." },
+      { label: `b) Masse d'excipient pour ${n} + 1 = ${n + 1} suppositoires (g)`, ans: base, unit: "g", tol: { rel: 0.004 }, show: `(${fmt(E, 4)} − ${fmt(f, 3)} × ${fmt(dose / 1000)}) × ${n + 1} = ${fmt(base, 3)} g`, why: "« En pratique » = on prévoit 1 suppositoire de plus pour les pertes de coulée." }] };
+}
+function eqEx(V, agents, other) {
+  // agents : [[nom, conc, unité ('%' m/V ou 'g/L' ou 'mg'), E]]
+  const parts = agents.map(([nm, c, u, E]) => { const m = u === "%" ? c * V / 100 : u === "g/L" ? c * V / 1000 : c / 1000; return { nm, m, E, txt: u === "mg" ? `${fmt(c)} mg` : `${fmt(c)} ${u === "%" ? "%" : "g/L"} × ${V} mL = ${fmt(m, 4)} g` }; });
+  const sum = parts.reduce((a, p) => a + p.m * p.E, 0), need = 0.9 * V / 100, add = need - sum;
+  const steps = [
+    { label: "Masse(s) de PA (g)", ans: parts.reduce((a, p) => a + p.m, 0), unit: "g (total)", tol: { rel: 0.003 }, show: parts.map(p => `${p.nm} : ${p.txt}`).join(" ; "), why: "On convertit tout en grammes pour le volume prescrit." },
+    { label: "Équivalent NaCl apporté par les PA (g)", ans: sum, unit: "g", tol: { rel: 0.01 }, show: parts.map(p => `${fmt(p.m, 4)} × ${fmt(p.E)}`).join(" + ") + ` = ${fmt(sum, 4)} g`, why: "E = g de NaCl qui ont le même effet osmotique que 1 g de PA." },
+    { label: `NaCl pour ${V} mL isotoniques (g)`, ans: need, unit: "g", tol: { rel: 0.003 }, show: `0,9 g/100 mL × ${V} mL = ${fmt(need, 4)} g`, why: "NaCl 0,9 % = isotonique." },
+    { label: "NaCl à ajouter (mg)", ans: add * 1000, unit: "mg", tol: { rel: 0.01 }, show: `${fmt(need, 4)} − ${fmt(sum, 4)} = ${fmt(add, 4)} g = ${fmt(add * 1000, 1)} mg`, why: "On complète ce qui manque." }];
+  if (other) steps.push({ label: `${other[0]} à ajouter à la place (mg)`, ans: add / other[1] * 1000, unit: "mg", tol: { rel: 0.01 }, show: `${fmt(add * 1000, 1)} / ${fmt(other[1])} = ${fmt(add / other[1] * 1000, 1)} mg`, why: `Autre agent : on divise la masse de NaCl manquante par son E (${fmt(other[1])}).` });
+  return { ctx: `Rp/ ${agents.map(([nm, c, u, E]) => `${nm} ${fmt(c)} ${u === "%" ? "%" : u} (E = ${fmt(E)})`).join("\n    ")}\n    ${other ? other[0] + " q.s." : "NaCl q.s."}\n    aqua q.s. ad ${V} mL`, q: other ? `Quantité de NaCl, puis de ${other[0]}, pour isotoniser ?` : "Quantité de NaCl à ajouter pour isotoniser ?", steps };
+}
+function cryoEx(V, c, dT, pa) {
+  const pct = (0.52 - c * dT) / 0.58, g = pct * V / 100;
+  return { ctx: `${V} mL d'une solution à ${fmt(c)} % (m/V) de ${pa}\nΔT ${pa} (1 %) = ${fmt(dT)} ; ΔT NaCl (1 %) = 0,58`, q: "Quantité de NaCl à ajouter pour la rendre isotonique avec le sang ?",
+    steps: [
+      { label: "Abaissement dû au PA (°C)", ans: c * dT, unit: "°C", tol: { rel: 0.005 }, show: `${fmt(c)} × ${fmt(dT)} = ${fmt(c * dT, 4)} °C`, why: "ΔT est proportionnel à la concentration." },
+      { label: "% de NaCl (g/100 mL)", ans: pct, unit: "%", tol: { rel: 0.005 }, show: `(0,52 − ${fmt(c * dT, 4)}) / 0,58 = ${fmt(pct, 4)} %`, why: "Il manque (0,52 − ΔT PA) ; 1 % de NaCl abaisse de 0,58 °C." },
+      { label: `NaCl pour ${V} mL (g)`, ans: g, unit: "g", tol: { rel: 0.005 }, show: `${fmt(pct, 4)} × ${V} / 100 = ${fmt(g, 4)} g`, why: "Règle de trois sur le volume." }] };
+}
+function tritEx(ug, n, per1000, label) {
+  const tot = ug * n / 1000, m = tot * 1000 / per1000;
+  return { ctx: `Rp/ éthinylestradiol ${ug} µg\n    acétate de cyprotérone 2 mg\n    pf 1 gél dt ${n}`, q: `Quantité (mg) de trituration d'éthinylestradiol à ${label} à peser ?`,
+    steps: [
+      { label: "PA total (µg)", ans: ug * n, unit: "µg", show: `${ug} × ${n} = ${ug * n} µg`, why: "Dose × nombre de gélules." },
+      { label: "PA total (mg)", ans: tot, unit: "mg", tol: { rel: 0.001 }, show: `${ug * n} µg = ${fmt(tot)} mg`, why: "On travaille en mg." },
+      { label: "Trituration à peser (mg)", ans: m, unit: "mg", tol: { rel: 0.002 }, show: `${label} : ${fmt(per1000)} mg de PA dans 1000 mg → ${fmt(tot)} × 1000 / ${fmt(per1000)} = ${fmt(m, 2)} mg`, why: "Règle de trois sur la teneur de la trituration." }] };
+}
+function tritSurd(mg, n, pct) {
+  const tot = mg * n, t = tot * 100 / pct, s = t * 1.05;
+  return { ctx: `Rp/ dexaméthasone ${fmt(mg)} mg (utiliser trituration à ${pct} %)\n    pf ${n} gélules\nLa quantité de PA par gélule est < 10 mg : surdosage de 5 % nécessaire.`, q: `Quantité (g) de trituration à ${pct} % à peser ?`,
+    steps: [
+      { label: "PA total (mg)", ans: tot, unit: "mg", tol: { rel: 0.001 }, show: `${fmt(mg)} × ${n} = ${fmt(tot)} mg`, why: "Dose × nombre." },
+      { label: "Trituration sans surdosage (mg)", ans: t, unit: "mg", tol: { rel: 0.002 }, show: `${pct} mg de PA dans 100 mg → ${fmt(tot)} × 100 / ${pct} = ${fmt(t)} mg`, why: `Trituration à ${pct} %.` },
+      { label: "Avec 5 % de surdosage (g)", ans: s / 1000, unit: "g", tol: { rel: 0.002 }, show: `${fmt(t)} × 1,05 = ${fmt(s)} mg = ${fmt(s / 1000, 4)} g`, why: "Compense les pertes sur les parois (gélules < 10 mg de PA)." }] };
+}
+function alcoPP(v, dAbs, dDil) {
+  const p = v * dAbs / dDil;
+  return { ctx: `Mélange eau-alcool à ${v}° (% V/V) ; d alcool absolu = ${fmt(dAbs)} ; d alcool dilué = ${fmt(dDil)}`, q: "Titre pondéral (% m/m) ?",
+    steps: [{ label: "% m/m", ans: p, unit: "%", tol: { rel: 0.003 }, show: `${v} × ${fmt(dAbs)} / ${fmt(dDil)} = ${fmt(p, 3)} %`, why: "% p/p = % V/V × d(alcool absolu) / d(mélange) : on passe de mL d'alcool par 100 mL à g d'alcool par 100 g." }] };
+}
+function alcoMix(L, t1, d1, p1, t2, p2, tf, df, pf) {
+  const m1 = L * 1000 * d1, P = m1 * (pf - p1) / (p2 - pf), V = P / df;
+  return { ctx: `${L} L d'alcool à ${t1}° (d = ${fmt(d1)})\nTitres pondéraux : ${t1}° = ${fmt(p1)} % ; ${tf}° = ${fmt(pf)} % ; ${t2}° = ${fmt(p2)} %\nAlcool à ${t2}° : d = ${fmt(df)}`, q: `Volume d'alcool à ${t2}° à ajouter pour obtenir un titre de ${tf}° ?`,
+    steps: [
+      { label: `Masse de l'alcool à ${t1}° (g)`, ans: m1, unit: "g", tol: { rel: 0.002 }, show: `${L * 1000} mL × ${fmt(d1)} = ${fmt(m1)} g`, why: "Les volumes ne s'additionnent pas (contraction) : on travaille en masses." },
+      { label: `Masse d'alcool à ${t2}° (g)`, ans: P, unit: "g", tol: { rel: 0.003 }, show: `${fmt(m1)} × ${fmt(p1)} + P × ${fmt(p2)} = ${fmt(pf)} × (${fmt(m1)} + P) → P = ${fmt(m1)} × (${fmt(pf)} − ${fmt(p1)}) / (${fmt(p2)} − ${fmt(pf)}) = ${fmt(P, 1)} g`, why: "Conservation de l'alcool absolu, en titres pondéraux." },
+      { label: `Volume d'alcool à ${t2}° (mL)`, ans: V, unit: "mL", tol: { rel: 0.004 }, show: `${fmt(P, 1)} / ${fmt(df)} = ${fmt(V, 1)} mL`, why: "V = m / d." }] };
+}
+function gabbro(conc, vol, cac, perDay, days, kg, lo, hi, tabMg, tabW) {
+  const daily = cac * 5 * conc * perDay, mgkg = daily / kg, need = 5 * cac * perDay * days, pa = conc * vol, nTab = Math.ceil(pa / tabMg), excess = nTab * tabMg - pa, powder = excess / tabMg * tabW;
+  return { ctx: `Rp/ Gabbroral® ${tabMg} mg\n    pf suspension à ${conc} mg/mL dt ${vol} mL\nS/ ${cac} c.à.c. ${perDay}x/jour pendant ${days} jours\nEnfant de ${kg} kg ; RCP : ${lo} à ${hi} mg/kg/jour ; 1 comprimé pèse ${tabW} mg`,
+    q: "a) Posologie correcte ? b) Assez de suspension ? c) Combien de comprimés broyer ? d) Quelle masse de poudre enlever ?",
+    steps: [
+      { label: "a) Dose journalière prescrite (mg/jour)", ans: daily, unit: "mg/j", tol: { rel: 0.002 }, show: `${cac} × 5 mL × ${conc} mg/mL × ${perDay} = ${fmt(daily)} mg/jour`, why: "1 c.à.c. = 5 mL." },
+      { label: "a) Dose maximale RCP (mg/jour)", ans: hi * kg, unit: "mg/j", show: `${hi} × ${kg} = ${hi * kg} mg/jour (min. ${lo * kg})`, why: `Soit ${fmt(mgkg, 1)} mg/kg/jour prescrits → ${mgkg > hi ? "TROP ÉLEVÉ : posologie incorrecte, on contacte le médecin" : mgkg < lo ? "trop faible" : "dans l'intervalle : correcte"}.` },
+      { label: "b) Volume nécessaire (mL)", ans: need, unit: "mL", show: `${cac} × 5 × ${perDay} × ${days} = ${need} mL`, why: `${need <= vol ? `≤ ${vol} mL : la quantité suffit` : `> ${vol} mL : la quantité ne suffit pas`}.` },
+      { label: "c) Nombre de comprimés à broyer", ans: nTab, unit: "comprimés", show: `${conc} × ${vol} = ${fmt(pa)} mg de PA → ${fmt(pa)} / ${tabMg} = ${fmt(pa / tabMg, 2)} → ${nTab} comprimés`, why: "On arrondit au comprimé entier supérieur." },
+      { label: "d) Poudre à enlever (mg)", ans: powder, unit: "mg", tol: { rel: 0.003 }, show: `PA en trop : ${nTab * tabMg} − ${fmt(pa)} = ${fmt(excess)} mg → ${fmt(excess)} / ${tabMg} × ${tabW} = ${fmt(powder, 1)} mg de poudre`, why: "Le PA est réparti dans toute la poudre du comprimé : on enlève la masse de poudre qui contient le PA en trop." }] };
+}
+
+const EXOS = [
+{ id: "x1", src: "Janvier 2021", theme: "Suppositoires", title: "Facteur de déplacement de l'ibuprofène", base: () => supEx(60, 7, 4.8, 5, 7.77, 8, "ibuprofène"),
+  variant() { const n = pick([6, 7, 10, 12]); const E = pick([0.96, 1.0, 2.0, 2.4]); const f = pick([0.5, 0.67, 0.72, 0.88, 0.9]); const nP = pick([5, 6, 10]); const nM = pick([6, 8, 10]); const u = E / (0.9 + 0.1 * f); return supEx(pick([60, 100, 150, 250, 500].filter(d => d / 1000 < E * 0.4)), n, R(E * nP), nP, Math.round(u * nM * 1000) / 1000, nM, pick(["ibuprofène", "paracétamol", "acide acétylsalicylique"])); } },
+{ id: "x2", src: "Janvier 2021", theme: "Isotonie", title: "Thiomersal isotonisé au nitrate de sodium", base: () => eqEx(300, [["thiomersal", 0.3, "g/L", 0.15]], ["nitrate de sodium", 0.67]),
+  variant() { return eqEx(pick([100, 200, 250, 300, 500]), [["thiomersal", pick([0.1, 0.2, 0.3]), "g/L", 0.15]], pick([["nitrate de sodium", 0.67], ["propylène glycol", 0.42], ["acide borique", 0.5], ["glycérol", 0.5]])); } },
+{ id: "x3", src: "Janvier 2020 · Août 2020 · Janvier 2021", theme: "Isotonie", title: "Lidocaïne HCl : méthode cryoscopique (0,5 %, 300 mL)", base: () => cryoEx(300, 0.5, 0.21, "lidocaïne HCl"),
+  variant() { return cryoEx(pick([50, 100, 180, 250, 300]), pick([0.5, 0.7, 1]), pick([0.13, 0.16, 0.21]), "lidocaïne HCl"); } },
+{ id: "x4", src: "Janvier 2021", theme: "Isotonie", title: "Lidocaïne HCl : méthode cryoscopique (0,7 %, 180 mL)", base: () => cryoEx(180, 0.7, 0.16, "lidocaïne HCl"),
+  variant() { return cryoEx(pick([60, 120, 180, 240]), pick([0.4, 0.6, 0.7, 0.8]), pick([0.14, 0.16, 0.2]), "lidocaïne HCl"); } },
+{ id: "x5", src: "Janvier 2020 · Août 2020 · Janvier 2021", theme: "Triturations", title: "Éthinylestradiol, trituration à 3 ‰", base: () => tritEx(35, 21, 3, "3 ‰"),
+  variant() { const t = pick([[1, "1 ‰"], [1.5, "1,5 ‰"], [2, "2 ‰"], [3, "3 ‰"], [10, "1 %"]]); return tritEx(pick([20, 25, 30, 35, 50]), pick([20, 21, 28, 30]), t[0], t[1]); } },
+{ id: "x6", src: "Janvier 2021", theme: "Triturations", title: "Éthinylestradiol, trituration à 1,5 ‰", base: () => tritEx(35, 21, 1.5, "1,5 ‰"), variant() { return EXOS[4].variant(); } },
+{ id: "x7", src: "Janvier 2021", theme: "Triturations", title: "Dexaméthasone 0,300 mg, trituration à 1 % + surdosage 5 %", base: () => tritSurd(0.3, 60, 1),
+  variant() { return tritSurd(pick([0.1, 0.25, 0.3, 0.35, 0.5, 0.75]), pick([20, 30, 40, 60]), pick([1, 2, 10])); } },
+{ id: "x8", src: "Janvier 2021", theme: "Triturations", title: "Dexaméthasone 0,350 mg, trituration à 2 % + surdosage 5 %", base: () => tritSurd(0.35, 40, 2), variant() { return EXOS[6].variant(); } },
+{ id: "x9", src: "Janvier 2021 (deux versions)", theme: "Alcoométrie", title: "Titre pondéral d'un alcool à 37°", base: () => alcoPP(37, 0.789, 0.952),
+  variant() { const v = pick([[37, 0.952], [43, 0.943], [40, 0.948], [60, 0.913], [70, 0.889]]); return alcoPP(v[0], 0.789, v[1]); } },
+{ id: "x10", src: "Janvier 2021", theme: "Alcoométrie", title: "Remonter 4 L d'alcool à 20° jusqu'à 40° avec de l'alcool à 95°", base: () => alcoMix(4, 20, 0.974, 16.21, 95, 92.41, 40, 0.811, 33.30),
+  variant() { const s = pick([[4, 20, 0.974, 16.21, 40, 33.30], [7, 40, 0.948, 33.30, 50, 42.43], [2, 20, 0.974, 16.21, 50, 42.43], [5, 40, 0.948, 33.30, 60, 52.09]]); return alcoMix(s[0], s[1], s[2], s[3], 95, 92.41, s[4], 0.811, s[5]); } },
+{ id: "x11", src: "Janvier 2021 (autre version)", theme: "Alcoométrie", title: "7 L d'alcool à 40° remontés avec de l'alcool à 95°", base: () => alcoMix(7, 40, 0.948, 33.30, 95, 92.41, 50, 0.811, 42.43),
+  note: "L'énoncé recopié dit « ajuster son titre à 60c » mais ne donne que le titre pondéral du 50° (42,43 %) : la correction (et l'étudiant) utilise 50°. À l'examen, utilise le titre pondéral fourni pour le titre visé.", variant() { return EXOS[9].variant(); } },
+{ id: "x12", src: "Janvier 2019 · Janvier 2022 · syllabus", theme: "Comprimés broyés", title: "Gabbroral® 250 mg en suspension à 30 mg/mL", base: () => gabbro(30, 130, 1, 4, 6, 15, 20, 30, 250, 500),
+  final: "Résultats attendus (janvier 2022) : posologie non correcte, quantité suffisante, 16 comprimés, 200 mg de poudre.",
+  variant() { return gabbro(pick([20, 25, 30]), pick([120, 130, 140, 150]), 1, pick([3, 4]), pick([5, 6, 7]), pick([12, 15, 18, 20]), 20, 30, 250, pick([500, 1000])); } },
+{ id: "x13", src: "Janvier 2019 · Janvier 2022", theme: "Isotonie", title: "Épinéphrine HCl 1 % + sulfate de zinc 0,4 %, 10 mL (NaCl puis glycérol)", base: () => eqEx(10, [["épinéphrine HCl", 1, "%", 0.26], ["sulfate de zinc", 0.4, "%", 0.15]], ["glycérol", 0.5]),
+  final: "Résultats attendus (janvier 2022) : 58 mg de NaCl ; 116 mg de glycérol (avec E = 0,5 donné dans l'énoncé).",
+  variant() { return eqEx(pick([10, 15, 20, 30]), [["épinéphrine HCl", pick([0.5, 1]), "%", 0.26], ["sulfate de zinc", pick([0.2, 0.25, 0.4]), "%", 0.15]], pick([["glycérol", 0.5], ["acide borique", 0.5], ["propylène glycol", 0.42]])); } },
+{ id: "x14", src: "Août 2019", theme: "Isotonie", title: "Collyre de « stellatropine » 20 mg dans 10 mL", base: () => eqEx(10, [["stellatropine", 20, "mg", 0.14]]),
+  final: "Question 2 de l'examen : si le médecin avait prescrit 2 dg (= 200 mg) au lieu de 20 mg, on refait le calcul : 200 mg × 0,14 = 28 mg d'équivalent NaCl → 90 − 28 = 62 mg de NaCl. C'est 10 fois la dose : on vérifie d'abord la prescription auprès du médecin avant de préparer.",
+  variant() { return eqEx(10, [[pick(["sulfate d'atropine", "stellatropine"]), pick([10, 20, 50, 100, 200]), "mg", 0.14]]); } },
+{ id: "x15", src: "Janvier 2018", theme: "Isotonie", title: "Sulfate d'atropine 100 mg, aqua q.s. 10 mL", base: () => eqEx(10, [["sulfate d'atropine", 100, "mg", 0.14]], ["agent d'E = 0,42 (propylène glycol)", 0.42]),
+  final: "Suite de l'examen : « 900 cg au lieu de 100 mg ? » → 9 g × 0,14 = 1,26 g d'équivalent NaCl dans 10 mL = 12,6 % : solution très hypertonique (la limite est 0,9 %). On ne prépare pas : on appelle le médecin (erreur d'unité probable). Note : la correction manuscrite divise 0,076 g par 0,42 (= 180 mg) ; avec du NaCl seul, la réponse est 76 mg.",
+  variant() { return eqEx(10, [["sulfate d'atropine", pick([50, 100, 150]), "mg", 0.14]], ["propylène glycol", 0.42]); } },
+{ id: "x16", src: "Août 2019", theme: "Dilutions", title: "Pommade à 0,005 % (15 g) à partir d'une solution mère",
+  base() { return { ctx: "Principe actif à 0,005 %\nexcipient q.s. ad 15 g (pommade, 2x/jour)\nOn dissout 5 mg de PA dans 10 mL d'eau.", q: "1) Masse de PA ? 2) Concentration de la solution (mg/mL) ? 3) Volume à prélever ?", steps: [
+    { label: "1) Masse de PA (mg)", ans: 0.75, unit: "mg", tol: { rel: 0.002 }, show: "0,005 g/100 g × 15 g = 0,00075 g = 0,75 mg", why: "% m/m × masse totale." },
+    { label: "2) Concentration (mg/mL)", ans: 0.5, unit: "mg/mL", show: "5 mg / 10 mL = 0,5 mg/mL", why: "On ne peut pas peser 0,75 mg : on passe par une solution." },
+    { label: "3) Volume à prélever (mL)", ans: 1.5, unit: "mL", show: "0,75 / 0,5 = 1,5 mL", why: "Volume qui contient la masse voulue." }] }; },
+  variant() { const pct = pick([0.001, 0.002, 0.005, 0.01]); const m = pick([10, 15, 20, 30, 50]); const st = pick([5, 10, 20]); const v = pick([10, 20, 25]); const pa = pct * m * 10; const c = st / v;
+    return { ctx: `Principe actif à ${fmt(pct)} %\nexcipient q.s. ad ${m} g\nOn dissout ${st} mg de PA dans ${v} mL d'eau.`, q: "Masse de PA, concentration, volume à prélever ?", steps: [
+      { label: "Masse de PA (mg)", ans: pa, unit: "mg", tol: { rel: 0.002 }, show: `${fmt(pct)} g/100 g × ${m} g = ${fmt(pa)} mg`, why: "% m/m × masse." },
+      { label: "Concentration (mg/mL)", ans: c, unit: "mg/mL", tol: { rel: 0.002 }, show: `${st} / ${v} = ${fmt(c, 4)} mg/mL`, why: "Solution mère." },
+      { label: "Volume à prélever (mL)", ans: pa / c, unit: "mL", tol: { rel: 0.003 }, show: `${fmt(pa)} / ${fmt(c, 4)} = ${fmt(pa / c, 3)} mL`, why: "V = m / C." }] }; } },
+{ id: "x17", src: "Janvier 2018", theme: "Comprimés broyés", title: "Oméprazole 5 mg dt LX, puis suspension à 1 mg/mL",
+  base() { return { ctx: "1) Rp/ oméprazole 5 mg, pf 1 gélule dt LX\n2) Formule de suspension (2 mg/mL) : oméprazole 0,200 g · bicarbonate de sodium 8,4 g · polysorbate 80 100 mg · aqua ad 100 mL\nOn veut 5 mg d'oméprazole par cuillère à café, pour le même traitement.", q: "Quantité d'oméprazole, volume total, bicarbonate ?", steps: [
+    { label: "Oméprazole total (mg)", ans: 300, unit: "mg", show: "LX = 60 → 60 × 5 = 300 mg", why: "Chiffres romains : LX = 60." },
+    { label: "Concentration voulue (mg/mL)", ans: 1, unit: "mg/mL", show: "5 mg / 5 mL = 1 mg/mL", why: "1 c.à.c. = 5 mL." },
+    { label: "Volume total de suspension (mL)", ans: 300, unit: "mL", show: "60 prises × 5 mL = 300 mL", why: "Même nombre de prises que les gélules." },
+    { label: "Bicarbonate de sodium (g)", ans: 25.2, unit: "g", show: "8,4 g/100 mL × 300 mL = 25,2 g", why: "Le bicarbonate (qui protège l'oméprazole de l'acidité gastrique) garde la concentration de la formule." }] }; },
+  variant() { const d = pick([5, 10, 20]); const n = pick([30, 40, 60]); const V = n * 5; return { ctx: `Oméprazole ${d} mg par prise, ${n} prises, en suspension (1 prise = 1 c.à.c.).\nFormule de référence : bicarbonate de sodium 8,4 g pour 100 mL.`, q: "Concentration, volume, bicarbonate ?", steps: [
+    { label: "Concentration (mg/mL)", ans: d / 5, unit: "mg/mL", show: `${d} / 5 = ${fmt(d / 5)} mg/mL`, why: "1 c.à.c. = 5 mL." },
+    { label: "Volume total (mL)", ans: V, unit: "mL", show: `${n} × 5 = ${V} mL`, why: "" },
+    { label: "Bicarbonate (g)", ans: 8.4 * V / 100, unit: "g", tol: { rel: 0.002 }, show: `8,4 × ${V} / 100 = ${fmt(8.4 * V / 100)} g`, why: "Même concentration que la formule." }] }; } },
+{ id: "x18", src: "Juin 2012 (tuyau)", theme: "Triturations", title: "20 gélules : éthinylestradiol 25 µg (trituration 1 ‰) + cyprotérone 2,5 mg (comprimés de 10 mg)",
+  base() { return { ctx: "Rp/ éthinylestradiol 25 µg\n    acétate de cyprotérone 2,5 mg\n    pf 1 gél dt 20\nTrituration d'éthinylestradiol à 1 ‰ ; comprimés de cyprotérone à 10 mg.", q: "Trituration à peser ? Comprimés de cyprotérone à broyer ?", steps: [
+    { label: "Éthinylestradiol total (mg)", ans: 0.5, unit: "mg", show: "25 µg × 20 = 500 µg = 0,5 mg", why: "" },
+    { label: "Trituration à 1 ‰ (mg)", ans: 500, unit: "mg", show: "0,5 × 1000 = 500 mg", why: "1 ‰ : 1 mg de PA dans 1000 mg." },
+    { label: "Cyprotérone totale (mg)", ans: 50, unit: "mg", show: "2,5 × 20 = 50 mg", why: "" },
+    { label: "Comprimés de 10 mg à broyer", ans: 5, unit: "comprimés", show: "50 / 10 = 5 comprimés", why: "Nombre entier : rien à retirer." }] }; },
+  variant() { return EXOS[4].variant(); } }
+];
+
+// ---------- QCM des examens ----------
+// o : propositions ; a : index de la réponse à cocher ; v : vrai/faux de chaque proposition avec explication ; amb : question ambiguë
+const QCM = [
+{ id: "q1", src: "J2020 · A2020 · J2021", th: "Solubilité", q: "Parmi les facteurs suivants, lequel n'intervient pas dans la solubilisation ?", o: ["La constante diélectrique du solvant", "La température", "La taille des particules", "Le temps", "Ils interviennent tous dans la solubilisation"], a: 3,
+  v: ["Intervient : la solubilité dépend de la polarité du solvant, liée à sa constante diélectrique (dia 141).", "Intervient : la solubilité d'un solide augmente en général avec la température (dia 144).", "Intervient sur la vitesse de dissolution (Noyes-Whitney, surface A).", "N'intervient pas : le temps ne change pas la solubilité (quantité maximale dissoute à l'équilibre).", "Faux, puisque le temps n'intervient pas."] },
+{ id: "q2", src: "J2020 · A2020 · J2021", th: "État solide", q: "La déformation élastique :", o: ["empêche la formation d'un compact", "est mieux connue sous le nom de clivage", "est responsable des phénomènes de « capping »", "est responsable des phénomènes de « lamination »", "tout est correct"], a: 4, amb: "Réponse retenue par les corrigés d'étudiants : e. Le cours dit que la déformation élastique est la CAUSE du clivage et du laminage ; elle ne « s'appelle » pas clivage (b est donc discutable). Retiens surtout le principe.",
+  v: ["Vrai : le matériau élastique relâche l'énergie quand la contrainte cesse ; ce sont la déformation plastique et la fragmentation qui forment le compact.", "Discutable : elle CAUSE le clivage, elle ne porte pas ce nom.", "Vrai : capping = décalottage = clivage du comprimé.", "Vrai : laminage (lamination).", "Réponse attendue."] },
+{ id: "q3", src: "J2020 · A2020 · J2021", th: "Systèmes dispersés", q: "Parmi ces paramètres, lequel n'intervient pas dans l'équation de Stokes ?", o: ["La force centripète", "La masse volumique de la particule", "La viscosité dynamique de l'eau", "Le diamètre apparent de la particule", "La masse volumique du liquide"], a: 0,
+  v: ["N'intervient pas : c'est l'accélération de la pesanteur g qui intervient.", "Intervient (ρp − ρl).", "Intervient, au dénominateur.", "Intervient, au carré.", "Intervient (ρp − ρl)."] },
+{ id: "q4", src: "J2020 · A2020 · J2021", th: "Solubilité", q: "Parmi les propositions suivantes, laquelle ne permet pas de modifier la solubilité d'une substance ?", o: ["L'utilisation de co-solutés", "L'augmentation de la température", "La complexation", "La modification du pH de la solution", "Ils permettent tous de modifier la solubilité"], a: 0, amb: "Piège de vocabulaire : le cours parle de CO-SOLVANTS, pas de « co-solutés ».",
+  v: ["Ne figure pas parmi les 7 moyens : on utilise des co-solvants (propylène glycol, glycérol, éthanol).", "Moyen n° 2.", "Moyen n° 5 (cyclodextrines).", "Moyen n° 3 (Henderson-Hasselbalch).", "Faux à cause du « co-soluté »."] },
+{ id: "q5", src: "J2020 · A2020 · J2021", th: "Calculs", q: "Une trituration est utile pour :", o: ["assurer un mélange homogène", "permettre de mélanger des poudres de structure granulaire différente", "permettre d'incorporer de faibles quantités de PA dans une préparation", "tout est correct", "tout est faux"], a: 2,
+  v: ["Ce n'est pas son but premier.", "Non.", "Vrai : c'est sa raison d'être (on ne pèse pas 35 µg).", "Non.", "Non."] },
+{ id: "q6", src: "J2020 · A2020 · J2021", th: "Stérilisation", q: "La stérilisation par radiation :", o: ["fait intervenir 3 grands types de radiation (électromagnétique, particulaire et hertzienne)", "n'est totalement arrêtée que par une épaisseur d'au moins 2 mètres de béton", "permet de casser l'ADN", "tout est correct", "b et c sont correctes"], a: 2,
+  v: ["Faux : 2 grands types (électromagnétiques et particulaires), pas « hertzienne ».", "Faux : le cours montre des pouvoirs de pénétration différents selon le type ; aucun chiffre de 2 m.", "Vrai : effet direct, l'ADN est la cible principale (ionisation).", "Non.", "Non."] },
+{ id: "q7", src: "J2020 · A2020 · J2021", th: "État solide", q: "L'échelle de coulabilité nous apprend :", o: ["plus l'angle de repos est élevé, plus une poudre s'écoule facilement", "plus l'angle de repos est élevé, moins une poudre s'écoule facilement", "les poudres ayant un angle de repos de 100° s'écoulent difficilement", "les poudres ayant un angle de repos de 100° s'écoulent facilement", "tout est faux"], a: 1,
+  v: ["Inverse.", "Vrai : échelle de Carr, excellent 25–30°, extrêmement faible > 66°.", "Un tas de poudre ne peut pas dépasser 90° : proposition sans sens physique.", "Faux.", "Faux."] },
+{ id: "q8", src: "J2020 · A2020 · J2021", th: "État solide", q: "La réduction de la taille des particules :", o: ["diminue la vitesse de dissolution, car les particules flottent", "diminue la vitesse de sédimentation pour une suspension", "permet de réduire la taille de la couche de diffusion", "tout est correct", "tout est faux"], a: 1,
+  v: ["Faux : elle AUGMENTE la vitesse de dissolution (surface A plus grande).", "Vrai : Stokes, v proportionnelle au diamètre au carré.", "Pas dans le cours (h dépend surtout de l'agitation).", "Non.", "Non."] },
+{ id: "q9", src: "J2020 · A2020 · J2021", th: "État solide", q: "Parmi ces propositions, laquelle est fausse ?", o: ["La taille et la forme des particules influencent la vitesse de dissolution", "… la vitesse d'écoulement des poudres", "… la stabilité des dispersions", "… la vitesse de fonte des suppositoires", "… l'homogénéité du mélange de poudres"], a: 3,
+  v: ["Vrai (dia 60).", "Vrai.", "Vrai.", "FAUX : ne fait pas partie des 6 influences de la dia 60 (la fonte dépend de l'excipient).", "Vrai."] },
+{ id: "q10", src: "J2020 · A2020 · J2021", th: "Isotonie", q: "L'abaissement cryoscopique du sérum sanguin est de :", o: ["1,52°", "0,45°", "0,52°", "0,00°", "0,58°"], a: 2,
+  v: ["Non.", "Non.", "Vrai (dia 167, « à retenir »).", "Non.", "C'est le ΔT d'une solution de NaCl à 1 %."] },
+{ id: "q11", src: "J2020 · A2020 · J2021", th: "Stérilisation", q: "La stérilisation à la chaleur humide :", o: ["nécessite des températures plus élevées que la chaleur sèche", "est recommandée pour stériliser le matériel médical métallique", "se réalise dans un autoclave", "tout est correct", "b et c sont correctes"], a: 2,
+  v: ["Inverse : 121 °C contre 160–220 °C en chaleur sèche.", "Non : le métal se stérilise à la chaleur sèche (dia 228).", "Vrai.", "Non.", "Non."] },
+{ id: "q12", src: "J2020 · A2020 · J2021", th: "Le médicament", q: "Un excipient :", o: ["est dépourvu de toxicité", "peut être responsable d'un effet placebo", "peut parfois être un principe actif", "peut modifier l'effet d'un principe actif", "tout est correct"], a: 4, amb: "Question mal construite : (a) est faux (excipients à effet notoire), mais (b), (c) et (d) sont vrais et aucune case ne regroupe b-c-d. Les corrigés d'étudiants cochent (e). À l'oral ou en question ouverte, explique pourquoi (a) est faux.",
+  v: ["Faux : il existe des excipients à effet notoire (aspartam, chlorure de benzalkonium, éthanol).", "Vrai : un placebo est fait d'excipients ; le cours dit que « placebo = inerte » est abusif.", "Vrai : silice colloïdale, acide ascorbique, hydroxyde d'aluminium.", "Vrai : il influence la biodisponibilité.", "Réponse cochée par les étudiants."] },
+{ id: "q13", src: "J2020 · A2020 · J2021", th: "Le médicament", q: "Une préparation magistrale :", o: ["a pour objectif d'individualiser le traitement", "sert à rendre un médicament moins coûteux", "n'est pas obligatoirement soumise à la prescription", "tout est correct", "tout est faux"], a: 3,
+  v: ["Vrai (dia 20).", "Vrai : intérêt économique pour certains patients.", "Vrai : « le plus souvent » sur prescription.", "Réponse.", "Non."] },
+{ id: "q14", src: "J2020 · A2020 · J2021", th: "Rhéologie", q: "Les rhéoépaississants :", o: ["se viscosifient lorsque l'on relâche la contrainte de cisaillement", "se viscosifient lorsqu'on applique une contrainte de cisaillement", "sont très utiles sur le plan pharmaceutique pour les suspensions", "tout est correct", "a et c sont correctes"], a: 1,
+  v: ["Non.", "Vrai : dilatants, la viscosité augmente avec le cisaillement (dia 208).", "Non : ce sont les rhéofluidifiants qui sont utiles pour les suspensions ; peu d'applications pour les dilatants.", "Non.", "Non."] },
+{ id: "q15", src: "J2020 · A2020 · J2021", th: "Stabilité", q: "L'équation d'Arrhenius :", o: ["permet de déterminer la vitesse de solubilisation d'une substance", "permet d'extrapoler la vitesse de dégradation d'une substance", "est basée sur une cinétique d'ordre 1", "tout est correct", "b et c sont correctes"], a: 1, amb: "Plusieurs corrigés d'étudiants cochent (e). Le cours ne dit pas qu'Arrhenius suppose un ordre 1 : il suppose seulement que l'ordre ne change pas avec la température.",
+  v: ["Non : vitesse de dégradation.", "Vrai : mesures à haute température, extrapolation à 25 °C (dia 164).", "Faux : log k = log A − Ea/2,303 RT, valable quel que soit l'ordre s'il ne change pas.", "Non.", "Non (voir c)."] },
+{ id: "q16", src: "J2020 · A2020 · J2021", th: "État solide", q: "Laquelle est incorrecte ? L'analyse granulométrique :", o: ["est nécessaire dans le contrôle des matières premières", "est nécessaire dans le contrôle « in process »", "est réalisée avant et après le broyage d'une poudre", "est réalisée afin de vérifier la contamination particulaire des solutions pour administration intramusculaire type dépôt", "est réalisée pour le contrôle de l'atmosphère"], a: 3,
+  v: ["Vrai (dia 62).", "Vrai.", "Vrai.", "Incorrect : le cours parle de la contamination particulaire des solutions INJECTABLES ; une IM dépôt est souvent une suspension.", "Vrai : contamination particulaire de l'air des salles."] },
+{ id: "q17", src: "J2020 · A2020 · J2021", th: "Stérilisation", q: "Parmi les voies suivantes, laquelle ne nécessite pas habituellement une stérilisation ?", o: ["La voie cutanée", "La voie oculaire", "La voie pulmonaire", "La voie parentérale", "Elles nécessitent toutes une stérilisation"], a: 0,
+  v: ["Vrai : sur peau saine, pas de stérilité exigée.", "Collyres stériles.", "Préparations pour inhalation stériles.", "Injectables stériles.", "Non."] },
+{ id: "q18", src: "J2020 · A2020 · J2021", th: "État solide", q: "L'analyse granulométrique :", o: ["est un test qui permet de savoir si une préparation magistrale n'est pas trop granuleuse", "est la mesure de la dimension des particules de poudre", "est importante pour utiliser l'équation de Noyes et Whitney", "tout est correct", "b et c sont correctes"], a: 1, amb: "Les étudiants hésitaient entre (b) et (e). (b) est la définition du cours ; (c) est défendable (la taille fixe la surface A), mais ce n'est pas présenté ainsi dans le cours.",
+  v: ["Non.", "Vrai : définition (dia 62).", "Défendable mais pas dans le cours.", "Non.", "Possible, voir l'avertissement."] },
+{ id: "q19", src: "J2020 · A2020 · J2021", th: "Rhéologie", q: "Les liquides thixotropes :", o: ["ont une viscosité qui dépend du traitement que l'on fait subir au liquide", "tout est correct", "b et c sont correctes", "sont responsables du phénomène d'hystérésis", "ne sont pas très utiles en pharmacotechnie"], a: 1, amb: "Les cases changent d'une version à l'autre (énoncé mal recopié). Vrai : (a) et (d). Faux : (e). Aucune case « a et d » : selon la version, les étudiants ont coché « tout est correct » ou « b et c ». Retiens le contenu.",
+  v: ["Vrai : définition des fluides non newtoniens (dia 210).", "—", "—", "Vrai : boucle d'hystérésis, mémoire de la déformation (dia 211).", "Faux : gels, suspensions, peintures…"] },
+{ id: "q20", src: "J2021", th: "Le médicament", q: "Les objectifs de la pharmacie galénique sont de :", o: ["étudier les propriétés physiques des substances actives", "rationaliser la formulation des PA pour les rendre efficaces", "fabriquer de manière reproductible un médicament", "étudier la biodisponibilité d'un principe actif", "tout est correct"], a: 4,
+  v: ["Vrai.", "Vrai : rationaliser la mise en forme des PA.", "Vrai : médicament actif, biodisponible, stable, reproductible.", "Vrai.", "Réponse."] },
+{ id: "q21", src: "J2021", th: "Systèmes dispersés", q: "Les agents tensio-actifs :", o: ["sont des composés amphibiens", "possèdent une queue polaire et une tête lipophile", "permettent de réaliser des émulsions", "tout est correct", "a et c sont correctes"], a: 2,
+  v: ["Piège : AMPHIPHILES.", "Inverse : tête polaire, queue lipophile.", "Vrai.", "Non.", "Non."] },
+{ id: "q22", src: "J2021", th: "Isotonie", q: "Parmi les préparations suivantes, laquelle ne pourrait pas être hypertonique pour des raisons thérapeutiques ?", o: ["Les préparations injectables", "Les préparations oculaires", "Les préparations à instillation pulmonaire", "Les préparations à instillation nasale", "Tout est faux"], a: 4, amb: "Question de raisonnement, pas de dia unique. Toutes peuvent être hypertoniques volontairement : NaCl hypertonique ou mannitol injectables, collyre de NaCl 5 % contre l'œdème cornéen, sérum salé hypertonique en nébulisation, sprays nasaux hypertoniques. D'où « tout est faux ».",
+  v: ["Peut l'être (ex. NaCl hypertonique).", "Peut l'être (et l'œil tolère 0,7–1,6 % de NaCl).", "Peut l'être (NaCl 7 % nébulisé).", "Peut l'être (sprays hypertoniques).", "Réponse la plus défendable."] },
+{ id: "q23", src: "J2021", th: "Le médicament", q: "Sous quelle forme doit-on retrouver l'hydrocortisone pour une administration IV ?", o: ["Sous forme de base", "Sous forme d'ammonium quaternaire", "Sous forme de 21-succinate sodique", "Sous forme de 21-acétate", "L'hydrocortisone ne s'administre pas par voie IV"], a: 2,
+  v: ["Usage topique, ORL…", "Non.", "Vrai : sel hydrosoluble (dia 29).", "Lipophile : usage local.", "Faux."] },
+{ id: "q24", src: "J2021", th: "État solide", q: "La surface spécifique d'une poudre :", o: ["est exprimée en mètre cube", "est exprimée en mètre carré", "est exprimée en unité de surface par unité de masse sèche", "est exprimée en unité de poids par unité de surface", "tout est faux"], a: 2,
+  v: ["Non.", "Incomplet : m² PAR gramme.", "Vrai : m²/g.", "Inverse.", "Non."] },
+{ id: "q25", src: "J2021", th: "Systèmes dispersés", q: "La HLB :", o: ["est une échelle semi-empirique allant de −10 à 10", "permet de classer les agents d'écoulement", "est de 1,5 à 3 pour les produits anti-mousse", "tout est correct", "a et c sont correctes"], a: 2,
+  v: ["Faux : de 1 à 40.", "Faux : elle classe les tensio-actifs.", "Vrai.", "Non.", "Non."] },
+{ id: "q26", src: "J2021", th: "Rhéologie", q: "Les agents viscosifiants permettent :", o: ["d'améliorer les propriétés gustatives d'une préparation", "d'assurer une action prolongée du principe actif", "de réaliser des gels pour application cutanée", "de fabriquer des comprimés", "tout est correct"], a: 4,
+  v: ["Vrai : retardent la perception du mauvais goût.", "Vrai : collyre visqueux.", "Vrai.", "Vrai : comprimés matriciels à matrice hydrophile.", "Réponse (liste de la dia sur les agents viscosifiants)."] },
+{ id: "q27", src: "J2021", th: "Rhéologie", q: "Les carbomères permettent :", o: ["d'améliorer les propriétés gustatives d'une préparation", "d'assurer une action prolongée du principe actif", "de réaliser des gels pour application cutanée", "de fabriquer des comprimés", "tout est correct"], a: 4,
+  v: ["Vrai : ce sont des agents viscosifiants (polymères acryliques anioniques synthétiques).", "Vrai.", "Vrai (gels de carbomère).", "Vrai (matrices).", "Réponse."] },
+{ id: "q28", src: "J2021", th: "Systèmes dispersés", q: "Un agent tensio-actif ayant une HLB inférieure à 7 :", o: ["est plus hydrophile que lipophile", "est plus lipophile qu'hydrophile", "sert pour les émulsions huile dans eau", "a et c sont correctes", "b et c sont correctes"], a: 1,
+  v: ["Inverse.", "Vrai : 7 est le pivot.", "Non : E/H (eau dans huile), HLB 3–6.", "Non.", "Non."] },
+{ id: "q29", src: "J2021", th: "Systèmes dispersés", q: "La HLB critique est :", o: ["la HLB à partir de laquelle l'émulsion va floculer", "la HLB optimale de la suspension", "la HLB à partir de laquelle le PA sera facilement remis en suspension", "définie grâce à l'observation de la stabilité de différentes émulsions de 2 phases liquides avec 2 tensio-actifs en proportions variables", "tout est faux"], a: 3,
+  v: ["Non.", "Non : de l'ÉMULSION (de l'huile).", "Non.", "Vrai : série d'émulsions avec un mélange de 2 émulsifs en proportions variables ; la plus stable donne la HLB critique (Le Hir p. 90).", "Non."] },
+{ id: "q30", src: "J2021", th: "Excipients", q: "Le stéarate de magnésium est :", o: ["tout est correct", "utilisé comme lubrifiant dans la fabrication de comprimés et de gélules", "tout est faux", "utilisé pour lutter contre les crampes nocturnes", "utilisé pour diminuer l'écoulement des poudres"], a: 1,
+  v: ["Non.", "Vrai (cours, surface spécifique).", "Non.", "Non (piège magnésium).", "Non : il AMÉLIORE l'écoulement et réduit la friction."] },
+{ id: "q31", src: "J2021", th: "État solide", q: "La masse volumique cristalline :", o: ["est inférieure à la masse volumique vrac", "est inférieure à la masse volumique particulaire", "est supérieure à la masse volumique particulaire", "prend en compte la masse volumique des espaces interparticulaires", "tout est faux"], a: 2,
+  v: ["Inverse : cristalline > particulaire > vrac.", "Inverse.", "Vrai : elle ne compte que la fraction solide, sans les pores.", "Non : c'est la masse volumique vrac.", "Non."] },
+{ id: "q32", src: "J2021", th: "État solide", q: "Le pseudopolymorphisme :", o: ["décrit les solides cristallins dans lesquels le solvant participe à la maille cristalline", "décrit la pseudosolubilisation d'un PA dans un solvant", "décrit un PA modifié par sa mise en solution", "tout est faux", "a et b sont faux"], a: 0,
+  v: ["Vrai : hydrates et solvates.", "Non (la pseudosolubilisation est micellaire).", "Non.", "Non.", "Non."] },
+{ id: "q33", src: "J2021", th: "État solide", q: "Une forme métastable :", o: ["possède une densité supérieure à la forme stable", "est moins soluble que la forme stable", "forme plus facilement des cristaux que la forme stable lorsqu'elle est mise en solution", "tout est correct", "tout est faux"], a: 4, amb: "Un étudiant a coché (a). En règle générale, la forme la plus stable est la plus dense ; le cours dit seulement que les densités diffèrent.",
+  v: ["Faux en règle générale.", "Faux : PLUS soluble, point de fusion plus bas (dia 52).", "Faux : c'est la forme stable qui cristallise depuis la solution sursaturée.", "Non.", "Réponse la plus défendable."] },
+{ id: "q34", src: "J2021", th: "Le médicament", q: "Sous quelle forme doit se trouver l'érythromycine pour la voie orale ?", o: ["Base", "Ammonium quaternaire", "Lactobionate", "Éthylsuccinate", "Ne s'administre pas par voie orale"], a: 3,
+  v: ["Usage topique.", "Non.", "Sel soluble pour l'IV.", "Vrai : ester très peu soluble pour les comprimés.", "Faux."] },
+{ id: "q35", src: "J2021", th: "État solide", q: "Le mouillage :", o: ["est défini par l'équation de Noyes et Whitney", "est défini par la tension interfaciale entre le liquide et l'air", "est complet pour un angle de 180°", "est complet pour un angle de 0°", "tout est faux"], a: 3,
+  v: ["Non : équation de Young.", "Incomplet : 3 tensions (S/A, S/L, L/A).", "Non : 180° = mouillage nul.", "Vrai : cos θ = 1.", "Non."] },
+{ id: "q36", src: "J2021", th: "État solide", q: "La déformation plastique :", o: ["empêche la formation d'un compact", "est mieux connue sous le nom de clivage", "est responsable des phénomènes de « capping »", "est responsable des phénomènes de « lamination »", "tout est faux"], a: 4,
+  v: ["Faux : elle CONTRIBUE à former le compact.", "Non.", "Non : c'est l'élastique.", "Non : c'est l'élastique.", "Réponse."] },
+{ id: "q37", src: "J2021", th: "Le médicament", q: "Une spécialité pharmaceutique :", o: ["ne possède pas de conditionnement particulier", "n'est pas différente s'il s'agit d'un médicament original ou d'un générique", "est identifiée par un nom commercial unique", "tout est correct", "tout est faux"], a: 1, amb: "Question controversée : un étudiant a coché (c), un autre l'a jugée fausse. Définition du cours : préparée à l'avance, dénomination spéciale, conditionnement particulier, PA sous DCI. Un générique reste une spécialité, d'où (b). Prépare-toi à justifier.",
+  v: ["Faux : conditionnement particulier.", "Défendable : la définition s'applique aux deux.", "Discutable : « dénomination spéciale », pas forcément un nom commercial unique (génériques DCI + firme).", "Non.", "Non."] },
+{ id: "q38", src: "J2021", th: "Voies d'administration", q: "Pour atteindre les bronchioles terminales, les particules doivent mesurer :", o: ["moins de 30 µm", "20 à 30 µm", "10 à 20 µm", "moins de 3 mm", "10 à 3 µm"], a: 4,
+  v: ["Nez, pharynx, larynx : > 30 µm.", "Trachée.", "Bronches.", "Non.", "Vrai (dia 67) ; < 3 µm : alvéoles."] },
+{ id: "q39", src: "J2021", th: "Rhéologie", q: "Les rhéofluidifiants :", o: ["se viscosifient plus on applique une contrainte", "se viscosifient moins on applique une contrainte", "se fluidifient après qu'une certaine contrainte a été appliquée", "se fluidifient moins on applique une contrainte", "tout est faux"], a: 1, amb: "Formulation maladroite : (b) veut dire que la viscosité est plus élevée quand on applique moins de contrainte, ce qui correspond bien au rhéofluidifiant. (c) décrit le seuil d'écoulement des plastiques.",
+  v: ["Inverse.", "Vrai : la viscosité diminue quand le cisaillement augmente.", "Plastique (seuil d'écoulement).", "Inverse.", "Non."] },
+{ id: "q40", src: "J2021", th: "Voies d'administration", q: "L'administration rectale permet :", o: ["une voie d'accès aisée en cas d'urgence, surtout en pédiatrie", "d'éviter en partie l'effet de premier passage hépatique", "d'améliorer la compliance au traitement", "a et b sont correctes", "tout est correct"], a: 3, amb: "La compliance n'est pas présentée comme un avantage dans le cours. Choix le plus sûr : (d).",
+  v: ["Vrai.", "Vrai : seules les veines hémorroïdales moyennes et inférieures évitent le foie.", "Non démontré.", "Réponse.", "Non."] },
+{ id: "q41", src: "J2021", th: "État solide", q: "Le polymorphisme est :", o: ["la propriété de certaines substances pures d'exister sous au moins deux formes cristallines similaires", "une propriété qui donne à certaines substances des densités similaires", "un phénomène qui permet d'expliquer la présence de formes métastables", "tout est correct", "tout est faux"], a: 2,
+  v: ["Piège : formes DIFFÉRENTES.", "Non : les polymorphes ont des densités différentes.", "Vrai.", "Non.", "Non."] },
+{ id: "q42", src: "J2021", th: "Stabilité", q: "Parmi les mécanismes suivants, lequel ne participe pas à la dégradation des substances médicamenteuses ?", o: ["L'hydrolyse", "La polymérisation", "La décomposition photochimique", "L'estérification", "L'oxydation"], a: 3,
+  v: ["Mécanisme.", "Mécanisme.", "Mécanisme.", "N'en fait pas partie.", "Mécanisme."] },
+{ id: "q43", src: "J2019 · A2019 · J2022", th: "Stérilisation", q: "Quel procédé de stérilisation n'est pas considéré comme un procédé terminal ?", o: ["Chaleur humide", "Stérilisation gazeuse", "Oxyde d'éthylène", "Filtration", "Radiation"], a: 3,
+  v: ["Terminal.", "Terminal.", "Terminal.", "Vrai : pas terminal, les virus passent (dia filtration).", "Terminal."] },
+{ id: "q44", src: "J2019 · J2022", th: "Systèmes dispersés", q: "L'équation de Stokes permet de :", o: ["calculer la vitesse de dissolution des substances", "calculer la vitesse de sédimentation des particules", "calculer le volume d'eau nécessaire pour rendre une solution isotonique", "calculer la vitesse de dégradation à température ambiante à partir de mesures à plus haute température", "calculer la tension interfaciale entre le solide et l'air"], a: 1,
+  v: ["Noyes-Whitney.", "Vrai.", "White-Vincent.", "Arrhenius.", "Young."] }
+];
+// QRM (plusieurs réponses) des sessions 2019-2022
+const QRM = [
+{ id: "m1", src: "J2019 · J2022", th: "Stabilité", q: "Lesquels font partie des mécanismes de dégradation des substances ?", o: ["Oxydation", "Décomposition photochimique", "Racémisation", "Sulfoconjugaison", "Hydrolyse"], ok: [0, 1, 2, 4], ex: "Liste du cours : hydrolyse, oxydation, isomérisation (la racémisation en est une), décomposition photochimique, polymérisation. La sulfoconjugaison est une réaction du MÉTABOLISME, pas de dégradation en flacon." },
+{ id: "m2", src: "J2019 · A2019 · J2022", th: "Isotonie", q: "Quelles préparations doivent être isotoniques aux liquides tissulaires ?", o: ["Injectables (perfusion)", "Instillation nasale", "Inhalation pulmonaire", "Préparations cutanées", "Collyres"], ok: [0, 1, 2, 4], ex: "Le cours cite : injectables, collyres, instillation nasale, inhalation pulmonaire. Pas la voie cutanée." },
+{ id: "m3", src: "J2019 · A2019 · J2022", th: "Systèmes dispersés", q: "Lesquelles sont correctes au sujet de la HLB ?", o: ["HLB 1,5–3 : agents anti-mousse", "HLB > 7 : lipophile, sert aux émulsions E/H", "Échelle semi-empirique de 1 à 40", "HLB = 7 : le PA est insoluble", "HLB 15–18 : solubilisants", "Les tensio-actifs H/E servent à stabiliser des émulsions lipophiles (E/H)"], ok: [0, 2, 4], ex: "> 7 = hydrophile (émulsions H/E, 8–18). 7 = même affinité pour l'eau et l'huile, pivot, rien à voir avec la solubilité d'un PA. 15–18 : solubilisants (Le Hir p. 90 ; le cours cite 1,5–3, 3–6 et 8–18)." },
+{ id: "m4", src: "Janvier 2018", th: "Le médicament", q: "Associe correctement les principes :", o: ["« Contraria contrariis curantur » = allopathie", "« Similia similibus curantur » = homéopathie", "« Similia similibus curantur » = allopathie", "« Contraria contrariis curantur » = homéopathie"], ok: [0, 1], ex: "Allopathie : provoquer un état contraire à l'état pathologique. Homéopathie : ce qui provoque les troubles à forte dose les guérit à dose infinitésimale." }
+];
+
+// ---------- Questions ouvertes ----------
+const OPEN = [
+{ id: "o1", src: "2008 · 2009 · 2010 · 2011 · 2012 · 2013 · 2019 · 2022", star: 3, q: "Citez et expliquez les facteurs qui influencent la solubilité, puis les méthodes pour augmenter la solubilité d'un PA. Que faire si elles échouent ?",
+  a: `<p><b>Facteurs</b> : nature des forces dans la molécule et le solvant ; solubilisation par <b>ionisation</b> (NaCl) ou par <b>polarité</b> ; <b>constante diélectrique</b> du solvant (polaires ε élevée : eau, glycérol, PG ; apolaires ε faible : huiles) ; <b>température</b> (augmente en général, exceptions : citrate de calcium, méthylcellulose) ; <b>pH</b> pour les acides et bases faibles ; état solide (polymorphisme, amorphe plus soluble).</p>
+  <p><b>Les 7 moyens</b> (dia 142, « TUYAU ») :</p><ol>
+  <li><b>Co-solvants</b> miscibles au solvant principal (propylène glycol, glycérol, éthanol ; ex. minoxidil, diazépam injectable).</li>
+  <li><b>Température</b> (attention à la dégradation ; exceptions).</li>
+  <li><b>pH</b> (Henderson-Hasselbalch) : acides faibles solubles à pH ≥ pKa + 2, bases faibles à pH ≤ pKa − 2.</li>
+  <li><b>Solubilisation micellaire</b> au-dessus de la CMC : pseudosolubilisation (vitamines liposolubles, huiles essentielles, liposomes d'amphotéricine).</li>
+  <li><b>Complexation</b> par cyclodextrines (cône tronqué, extérieur hydrophile, cavité lipophile ; β-CD la plus utilisée, néphrotoxique en injectable → hydroxypropyl) : piroxicam + β-CD = Brexine®.</li>
+  <li><b>Substances hydrotropes</b> (salting-in) : benzoate de sodium pour la caféine, nicotinamide pour la riboflavine.</li>
+  <li><b>Modification chimique</b> : sel ou ester soluble (succinate sodique de méthylprednisolone, 21-succinate sodique d'hydrocortisone en IV).</li></ol>
+  <p><b>Si tout échoue</b> : formuler une <b>suspension</b> (ou une émulsion si le PA est huileux).</p>`,
+  keys: ["ionisation et polarité", "constante diélectrique", "température + exceptions", "pH + Henderson-Hasselbalch (pKa ± 2)", "les 7 moyens avec 1 exemple chacun", "CMC / pseudosolubilisation", "cyclodextrines : structure + Brexine®", "hydrotropes : caféine, riboflavine", "suspension si échec"] },
+{ id: "o2", src: "2010 · 2011 · 2013 · 2019 · août 2019 · 2022", star: 3, q: "Expliquez le graphique du palmitate de chloramphénicol : que montre-t-il, quelle propriété fondamentale de l'état solide illustre-t-il, et qu'est-ce que la sursaturation ?",
+  a: `<p><b>Le graphique</b> : concentrations sériques de chloramphénicol (µg/mL) en fonction du temps (0 à 24 h) après des suspensions contenant des proportions variables de forme <b>α (stable)</b> et <b>β (métastable)</b> : M = 100 % α, N = 25:75 β:α, O = 50:50, P = 75:25, L = 100 % β.</p>
+  <p><b>Lecture</b> : plus la proportion de forme <b>métastable β</b> augmente, plus le pic sérique est élevé (≈ 22 µg/mL avec 100 % β contre ≈ 2–3 µg/mL avec 100 % α). Même PA, même dose : la biodisponibilité change avec la forme cristalline.</p>
+  <p><b>Propriété</b> : le <b>polymorphisme</b>, capacité d'une substance pure d'exister sous au moins deux structures cristallines différentes. Une seule forme est stable à T et P données ; les autres sont <b>métastables</b> : point de fusion plus bas, <b>solubilité et vitesse de dissolution plus élevées</b>. Le palmitate (prodrogue) doit être hydrolysé, ce qui exige qu'il soit dissous : la forme β, plus soluble, est mieux absorbée.</p>
+  <p><b>Sursaturation</b> : une solution contient plus de soluté que la solubilité d'équilibre (de la forme stable) à cette température. La forme métastable, plus soluble, peut donner une concentration supérieure à la solubilité de la forme stable : la solution est sursaturée, donc instable, et la forme stable finit par précipiter (cristallisation).</p>
+  <p><b>Conséquence pratique</b> : contrôler la forme cristalline des matières premières ; la forme métastable n'est utilisable que si sa conversion est lente pendant la durée de vie du médicament.</p>`,
+  keys: ["axes : taux sériques / temps", "α stable, β métastable, mélanges", "plus de β → taux sériques plus élevés", "polymorphisme : définition", "métastable : plus soluble, fusion plus basse", "biodisponibilité", "sursaturation : définition + précipitation de la forme stable"] },
+{ id: "o3", src: "2013 · 2018 · 2019 · août 2019 · 2022", star: 3, q: "Citez les différentes voies d'administration et donnez un exemple de forme galénique pour chacune.",
+  a: `<ul><li><b>Orale</b> : perorale et sublinguale ; comprimés, gélules, solutions, suspensions, sirops (sublingual : comprimé sous la langue).</li>
+  <li><b>Parentérale</b> : intravasculaire (IV) et extravasculaire (IM, SC) ; solutions injectables, perfusions.</li>
+  <li><b>Rectale</b> : suppositoires, rectioles, lavements.</li>
+  <li><b>Pulmonaire</b> : poudres pour inhalation, aérosols-doseurs, liquides pour nébulisation.</li>
+  <li><b>Cutanée</b> : action locale (gels, crèmes) ou systémique (patchs, systèmes transdermiques TTS).</li>
+  <li><b>Oculaire</b> : collyres, pommades ophtalmiques, injections intraoculaires (Lucentis®, ranibizumab).</li>
+  <li><b>Nasale</b> : gouttes, sprays, pommades ; parfois systémique (desmopressine, Minirin® spray).</li>
+  <li><b>Vaginale</b> : comprimés, ovules, liquides pour irrigation, formes semi-solides.</li></ul>`,
+  keys: ["8 voies", "orale : per os + sublinguale", "parentérale : IV / IM / SC", "rectale", "pulmonaire", "cutanée locale / systémique (TTS)", "oculaire", "nasale (+ systémique : desmopressine)", "vaginale", "un exemple de forme pour chacune"] },
+{ id: "o4", src: "2009 · 2012 · 2013 (+ annotation « question d'examen »)", star: 2, q: "Décrivez les différents types de fluides en rhéologie, avec leurs graphiques, et comment on peut viscosifier une solution.",
+  a: `<p><b>Grandeurs</b> : contrainte de cisaillement τ, vitesse de cisaillement D, viscosité η = τ/D (Pa·s ; 1 Pa·s = 10 P) ; la viscosité des liquides diminue quand la température augmente.</p>
+  <ul><li><b>Newtoniens</b> : viscosité constante quelle que soit la contrainte. D = f(τ) est une droite passant par l'origine ; η = f(D) est horizontale. Ex. : eau.</li>
+  <li><b>Rhéofluidifiants (pseudoplastiques)</b> : la viscosité diminue avec le cisaillement, ils se fluidifient sous agitation (utiles pour les suspensions). Ex. : dispersions de méthylcellulose, gommes, alginate de sodium.</li>
+  <li><b>Rhéoépaississants (dilatants)</b> : la viscosité augmente avec le cisaillement. Peu d'applications : pâtes, suspensions très chargées.</li>
+  <li><b>Plastiques</b> : ne s'écoulent qu'au-delà d'un <b>seuil d'écoulement</b> (ordonnée à l'origine), qui correspond à la force pour vaincre la cohésion.</li>
+  <li><b>Thixotropes</b> : la viscosité diminue avec le temps d'agitation puis revient au repos ; mémoire de la déformation = <b>hystérésis</b>. Ex. : gels.</li></ul>
+  <p><b>Viscosifier</b> : polymères (colloïdes lyophiles) qui s'entourent d'une couche de solvatation : celluloses (hypromellose, CMC sodique, méthylcellulose), gommes, alginates, carbomères. Utilité : ralentir la sédimentation ou le crémage (Stokes), masquer le goût, prolonger l'action (collyre visqueux), gels cutanés, comprimés matriciels, effet muco-adhésif.</p>`,
+  keys: ["τ, D, η = τ/D, Pa·s", "newtonien : graphiques", "rhéofluidifiant + exemple", "rhéoépaississant", "plastique : seuil d'écoulement", "thixotrope : hystérésis, gels", "agents viscosifiants + usages"] },
+{ id: "o5", src: "2008 · 2010 · 2011 · 2012 · août 2019", star: 2, q: "Quelles sont les influences de la taille des particules ? Énoncez et expliquez la loi de Stokes, et l'influence de la viscosité sur la sédimentation.",
+  a: `<p><b>Les 6 influences</b> (dia 60) : 1) vitesse de dissolution (Noyes-Whitney : petites particules = plus de surface = dissolution plus rapide, in vitro et in vivo) ; 2) écoulement des poudres (grosses sphériques coulent mieux que petites irrégulières) ; 3) homogénéité du mélange et sa stabilité ; 4) efficacité des lubrifiants (comprimés, gélules) ; 5) dépôt des particules inhalées (fraction respirable 1–6 µm) ; 6) stabilité des dispersions (suspensions, émulsions).</p>
+  <p><b>Loi de Stokes</b> : v = 2 r² g (ρp − ρl) / 9 η (ou avec le diamètre : d² g (ρp − ρl) / 18 η). La vitesse de sédimentation augmente avec le carré de la taille et la différence de masse volumique, et diminue quand la viscosité du liquide augmente.</p>
+  <p><b>Stabiliser</b> : microniser (r ↓), rapprocher les densités, <b>augmenter la viscosité de la phase externe</b> avec un agent viscosifiant : la sédimentation (suspension, E/H) ou le crémage (H/E) ralentit.</p>`,
+  keys: ["6 influences", "Noyes-Whitney", "fraction respirable 1–6 µm", "formule de Stokes et ses termes", "r² : micronisation", "viscosité au dénominateur", "agents viscosifiants"] },
+{ id: "o6", src: "2008 · 2009 · 2010 · 2011", star: 2, q: "Définissez préparation magistrale, préparation officinale et spécialité. Dans quelles circonstances la préparation magistrale est-elle indiquée ?",
+  a: `<ul><li><b>Magistrale</b> : préparée <b>extemporanément</b> à l'officine, sous la surveillance du pharmacien, le plus souvent sur <b>prescription</b>. Ex. : ergotamine 1 mg + caféine 100 mg + cyclizine 50 mg, pf 1 gélule dt XX.</li>
+  <li><b>Officinale</b> : composition et mode de préparation fixés par une <b>Pharmacopée ou un formulaire officiel</b> ; peut être préparée à l'avance ou achetée chez le grossiste. Ex. : eau de Dalibour (PBV).</li>
+  <li><b>Spécialité</b> : préparée à l'avance, mise sur le marché sous une <b>dénomination spéciale</b> et un <b>conditionnement particulier</b> ; PA sous DCI + excipients. Ex. : Mobic® (méloxicam 15 mg).</li></ul>
+  <p><b>Intérêts de la magistrale</b> : individualiser la posologie (âge, évolution de la maladie) ; associer des principes actifs ; spécialité non disponible ; intérêt économique pour certains patients.</p>`,
+  keys: ["extemporanée, prescription (le plus souvent)", "Pharmacopée / formulaire, à l'avance", "dénomination spéciale + conditionnement particulier + DCI", "4 circonstances", "un exemple pour chaque"] },
+{ id: "o7", src: "Janvier 2018", star: 1, q: "Qu'est-ce qu'un excipient à effet notoire ? Donnez des exemples de la liste.",
+  a: `<p>Excipient dont la présence peut nécessiter des <b>précautions d'emploi</b> pour certaines catégories de patients. Il contredit l'idée ancienne de l'excipient inerte.</p>
+  <ul><li><b>Aspartam (E951)</b> : source de phénylalanine, contre-indiqué en cas de phénylcétonurie.</li>
+  <li><b>Chlorure de benzalkonium</b> : irritation, eczéma de contact, bronchospasme ; en collyre, altère les lentilles de contact.</li>
+  <li><b>Éthanol</b> : au-delà de 50 mg par dose journalière, dangereux en cas de maladie du foie, d'alcoolisme, d'épilepsie, chez la femme enceinte et l'enfant de moins de 12 ans ; au-delà de 3 g, contre-indiqué chez eux et diminue les réactions au volant.</li></ul>`,
+  keys: ["définition : précautions d'emploi", "aspartam / phénylcétonurie", "benzalkonium / lentilles, bronchospasme", "éthanol : seuils 50 mg et 3 g"] },
+{ id: "o8", src: "2008 · cours", star: 1, q: "La structure cristalline et son influence sur la biodisponibilité.",
+  a: `<p>Solides cristallins : arrangements ordonnés (maille, 7 systèmes : cubique, tétragonal, orthorhombique, monoclinique, triclinique, hexagonal, rhomboédrique) ; amorphes : désordonnés et souvent plus solubles. <b>Polymorphisme</b> : formes différentes de densité, point de fusion, spectres, solubilité et vitesse de dissolution, d'où des différences de biodisponibilité (palmitate de chloramphénicol). <b>Pseudopolymorphisme</b> : hydrates et solvates ; les hydrates sont en général moins solubles (l'ampicilline anhydre est plus soluble que le trihydrate) ; la granulation humide peut créer un hydrate et le séchage une forme anhydre.</p>`,
+  keys: ["cristallin vs amorphe", "polymorphisme : propriétés qui diffèrent", "métastable plus soluble", "chloramphénicol", "hydrates / solvates, ampicilline", "granulation humide"] },
+{ id: "o9", src: "Tuyau (dia 67) + J2021", star: 1, q: "Replacez l'échelle de taille des particules dans les voies aériennes.",
+  a: `<ul><li><b>> 30 µm</b> : fosses nasales, pharynx, larynx</li><li><b>20–30 µm</b> : trachée</li><li><b>10–20 µm</b> : bronches et bronchioles</li><li><b>3–10 µm</b> : bronchioles terminales</li><li><b>< 3 µm</b> : canaux alvéolaires et alvéoles</li></ul><p>Fraction respirable : 1–6 µm.</p>`,
+  keys: [">30 nez/pharynx/larynx", "20–30 trachée", "10–20 bronches", "3–10 bronchioles terminales", "<3 alvéoles"] },
+{ id: "o10", src: "Tuyau (dia 176)", star: 1, q: "Quelle concentration de NaCl l'œil peut-il tolérer sans gêne ? Que retenir de l'isotonie ?",
+  a: `<p>Isotonie = 0,9 % de NaCl, ΔT = 0,52 °C (plasma et larmes). L'œil tolère une certaine hypo- et hypertonie : <b>0,7 à 1,6 % de NaCl</b>. En dessous ou au-dessus : gêne douloureuse. Les hématies se gonflent (turgescence) dans NaCl 0,4 % et se rétractent (plasmolyse) dans NaCl 5 %.</p>`,
+  keys: ["0,9 % / 0,52 °C", "0,7–1,6 %", "hypotonique : turgescence", "hypertonique : plasmolyse"] }
+];
+
+const $ = s => document.querySelector(s);
+const KEY = "mphab311-examens";
+let S; try { S = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { S = {}; }
+S.q = S.q || {}; S.x = S.x || {}; S.o = S.o || {}; S.m = S.m || {};
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
+const TABS = [["home", "🎯 Ce qui tombe"], ["exo", "🧮 Exercices"], ["qcm", "✅ QCM"], ["qrm", "☑️ QRM"], ["open", "📝 Questions ouvertes"], ["blanc", "🧪 Examen blanc"]];
+let cur = "home";
+function go(t) { cur = t; stopTimer(); $("#nav").innerHTML = TABS.map(([k, l]) => `<button class="${k === t ? "on" : ""}" onclick="go('${k}')">${l}</button>`).join(""); VIEWS[t](); window.scrollTo(0, 0); }
+const stars = n => `<span class="stars">${"★".repeat(n)}${"☆".repeat(3 - n)}</span>`;
+
+// ---------- Accueil ----------
+function home() {
+  const qd = QCM.filter(q => S.q[q.id]), qok = qd.filter(q => S.q[q.id].last).length;
+  const xd = EXOS.filter(x => S.x[x.id]), xok = xd.filter(x => S.x[x.id].last).length;
+  const od = OPEN.filter(o => S.o[o.id] != null);
+  $("#view").innerHTML = `
+  <div class="box ko"><b>Règle de l'examen</b> : écrit, questions ouvertes + QCM éventuel. La <b>première partie (exercices de calcul) est éliminatoire</b> : une seule réponse fausse = échec pour tout le cours. Un ancien étudiant rapporte qu'une erreur grave (dose × 10) annule la copie.</div>
+  <div class="grid3">
+    <div class="stat">Exercices réussis<b>${xok} / ${EXOS.length}</b><div class="bar"><i style="width:${xok / EXOS.length * 100}%"></i></div></div>
+    <div class="stat">QCM justes (dernier essai)<b>${qok} / ${QCM.length}</b><div class="bar"><i style="width:${qok / QCM.length * 100}%"></i></div></div>
+    <div class="stat">Questions ouvertes travaillées<b>${od.length} / ${OPEN.length}</b><div class="bar"><i style="width:${od.length / OPEN.length * 100}%"></i></div></div>
+  </div>
+  <div class="card"><h2>Ce qui revient d'une année à l'autre</h2>
+  <table><tr><th>Sujet</th><th>Sessions</th><th>Priorité</th></tr>
+  ${FREQ.map(f => `<tr><td><b>${f.t}</b>${f.note ? `<div class="sub">${f.note}</div>` : ""}</td><td class="sub">${f.s}</td><td>${stars(f.p)}</td></tr>`).join("")}</table></div>
+  <div class="card"><h2>Comment utiliser cette page</h2>
+  <ol><li><b>Exercices</b> : fais chaque énoncé original, puis 2 ou 3 variantes (bouton « ↻ Variante »). Objectif : 100 % juste, plusieurs jours de suite.</li>
+  <li><b>QCM</b> : les mêmes questions reviennent presque mot pour mot depuis 2019. Lis l'explication de chaque proposition, pas seulement la bonne réponse. Les questions marquées ⚠️ sont mal construites ou controversées : sache justifier.</li>
+  <li><b>Questions ouvertes</b> : rédige d'abord sans regarder, puis compare avec le corrigé et coche les points cités. C'est l'entraînement le plus efficace pour la mémoire à long terme.</li>
+  <li><b>Examen blanc</b> : dans les 10 derniers jours, en conditions réelles.</li></ol></div>`;
+}
+
+// ---------- Exercices ----------
+const CUR = {};
+function exo() {
+  const themes = [...new Set(EXOS.map(x => x.theme))];
+  $("#view").innerHTML = `<div class="box warn">Remplis chaque étape puis clique « Vérifier ». Les virgules sont acceptées. Arrondis comme à l'examen (2 à 4 décimales) : une petite tolérance est prévue.</div>` +
+    themes.map(t => `<h2 style="margin-top:18px">${t}</h2>` + EXOS.filter(x => x.theme === t).map(x => `<div class="card" id="c-${x.id}"></div>`).join("")).join("");
+  EXOS.forEach(x => { CUR[x.id] = { ex: x.base(), orig: true }; drawExo(x.id); });
+}
+function drawExo(id, box) {
+  const x = EXOS.find(e => e.id === id), c = CUR[id], el = box || $("#c-" + id), st = S.x[id];
+  el.innerHTML = `<div class="row" style="justify-content:space-between"><div><span class="pill">${x.src}</span>${st ? (st.last ? `<span class="pill" style="background:var(--ok-soft);color:var(--ok)">✔ réussi</span>` : `<span class="pill" style="background:var(--ko-soft);color:var(--ko)">à refaire</span>`) : ""}</div><div>${c.orig ? "" : `<span class="pill th">variante</span>`}</div></div>
+  <h3>${x.title}</h3><pre>${c.ex.ctx}</pre><div><b>${c.ex.q}</b></div>
+  ${c.ex.steps.map((s, k) => `<div class="step"><span>${s.label}</span><input id="i-${id}-${k}" inputmode="decimal" onkeydown="if(event.key==='Enter')checkExo('${id}')"><span class="u">${s.unit || ""}</span><div class="corr hidden" id="k-${id}-${k}">${s.show}${s.why ? `<br><span class="sub">${s.why}</span>` : ""}</div></div>`).join("")}
+  <div class="row" style="margin-top:8px"><button class="btn primary" onclick="checkExo('${id}')">Vérifier</button><button class="btn" onclick="solExo('${id}')">Correction complète</button><button class="btn" onclick="varExo('${id}')">↻ Variante</button>${c.orig ? "" : `<button class="btn" onclick="CUR['${id}']={ex:EXOS.find(e=>e.id==='${id}').base(),orig:true};drawExo('${id}')">↺ Énoncé original</button>`}</div>
+  <div id="r-${id}"></div>${c.orig && (x.final || x.note) ? `<div class="box info hidden" id="f-${id}">${x.final || ""}${x.note ? `<br>⚠️ ${x.note}` : ""}</div>` : ""}`;
+}
+function checkExo(id) {
+  const c = CUR[id]; let ok = 0;
+  c.ex.steps.forEach((s, k) => { const inp = $(`#i-${id}-${k}`); const good = near(parseNum(inp.value), s.ans, s.tol); inp.className = inp.value ? (good ? "good" : "bad") : ""; if (good) ok++; else if (inp.value) $(`#k-${id}-${k}`).classList.remove("hidden"); });
+  const all = ok === c.ex.steps.length;
+  $("#r-" + id).innerHTML = all ? `<div class="box ok">✔ Tout est juste. Refais une variante dans quelques jours pour vérifier que c'est automatique.</div>` : `<div class="box ko">${ok} / ${c.ex.steps.length} étapes justes. Les corrections des étapes fausses sont affichées ; recommence sans regarder.</div>`;
+  if (c.orig || all) { S.x[id] = { last: all, n: ((S.x[id] || {}).n || 0) + 1 }; save(); }
+  const f = $("#f-" + id); if (f && all) f.classList.remove("hidden");
+}
+function solExo(id) { CUR[id].ex.steps.forEach((s, k) => $(`#k-${id}-${k}`).classList.remove("hidden")); const f = $("#f-" + id); if (f) f.classList.remove("hidden"); }
+function varExo(id) { CUR[id] = { ex: EXOS.find(e => e.id === id).variant(), orig: false }; drawExo(id); }
+
+// ---------- QCM ----------
+let QF = { th: "all", mode: "all" };
+function qcm() {
+  const th = [...new Set(QCM.map(q => q.th))];
+  let list = QCM.filter(q => QF.th === "all" || q.th === QF.th);
+  if (QF.mode === "err") list = list.filter(q => S.q[q.id] && !S.q[q.id].last);
+  if (QF.mode === "new") list = list.filter(q => !S.q[q.id]);
+  if (QF.mode === "mix") list = shuffle(list);
+  $("#view").innerHTML = `<div class="card row"><label>Thème <select onchange="QF.th=this.value;qcm()"><option value="all">Tous (${QCM.length})</option>${th.map(t => `<option ${QF.th === t ? "selected" : ""}>${t}</option>`).join("")}</select></label>
+  <label>Afficher <select onchange="QF.mode=this.value;qcm()"><option value="all" ${QF.mode === "all" ? "selected" : ""}>Toutes, dans l'ordre</option><option value="mix" ${QF.mode === "mix" ? "selected" : ""}>Toutes, mélangées</option><option value="new" ${QF.mode === "new" ? "selected" : ""}>Jamais faites</option><option value="err" ${QF.mode === "err" ? "selected" : ""}>Mes erreurs</option></select></label><span class="sub">${list.length} question(s)</span></div>` +
+    (list.length ? list.map((q, i) => qcard(q, i + 1)).join("") : `<div class="card">Rien à afficher ici 🎉</div>`);
+}
+function qcard(q, n) {
+  return `<div class="card" id="q-${q.id}"><div><span class="pill">${q.src}</span><span class="pill th">${q.th}</span>${q.amb ? `<span class="pill" style="background:var(--warn-soft);color:var(--warn)">⚠️ ambiguë</span>` : ""}</div>
+  <h3>${n}. ${q.q}</h3>${q.o.map((o, k) => `<button class="opt" id="o-${q.id}-${k}" onclick="ans('${q.id}',${k})">${"abcde"[k]}. ${o}</button>`).join("")}<div id="e-${q.id}"></div></div>`;
+}
+function ans(id, k) {
+  const q = QCM.find(x => x.id === id); if ($(`#o-${id}-0`).classList.contains("done")) return;
+  const ok = k === q.a; S.q[id] = { last: ok, n: ((S.q[id] || {}).n || 0) + 1 }; save();
+  q.o.forEach((o, j) => { const b = $(`#o-${id}-${j}`); b.classList.add("done"); if (j === q.a) b.classList.add("right"); else if (j === k) b.classList.add("wrong"); b.innerHTML += `<span class="vf">${q.v[j]}</span>`; });
+  $("#e-" + id).innerHTML = `<div class="box ${ok ? "ok" : "ko"}">${ok ? "✔ Juste." : `✘ Réponse attendue : ${"abcde"[q.a]}.`}</div>${q.amb ? `<div class="box warn">⚠️ ${q.amb}</div>` : ""}`;
+}
+
+// ---------- QRM ----------
+function qrm() {
+  $("#view").innerHTML = `<div class="box info">Plusieurs réponses possibles : coche toutes celles qui sont justes, puis valide.</div>` + QRM.map(m => `<div class="card" id="m-${m.id}"><span class="pill">${m.src}</span><span class="pill th">${m.th}</span><h3>${m.q}</h3>
+  ${m.o.map((o, k) => `<label class="opt" id="mo-${m.id}-${k}"><input type="checkbox" id="mc-${m.id}-${k}"> ${o}</label>`).join("")}
+  <button class="btn primary" onclick="valQrm('${m.id}')">Valider</button><div id="me-${m.id}"></div></div>`).join("");
+}
+function valQrm(id) {
+  const m = QRM.find(x => x.id === id); let ok = true;
+  m.o.forEach((o, k) => { const c = $(`#mc-${id}-${k}`).checked, should = m.ok.includes(k); if (c !== should) ok = false; $(`#mo-${id}-${k}`).classList.add(should ? "right" : (c ? "wrong" : "x")); });
+  S.m[id] = ok; save();
+  $("#me-" + id).innerHTML = `<div class="box ${ok ? "ok" : "ko"}">${ok ? "✔ Tout juste." : "✘ Pas tout à fait (en vert : les bonnes réponses)."} ${m.ex}</div>`;
+}
+
+// ---------- Questions ouvertes ----------
+function open_() {
+  $("#view").innerHTML = `<div class="box info">Écris ta réponse comme à l'examen, sans regarder le cours. Puis ouvre le corrigé et coche honnêtement les points que tu as cités : le score est enregistré.</div>` + OPEN.map(o => `<div class="card" id="op-${o.id}"><div><span class="pill">${o.src}</span>${stars(o.star)}${S.o[o.id] != null ? `<span class="pill">dernier score : ${S.o[o.id]} %</span>` : ""}</div><h3>${o.q}</h3>
+  <textarea id="t-${o.id}" placeholder="Ta réponse…"></textarea><button class="btn primary" onclick="showOpen('${o.id}')">Voir le corrigé</button>
+  <div id="oc-${o.id}" class="hidden"><div class="box info">${o.a}</div><b>Coche ce que tu as cité :</b><div class="keys">${o.keys.map((k, i) => `<label><input type="checkbox" id="ok-${o.id}-${i}" onchange="scoreOpen('${o.id}')"> ${k}</label>`).join("")}</div><div id="os-${o.id}"></div></div></div>`).join("");
+}
+function showOpen(id) { $("#oc-" + id).classList.remove("hidden"); }
+function scoreOpen(id) { const o = OPEN.find(x => x.id === id); const n = o.keys.filter((k, i) => $(`#ok-${id}-${i}`).checked).length; const p = Math.round(n / o.keys.length * 100); S.o[id] = p; save(); $("#os-" + id).innerHTML = `<div class="box ${p >= 80 ? "ok" : "warn"}">${p} % des points clés. ${p >= 80 ? "Bien : refais-la dans une semaine." : "Relis le corrigé, puis réécris ta réponse demain sans regarder."}</div>`; }
+
+// ---------- Examen blanc ----------
+let T = null, BL = null;
+function stopTimer() { if (T) { clearInterval(T); T = null; } }
+function blanc() {
+  $("#view").innerHTML = `<div class="card"><h2>Examen blanc</h2><p>Composition tirée au hasard, comme les vraies sessions :</p><ul><li><b>3 exercices de calcul</b> (variantes des exercices d'examen), <b>éliminatoires</b> ;</li><li><b>12 QCM</b> ;</li><li><b>2 questions ouvertes</b>, corrigées par toi avec la grille.</li></ul><p>Durée conseillée : 2 heures, sans calculatrice si tu veux t'entraîner comme en 2009.</p><button class="btn primary" onclick="startBlanc()">Commencer</button></div>`;
+}
+function startBlanc() {
+  const ex = shuffle(EXOS).slice(0, 3).map(x => ({ id: x.id, title: x.title, ex: x.variant() }));
+  const qs = shuffle(QCM).slice(0, 12), op = shuffle(OPEN.filter(o => o.star >= 2)).slice(0, 2);
+  BL = { ex, qs, op, ans: {}, end: Date.now() + 2 * 3600e3 };
+  $("#view").innerHTML = `<div class="card row" style="justify-content:space-between;position:sticky;top:52px;z-index:4"><b>Examen blanc</b><span>⏱ <span class="timer" id="tm"></span></span><button class="btn primary" onclick="endBlanc()">Rendre ma copie</button></div>
+  <h2>Partie 1 · Exercices (éliminatoire)</h2>${ex.map((e, i) => `<div class="card"><h3>Exercice ${i + 1}</h3><pre>${e.ex.ctx}</pre><b>${e.ex.q}</b>${e.ex.steps.map((s, k) => `<div class="step"><span>${s.label}</span><input id="b-${i}-${k}" inputmode="decimal"><span class="u">${s.unit || ""}</span><div class="corr hidden" id="bk-${i}-${k}">${s.show}</div></div>`).join("")}</div>`).join("")}
+  <h2>Partie 2 · QCM</h2>${qs.map((q, i) => `<div class="card"><h3>${i + 1}. ${q.q}</h3>${q.o.map((o, k) => `<label class="opt" id="bo-${i}-${k}"><input type="radio" name="bq${i}" value="${k}"> ${"abcde"[k]}. ${o}<span class="vf hidden">${q.v[k]}</span></label>`).join("")}</div>`).join("")}
+  <h2>Partie 3 · Questions ouvertes</h2>${op.map((o, i) => `<div class="card"><h3>${o.q}</h3><textarea></textarea><div class="hidden" id="bc-${i}"><div class="box info">${o.a}</div><div class="keys">${o.keys.map((k, j) => `<label><input type="checkbox" class="bkey-${i}"> ${k}</label>`).join("")}</div></div></div>`).join("")}
+  <button class="btn primary" onclick="endBlanc()">Rendre ma copie</button><div id="bres"></div>`;
+  const tick = () => { const s = Math.max(0, Math.round((BL.end - Date.now()) / 1000)); $("#tm").textContent = `${Math.floor(s / 3600)}:${String(Math.floor(s / 60) % 60).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`; if (!s) endBlanc(); };
+  tick(); T = setInterval(tick, 1000);
+}
+function endBlanc() {
+  if (!BL || BL.done) return; BL.done = true; stopTimer();
+  let exOk = 0, exTot = 0, elim = false;
+  BL.ex.forEach((e, i) => e.ex.steps.forEach((s, k) => { exTot++; const inp = $(`#b-${i}-${k}`); const g = near(parseNum(inp.value), s.ans, s.tol); inp.className = g ? "good" : "bad"; if (g) exOk++; else { elim = true; $(`#bk-${i}-${k}`).classList.remove("hidden"); } }));
+  let qOk = 0; BL.qs.forEach((q, i) => { const r = document.querySelector(`input[name=bq${i}]:checked`); const k = r ? +r.value : -1; if (k === q.a) qOk++; q.o.forEach((o, j) => { const el = $(`#bo-${i}-${j}`); if (j === q.a) el.classList.add("right"); else if (j === k) el.classList.add("wrong"); el.querySelector(".vf").classList.remove("hidden"); }); });
+  BL.op.forEach((o, i) => $("#bc-" + i).classList.remove("hidden"));
+  $("#bres").innerHTML = `<div class="card"><h2>Résultat</h2>${elim ? `<div class="box ko"><b>Partie éliminatoire : échec</b> (${exOk}/${exTot} étapes justes). À l'examen, une seule erreur de calcul suffit à échouer : refais ces exercices jusqu'à 100 %.</div>` : `<div class="box ok"><b>Partie éliminatoire réussie</b> (${exOk}/${exTot}).</div>`}
+  <p>QCM : <span class="score">${qOk} / ${BL.qs.length}</span></p><p>Questions ouvertes : coche les points cités dans les corrigés affichés plus haut.</p></div>`;
+  $("#bres").scrollIntoView({ behavior: "smooth" });
+}
+const VIEWS = { home, exo, qcm, qrm, open: open_, blanc };
+go("home");
+</script>
+</body>
+</html>
