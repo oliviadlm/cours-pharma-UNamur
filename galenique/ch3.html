@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MPHAB311 · Ch. 3 Solutions</title>
+<style>
+:root{
+  --bg:#f6f4ee; --card:#fff; --ink:#1d2629; --muted:#687276; --line:#e3ded3;
+  --accent:#2f6f62; --accent-ink:#fff; --accent-soft:#e2eee9;
+  --ok:#2e7d4f; --ok-soft:#e4f3e9; --ko:#b3412f; --ko-soft:#fbe8e3;
+  --warn:#9a6a00; --warn-soft:#fff4d6; --info-soft:#eaf0fb; --r:14px;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#17191a; --card:#222527; --ink:#ecebe6; --muted:#9aa3a6; --line:#34393b;
+  --accent:#7cc4b2; --accent-ink:#0f201b; --accent-soft:#233630;
+  --ok:#7fd29d; --ok-soft:#1f3527; --ko:#f0907d; --ko-soft:#3a2420;
+  --warn:#f0c869; --warn-soft:#3a3320; --info-soft:#232c3a;}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:820px;margin:0 auto;padding:18px 14px 60px}
+header .kick{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+header h1{font-size:21px;line-height:1.25;margin:3px 0 2px}
+header p{margin:0;color:var(--muted);font-size:14px}
+nav.tabs{display:flex;gap:4px;flex-wrap:wrap;margin:14px 0 14px}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:13.5px;
+  padding:6px 11px;border-radius:999px;cursor:pointer}
+nav.tabs button.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-bottom:12px}
+h2{font-size:18px;margin:0 0 8px} h3{font-size:16px;margin:14px 0 6px}
+.muted{color:var(--muted)} .small{font-size:13.5px}
+.btn{border:1.5px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:15px;
+  padding:8px 15px;border-radius:10px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent}
+.btn.sm{font-size:13.5px;padding:5px 10px}
+.btn:disabled{opacity:.45;cursor:default}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+.tile{border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;background:var(--card);text-align:left;font:inherit;color:inherit}
+.tile:hover{border-color:var(--accent)} .tile b{display:block;margin-bottom:2px} .tile span{font-size:13.5px;color:var(--muted)}
+.pill{display:inline-block;font-size:12px;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-weight:600}
+.bar{height:8px;background:var(--line);border-radius:8px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);transition:width .3s}
+.ctx{background:var(--accent-soft);border-radius:10px;padding:11px 13px;margin:0 0 12px;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:14px;white-space:pre-wrap}
+.q{font-size:17px;margin:4px 0 12px}
+.opts{display:grid;gap:7px}
+.opt{display:flex;gap:11px;align-items:center;text-align:left;width:100%;border:1.5px solid var(--line);background:var(--card);
+  color:var(--ink);border-radius:10px;padding:10px 13px;font:inherit;cursor:pointer}
+.opt .n{flex:none;width:25px;height:25px;border-radius:50%;display:grid;place-items:center;background:var(--line);font-size:12.5px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.ok{border-color:var(--ok);background:var(--ok-soft)} .opt.ok .n{background:var(--ok);color:#fff}
+.opt.ko{border-color:var(--ko);background:var(--ko-soft)} .opt.ko .n{background:var(--ko);color:#fff}
+.opt:disabled{cursor:default}
+input.num,input.txt,textarea{font:inherit;font-size:17px;padding:9px 12px;border:1.5px solid var(--line);border-radius:10px;
+  background:var(--card);color:var(--ink);width:100%}
+input.num:focus,input.txt:focus{outline:none;border-color:var(--accent)}
+input.ok{border-color:var(--ok);background:var(--ok-soft)} input.ko{border-color:var(--ko);background:var(--ko-soft)}
+.conf{margin-top:12px} .conf .lab{font-size:13px;color:var(--muted);margin-bottom:6px}
+.fb{margin-top:12px;padding:11px 13px;border-radius:10px;font-size:15px}
+.fb.ok{background:var(--ok-soft);color:var(--ok)} .fb.ko{background:var(--ko-soft);color:var(--ko)}
+.fb .ex{color:var(--ink);margin-top:6px;font-size:14.5px}
+.hyper{margin-top:10px;background:var(--warn-soft);border-radius:10px;padding:10px 12px;font-size:14px}
+.flash{min-height:150px;display:flex;flex-direction:column;justify-content:center;text-align:center;font-size:19px;gap:8px}
+.flash .back{font-size:17px;color:var(--accent);font-weight:600;border-top:1px dashed var(--line);padding-top:10px;margin-top:6px}
+.grades{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:12px}
+.grades .btn{justify-content:center;font-size:14px;padding:8px 4px}
+.g0{border-color:var(--ko)!important;color:var(--ko)} .g3{border-color:var(--ok)!important;color:var(--ok)}
+.steps{margin:6px 0 0;padding-left:20px} .steps li{margin:5px 0}
+.wk li{margin:9px 0} .wk .blank{display:flex;gap:8px;align-items:center;margin-top:5px} .wk .blank input{max-width:180px}
+.why{font-size:13.5px;color:var(--muted);cursor:pointer;margin-left:4px;text-decoration:underline dotted}
+.whyx{display:block;font-size:14px;background:var(--info-soft);border-radius:8px;padding:6px 10px;margin-top:5px}
+.lesson .content p{margin:6px 0}
+.lesson table,.tbl{width:100%;border-collapse:collapse;font-size:15px;margin:8px 0}
+.lesson td,.lesson th,.tbl td,.tbl th{padding:6px 9px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.lesson th,.tbl th{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.k{transition:filter .2s}
+.hidek .k{filter:blur(6px);cursor:pointer;background:var(--accent-soft);border-radius:4px}
+.hidek .k.shown{filter:none}
+.box{border-radius:10px;padding:10px 12px;margin:10px 0;font-size:14.5px}
+.box.why2{background:var(--info-soft)} .box.trap{background:var(--ko-soft)} .box.talk{background:var(--warn-soft)}
+.box h4{margin:0 0 6px;font-size:14px}
+details summary{cursor:pointer;font-weight:600}
+.formula{font-size:17px;text-align:center;font-weight:700;margin:8px 0;font-family:ui-monospace,Menlo,Consolas,monospace}
+.timer{font-size:34px;font-weight:800;font-variant-numeric:tabular-nums}
+.big{font-size:40px;font-weight:800;color:var(--accent);line-height:1.1}
+.plan{display:flex;gap:6px;flex-wrap:wrap}
+.plan div{flex:1;min-width:84px;border:1.5px solid var(--line);border-radius:10px;padding:8px;text-align:center;font-size:13px}
+.plan div b{display:block;font-size:15px}
+.plan .done{border-color:var(--ok);background:var(--ok-soft)} .plan .today{border-color:var(--accent);border-width:2.5px}
+.mast{display:grid;grid-template-columns:1fr 110px 44px;gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line);font-size:14.5px}
+.lvl{font-size:12px;font-weight:700}
+.src a{color:var(--accent)}
+.kbd{font-family:ui-monospace,Menlo,monospace;background:var(--line);border-radius:5px;padding:1px 6px;font-size:13px}
+.hidden{display:none}
+.method{border-left:4px solid var(--accent);padding:6px 0 6px 12px;margin:12px 0}
+.method b{font-size:15.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kick" id="hKick"></div>
+    <h1 id="hTitle"></h1>
+    <p id="hSub"></p>
+  </header>
+  <nav class="tabs" id="tabs"></nav>
+  <main id="view"></main>
+</div>
+<script>
+/* ================= DONNÉES DU COURS ================= */
+const r10 = x => Math.round(x * 1e10) / 1e10;
+const DATA = {
+id: "ch3", key: "mphab311-ch3", sumKey: "mphab311-sum-ch3", hubUrl: "index.html",
+kicker: "MPHAB311 · Introduction à la galénique · Partim 1",
+title: "Chapitre 3 · Les substances actives en solution",
+sub: "Solubilité (et comment l'augmenter) · stabilité (cinétiques, Arrhenius) · propriétés osmotiques et isotonie",
+
+concepts: [
+{ id: "solub", title: "La solubilité : définitions et expressions",
+  html: `<p>Quelle que soit la voie, un PA doit être <span class="k">dispersé (solubilisé) avant d'être absorbé</span> à travers les membranes. Beaucoup de PA sont formulés en <span class="k">solutions</span> (injectables, collyres) ou poudres à dissoudre. Un PA <span class="k">très peu soluble dans l'eau</span> pose des problèmes de <span class="k">formulation et/ou de biodisponibilité</span>.</p>
+  <p><b>Solution</b> : système où les molécules de <span class="k">soluté</span> sont dispersées dans un <span class="k">solvant</span>. Au maximum de solubilité (à T et P données), la solution est <span class="k">saturée</span>. La solubilité influence la <span class="k">vitesse de dissolution</span> (Noyes-Whitney : dQ/dt = D·A/h × (Cs − C)).</p>
+  <p><b>Expressions</b> : masse/volume (g/dm³ ou % m/V) · <span class="k">molarité</span> (mol de soluté par litre de solution) · termes de la Pharmacopée :</p>
+  <table><tr><th>Terme</th><th>g de solvant pour dissoudre 1 g</th></tr>
+  <tr><td>Très soluble</td><td><span class="k">&lt; 1</span></td></tr><tr><td>Facilement soluble</td><td><span class="k">1 à 10</span></td></tr>
+  <tr><td>Soluble</td><td><span class="k">10 à 30</span></td></tr><tr><td>Assez soluble</td><td><span class="k">30 à 100</span></td></tr>
+  <tr><td>Peu soluble</td><td><span class="k">100 à 1000</span></td></tr><tr><td>Très peu soluble</td><td><span class="k">1000 à 10 000</span></td></tr>
+  <tr><td>Pratiquement insoluble</td><td><span class="k">&gt; 10 000</span></td></tr></table>
+  <p><b>Facteurs</b> : nature des forces dans la molécule et dans le solvant, et leur interaction. Solubilisation par <span class="k">ionisation</span> (NaCl dans l'eau) ou par <span class="k">polarité</span> (alcool dans l'eau). La polarité d'un solvant est liée à sa <span class="k">constante diélectrique ε</span> : ε élevée = <span class="k">solvant polaire</span> (eau, glycérol, propylène glycol) qui dissout les composés ioniques ; ε faible = <span class="k">apolaire</span> (benzène, huile) qui dissout les composés organiques.</p>`,
+  why: [["Pourquoi un PA doit-il être dissous avant d'être absorbé ?", "Seules les molécules en solution diffusent à travers les membranes biologiques ; un solide non dissous n'est pas absorbé."]],
+  talk: { prompt: "Récite l'échelle de solubilité de la Pharmacopée et explique le rôle de la constante diélectrique.", check: ["< 1 · 1-10 · 10-30 · 30-100 · 100-1000 · 1000-10 000 · > 10 000 (g de solvant pour 1 g)", "ε élevée = polaire (eau, glycérol, PG) → composés ioniques", "ε faible = apolaire (huile, benzène) → composés organiques"] },
+  traps: ["Lire l'échelle à l'envers : c'est la quantité de SOLVANT pour 1 g de soluté.", "Confondre « soluble » (10-30) et « facilement soluble » (1-10)."] },
+
+{ id: "augment", title: "Augmenter la solubilité : 7 moyens",
+  html: `<ol><li><b>Co-solvants</b> : miscibles au solvant principal et bons solvants du PA : <span class="k">propylène glycol, glycérol, éthanol</span>. Ex. <span class="k">minoxidil</span> (PG, éthanol, isopropanol) ; <span class="k">diazépam injectable</span> (PG, éthanol).</li>
+  <li><b>Augmenter la température</b> : la solubilité augmente en général (Pharmacopée : valeurs à <span class="k">20 °C</span>). Attention à la <span class="k">dégradation</span> ; exceptions : <span class="k">citrate de calcium, méthylcellulose</span>.</li>
+  <li><b>Modifier le pH</b> : les acides et bases faibles sont <span class="k">plus solubles sous forme ionisée</span>. Henderson-Hasselbalch :<br>acides : <span class="k">pH = pKa + log [ionisée]/[non ionisée]</span> · bases : <span class="k">pH = pKa + log [non ionisée]/[ionisée]</span>.<br>Règle : <span class="k">acides faibles plus solubles à pH ≥ pKa + 2</span> ; <span class="k">bases faibles plus solubles à pH ≤ pKa − 2</span>.</li>
+  <li><b>Solubilisation micellaire</b> : au-dessus de la <span class="k">concentration micellaire critique (CMC)</span>, les tensio-actifs forment des micelles dont le cœur lipophile dissout les PA hydrophobes = <span class="k">pseudosolubilisation</span>. Ex. solutions orales de vitamines liposolubles et d'huiles essentielles ; <span class="k">amphotéricine dans des liposomes</span>.</li>
+  <li><b>Complexation</b> : <span class="k">cyclodextrines</span> = oligosaccharides cycliques de <span class="k">6, 7 ou 8 glucopyranoses (α, β, γ)</span>, cône tronqué à extérieur hydrophile et cavité moins polaire. La <span class="k">β</span> est la plus utilisée mais <span class="k">néphrotoxique en injectable</span> et peu soluble (1,8 g/100 mL) → greffage d'<span class="k">hydroxypropyles</span>. Ex. <span class="k">piroxicam + β-cyclodextrine = Brexine®</span>. Effets : ↑ solubilité, ↑ biodisponibilité.</li>
+  <li><b>Substances hydrotropes</b> (« salting in ») : grandes quantités de sels très solubles à gros ions : <span class="k">benzoate sodique → caféine</span> ; <span class="k">nicotinamide → riboflavine</span>.</li>
+  <li><b>Modification chimique</b> : ex. <span class="k">succinate sodique de méthylprednisolone</span>.</li></ol>`,
+  why: [["Pourquoi un acide faible se dissout-il mieux à pH élevé ?", "À pH > pKa, il est majoritairement ionisé (A⁻) ; la forme ionisée interagit avec l'eau et est beaucoup plus soluble."],
+        ["Pourquoi greffe-t-on des hydroxypropyles sur la β-cyclodextrine ?", "Pour améliorer sa faible solubilité et réduire sa néphrotoxicité en injectable."]],
+  talk: { prompt: "Cite les 7 moyens d'augmenter la solubilité avec un exemple chacun.", check: ["Co-solvants : minoxidil, diazépam", "Température (exceptions : citrate de Ca, méthylcellulose)", "pH : acides ≥ pKa + 2, bases ≤ pKa − 2", "Micelles : CMC, pseudosolubilisation, vitamines liposolubles", "Cyclodextrines : Brexine®", "Hydrotropes : benzoate Na/caféine, nicotinamide/riboflavine", "Modification chimique : succinate de méthylprednisolone"] },
+  traps: ["Inverser la règle du pH pour les bases (bases : pH ≤ pKa − 2).", "Croire que la température augmente toujours la solubilité (exceptions)."] },
+
+{ id: "stab", title: "La stabilité et les cinétiques de dégradation",
+  html: `<p>Une dégradation entraîne perte d'activité, modifications physico-chimiques, parfois <span class="k">produits toxiques</span>. Ex. <span class="k">trétinoïne</span> : sensible à l'air, à la chaleur et à la lumière. Durée de validité : temps au terme duquel la teneur n'est plus que de <span class="k">95 % (voire 90 %)</span> de la concentration initiale.</p>
+  <table><tr><th>Mécanisme</th><th>Exemples</th></tr>
+  <tr><td>Hydrolyse</td><td>esters, amides, lactones, lactames : <span class="k">pénicilline</span></td></tr>
+  <tr><td>Oxydation</td><td>phénols : <span class="k">morphine, adrénaline</span></td></tr>
+  <tr><td>Isomérisation</td><td><span class="k">adrénaline</span> en solution ; cis-trans de la <span class="k">vitamine A</span></td></tr>
+  <tr><td>Photodécomposition</td><td><span class="k">riboflavine, acide ascorbique</span></td></tr>
+  <tr><td>Polymérisation</td><td><span class="k">aminopénicillines, trétinoïne</span></td></tr></table>
+  <p><b>Cinétiques</b> : −d[D]/dt = k[D]ⁿ (n = ordre).</p>
+  <p><b>Ordre 0</b> : vitesse <span class="k">constante, indépendante de la concentration</span> : <span class="k">[D]t = [D]0 − k0·t</span> (droite de pente −k0). Fréquent pour les substances <span class="k">à l'état solide ou en suspension</span>.</p>
+  <p><b>Ordre 1</b> : vitesse <span class="k">proportionnelle à la quantité restante</span> : <span class="k">ln[D]t = ln[D]0 − k1·t</span> (ou log[D]t = log[D]0 − k1·t/2,303). Fréquent pour les <span class="k">substances en solution qui s'hydrolysent</span>.</p>
+  <p><b>Température – équation d'Arrhenius</b> : <span class="k">log k = log A − Ea / (2,303·R·T)</span> (T en K). log k en fonction de 1/T donne une <span class="k">droite de pente −Ea/(2,303 R)</span> : on mesure k à températures élevées et on <span class="k">extrapole à 25 °C</span> (études de stabilité accélérée), en supposant que l'ordre ne change pas.</p>`,
+  why: [["Pourquoi l'ordre 0 est-il typique des suspensions ?", "Seule la fraction dissoute se dégrade ; tant qu'il reste du solide pour la reconstituer, la concentration dissoute reste constante, donc la vitesse aussi."],
+        ["Pourquoi chauffe-t-on pour étudier la stabilité ?", "La dégradation est plus rapide à haute température : on obtient k en peu de temps, puis Arrhenius permet d'extrapoler à 25 °C."]],
+  talk: { prompt: "Compare les cinétiques d'ordre 0 et 1, et explique l'utilisation de l'équation d'Arrhenius.", check: ["Ordre 0 : vitesse constante, [D]t = [D]0 − k0 t, solides/suspensions", "Ordre 1 : vitesse ∝ concentration, ln[D]t = ln[D]0 − k1 t, solutions (hydrolyse)", "Arrhenius : log k = log A − Ea/(2,303 RT)", "Droite log k vs 1/T, extrapolation à 25 °C", "Validité : 95 % (90 %) de la teneur initiale"] },
+  traps: ["Associer l'ordre 0 aux solutions (c'est l'ordre 1 qui y domine pour l'hydrolyse).", "Utiliser T en °C dans Arrhenius (il faut des kelvins)."] },
+
+{ id: "osmo", title: "Propriétés osmotiques",
+  html: `<p>Un soluté non volatil modifie, <span class="k">proportionnellement au nombre de particules</span>, la tension de vapeur, le <span class="k">point de congélation</span> et le point d'ébullition du solvant (propriétés colligatives). La plus importante en pharmacie : la <span class="k">pression osmotique</span>, liée à l'<span class="k">abaissement cryoscopique</span>.</p>
+  <p><b>Osmose</b> : à travers une <span class="k">membrane semi-perméable</span>, l'eau migre de la solution <span class="k">la moins concentrée vers la plus concentrée</span>. <b>Pression osmotique</b> : pression minimale à exercer pour <span class="k">empêcher ce passage</span>. <b>van't Hoff (1886)</b> : <span class="k">P·V = n·R·T</span>.</p>
+  <p><b>Osmolalité</b> : <span class="k">moles de soluté par kg de solvant</span> (≠ molarité : par litre de solution ; équivalentes pour l'eau en solution diluée). <b>Osmole</b> : 1 mol de glucose = <span class="k">1 osmole</span> ; 1 mol de NaCl = <span class="k">2 osmoles</span>. <b>Osmolarité</b> : <span class="k">Osm = α · n · C</span> (α : coefficient de dissociation 0 à 1 ; n : nombre de particules ; C : concentration molaire). En pratique : <span class="k">mOsm·kg⁻¹</span>.</p>
+  <p><b>Globules rouges</b> : NaCl <span class="k">0,9 % = isotonique</span> (forme inchangée) · <span class="k">0,4 % = hypotonique</span> → l'eau entre : <span class="k">turgescence</span> · <span class="k">5 % = hypertonique</span> → l'eau sort : <span class="k">plasmolyse</span>.</p>`,
+  why: [["Pourquoi 1 mol de NaCl compte-t-elle pour 2 osmoles ?", "Le NaCl se dissocie en Na⁺ et Cl⁻ : ce sont les particules, pas les molécules, qui comptent en osmose."]],
+  talk: { prompt: "Explique l'osmose, la pression osmotique et ce qui arrive aux globules rouges dans du NaCl à 0,4 %, 0,9 % et 5 %.", check: ["Eau du moins concentré vers le plus concentré", "Pression osmotique = pression pour empêcher ce passage", "van't Hoff P·V = n·R·T", "0,9 % isotonique ; 0,4 % hypotonique → turgescence ; 5 % hypertonique → plasmolyse"] },
+  traps: ["Inverser turgescence (hypotonique) et plasmolyse (hypertonique).", "Confondre osmolalité (par kg de solvant) et molarité (par L de solution)."] },
+
+{ id: "isoto", title: "Isotonie et méthodes d'isotonisation",
+  html: `<p>Doivent être <span class="k">isotoniques</span> (0,9 % NaCl) dans la mesure du possible : <span class="k">préparations injectables, collyres, instillations nasales, inhalations pulmonaires</span>. <span class="k">Iso-osmose</span> = état physique ; <span class="k">isotonie</span> = état clinique de cet équilibre.</p>
+  <p><span class="k">Liquide lacrymal, plasma et NaCl 0,9 %</span> ont un <span class="k">ΔT = 0,52 °C</span> (congélation à −0,52 °C) : deux solutions de même ΔT sont <span class="k">iso-osmotiques</span>. ΔT &lt; 0,52 = <span class="k">hypotonique</span> ; ΔT &gt; 0,52 = <span class="k">hypertonique</span>.</p>
+  <p><b>Tolérance oculaire</b> : un œil sain supporte <span class="k">0,7 à 1,6 % NaCl</span> ; il supporte <span class="k">mieux l'hypertonie que l'hypotonie</span> ; un œil malade est plus sensible.</p>
+  <p><b>Agents isotonisants</b> : <span class="k">NaCl</span> si compatible · <span class="k">nitrate de sodium</span> avec les <span class="k">sels d'argent</span> · tampons (<span class="k">acide borique/borax</span> ; Na₂HPO₄/NaH₂PO₄), qui ajustent pH et osmolarité · <span class="k">glucose</span>, propylène glycol…</p>
+  <p><b>3 méthodes de calcul</b> (détaillées dans la page Calculs) :</p>
+  <ol><li><b>Abaissement cryoscopique</b> : <span class="k">% excipient (m/V) = (0,52 − Σ C%PA × ΔTPA) / ΔTexcipient</span> (ΔT d'une solution à 1 %).</li>
+  <li><b>Équivalents en NaCl</b> : E = masse de NaCl qui produit la même pression osmotique que <span class="k">1 g de PA</span>. NaCl à ajouter = <span class="k">0,9 g/100 mL × V − Σ m·E</span> ; autre agent : diviser par son E.</li>
+  <li><b>White et Vincent</b> : <span class="k">V eau (mL) = Σ m (g) × E × 111,1</span> (111,1 mL = volume qui rend 1 g de NaCl isotonique), puis compléter avec du <span class="k">NaCl 0,9 %</span>.</li></ol>`,
+  why: [["Pourquoi utilise-t-on du nitrate de sodium avec les sels d'argent ?", "Le chlorure du NaCl précipiterait l'argent en AgCl insoluble."],
+        ["D'où vient 111,1 mL ?", "1 g de NaCl à 0,9 % occupe 1 / 0,009 = 111,1 mL : c'est le volume d'eau qui rend 1 g de NaCl isotonique."]],
+  talk: { prompt: "Explique pourquoi isotoniser, la valeur 0,52 °C, la tolérance de l'œil et le principe des 3 méthodes.", check: ["Injectables, collyres, nasal, inhalation", "ΔT = 0,52 °C = plasma, larmes, NaCl 0,9 %", "Œil : 0,7-1,6 %, tolère mieux l'hypertonie", "Cryoscopie : (0,52 − Σ C·ΔT)/ΔTex", "Équivalents NaCl : 0,9 % du volume − Σ m·E", "White-Vincent : V = Σ m·E·111,1 puis NaCl 0,9 %"] },
+  traps: ["Dire que l'œil tolère mieux l'hypotonie.", "Utiliser du NaCl avec un sel d'argent."] }
+],
+
+cards: [
+{ c: "solub", front: "Solution saturée ?", back: "Solution qui contient le soluté à la limite de sa solubilité (T et P données)" },
+{ c: "solub", front: "« Très soluble » (Ph. Eur.) ?", back: "< 1 g de solvant pour 1 g de soluté" },
+{ c: "solub", front: "« Facilement soluble » ?", back: "1 à 10 g de solvant pour 1 g" },
+{ c: "solub", front: "« Soluble » ?", back: "10 à 30 g de solvant pour 1 g" },
+{ c: "solub", front: "« Assez soluble » ?", back: "30 à 100 g" },
+{ c: "solub", front: "« Peu soluble » ?", back: "100 à 1000 g" },
+{ c: "solub", front: "« Très peu soluble » ?", back: "1000 à 10 000 g" },
+{ c: "solub", front: "« Pratiquement insoluble » ?", back: "> 10 000 g de solvant pour 1 g" },
+{ c: "solub", front: "Solvant à constante diélectrique élevée ?", back: "Polaire (eau, glycérol, propylène glycol) : dissout les composés ioniques" },
+{ c: "solub", front: "Molarité ?", back: "Nombre de moles de soluté par litre de solution" },
+{ c: "augment", front: "Les 7 moyens d'augmenter la solubilité ?", back: "Co-solvants · température · pH · micelles · complexation · hydrotropes · modification chimique" },
+{ c: "augment", front: "Exemples de co-solvants ?", back: "Propylène glycol, glycérol, éthanol" },
+{ c: "augment", front: "Exceptions à « la chaleur augmente la solubilité » ?", back: "Citrate de calcium, méthylcellulose" },
+{ c: "augment", front: "Henderson-Hasselbalch pour un acide ?", back: "pH = pKa + log [ionisée]/[non ionisée]" },
+{ c: "augment", front: "Henderson-Hasselbalch pour une base ?", back: "pH = pKa + log [non ionisée]/[ionisée]" },
+{ c: "augment", front: "pH où un acide faible est bien soluble ?", back: "pH ≥ pKa + 2" },
+{ c: "augment", front: "pH où une base faible est bien soluble ?", back: "pH ≤ pKa − 2" },
+{ c: "augment", front: "CMC ?", back: "Concentration micellaire critique : concentration minimale de tensio-actif à partir de laquelle se forment les micelles" },
+{ c: "augment", front: "Pseudosolubilisation ?", back: "Solubilisation d'un PA hydrophobe dans le cœur lipophile des micelles" },
+{ c: "augment", front: "Cyclodextrines α, β, γ ?", back: "6, 7 ou 8 unités glucopyranose" },
+{ c: "augment", front: "Inconvénients de la β-cyclodextrine ?", back: "Néphrotoxique en injectable, peu soluble (1,8 g/100 mL) → greffage d'hydroxypropyles" },
+{ c: "augment", front: "Brexine® ?", back: "Piroxicam + β-cyclodextrine" },
+{ c: "augment", front: "Hydrotrope de la caféine ?", back: "Benzoate sodique" },
+{ c: "augment", front: "Hydrotrope de la riboflavine ?", back: "Nicotinamide" },
+{ c: "augment", front: "Exemple de modification chimique pour la solubilité ?", back: "Succinate sodique de méthylprednisolone" },
+{ c: "stab", front: "Durée de validité d'un médicament ?", back: "Temps au bout duquel la teneur n'est plus que de 95 % (voire 90 %) de l'initiale" },
+{ c: "stab", front: "Exemple de PA dégradé par hydrolyse ?", back: "Pénicilline" },
+{ c: "stab", front: "Exemples de PA oxydés ?", back: "Morphine, adrénaline (phénols)" },
+{ c: "stab", front: "Exemples de photodécomposition ?", back: "Riboflavine, acide ascorbique" },
+{ c: "stab", front: "Exemples de polymérisation ?", back: "Aminopénicillines, trétinoïne" },
+{ c: "stab", front: "Ordre 0 : équation ?", back: "[D]t = [D]0 − k0·t" },
+{ c: "stab", front: "Ordre 1 : équation ?", back: "ln[D]t = ln[D]0 − k1·t" },
+{ c: "stab", front: "Ordre 0 typique de… ?", back: "Substances à l'état solide ou en suspension" },
+{ c: "stab", front: "Ordre 1 typique de… ?", back: "Substances en solution qui s'hydrolysent" },
+{ c: "stab", front: "Équation d'Arrhenius ?", back: "log k = log A − Ea / (2,303·R·T)" },
+{ c: "stab", front: "Pente de log k en fonction de 1/T ?", back: "−Ea / (2,303·R)" },
+{ c: "osmo", front: "Pression osmotique ?", back: "Pression minimale pour empêcher le passage du solvant vers la solution plus concentrée à travers une membrane semi-perméable" },
+{ c: "osmo", front: "Équation de van't Hoff ?", back: "P·V = n·R·T" },
+{ c: "osmo", front: "Osmolalité ?", back: "Moles de soluté par kg de solvant" },
+{ c: "osmo", front: "1 mol de NaCl = ? osmoles", back: "2" },
+{ c: "osmo", front: "Osmolarité ?", back: "Osm = α · n · C" },
+{ c: "osmo", front: "Globule rouge dans NaCl 0,4 % ?", back: "Hypotonique → l'eau entre → turgescence" },
+{ c: "osmo", front: "Globule rouge dans NaCl 5 % ?", back: "Hypertonique → l'eau sort → plasmolyse" },
+{ c: "isoto", front: "ΔT du plasma, des larmes, du NaCl 0,9 % ?", back: "0,52 °C" },
+{ c: "isoto", front: "Tolérance de l'œil sain ?", back: "0,7 à 1,6 % NaCl ; mieux l'hypertonie que l'hypotonie" },
+{ c: "isoto", front: "Préparations à isotoniser ?", back: "Injectables, collyres, instillations nasales, inhalations pulmonaires" },
+{ c: "isoto", front: "Isotonisant avec les sels d'argent ?", back: "Nitrate de sodium" },
+{ c: "isoto", front: "Formule de la méthode cryoscopique ?", back: "% excipient = (0,52 − Σ C% × ΔTPA) / ΔTexcipient" },
+{ c: "isoto", front: "Équivalent en NaCl (E) ?", back: "Masse de NaCl qui produit la même pression osmotique que 1 g de PA" },
+{ c: "isoto", front: "White et Vincent : volume d'eau ?", back: "V (mL) = Σ m (g) × E × 111,1" },
+{ c: "isoto", front: "Iso-osmose vs isotonie ?", back: "État physique de l'équilibre osmotique vs état clinique" }
+],
+
+quiz: [
+{ id: "p1", c: "solub", q: "Selon la Pharmacopée, une substance qui nécessite 50 g de solvant pour dissoudre 1 g est", o: ["soluble", "assez soluble", "peu soluble", "facilement soluble"], a: 1, ex: "Assez soluble : 30 à 100 g." },
+{ c: "solub", q: "Un solvant de constante diélectrique élevée", o: ["est apolaire", "est polaire et dissout les composés ioniques", "est toujours une huile", "ne dissout rien"], a: 1, ex: "Eau, glycérol, propylène glycol." },
+{ c: "solub", q: "La molarité est le nombre de moles de soluté par", o: ["kg de solvant", "litre de solution", "litre de solvant", "100 g de solution"], a: 1, ex: "Par kg de solvant = osmolalité/molalité." },
+{ id: "p2", c: "augment", q: "Un acide faible de pKa 4 est bien soluble à partir d'un pH d'environ", o: ["2", "4", "6", "1"], a: 2, ex: "pH ≥ pKa + 2." },
+{ c: "augment", q: "Une base faible de pKa 8 est bien soluble à pH", o: ["≥ 10", "≤ 6", "= 8", "≥ 8"], a: 1, ex: "pH ≤ pKa − 2." },
+{ c: "augment", q: "Le benzoate sodique est utilisé pour solubiliser la caféine. C'est un exemple de", o: ["co-solvant", "substance hydrotrope", "complexation", "solubilisation micellaire"], a: 1, ex: "Effet « salting in »." },
+{ c: "augment", q: "La Brexine® associe le piroxicam à", o: ["un co-solvant", "une β-cyclodextrine", "un tensio-actif", "un sel de sodium"], a: 1, ex: "Complexation." },
+{ c: "augment", q: "La cyclodextrine β contient", o: ["6 unités glucopyranose", "7 unités glucopyranose", "8 unités glucopyranose", "10 unités"], a: 1, ex: "α = 6, β = 7, γ = 8." },
+{ c: "augment", q: "La pseudosolubilisation d'un PA hydrophobe se fait grâce", o: ["aux cyclodextrines", "aux micelles de tensio-actifs", "à la chaleur", "au pH"], a: 1, ex: "Cœur lipophile des micelles, au-dessus de la CMC." },
+{ c: "augment", q: "Pour solubiliser le diazépam injectable, on utilise", o: ["du propylène glycol et de l'éthanol", "une cyclodextrine", "du benzoate sodique", "du chauffage"], a: 0, ex: "Co-solvants." },
+{ c: "augment", t: "tf", q: "Vrai ou faux : la solubilité de la méthylcellulose augmente avec la température.", a: 1, ex: "Faux : c'est une exception citée au cours (avec le citrate de calcium)." },
+{ id: "p3", c: "stab", q: "Une cinétique d'ordre 0 signifie que la vitesse de dégradation", o: ["est proportionnelle à la concentration", "est constante", "augmente avec le temps", "est nulle"], a: 1, ex: "[D]t = [D]0 − k0·t." },
+{ c: "stab", q: "La dégradation des substances en solution qui s'hydrolysent suit souvent", o: ["un ordre 0", "un ordre 1", "un ordre 2", "aucun ordre"], a: 1, ex: "Ordre 1." },
+{ c: "stab", q: "L'adrénaline est sensible à", o: ["l'hydrolyse uniquement", "l'oxydation et l'isomérisation", "la polymérisation uniquement", "rien"], a: 1, ex: "Phénol oxydable ; isomérisation en solution." },
+{ c: "stab", q: "L'équation d'Arrhenius sert à", o: ["calculer la solubilité", "extrapoler la vitesse de dégradation à 25 °C à partir de mesures à haute température", "calculer une pression osmotique", "mesurer la viscosité"], a: 1, ex: "log k vs 1/T est une droite." },
+{ c: "stab", q: "La durée de validité correspond généralement à une teneur restante de", o: ["50 %", "80 %", "95 % (voire 90 %)", "100 %"], a: 2, ex: "95 % voire 90 %." },
+{ id: "p4", c: "osmo", q: "Des globules rouges dans du NaCl à 0,4 %", o: ["ne changent pas", "gonflent (turgescence)", "se rétractent (plasmolyse)", "se dissolvent"], a: 1, ex: "Hypotonique : l'eau entre." },
+{ c: "osmo", q: "1 mole de NaCl totalement dissociée correspond à", o: ["1 osmole", "2 osmoles", "0,5 osmole", "3 osmoles"], a: 1, ex: "Na⁺ + Cl⁻." },
+{ c: "osmo", q: "En osmose, l'eau migre", o: ["de la solution la plus concentrée vers la moins concentrée", "de la moins concentrée vers la plus concentrée", "dans les deux sens également", "uniquement si on chauffe"], a: 1, ex: "Pour équilibrer les concentrations." },
+{ id: "p5", c: "isoto", q: "L'abaissement cryoscopique du plasma et du NaCl 0,9 % vaut", o: ["0,25 °C", "0,52 °C", "0,90 °C", "1,86 °C"], a: 1, ex: "ΔT = 0,52 °C." },
+{ c: "isoto", q: "Un œil sain tolère sans gêne", o: ["0,2 à 0,5 % NaCl", "0,7 à 1,6 % NaCl", "2 à 5 % NaCl", "uniquement 0,9 %"], a: 1, ex: "Et il supporte mieux l'hypertonie." },
+{ c: "isoto", q: "Pour isotoniser un collyre contenant un sel d'argent, on utilise", o: ["du NaCl", "du nitrate de sodium", "du glucose obligatoirement", "rien"], a: 1, ex: "Le chlorure précipiterait l'argent." },
+{ c: "isoto", q: "Une solution de ΔT = 0,40 °C est", o: ["isotonique", "hypotonique", "hypertonique", "iso-osmotique au plasma"], a: 1, ex: "ΔT < 0,52." },
+{ c: "isoto", q: "Dans la méthode de White et Vincent, 111,1 mL représente", o: ["le volume d'une ampoule", "le volume d'eau qui rend 1 g de NaCl isotonique", "le volume du plasma", "0,9 % de 100 mL"], a: 1, ex: "1 / 0,009 = 111,1." },
+{ t: "open", c: "augment", q: "Citez et expliquez les méthodes permettant d'augmenter la solubilité d'une substance active. Donnez un exemple pour chacune.", a: "1) Co-solvants (PG, glycérol, éthanol ; minoxidil, diazépam injectable). 2) Augmenter la température (attention dégradation ; exceptions citrate de Ca, méthylcellulose). 3) Modifier le pH : forme ionisée plus soluble (acides faibles pH ≥ pKa + 2 ; bases ≤ pKa − 2 ; Henderson-Hasselbalch). 4) Solubilisation micellaire au-dessus de la CMC = pseudosolubilisation (vitamines liposolubles, amphotéricine en liposomes). 5) Complexation par cyclodextrines (piroxicam-β-cyclodextrine = Brexine®). 6) Hydrotropes (benzoate de sodium/caféine, nicotinamide/riboflavine). 7) Modification chimique (succinate sodique de méthylprednisolone).", keys: ["co-solvants", "température", "pH + Henderson-Hasselbalch", "micelles / CMC", "cyclodextrines", "hydrotropes", "modification chimique", "un exemple par méthode"] },
+{ t: "open", c: "stab", q: "Comparez les cinétiques de dégradation d'ordre 0 et d'ordre 1. Comment détermine-t-on la stabilité à température ambiante ?", a: "Ordre 0 : vitesse constante, indépendante de la concentration, [D]t = [D]0 − k0·t (droite) : solides, suspensions. Ordre 1 : vitesse proportionnelle à la quantité restante, ln[D]t = ln[D]0 − k1·t : solutions qui s'hydrolysent. On mesure k à plusieurs températures élevées et on utilise Arrhenius : log k = log A − Ea/(2,303 RT) ; log k vs 1/T est une droite de pente −Ea/2,303R, qu'on extrapole à 25 °C (en supposant que l'ordre ne change pas).", keys: ["ordre 0 : définition + équation + exemple", "ordre 1 : définition + équation + exemple", "Arrhenius", "extrapolation à 25 °C"] },
+{ t: "open", c: "isoto", q: "Qu'est-ce qu'une solution isotonique ? Quelles préparations doivent l'être et quelles sont les limites de tolérance de l'œil ?", a: "Solution qui a la même pression osmotique que les liquides tissulaires (plasma, larmes), c.-à-d. celle d'un NaCl à 0,9 % ; ΔT = 0,52 °C. Concerne les injectables, collyres, instillations nasales et préparations pour inhalation. L'œil sain tolère 0,7 à 1,6 % NaCl, mieux l'hypertonie que l'hypotonie ; un œil malade est plus sensible, donc rester proche de l'isotonie. Ajustement : NaCl, nitrate de sodium (sels d'Ag), tampons borate/phosphate, glucose, PG.", keys: ["définition / 0,9 % / 0,52 °C", "4 types de préparations", "0,7-1,6 %", "hypertonie mieux tolérée", "agents isotonisants"] }
+],
+
+gens: {
+hh: { c: "augment", method: "Henderson-Hasselbalch", make() {
+  const acid = Math.random() < .5; const pKa = pick([2, 3, 4, 5, 7, 8, 9]); const pH = pick([1, 2, 4, 6, 7, 8, 10].filter(x => Math.abs(x - pKa) <= 4 && x !== pKa));
+  const d = pH - pKa; const ratio = acid ? d : -d; // log(ionisée/non ionisée)
+  return { q: `${acid ? "Acide" : "Base"} faible de pKa ${pKa} dans une solution à pH ${pH}. log([ionisée]/[non ionisée]) = ?`, ans: ratio, unit: "", tol: { abs: 0.001 }, steps: [acid ? `Acide : pH = pKa + log [ionisée]/[non ionisée]` : `Base : pH = pKa + log [non ionisée]/[ionisée] → log [ionisée]/[non ionisée] = pKa − pH`, `= <b>${ratio}</b> → rapport ionisée/non ionisée = 10^${ratio}`, ratio >= 2 ? "Majoritairement ionisée : bonne solubilité." : ratio <= -2 ? "Majoritairement non ionisée : faible solubilité." : "Zone intermédiaire."] };
+} },
+ordre0: { c: "stab", method: "Cinétique d'ordre 0", make() {
+  const C0 = pick([100, 200, 250, 500]); const k = pick([0.5, 1, 2, 2.5, 5]); const pct = pick([90, 95]); const t = r10(C0 * (1 - pct / 100) / k);
+  return { q: `Suspension : concentration initiale ${C0} mg/mL, dégradation d'ordre 0 avec k0 = ${fmt(k)} mg/mL par mois. Temps (mois) pour atteindre ${pct} % de la teneur initiale ?`, ans: t, unit: "mois", tol: { rel: 0.01 }, steps: [`[D]t = [D]0 − k0·t → t = ([D]0 − [D]t) / k0`, `([D]0 − [D]t) = ${100 - pct} % de ${C0} = ${fmt(C0 * (100 - pct) / 100)} mg/mL`, `t = ${fmt(C0 * (100 - pct) / 100)} / ${fmt(k)} = <b>${fmt(t, 3)} mois</b>`] };
+} },
+ordre1: { c: "stab", method: "Cinétique d'ordre 1", make() {
+  const k = pick([0.001, 0.002, 0.005, 0.01, 0.02]); const pct = pick([90, 95]); const t = r10(Math.log(100 / pct) / k);
+  return { q: `Solution : dégradation d'ordre 1, k1 = ${fmt(k)} par jour. Temps (jours) pour que la teneur tombe à ${pct} % ?`, ans: t, unit: "jours", tol: { rel: 0.01 }, steps: [`ln[D]t = ln[D]0 − k1·t → t = ln([D]0/[D]t) / k1`, `ln(100/${pct}) = ${fmt(Math.log(100 / pct), 4)}`, `t = ${fmt(Math.log(100 / pct), 4)} / ${fmt(k)} = <b>${fmt(t, 1)} jours</b>`] };
+} },
+cryo: { c: "isoto", method: "Isotonie : abaissement cryoscopique", make() {
+  const pa = pick([["lidocaïne HCl", 0.13], ["NaI", 0.22], ["KI", 0.2], ["éphédrine HCl", 0.165], ["procaïne HCl", 0.122]]); const c = pick([0.5, 1, 2]); const V = pick([10, 20, 50, 100, 250]);
+  const pct = (0.52 - c * pa[1]) / 0.58; const g = r10(pct * V / 100);
+  return { q: `Solution de ${pa[0]} à ${fmt(c)} % (m/V), ${V} mL (ΔT 1 % ${pa[0]} = ${fmt(pa[1])} ; ΔT NaCl = 0,58). Masse de NaCl (g) pour isotoniser ?`, ans: g, unit: "g", tol: { rel: 0.01 }, steps: [`% NaCl = (0,52 − ${fmt(c)} × ${fmt(pa[1])}) / 0,58 = ${fmt(pct, 4)} %`, `${fmt(pct, 4)} g/100 mL × ${V} mL = <b>${fmt(g, 4)} g</b>`] };
+} },
+osmol: { c: "osmo", method: "Osmolarité Osm = α·n·C", make() {
+  const s = pick([["glucose", 1, 1], ["NaCl", 2, 1], ["CaCl₂", 3, 1], ["NaCl", 2, 0.9]]); const C = pick([0.1, 0.15, 0.3, 0.5]); const ans = r10(s[2] * s[1] * C * 1000);
+  return { q: `Solution ${fmt(C)} M de ${s[0]} (α = ${fmt(s[2])}). Osmolarité en mOsm/L ?`, ans, unit: "mOsm/L", tol: { rel: 0.01 }, steps: [`n = ${s[1]} particule${s[1] > 1 ? "s" : ""} par molécule`, `Osm = α·n·C = ${fmt(s[2])} × ${s[1]} × ${fmt(C)} = ${fmt(ans / 1000)} Osm/L = <b>${fmt(ans)} mOsm/L</b>`] };
+} }
+},
+worked: [
+{ id: "w1", title: "Isotonie par la méthode cryoscopique", gen: "cryo", make() {
+  const a = pick([["NaI", 0.22], ["KI", 0.2]]); const b = a[0] === "NaI" ? ["KI", 0.2] : ["NaI", 0.22]; const m = pick([5, 10, 20]); const V = pick([10, 20]);
+  const ca = m / V, cb = ca; const num = 0.52 - (ca * a[1] + cb * b[1]); const pct = num / 0.58; const mg = pct * V / 100 * 1000;
+  if (num <= 0) return this.make();
+  return { ctx: `Rp ${a[0]} ${m} cg (ΔT ${a[0]} = ${fmt(a[1])})\n   ${b[0]} ${m} cg (ΔT ${b[0]} = ${fmt(b[1])})\n   ΔT NaCl = 0,58\n   Aqua q.s. ad ${V} mL`, q: "Quelle quantité de NaCl ajouter pour obtenir un collyre isotonique ?", steps: [
+    { label: "Concentration de chaque PA (% m/V)", ans: ca, unit: "%", tol: { rel: 0.005 }, show: `${m} cg/${V} mL = ${fmt(m / 100)} g/${V} mL = ${fmt(ca)} %`, why: "La formule utilise des % (m/V)." },
+    { label: "Σ C% × ΔT des PA", ans: ca * a[1] + cb * b[1], unit: "°C", tol: { rel: 0.005 }, show: `${fmt(ca)} × ${fmt(a[1])} + ${fmt(cb)} × ${fmt(b[1])} = ${fmt(ca * a[1] + cb * b[1], 4)} °C`, why: "Abaissement déjà apporté par les PA." },
+    { label: "% de NaCl à ajouter", ans: pct, unit: "%", tol: { rel: 0.01 }, show: `(0,52 − ${fmt(ca * a[1] + cb * b[1], 4)}) / 0,58 = ${fmt(pct, 4)} %`, why: "On complète jusqu'à 0,52 °C avec l'excipient." },
+    { label: "Masse de NaCl pour le volume", ans: mg, unit: "mg", tol: { rel: 0.01 }, show: `${fmt(pct, 4)} g/100 mL × ${V} mL = ${fmt(mg, 1)} mg`, why: "Règle de trois sur le volume final." }] };
+} },
+{ id: "w2", title: "Temps de validité (ordre 1)", gen: "ordre1", make() {
+  const k = pick([0.002, 0.005, 0.01]);
+  return { ctx: `Une solution se dégrade selon une cinétique d'ordre 1, k1 = ${fmt(k)} par jour.`, q: "Combien de temps la solution reste-t-elle à au moins 90 % de sa teneur ?", steps: [
+    { label: "Rapport [D]0/[D]t", ans: 100 / 90, unit: "", tol: { rel: 0.002 }, show: `100 / 90 = ${fmt(100 / 90, 4)}`, why: "On cherche le temps où il reste 90 %." },
+    { label: "ln([D]0/[D]t)", ans: Math.log(100 / 90), unit: "", tol: { rel: 0.01 }, show: `ln(${fmt(100 / 90, 4)}) = ${fmt(Math.log(100 / 90), 4)}`, why: "Ordre 1 : ln[D]t = ln[D]0 − k1·t." },
+    { label: "t = ln(…) / k1", ans: Math.log(100 / 90) / k, unit: "jours", tol: { rel: 0.01 }, show: `${fmt(Math.log(100 / 90), 4)} / ${fmt(k)} = ${fmt(Math.log(100 / 90) / k, 1)} jours`, why: "On isole t." }] };
+} }
+],
+sprints: [
+{ id: "s1", title: "Échelle de solubilité Ph. Eur.", target: 15, make() {
+  const L = [["Très soluble", [0.3, 0.8]], ["Facilement soluble", [2, 9]], ["Soluble", [12, 28]], ["Assez soluble", [35, 90]], ["Peu soluble", [150, 900]], ["Très peu soluble", [1500, 9000]], ["Pratiquement insoluble", [15000, 50000]]];
+  const k = rnd(0, 6); const v = Math.round(L[k][1][0] + Math.random() * (L[k][1][1] - L[k][1][0])); const o = L.map(x => x[0]);
+  return { q: `${fmt(v)} g de solvant pour dissoudre 1 g`, o, a: k };
+} },
+{ id: "s2", title: "Mécanisme de dégradation", target: 12, make() {
+  const L = [["Pénicilline", "Hydrolyse"], ["Morphine", "Oxydation"], ["Adrénaline (phénol)", "Oxydation"], ["Vitamine A (cis-trans)", "Isomérisation"], ["Riboflavine", "Photodécomposition"], ["Acide ascorbique (lumière)", "Photodécomposition"], ["Aminopénicillines", "Polymérisation"], ["Trétinoïne (association de 2 molécules)", "Polymérisation"]];
+  const [n, m] = pick(L); const o = ["Hydrolyse", "Oxydation", "Isomérisation", "Photodécomposition", "Polymérisation"]; return { q: n, o, a: o.indexOf(m) };
+} },
+{ id: "s3", title: "Tonicité et ΔT", target: 15, make() {
+  if (Math.random() < .5) { const d = pick([0.3, 0.4, 0.45, 0.52, 0.6, 0.7]); const a = d < 0.52 ? 0 : d === 0.52 ? 1 : 2; return { q: `ΔT = ${fmt(d)} °C`, o: ["Hypotonique", "Isotonique", "Hypertonique"], a }; }
+  const p = pick([0.4, 0.9, 5, 0.6, 2]); const a = p < 0.9 ? 0 : p === 0.9 ? 1 : 2; return { q: `GR dans NaCl ${fmt(p)} %`, o: ["Turgescence", "Inchangé", "Plasmolyse"], a };
+} }
+],
+pretest: ["p1", "p2", "p3", "p4", "p5", "hh"]
+};
+
+const METHODS_HTML = `
+<div class="card"><h2>Pourquoi cette page est construite ainsi</h2>
+<p class="small" style="margin-top:0">Chaque outil de cette page applique une méthode dont l'efficacité a été mesurée dans des études contrôlées en psychologie cognitive et en sciences de l'éducation. La grande revue de Dunlosky et al. (2013) a évalué 10 techniques d'étude : <b>se tester</b> (pratique de récupération) et <b>espacer les révisions</b> obtiennent la note d'utilité la plus élevée ; l'<b>entrelacement</b>, l'<b>interrogation élaborative</b> et l'<b>auto-explication</b> une note moyenne ; <b>relire, surligner et résumer</b> une note faible.</p>
+<div class="box trap" style="margin-bottom:0"><b>À éviter :</b> relire le PDF plusieurs fois ou surligner. On a l'impression de savoir parce que le texte est familier, mais on ne s'entraîne pas à le retrouver seule, ce que l'examen exige.</div></div>
+
+<div class="card"><h2>Les méthodes, et où elles sont dans la page</h2>
+<div class="method"><b>1. Se tester plutôt que relire (pratique de récupération)</b><br><span class="small">Flashcards, Quiz, Séance du jour. Dans l'étude de Roediger &amp; Karpicke (2006), les étudiants qui s'étaient testés retenaient nettement plus une semaine plus tard que ceux qui avaient relu. Réponds toujours <b>avant</b> de voir la réponse, même si tu n'es pas sûre.</span></div>
+<div class="method"><b>2. Espacer les séances</b><br><span class="small">Plan J+1, J+3, J+7, J+14, J+30 et boîtes des flashcards. Cepeda et al. (2008, plus de 1 350 participants) montrent que l'intervalle optimal entre deux révisions augmente avec le délai jusqu'à l'examen. Mieux vaut 15 minutes réparties sur 5 jours que 75 minutes la veille.</span></div>
+<div class="method"><b>3. Réapprendre jusqu'au critère, sur plusieurs séances (réapprentissage successif)</b><br><span class="small">Dans les sessions, une question ratée revient jusqu'à ce que tu la réussisses ; puis elle revient les jours suivants. Rawson &amp; Dunlosky recommandent de réussir chaque élément au moins une fois par séance, sur environ 3 séances espacées : c'est ce qui rend le souvenir durable.</span></div>
+<div class="method"><b>4. Mélanger les types de problèmes (entrelacement)</b><br><span class="small">Onglet Mélange et Séance du jour. En maths, des élèves ayant mélangé les types d'exercices ont nettement mieux réussi un test surprise un mois plus tard (61 % contre 38 % dans un essai sur 787 élèves de Rohrer et al.). Le gain vient surtout du fait qu'il faut <b>choisir la méthode</b> : c'est pour cela que l'onglet Mélange te demande d'abord « quelle méthode ? ». C'est plus difficile sur le moment, et c'est normal.</span></div>
+<div class="method"><b>5. Exemples résolus puis aide qui s'estompe</b><br><span class="small">Onglet Exemples guidés. Au début d'un apprentissage, étudier un exemple résolu est plus efficace que de chercher seule (Sweller ; Renkl). Ensuite, on retire les étapes en commençant par la fin (« estompage arrière », Renkl &amp; Atkinson), jusqu'à résoudre seule. Le niveau s'adapte à tes réussites.</span></div>
+<div class="method"><b>6. Se demander « pourquoi ? » et s'expliquer les étapes</b><br><span class="small">Encadrés « Pourquoi ? » de la Leçon active et boutons « pourquoi ? » des exemples. Relier chaque règle à sa raison (interrogation élaborative, auto-explication) aide à comprendre et à transférer à des problèmes nouveaux.</span></div>
+<div class="method"><b>7. Expliquer à voix haute, sans regarder</b><br><span class="small">Encadrés « Explique à voix haute ». C'est une forme de rappel libre et d'auto-explication. La liste à cocher te montre ce que tu as oublié.</span></div>
+<div class="method"><b>8. Se tester avant d'apprendre (pré-test)</b><br><span class="small">Bouton Pré-test. Essayer de répondre avant d'avoir étudié, même en se trompant, améliore la mémorisation de ce qu'on apprend ensuite (Richland, Kornell &amp; Kao, 2009 ; Kornell, Hays &amp; Bjork, 2009).</span></div>
+<div class="method"><b>9. Noter sa certitude et corriger les erreurs « sûres »</b><br><span class="small">Boutons Sûre / Hésitante / Au hasard et tableau de calibration. Les erreurs commises avec une forte confiance sont paradoxalement les mieux corrigées après le feedback (effet d'hypercorrection, Butterfield &amp; Metcalfe, 2001). Comparer ta confiance à tes résultats t'apprend aussi à savoir ce que tu sais vraiment.</span></div>
+<div class="method"><b>10. Rendre les bases automatiques (sprints)</b><br><span class="small">Onglet Sprint. Quand les conversions, abréviations et densités sont instantanées, ta mémoire de travail reste disponible pour le raisonnement. On vise d'abord la précision, ensuite la vitesse. Honnêtement : cette idée est surtout étudiée pour le calcul de base chez les enfants, et une étude n'a pas trouvé d'avantage de rétention au simple entraînement chronométré par rapport à la même quantité de pratique. Utilise donc les sprints en complément, pas à la place des autres méthodes.</span></div>
+<div class="method"><b>11. Une méthode de calcul stable, avec les unités</b><br><span class="small">Dans les corrections, chaque étape garde son unité (mg, g, mL). En formation infirmière, apprendre à poser les calculs de doses avec les unités (analyse dimensionnelle) a amélioré la précision par rapport au calcul classique. Écris toujours l'unité à chaque ligne et vérifie l'ordre de grandeur.</span></div>
+</div>
+
+<div class="card"><h2>Spécial galénique : ce qui change pour ce cours</h2>
+<div class="method"><b>Questions ouvertes : rédiger, pas reconnaître</b><br><span class="small">L'examen comporte des questions ouvertes. Reconnaître la bonne réponse dans un QCM ne prouve pas qu'on sait la produire. Les « Questions d'examen » te font rédiger (ou dire) ta réponse, puis la comparer point par point à la réponse attendue : c'est du rappel libre, la forme de test la plus exigeante et la plus proche de l'examen.</span></div>
+<div class="method"><b>Partie calculs éliminatoire : viser le sur-apprentissage</b><br><span class="small">Une seule erreur de calcul fait échouer tout le cours. Pour cette partie, « réussir une fois » ne suffit pas : continue à t'entraîner après avoir réussi (problèmes mélangés chaque jour, sans calculatrice), et vérifie systématiquement unités et ordre de grandeur. L'entraînement prolongé au-delà de la première réussite ralentit l'oubli à court terme ; l'espacer garde l'effet sur la durée.</span></div>
+<div class="method"><b>Mélanger les chapitres</b><br><span class="small">La « Séance mélangée » et l'« Examen blanc » de la page générale tirent des questions de tous les chapitres : c'est l'entrelacement appliqué au cours entier, comme le jour de l'examen.</span></div></div>
+
+<div class="card"><h2>Mode d'emploi conseillé</h2><ol class="steps">
+<li><b>Un nouveau chapitre</b> (45-60 min) : pré-test → Leçon active (notion par notion : « pourquoi ? », voix haute, « Me tester ») → exemples guidés s'il y en a → questions d'examen.</li>
+<li><b>Les jours suivants</b> (15-20 min par chapitre prévu) : Séance du jour du chapitre, aux dates du plan (J+1, J+3, J+7, J+14, J+30).</li>
+<li><b>Chaque jour</b> : 5 problèmes de calcul mélangés (partie éliminatoire) et, si tu as le temps, un sprint de 60 s.</li>
+<li><b>Notions « En cours »</b> : rouvre-les dans la Leçon (mode « Masquer l'essentiel »), refais leur test.</li>
+<li><b>Les 10 derniers jours</b> : examens blancs et séances mélangées depuis la page générale ; plus de grosse relecture la veille, dors.</li>
+<li><b>Livres</b> (Le Hir, Aulton) : utilise-les pour approfondir une notion ratée, pas pour tout relire.</li></ol></div>
+
+<div class="card src"><h2>Sources</h2><ul class="small">
+<li>Dunlosky, Rawson, Marsh, Nathan &amp; Willingham (2013), <i>Improving Students' Learning With Effective Learning Techniques</i>, Psychological Science in the Public Interest 14(1). <a href="https://doi.org/10.1177/1529100612453266" target="_blank">doi:10.1177/1529100612453266</a></li>
+<li>Roediger &amp; Karpicke (2006), <i>Test-Enhanced Learning</i>, Psychological Science 17(3). <a href="https://psychology.ecu.edu/wp-content/pv-uploads/sites/216/2019/03/Roediger-Karpicke-2006.pdf" target="_blank">PDF</a></li>
+<li>Cepeda, Vul, Rohrer, Wixted &amp; Pashler (2008), <i>Spacing Effects in Learning: A Temporal Ridgeline of Optimal Retention</i>, Psychological Science 19(11). <a href="https://escholarship.org/uc/item/0kp5q19x" target="_blank">eScholarship</a></li>
+<li>Rawson &amp; Dunlosky : réapprentissage successif. <a href="https://journals.sagepub.com/doi/full/10.1177/09637214221100484" target="_blank">Current Directions in Psychological Science</a> · <a href="https://www.retrievalpractice.org/archive/2018/successive-relearning" target="_blank">synthèse retrievalpractice.org</a></li>
+<li>Rohrer, Dedrick, Hartwig &amp; Cheung (2020), <i>A randomized controlled trial of interleaved mathematics practice</i>, Journal of Educational Psychology 112(1) · Rohrer, Dedrick &amp; Burgess (2014), <a href="https://link.springer.com/article/10.3758/s13423-014-0588-3" target="_blank">Psychonomic Bulletin &amp; Review</a></li>
+<li>Renkl, Atkinson, Maier &amp; Staley (2002) ; Atkinson, Renkl &amp; Merrill (2003) : estompage des exemples résolus. <a href="https://en.wikipedia.org/wiki/Worked-example_effect" target="_blank">Synthèse</a></li>
+<li>Butterfield &amp; Metcalfe (2001, 2006) : effet d'hypercorrection. <a href="https://core.ac.uk/download/357328401.pdf" target="_blank">PDF</a></li>
+<li>Richland, Kornell &amp; Kao (2009), <i>The Pretesting Effect</i>. <a href="https://learninglab.uchicago.edu/Pre-Testing_files/RichlandKornellKao.pdf" target="_blank">PDF</a></li>
+<li>Greenfield, Whelan &amp; Cohn (2006), <i>Use of dimensional analysis to reduce medication errors</i>, Journal of Nursing Education 45(2). <a href="https://psnet.ahrq.gov/issue/use-dimensional-analysis-reduce-medication-errors" target="_blank">PSNet</a></li>
+</ul></div>`;
+
+/* ================= MOTEUR ================= */
+const KEY = DATA.key || ("mphab287-theorie-" + DATA.id);
+const INTERVALS = [0, 1, 3, 7, 14, 30, 60];
+const $ = s => document.querySelector(s);
+const V = () => $("#view");
+const rnd = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+function fmt(n, d = 8) {
+  if (typeof n !== "number" || !isFinite(n)) return String(n);
+  let s = (Math.round(n * 10 ** d) / 10 ** d).toFixed(d).replace(/0+$/, "").replace(/\.$/, "");
+  const [i, f] = s.split(".");
+  const ii = i.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  return f ? ii + "," + f : ii;
+}
+function parseNum(s) {
+  if (s == null) return NaN;
+  s = String(s).trim().replace(/\s| /g, "").replace(",", ".");
+  if (s === "½") return 0.5;
+  if (/^-?\d+(\.\d+)?\/\d+(\.\d+)?$/.test(s)) { const [a, b] = s.split("/"); return parseFloat(a) / parseFloat(b); }
+  if (!/^-?(\d+\.?\d*|\.\d+)(e-?\d+)?$/i.test(s)) return NaN;
+  return parseFloat(s);
+}
+function near(x, target, tol) {
+  if (isNaN(x)) return false;
+  if (tol && tol.abs != null) return Math.abs(x - target) <= tol.abs + 1e-12;
+  const rel = tol && tol.rel != null ? tol.rel : 0.005;
+  return Math.abs(x - target) <= Math.max(Math.abs(target) * rel, 1e-12);
+}
+const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+function today() { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+function addDays(iso, n) { const d = new Date(iso + "T12:00:00"); d.setDate(d.getDate() + n); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+function diffDays(a, b) { return Math.round((new Date(b + "T12:00:00") - new Date(a + "T12:00:00")) / 864e5); }
+function frDate(iso) { return new Date(iso + "T12:00:00").toLocaleDateString("fr-BE", { weekday: "short", day: "numeric", month: "short" }); }
+
+/* ---------- état sauvegardé ---------- */
+let S;
+function blank() { return { start: today(), cards: {}, items: {}, gens: {}, sprint: {}, worked: {}, days: [], daily: [], pretest: null, lessons: {}, conf: { sure: [0, 0], mid: [0, 0], guess: [0, 0] } }; }
+function load() { try { S = JSON.parse(localStorage.getItem(KEY)) || blank(); } catch (e) { S = blank(); } const b = blank(); for (const k in b) if (!(k in S)) S[k] = b[k]; }
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { }
+  try { if (DATA.sumKey) { const all = DATA.concepts.map(c => mastery(c.id)); localStorage.setItem(DATA.sumKey, JSON.stringify({ m: all.reduce((a, b) => a + b, 0) / all.length, due: dueCards().length, last: S.days[S.days.length - 1] || null, started: S.days.length > 0 })); } } catch (e) { } }
+function markDay() { const t = today(); if (!S.days.includes(t)) S.days.push(t); save(); }
+
+/* ---------- index du contenu ---------- */
+const CONCEPTS = Object.fromEntries(DATA.concepts.map(c => [c.id, c]));
+const CARDS = DATA.cards.map((c, i) => ({ ...c, id: c.id || "k" + i }));
+const ITEMS = DATA.quiz.map((q, i) => ({ ...q, id: q.id || "q" + i }));
+const GENS = DATA.gens;
+
+/* ---------- répétition espacée (Leitner) ---------- */
+function cardState(id) { return S.cards[id] || { box: 0, due: null, seen: 0, lapses: 0 }; }
+function gradeCard(id, g) { // g: 0 raté, 1 difficile, 2 bien, 3 facile
+  const st = cardState(id); st.seen++;
+  if (g === 0) { st.box = 0; st.lapses++; }
+  else if (g === 1) st.box = Math.max(1, st.box);
+  else if (g === 2) st.box = Math.min(INTERVALS.length - 1, st.box + 1);
+  else st.box = Math.min(INTERVALS.length - 1, st.box + 2);
+  st.due = addDays(today(), g === 0 ? 0 : INTERVALS[st.box]);
+  S.cards[id] = st; save();
+}
+function dueCards() { const t = today(); return CARDS.filter(c => { const s = S.cards[c.id]; return !s || !s.due || s.due <= t; }); }
+function logItem(id, ok) { (S.items[id] = S.items[id] || []).push(ok ? 1 : 0); if (S.items[id].length > 12) S.items[id].shift(); save(); }
+function logGen(id, ok) { (S.gens[id] = S.gens[id] || []).push(ok ? 1 : 0); if (S.gens[id].length > 15) S.gens[id].shift(); save(); }
+function logConf(c, ok) { if (!c) return; S.conf[c][1]++; if (ok) S.conf[c][0]++; save(); }
+
+/* ---------- maîtrise par notion ---------- */
+function mastery(cid) {
+  const parts = [];
+  const cs = CARDS.filter(c => c.c === cid);
+  if (cs.length) parts.push(cs.reduce((a, c) => a + Math.min(cardState(c.id).box, 4) / 4, 0) / cs.length);
+  const qs = ITEMS.filter(q => q.c === cid);
+  if (qs.length) parts.push(qs.reduce((a, q) => { const r = S.items[q.id] || []; const last = r.slice(-3); return a + (last.length ? last.reduce((x, y) => x + y, 0) / 3 : 0); }, 0) / qs.length);
+  const gs = Object.entries(GENS).filter(([k, g]) => g.c === cid);
+  if (gs.length) parts.push(gs.reduce((a, [k]) => { const r = (S.gens[k] || []).slice(-5); return a + (r.length ? r.reduce((x, y) => x + y, 0) / 5 : 0); }, 0) / gs.length);
+  return parts.length ? parts.reduce((a, b) => a + b, 0) / parts.length : 0;
+}
+function lvl(m) { return m >= .85 ? ["Automatique", "var(--ok)"] : m >= .6 ? ["Solide", "var(--accent)"] : m >= .25 ? ["En cours", "var(--warn)"] : ["À découvrir", "var(--muted)"]; }
+
+/* ================= NAVIGATION ================= */
+const TABS = [
+  ["home", "🏠 Accueil"], ["lesson", "📖 Leçon active"], ["cards", "🃏 Flashcards"], ["quiz", "❓ Quiz"],
+  ["worked", "🪜 Exemples guidés"], ["sprint", "⚡ Sprint"], ["mix", "🔀 Mélange"], ["mastery", "📊 Maîtrise"],
+  ["methods", "🧠 Méthodes"], ["settings", "⚙️"]
+].filter(([k]) => !((k === "worked" && !(DATA.worked || []).length) || (k === "sprint" && !(DATA.sprints || []).length) || (k === "mix" && !Object.keys(DATA.gens || {}).length) || (k === "lesson" && DATA.hub)));
+let cur = "home";
+function go(v, arg) { cur = v; stopTimers(); renderTabs(); (VIEWS[v])(arg); window.scrollTo({ top: 0 }); }
+function renderTabs() { $("#tabs").innerHTML = TABS.map(([k, l]) => `<button class="${k === cur ? "on" : ""}" onclick="go('${k}')">${l}</button>`).join(""); }
+let timers = [];
+function stopTimers() { timers.forEach(clearInterval); timers = []; document.onkeydown = null; }
+
+/* ================= LECTEUR DE SESSION (quiz, cartes, problèmes) ================= */
+let P = null; // session courante
+function startSession(title, queue, opts = {}) {
+  stopTimers(); cur = ""; renderTabs(); window.scrollTo({ top: 0 });
+  P = { title, queue: queue.slice(), done: [], i: 0, opts, total: queue.length, retry: {}, results: [] };
+  markDay(); renderItem();
+}
+function renderItem() {
+  stopTimers();
+  if (!P.queue.length) return endSession();
+  const it = P.queue[0];
+  const n = P.done.length, total = n + P.queue.length;
+  let h = `<div class="card"><div class="row" style="justify-content:space-between"><span class="pill">${esc(P.title)}</span>
+    <span class="small muted">${n} / ${total}</span></div>
+    <div class="bar" style="margin:10px 0 14px"><i style="width:${(n / total) * 100}%"></i></div>`;
+  if (it.c && CONCEPTS[it.c]) h += `<div class="small muted">${esc(CONCEPTS[it.c].title)}</div>`;
+  if (it.t === "card") h += cardHTML(it);
+  else if (it.t === "mcq" || it.t === "tf") h += mcqHTML(it);
+  else if (it.t === "num") h += numHTML(it);
+  else if (it.t === "open") h += openHTML(it);
+  h += `</div><div class="row"><button class="btn ghost sm" onclick="endSession()">Terminer la session</button></div>`;
+  V().innerHTML = h;
+  if (it.t === "num") { const inp = $("#ans"); inp && inp.focus({ preventScroll: true }); }
+  if (it.t === "card") document.onkeydown = e => { if (e.key === " " && !it._flip) { e.preventDefault(); flip(); } else if (it._flip && "1234".includes(e.key)) grade(+e.key - 1); };
+  if (it.t === "mcq" || it.t === "tf") document.onkeydown = e => { const k = +e.key; if (!it._ans && k >= 1 && k <= (it.o || ["Vrai", "Faux"]).length) selOpt(k - 1); };
+}
+function cardHTML(it) {
+  return `<div class="flash"><div>${it.front}</div>${it._flip ? `<div class="back">${it.back}</div>` : ""}</div>
+  ${it._flip ? `<div class="small muted" style="text-align:center;margin-top:8px">Sois honnête : ta réponse était-elle juste et rapide ?</div>
+   <div class="grades"><button class="btn g0" onclick="grade(0)">Raté<br><small>revient</small></button><button class="btn" onclick="grade(1)">Difficile</button>
+   <button class="btn" onclick="grade(2)">Bien</button><button class="btn g3" onclick="grade(3)">Facile</button></div>`
+      : `<div class="row" style="justify-content:center;margin-top:12px"><button class="btn primary" onclick="flip()">Retourner <span class="kbd">espace</span></button></div>
+   <div class="small muted" style="text-align:center;margin-top:6px">Réponds d'abord dans ta tête (ou à voix haute) avant de retourner.</div>`}`;
+}
+function openHTML(it) {
+  let h = (it.ctx ? `<div class="ctx">${esc(it.ctx)}</div>` : "") + `<div class="q">${it.q}</div>`;
+  h += `<textarea id="oa" rows="5" placeholder="Rédige ta réponse comme à l'examen (ou réponds à voix haute), puis compare." ${it._show ? "disabled" : ""}>${esc(it._txt || "")}</textarea>`;
+  if (!it._show) h += `<div class="row" style="margin-top:10px"><button class="btn primary" onclick="openShow()">Voir la réponse attendue</button></div>`;
+  else h += `<div class="fb" style="background:var(--info-soft);color:var(--ink)"><b>Réponse attendue</b><div class="ex">${it.a}</div></div>
+    ${it.keys ? `<div class="small" style="margin-top:10px"><b>Coche les éléments que tu avais :</b></div>${it.keys.map(k => `<label class="row small" style="margin:3px 0;flex-wrap:nowrap;align-items:flex-start"><input type="checkbox"> <span>${k}</span></label>`).join("")}` : ""}
+    <div class="grades" style="grid-template-columns:repeat(3,1fr)"><button class="btn g0" onclick="openGrade(0)">Incomplète<br><small>revient</small></button><button class="btn" onclick="openGrade(1)">Presque</button><button class="btn g3" onclick="openGrade(2)">Complète</button></div>`;
+  return h;
+}
+function openShow() { const it = P.queue[0]; it._txt = ($("#oa") || {}).value || ""; it._show = true; renderItem(); }
+function openGrade(g) {
+  const it = P.queue.shift(); logItem(it.id, g === 2); P.results.push({ it, ok: g === 2 });
+  if (g === 0 && !P.opts.noRetry) { P.queue.splice(Math.min(P.queue.length, 4), 0, { ...it, _show: false, _txt: "" }); } else P.done.push(it);
+  renderItem();
+}
+function flip() { P.queue[0]._flip = true; renderItem(); }
+function grade(g) {
+  const it = P.queue.shift(); gradeCard(it.id, g);
+  P.results.push({ it, ok: g >= 2 });
+  if (g === 0) { delete it._flip; P.queue.splice(Math.min(P.queue.length, 3), 0, it); } // rappel successif : revient tant que raté
+  else P.done.push(it);
+  renderItem();
+}
+function confHTML(disabled) {
+  return `<div class="conf"><div class="lab">Valide en indiquant ta certitude :</div><div class="row">
+  <button class="btn primary sm" ${disabled ? "disabled" : ""} onclick="submit('sure')">✅ Sûre</button>
+  <button class="btn sm" ${disabled ? "disabled" : ""} onclick="submit('mid')">🤔 Hésitante</button>
+  <button class="btn sm" ${disabled ? "disabled" : ""} onclick="submit('guess')">🎲 Au hasard</button></div></div>`;
+}
+function mcqHTML(it) {
+  const o = it.o || ["Vrai", "Faux"];
+  let h = (it.ctx ? `<div class="ctx">${esc(it.ctx)}</div>` : "") + `<div class="q">${it.q}</div><div class="opts">`;
+  o.forEach((t, k) => {
+    let cls = "";
+    if (it._ans) { if (k === it.a) cls = "ok"; else if (k === it._sel) cls = "ko"; }
+    else if (k === it._sel) cls = "sel";
+    h += `<button class="opt ${cls}" ${it._ans ? "disabled" : ""} onclick="selOpt(${k})"><span class="n">${k + 1}</span><span>${t}</span></button>`;
+  });
+  h += `</div>`;
+  if (!it._ans) h += confHTML(it._sel == null);
+  else h += fbHTML(it, it._sel === it.a, it.ex);
+  return h;
+}
+function selOpt(k) { P.queue[0]._sel = k; renderItem(); }
+function numHTML(it) {
+  let h = (it.ctx ? `<div class="ctx">${esc(it.ctx)}</div>` : "") + `<div class="q">${it.q}</div>`;
+  h += `<div class="row" style="flex-wrap:nowrap"><input id="ans" class="num ${it._ans ? (it._ok ? "ok" : "ko") : ""}" inputmode="decimal" autocomplete="off"
+     placeholder="ta réponse" ${it._ans ? `value="${esc(it._raw)}" disabled` : ""} onkeydown="if(event.key==='Enter'&&!${!!it._ans})submit('mid')">
+     ${it.unit ? `<b style="min-width:40px">${esc(it.unit)}</b>` : ""}</div>`;
+  if (!it._ans) h += confHTML(false) + `<div class="small muted" style="margin-top:6px">Virgule ou point acceptés. <span class="kbd">Entrée</span> = « hésitante ».</div>`;
+  else h += fbHTML(it, it._ok, (it.steps ? `<ol class="steps">${it.steps.map(s => `<li>${s}</li>`).join("")}</ol>` : "") + (it.ex || ""));
+  return h;
+}
+function fbHTML(it, ok, ex) {
+  const good = it.t === "num" ? `${fmt(it.ans)} ${it.unit || ""}` : (it.o || ["Vrai", "Faux"])[it.a];
+  let h = `<div class="fb ${ok ? "ok" : "ko"}"><b>${ok ? "Juste !" : "Pas encore."}</b> ${ok ? "" : `Réponse : <b>${good}</b>`}
+    ${ex ? `<div class="ex">${ex}</div>` : ""}</div>`;
+  if (!ok && it._conf === "sure") h += `<div class="hyper">💡 <b>Erreur commise avec assurance.</b> C'est justement ce type d'erreur qui se corrige le mieux quand on s'y arrête (effet d'hypercorrection) : relis l'explication et redis-la avec tes mots avant de continuer. Cette question reviendra dans quelques minutes.</div>`;
+  else if (!ok) h += `<div class="small muted" style="margin-top:8px">Cette question reviendra plus loin dans la session jusqu'à ce que tu la réussisses.</div>`;
+  if (ok && it._conf === "guess") h += `<div class="small muted" style="margin-top:8px">Juste, mais au hasard : elle comptera comme « à revoir ».</div>`;
+  h += `<div class="row" style="margin-top:12px"><button class="btn primary" id="nextBtn" onclick="nextItem()">Continuer →</button></div>`;
+  return h;
+}
+function submit(conf) {
+  const it = P.queue[0];
+  if (it.t === "num") {
+    const raw = $("#ans").value; const x = parseNum(raw);
+    if (isNaN(x)) { $("#ans").classList.add("ko"); return; }
+    it._raw = raw; it._ok = near(x, it.ans, it.tol);
+  } else { if (it._sel == null) return; it._ok = it._sel === it.a; }
+  it._ans = true; it._conf = conf; logConf(conf, it._ok);
+  const counted = it._ok && conf !== "guess";
+  if (it.gen) logGen(it.gen, counted); else logItem(it.id, counted);
+  P.results.push({ it, ok: it._ok, conf });
+  renderItem();
+  document.onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); nextItem(); } };
+  const nb = $("#nextBtn"); nb && nb.focus({ preventScroll: true });
+}
+function nextItem() {
+  const it = P.queue.shift();
+  const retry = !it._ok || it._conf === "guess";
+  if (retry && !P.opts.noRetry) {
+    const again = it.gen && GENS[it.gen] ? makeGen(it.gen) : { ...it, _ans: false, _sel: null, _ok: null, _conf: null, _raw: null };
+    P.queue.splice(Math.min(P.queue.length, 4), 0, again);
+  } else P.done.push(it);
+  renderItem();
+}
+function endSession() {
+  stopTimers();
+  const r = P ? P.results : [];
+  const first = {}; r.forEach(x => { const key = x.it.id || x.it.gen + x.it.q; if (!(key in first)) first[key] = x.ok; });
+  const n = Object.keys(first).length, ok = Object.values(first).filter(Boolean).length;
+  const sure = r.filter(x => x.conf === "sure"), sureOk = sure.filter(x => x.ok).length;
+  const misses = r.filter(x => !x.ok).map(x => x.it).filter((v, i, a) => a.findIndex(y => (y.q || y.front) === (v.q || v.front)) === i);
+  if (P && P.opts.onEnd) P.opts.onEnd(ok, n);
+  V().innerHTML = `<div class="card" style="text-align:center"><span class="pill">${esc(P ? P.title : "")}</span>
+   <div class="big" style="margin-top:10px">${ok} / ${n}</div><div class="muted">réussies du premier coup</div>
+   ${sure.length ? `<p class="small">Calibration : quand tu étais <b>sûre</b>, tu avais raison dans <b>${Math.round(sureOk / sure.length * 100)} %</b> des cas ${sureOk / sure.length < .9 ? "→ ta confiance dépasse encore ta maîtrise, continue à t'auto-tester." : "→ ta confiance est fiable."}</p>` : ""}
+   ${misses.length ? `<div style="text-align:left"><h3>À retravailler</h3><ul class="small">${misses.slice(0, 12).map(m => `<li>${m.q || m.front}</li>`).join("")}</ul></div>` : ""}
+   <div class="row" style="justify-content:center;margin-top:10px"><button class="btn primary" onclick="go('home')">Retour à l'accueil</button>
+   ${P && P.opts.again ? `<button class="btn" onclick="(${P.opts.again})()">Recommencer</button>` : ""}</div></div>`;
+  P = null;
+}
+function makeGen(id) { const g = GENS[id]; const x = g.make(); return { t: "num", gen: id, c: g.c, ...x }; }
+
+/* ================= VUES ================= */
+const VIEWS = {};
+
+VIEWS.home = () => {
+  const dc = dueCards().length;
+  const all = DATA.concepts.map(c => mastery(c.id)); const glob = all.reduce((a, b) => a + b, 0) / all.length;
+  const start = S.start, t = today();
+  const plan = [0, 1, 3, 7, 14, 30].map(d => { const day = addDays(start, d); return { d, day, done: S.daily.includes(day) || (d === 0 && S.days.includes(start)), today: day === t }; });
+  const streak = (() => { let n = 0, d = t; while (S.days.includes(d)) { n++; d = addDays(d, -1); } return n; })();
+  const firstTime = !S.pretest && !Object.keys(S.cards).length;
+  V().innerHTML = `
+  <div class="card">
+    <div class="row" style="justify-content:space-between;align-items:flex-start">
+      <div><h2 style="margin-bottom:2px">Séance du jour</h2>
+      <div class="muted small">${dc} flashcard${dc > 1 ? "s" : ""} à revoir · problèmes mélangés · questions sur tes notions faibles</div></div>
+      <div style="text-align:right"><div class="big" style="font-size:30px">${Math.round(glob * 100)} %</div><div class="small muted">maîtrise globale</div></div>
+    </div>
+    <div class="bar" style="margin:12px 0"><i style="width:${glob * 100}%"></i></div>
+    <div class="row"><button class="btn primary" onclick="daily()">▶ Lancer la séance du jour (~15 min)</button>${DATA.hubUrl ? `<a class="btn ghost sm" href="${DATA.hubUrl}" target="_top">↖ Page générale du cours</a>` : ""}
+    ${streak ? `<span class="small muted">🔥 ${streak} jour${streak > 1 ? "s" : ""} d'affilée</span>` : ""}</div>
+  </div>
+  ${firstTime ? `<div class="card" style="border-color:var(--accent)"><h2>Première fois ? Suis cet ordre</h2>
+    <ol class="steps"><li><b>Pré-test</b> (5 min) : réponds sans avoir révisé. Se tromper avant d'apprendre aide à mieux retenir ensuite.</li>
+    <li><b>Leçon active</b> : lis chaque notion, réponds aux « pourquoi ? », explique-la à voix haute, puis teste-toi.</li>
+    ${(DATA.worked || []).length ? `<li><b>Exemples guidés</b> : un exemple complet, puis de moins en moins d'aide jusqu'à le faire seule.</li>` : `<li><b>Questions d'examen</b> : rédige ta réponse, puis compare-la à la réponse attendue.</li>`}
+    <li><b>Séance du jour</b> : à refaire selon le plan ci-dessous (J+1, J+3, J+7…).</li></ol>
+    <div class="row" style="margin-top:8px"><button class="btn primary" onclick="pretest()">🎯 Commencer par le pré-test</button><button class="btn" onclick="go('lesson')">Aller à la leçon</button></div></div>` : ""}
+  <div class="card"><h2>Plan de révision espacée</h2>
+    <div class="small muted" style="margin-bottom:8px">Départ : ${frDate(start)}. Chaque case = une séance du jour. Les intervalles s'allongent : c'est l'oubli partiel entre deux séances qui rend le rappel efficace.</div>
+    <div class="plan">${plan.map(p => `<div class="${p.done ? "done" : ""} ${p.today ? "today" : ""}"><b>J+${p.d}</b>${frDate(p.day)}${p.done ? "<br>✓" : ""}</div>`).join("")}</div>
+    <div class="small muted" style="margin-top:8px">Avant l'examen : une séance la veille et l'avant-veille, surtout sur les notions « En cours ».</div>
+  </div>
+  <div class="grid2">
+    <button class="tile" onclick="pretest()"><b>🎯 Pré-test</b><span>${S.pretest ? `Fait : ${S.pretest.ok}/${S.pretest.n}. À refaire pour mesurer tes progrès.` : "Teste-toi avant d'apprendre"}</span></button>
+    ${(DATA.sprints || []).length ? `<button class="tile" onclick="go('sprint')"><b>⚡ Sprint d'automatisme</b><span>60 secondes chrono, objectif : réponse juste et immédiate</span></button>` : ""}
+    ${gk0() ? `<button class="tile" onclick="go('mix')"><b>🔀 Problèmes mélangés</b><span>Identifier la bonne méthode puis calculer</span></button>` : `<button class="tile" onclick="go('quiz')"><b>✍️ Questions d'examen</b><span>Réponses rédigées, comparées à la réponse attendue</span></button>`}
+    <button class="tile" onclick="go('mastery')"><b>📊 Ma maîtrise</b><span>Notion par notion, et prochaines révisions</span></button>
+  </div>`;
+};
+function gk0() { return Object.keys(GENS).length > 0; }
+function daily() {
+  const due = shuffle(dueCards()).slice(0, 18).map(c => ({ t: "card", ...c }));
+  const weak = DATA.concepts.slice().sort((a, b) => mastery(a.id) - mastery(b.id)).slice(0, 4).map(c => c.id);
+  const qs = shuffle(ITEMS.filter(q => weak.includes(q.c) && q.t !== "open")).slice(0, gk0() ? 6 : 9).map(q => ({ ...q, t: q.t || "mcq" }));
+  const op = shuffle(ITEMS.filter(q => q.t === "open")).slice(0, 2);
+  const gk = Object.keys(GENS); const probs = []; if (gk.length) for (let i = 0; i < 6; i++) probs.push(makeGen(gk[i % gk.length]));
+  const q = shuffle([...qs, ...probs]).concat(op); const mixed = [];
+  // entrelacer : cartes et questions alternées
+  while (due.length || q.length) { if (due.length) mixed.push(due.shift()); if (due.length) mixed.push(due.shift()); if (q.length) mixed.push(q.shift()); }
+  startSession("Séance du jour", mixed, { onEnd: () => { const t = today(); if (!S.daily.includes(t)) S.daily.push(t); save(); } });
+}
+function pretest() {
+  const ids = DATA.pretest;
+  const qs = ids.map(id => { const q = ITEMS.find(x => x.id === id); return q ? { ...q, t: q.t || "mcq" } : (GENS[id] ? makeGen(id) : null); }).filter(Boolean);
+  startSession("Pré-test", qs, { noRetry: true, onEnd: (ok, n) => { S.pretest = { ok, n, date: today() }; save(); } });
+}
+
+/* ---------- Leçon active ---------- */
+VIEWS.lesson = (open) => {
+  let h = `<div class="card"><h2>Leçon active</h2><p class="small muted" style="margin:0">Ne relis pas passivement. Pour chaque notion : lis une fois, active <b>« Masquer l'essentiel »</b> et essaie de retrouver les éléments floutés, réponds aux <b>pourquoi ?</b>, explique la notion <b>à voix haute</b> sans regarder, puis <b>teste-toi</b>.</p>
+  <div class="row" style="margin-top:10px"><label class="row small"><input type="checkbox" id="hk" onchange="document.body.classList.toggle('hidek',this.checked)" ${document.body.classList.contains("hidek") ? "checked" : ""}> Masquer l'essentiel (mode rappel)</label></div></div>`;
+  DATA.concepts.forEach((c, i) => {
+    const m = mastery(c.id), [l, col] = lvl(m);
+    h += `<details class="card lesson" ${open === c.id || (!open && i === 0) ? "open" : ""}><summary>${i + 1}. ${c.title} <span class="lvl" style="color:${col};margin-left:6px">${l}</span></summary>
+    <div class="content">${c.html}</div>
+    ${c.why && c.why.length ? `<div class="box why2"><h4>🤔 Pourquoi ? (interrogation élaborative)</h4>${c.why.map((w, j) => `<div style="margin:6px 0"><b>${w[0]}</b> <span class="why" onclick="this.nextElementSibling.classList.toggle('hidden')">voir une réponse</span><span class="whyx hidden">${w[1]}</span></div>`).join("")}</div>` : ""}
+    ${c.talk ? `<div class="box talk"><h4>🗣️ Explique à voix haute, sans regarder</h4><p style="margin:4px 0">${c.talk.prompt}</p>
+      <div class="small">Puis vérifie que tu as bien dit :</div>${c.talk.check.map(x => `<label class="row small" style="margin:3px 0;flex-wrap:nowrap;align-items:flex-start"><input type="checkbox"> <span>${x}</span></label>`).join("")}</div>` : ""}
+    ${c.traps && c.traps.length ? `<div class="box trap"><h4>⚠️ Pièges classiques</h4><ul style="margin:4px 0;padding-left:18px">${c.traps.map(x => `<li>${x}</li>`).join("")}</ul></div>` : ""}
+    <div class="row"><button class="btn primary sm" onclick="testConcept('${c.id}')">🧪 Me tester sur cette notion</button></div></details>`;
+  });
+  V().innerHTML = h;
+  V().querySelectorAll(".k").forEach(k => k.onclick = () => k.classList.toggle("shown"));
+};
+function testConcept(cid) {
+  const cards = CARDS.filter(c => c.c === cid).map(c => ({ t: "card", ...c }));
+  const qs = ITEMS.filter(q => q.c === cid).map(q => ({ ...q, t: q.t || "mcq" }));
+  const gs = Object.keys(GENS).filter(k => GENS[k].c === cid).slice(0, 3).map(makeGen);
+  S.lessons[cid] = today(); save();
+  startSession(CONCEPTS[cid].title, shuffle([...cards, ...qs]).concat(gs), { again: `()=>testConcept('${cid}')` });
+}
+
+/* ---------- Flashcards ---------- */
+VIEWS.cards = () => {
+  const due = dueCards();
+  const boxes = [0, 0, 0, 0, 0, 0, 0]; CARDS.forEach(c => boxes[cardState(c.id).box]++);
+  V().innerHTML = `<div class="card"><h2>Flashcards à répétition espacée</h2>
+  <p class="small muted" style="margin-top:0">Chaque carte revient selon ta réponse : <b>Raté</b> → elle revient dans la session jusqu'à ce que tu la réussisses ; <b>Bien</b> → 1, 3, 7, 14, 30 puis 60 jours. Réponds toujours <b>avant</b> de retourner : c'est l'effort de rappel qui fixe la mémoire.</p>
+  <div class="small">Boîtes : ${boxes.map((b, i) => `<span class="pill" style="margin:2px">${i === 0 ? "Nouvelles/ratées" : "+" + INTERVALS[i] + " j"} : ${b}</span>`).join("")}</div>
+  <div class="row" style="margin-top:12px"><button class="btn primary" ${due.length ? "" : "disabled"} onclick="startSession('Flashcards', shuffle(dueCards()).map(c=>({t:'card',...c})))">Réviser les ${due.length} cartes dues</button>
+  <button class="btn" onclick="startSession('Toutes les cartes', shuffle(CARDS).map(c=>({t:'card',...c})))">Toutes les cartes (${CARDS.length})</button></div></div>
+  <div class="card"><h3 style="margin-top:0">Par notion</h3><div class="grid2">${DATA.concepts.map(c => { const n = CARDS.filter(k => k.c === c.id).length; return n ? `<button class="tile" onclick="startSession('${esc(c.title).replace(/'/g, "\\'")}', shuffle(CARDS.filter(k=>k.c==='${c.id}')).map(c=>({t:'card',...c})))"><b>${c.title}</b><span>${n} cartes</span></button>` : ""; }).join("")}</div></div>`;
+};
+
+/* ---------- Quiz ---------- */
+VIEWS.quiz = () => {
+  V().innerHTML = `<div class="card"><h2>Quiz de théorie</h2>
+  <p class="small muted" style="margin-top:0">Avant de valider, indique ta <b>certitude</b>. Tu verras à la fin si ta confiance est bien calibrée. Les erreurs reviennent dans la session jusqu'à être corrigées.</p>
+  <div class="row"><button class="btn primary" onclick="startSession('Quiz complet', shuffle(ITEMS).map(q=>({...q,t:q.t||'mcq'})))">Tout le quiz (${ITEMS.length} questions, ordre mélangé)</button>
+  <button class="btn" onclick="startSession('Quiz express', shuffle(ITEMS.filter(q=>q.t!=='open')).slice(0,10).map(q=>({...q,t:q.t||'mcq'})))">Express : 10 questions</button>
+  ${ITEMS.some(q => q.t === "open") ? `<button class="btn" onclick="startSession('Questions d\\'examen', shuffle(ITEMS.filter(q=>q.t==='open')))">✍️ Questions ouvertes d'examen (${ITEMS.filter(q => q.t === "open").length})</button>` : ""}</div></div>
+  <div class="card"><h3 style="margin-top:0">Par notion</h3><div class="grid2">${DATA.concepts.map(c => { const n = ITEMS.filter(k => k.c === c.id).length; return n ? `<button class="tile" onclick="startSession('Quiz', shuffle(ITEMS.filter(k=>k.c==='${c.id}')).map(q=>({...q,t:q.t||'mcq'})))"><b>${c.title}</b><span>${n} questions</span></button>` : ""; }).join("")}</div></div>`;
+};
+
+/* ---------- Exemples guidés (estompage) ---------- */
+const FADE = ["Exemple complet", "Dernière étape à faire", "Deux dernières étapes", "Seule, toutes les étapes"];
+VIEWS.worked = () => {
+  V().innerHTML = `<div class="card"><h2>Exemples guidés à estompage progressif</h2>
+  <p class="small muted" style="margin-top:0">On commence par un exemple entièrement résolu (tu expliques chaque étape), puis l'aide disparaît <b>en partant de la fin</b> : d'abord la dernière étape à faire toi-même, puis les deux dernières, puis tout. Tu montes d'un niveau quand tu réussis, tu redescends si tu bloques. Chaque exemple a de nouveaux nombres.</p></div>
+  <div class="grid2">${DATA.worked.map((w, i) => { const l = S.worked[w.id] || 0; return `<button class="tile" onclick="worked(${i})"><b>${w.title}</b><span>Niveau ${l + 1}/4 · ${FADE[l]}</span></button>`; }).join("")}</div>`;
+};
+let W = null;
+function worked(i) {
+  markDay();
+  const w = DATA.worked[i]; const level = S.worked[w.id] || 0; const ex = w.make();
+  const nBlank = level === 0 ? 0 : level === 1 ? 1 : level === 2 ? Math.min(2, ex.steps.length) : ex.steps.length;
+  W = { i, w, ex, level, blanks: ex.steps.map((s, k) => k >= ex.steps.length - nBlank), checked: false };
+  renderWorked();
+}
+function renderWorked() {
+  const { w, ex, level, blanks, checked } = W;
+  let h = `<div class="card"><div class="row" style="justify-content:space-between"><span class="pill">${w.title}</span><span class="small muted">Niveau ${level + 1}/4 · ${FADE[level]}</span></div>
+   <div class="ctx" style="margin-top:12px">${esc(ex.ctx)}</div><div class="q">${ex.q}</div><ol class="wk">`;
+  ex.steps.forEach((s, k) => {
+    h += `<li><b>${s.label}</b>`;
+    if (!blanks[k]) h += `<div>${s.show} <span class="why" onclick="this.nextElementSibling.classList.toggle('hidden')">pourquoi ?</span><span class="whyx hidden">${s.why}</span></div>`;
+    else {
+      const st = W.res && W.res[k];
+      h += `<div class="blank"><input class="num ${checked ? (st ? "ok" : "ko") : ""}" id="w${k}" inputmode="decimal" autocomplete="off" ${checked ? "disabled" : ""} value="${checked ? esc(W.raw[k]) : ""}"> <b>${s.unit || ""}</b></div>
+       ${checked && !st ? `<div class="small" style="color:var(--ko)">Attendu : ${s.show}</div>` : ""}${checked ? `<div class="whyx">${s.why}</div>` : ""}`;
+    }
+    h += `</li>`;
+  });
+  h += `</ol>`;
+  if (level === 0 && !checked) h += `<div class="box talk"><b>Auto-explication :</b> avant de continuer, dis à voix haute pourquoi chaque étape est nécessaire. Clique « pourquoi ? » seulement pour vérifier.</div>
+     <div class="row"><button class="btn primary" onclick="W.checked=true;W.ok=true;finishWorked()">J'ai compris chaque étape → niveau suivant</button></div>`;
+  else if (!checked) h += `<div class="row"><button class="btn primary" onclick="checkWorked()">Vérifier</button></div>`;
+  else h += `<div class="fb ${W.ok ? "ok" : "ko"}"><b>${W.ok ? "Bravo, niveau suivant débloqué." : "Pas encore : on reste à ce niveau (ou on redescend) pour consolider."}</b></div>
+     <div class="row" style="margin-top:10px"><button class="btn primary" onclick="worked(${W.i})">Nouvel exemple →</button><button class="btn" onclick="go('worked')">Autre procédure</button></div>`;
+  h += `</div>`;
+  V().innerHTML = h;
+  const f = V().querySelector("input.num:not([disabled])"); f && f.focus({ preventScroll: true });
+  V().querySelectorAll("input.num").forEach(inp => inp.onkeydown = e => { if (e.key === "Enter") checkWorked(); });
+}
+function checkWorked() {
+  if (W.checked) return;
+  W.res = {}; W.raw = {}; let ok = true;
+  W.ex.steps.forEach((s, k) => { if (!W.blanks[k]) return; const raw = $("#w" + k).value; W.raw[k] = raw; const r = near(parseNum(raw), s.ans, s.tol); W.res[k] = r; if (!r) ok = false; });
+  W.checked = true; W.ok = ok; finishWorked();
+}
+function finishWorked() {
+  const id = W.w.id; const l = S.worked[id] || 0;
+  S.worked[id] = W.ok ? Math.min(3, l + 1) : Math.max(0, l - (l === 3 ? 1 : 0));
+  if (W.w.gen) logGen(W.w.gen, W.ok && W.level === 3);
+  save(); if (W.level === 0) worked(W.i); else renderWorked();
+}
+
+/* ---------- Sprint d'automatisme ---------- */
+VIEWS.sprint = () => {
+  V().innerHTML = `<div class="card"><h2>Sprint d'automatisme</h2>
+  <p class="small muted" style="margin-top:0">60 secondes, un maximum de réponses <b>justes</b>. Le but n'est pas la vitesse pour elle-même : quand ces bases deviennent instantanées, ta mémoire de travail reste libre pour le raisonnement des exercices. Objectif indiqué pour chaque série ; ne vise la vitesse qu'une fois la précision acquise.</p></div>
+  <div class="grid2">${DATA.sprints.map((s, i) => { const h = S.sprint[s.id] || []; const best = h.reduce((a, b) => Math.max(a, b.ok - b.ko), 0); return `<button class="tile" onclick="sprint(${i})"><b>${s.title}</b><span>Objectif : ${s.target} justes / min · record : ${best}${best >= s.target ? " ✅" : ""}</span></button>`; }).join("")}</div>`;
+};
+let SP = null;
+function sprint(i) {
+  markDay(); const s = DATA.sprints[i];
+  SP = { s, i, end: Date.now() + 60000, ok: 0, ko: 0, misses: [], cur: s.make() };
+  renderSprint();
+  timers.push(setInterval(() => { const left = Math.max(0, Math.ceil((SP.end - Date.now()) / 1000)); const t = $("#tm"); if (t) t.textContent = left; if (left <= 0) endSprint(); }, 200));
+}
+function renderSprint() {
+  const it = SP.cur;
+  let h = `<div class="card" style="text-align:center"><div class="row" style="justify-content:space-between"><span class="pill">${SP.s.title}</span><span class="timer" id="tm">${Math.ceil((SP.end - Date.now()) / 1000)}</span></div>
+   <div class="small muted">✅ ${SP.ok} · ❌ ${SP.ko}</div><div class="q" style="font-size:22px;margin:18px 0">${it.q}</div>`;
+  if (it.o) { h += `<div class="opts">${it.o.map((t, k) => `<button class="opt" onclick="spAns(${k})"><span class="n">${k + 1}</span><span>${t}</span></button>`).join("")}</div>`; }
+  else h += `<div class="row" style="justify-content:center;flex-wrap:nowrap"><input id="sp" class="num" style="max-width:220px;text-align:center" inputmode="decimal" autocomplete="off"><b>${it.unit || ""}</b></div><div class="small muted" style="margin-top:6px"><span class="kbd">Entrée</span> pour valider</div>`;
+  h += `<div id="spfb" style="min-height:24px;margin-top:10px"></div></div>`;
+  V().innerHTML = h;
+  if (!it.o) { const inp = $("#sp"); inp.focus({ preventScroll: true }); inp.onkeydown = e => { if (e.key === "Enter") spAns(inp.value); }; }
+  else document.onkeydown = e => { const k = +e.key; if (k >= 1 && k <= it.o.length) spAns(k - 1); };
+}
+function spAns(v) {
+  const it = SP.cur; let ok;
+  if (it.o) ok = v === it.a; else { const x = parseNum(v); if (isNaN(x)) return; ok = near(x, it.ans, it.tol); }
+  if (ok) SP.ok++; else { SP.ko++; SP.misses.push(`${it.q} → <b>${it.o ? it.o[it.a] : fmt(it.ans) + " " + (it.unit || "")}</b>`); }
+  SP.cur = SP.s.make(); renderSprint();
+  const fb = $("#spfb"); if (fb) fb.innerHTML = ok ? `<span style="color:var(--ok)">✓</span>` : `<span style="color:var(--ko)">✗ ${SP.misses[SP.misses.length - 1]}</span>`;
+}
+function endSprint() {
+  stopTimers(); const s = SP.s; (S.sprint[s.id] = S.sprint[s.id] || []).push({ d: today(), ok: SP.ok, ko: SP.ko }); save();
+  const hist = S.sprint[s.id].slice(-8); const score = SP.ok - SP.ko;
+  V().innerHTML = `<div class="card" style="text-align:center"><span class="pill">${s.title}</span><div class="big" style="margin-top:10px">${SP.ok} ✓ · ${SP.ko} ✗</div>
+  <p>${SP.ko === 0 && SP.ok >= s.target ? "🎯 Objectif atteint sans erreur : cette base devient automatique. Refais un sprint dans quelques jours pour vérifier que ça tient." : SP.ko > 2 ? "Trop d'erreurs : ralentis et vise d'abord 100 % de justes, la vitesse viendra." : `Objectif : ${s.target} justes en 60 s, zéro erreur.`}</p>
+  <div class="small muted">Tes derniers sprints : ${hist.map(x => `${x.ok}/${x.ko}`).join(" · ")}</div>
+  ${SP.misses.length ? `<div style="text-align:left"><h3>Erreurs à retenir</h3><ul class="small">${SP.misses.map(m => `<li>${m}</li>`).join("")}</ul></div>` : ""}
+  <div class="row" style="justify-content:center"><button class="btn primary" onclick="sprint(${SP.i})">Relancer</button><button class="btn" onclick="go('sprint')">Autre série</button></div></div>`;
+}
+
+/* ---------- Mélange (entrelacement + discrimination de méthode) ---------- */
+let MX = null;
+VIEWS.mix = () => {
+  MX = { n: 0, ok: 0 }; markDay(); nextMix();
+};
+function nextMix() {
+  const keys = Object.keys(GENS); let k; do { k = pick(keys); } while (MX.last === k && keys.length > 1); MX.last = k;
+  MX.cur = makeGen(k); MX.stage = 0; MX.methodOk = null; renderMix();
+}
+function renderMix() {
+  const it = MX.cur; const fams = [...new Set(Object.values(GENS).map(g => g.method))];
+  let h = `<div class="card"><div class="row" style="justify-content:space-between"><span class="pill">Problèmes mélangés</span><span class="small muted">${MX.ok} / ${MX.n} justes</span></div>
+  <p class="small muted">Les types de problèmes arrivent dans le désordre, comme à l'examen. D'abord : <b>quelle méthode ?</b> Ensuite seulement : le calcul.</p>
+  ${it.ctx ? `<div class="ctx">${esc(it.ctx)}</div>` : ""}<div class="q">${it.q}</div>`;
+  if (MX.stage === 0) {
+    MX.opts = MX.opts && MX.optsFor === it ? MX.opts : shuffle(fams).slice(0, 4); if (!MX.opts.includes(GENS[it.gen].method)) MX.opts[rnd(0, MX.opts.length - 1)] = GENS[it.gen].method; MX.optsFor = it;
+    h += `<div class="small" style="margin-bottom:6px"><b>Étape 1 :</b> quelle méthode s'applique ?</div><div class="opts">${MX.opts.map((m, k) => `<button class="opt" onclick="mixMethod(${k})"><span class="n">${k + 1}</span><span>${m}</span></button>`).join("")}</div>`;
+    document.onkeydown = e => { const k = +e.key; if (k >= 1 && k <= MX.opts.length) mixMethod(k - 1); };
+  } else {
+    h += `<div class="small" style="margin:0 0 8px;color:${MX.methodOk ? "var(--ok)" : "var(--ko)"}">${MX.methodOk ? "✓ Bonne méthode" : "✗ La méthode était"} : ${GENS[it.gen].method}</div>`;
+    h += `<div class="row" style="flex-wrap:nowrap"><input id="mx" class="num ${MX.stage === 2 ? (MX.calcOk ? "ok" : "ko") : ""}" inputmode="decimal" autocomplete="off" ${MX.stage === 2 ? `disabled value="${esc(MX.raw)}"` : ""}> <b>${it.unit || ""}</b></div>`;
+    if (MX.stage === 1) h += `<div class="row" style="margin-top:10px"><button class="btn primary" onclick="mixCalc()">Valider le calcul</button></div>`;
+    else h += `<div class="fb ${MX.calcOk ? "ok" : "ko"}"><b>${MX.calcOk ? "Juste !" : "Réponse : " + fmt(it.ans) + " " + (it.unit || "")}</b><div class="ex"><ol class="steps">${(it.steps || []).map(s => `<li>${s}</li>`).join("")}</ol></div></div>
+      <div class="row" style="margin-top:10px"><button class="btn primary" id="mxn" onclick="nextMix()">Problème suivant →</button><button class="btn ghost" onclick="go('home')">Arrêter</button></div>`;
+  }
+  h += `</div>`; V().innerHTML = h;
+  const inp = $("#mx"); if (inp && MX.stage === 1) { inp.focus({ preventScroll: true }); inp.onkeydown = e => { if (e.key === "Enter") mixCalc(); }; }
+  if (MX.stage === 2) { const b = $("#mxn"); b && b.focus({ preventScroll: true }); }
+}
+function mixMethod(k) { MX.methodOk = MX.opts[k] === GENS[MX.cur.gen].method; MX.stage = 1; document.onkeydown = null; renderMix(); }
+function mixCalc() { const raw = $("#mx").value; const x = parseNum(raw); if (isNaN(x)) return; MX.raw = raw; MX.calcOk = near(x, MX.cur.ans, MX.cur.tol); MX.n++; if (MX.calcOk && MX.methodOk) MX.ok++; logGen(MX.cur.gen, MX.calcOk && MX.methodOk); MX.stage = 2; renderMix(); }
+
+/* ---------- Maîtrise ---------- */
+VIEWS.mastery = () => {
+  const t = today(); const next = [];
+  for (let d = 0; d < 7; d++) { const day = addDays(t, d); next.push([day, CARDS.filter(c => { const s = S.cards[c.id]; return d === 0 ? (!s || !s.due || s.due <= day) : s && s.due === day; }).length]); }
+  const c = S.conf; const pc = a => a[1] ? Math.round(a[0] / a[1] * 100) + " %" : "–";
+  V().innerHTML = `<div class="card"><h2>Ma maîtrise</h2><p class="small muted" style="margin-top:0">Score par notion = flashcards (boîte atteinte) + quiz (3 dernières réponses) + problèmes (5 derniers). « Automatique » = au moins 85 %. Une réponse juste « au hasard » ne compte pas.</p>
+  ${DATA.concepts.map(x => { const m = mastery(x.id); const [l, col] = lvl(m); return `<div class="mast"><a href="#" onclick="go('lesson','${x.id}');return false" style="color:inherit">${x.title}</a><div class="bar"><i style="width:${m * 100}%;background:${col}"></i></div><span class="lvl" style="color:${col}">${Math.round(m * 100)}%</span></div>`; }).join("")}
+  </div>
+  <div class="card"><h3 style="margin-top:0">Calibration de ta confiance</h3><table class="tbl"><tr><th>Quand tu dis…</th><th>tu as raison</th><th>réponses</th></tr>
+  <tr><td>✅ Sûre</td><td>${pc(c.sure)}</td><td>${c.sure[1]}</td></tr><tr><td>🤔 Hésitante</td><td>${pc(c.mid)}</td><td>${c.mid[1]}</td></tr><tr><td>🎲 Au hasard</td><td>${pc(c.guess)}</td><td>${c.guess[1]}</td></tr></table>
+  <div class="small muted">Idéal : « Sûre » proche de 100 %. Si c'est plus bas, tu surestimes ce que tu sais : c'est le signal pour te tester davantage plutôt que relire.</div></div>
+  <div class="card"><h3 style="margin-top:0">Flashcards à revoir les 7 prochains jours</h3><div class="plan">${next.map(([d, n]) => `<div class="${d === t ? "today" : ""}"><b>${n}</b>${frDate(d)}</div>`).join("")}</div></div>
+  <div class="card"><h3 style="margin-top:0">Exemples guidés</h3>${DATA.worked.map(w => `<div class="mast"><span>${w.title}</span><div class="bar"><i style="width:${((S.worked[w.id] || 0) / 3) * 100}%"></i></div><span class="lvl">${(S.worked[w.id] || 0) + 1}/4</span></div>`).join("")}</div>`;
+};
+
+/* ---------- Méthodes (science de l'apprentissage) ---------- */
+VIEWS.methods = () => { V().innerHTML = METHODS_HTML; };
+
+/* ---------- Réglages ---------- */
+VIEWS.settings = () => {
+  V().innerHTML = `<div class="card"><h2>Sauvegarde de ta progression</h2>
+  <p class="small muted" style="margin-top:0">Ta progression est enregistrée dans ce navigateur. Dans Notion, la page intégrée a sa propre mémoire, distincte de la page ouverte directement. Pour changer d'appareil : copie le code ci-dessous et colle-le de l'autre côté.</p>
+  <textarea id="exp" rows="4" style="font-size:12px">${esc(JSON.stringify(S))}</textarea>
+  <div class="row" style="margin-top:8px"><button class="btn" onclick="navigator.clipboard&&navigator.clipboard.writeText($('#exp').value);this.textContent='Copié ✓'">Copier</button>
+  <button class="btn" onclick="try{S=JSON.parse($('#exp').value);save();go('home')}catch(e){alert('Code invalide')}">Importer le code collé</button></div></div>
+  <div class="card"><h2>Recommencer</h2><p class="small muted" style="margin-top:0">Efface toute la progression de cette séance (cartes, scores, plan).</p>
+  <button class="btn" style="border-color:var(--ko);color:var(--ko)" onclick="if(confirm('Tout effacer ?')){S=blank();save();go('home')}">Tout effacer</button></div>
+  <div class="card small muted">Raccourcis clavier : <span class="kbd">espace</span> retourner une carte · <span class="kbd">1</span>–<span class="kbd">4</span> noter une carte ou choisir une option · <span class="kbd">Entrée</span> valider / continuer.</div>`;
+};
+
+/* ================= DÉMARRAGE ================= */
+if (DATA.hub && typeof HUB_HOME === "function") VIEWS.home = HUB_HOME;
+load();
+$("#hKick").textContent = DATA.kicker; $("#hTitle").textContent = DATA.title; $("#hSub").textContent = DATA.sub;
+go("home");
+</script>
+</body>
+</html>
