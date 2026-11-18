@@ -205,7 +205,7 @@ loadSaved().then(f => { if (f) openFile(f); });
     let v = document.getElementById("viewer");
     if (!v) { v = document.createElement("div"); v.id = "viewer"; v.innerHTML = '<div class="vbar"><button onclick="closeViewer()">← Retour à la page générale</button><span class="vt"></span></div><iframe title="page"></iframe>'; document.body.appendChild(v); }
     const f = v.querySelector("iframe"); f.onload = () => { try { v.querySelector(".vt").textContent = f.contentDocument.title; } catch (e) {} };
-    f.src = u; v.style.display = "flex"; document.documentElement.style.overflow = "hidden";
+    f.src = u + (u.includes("?") ? "&" : "?") + "v=1794968025"; v.style.display = "flex"; document.documentElement.style.overflow = "hidden";
   };
   window.closeViewer = function () {
     if (top_) return top_.closeViewer();
