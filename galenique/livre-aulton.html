@@ -172,7 +172,7 @@ async function openFile(f) {
 }
 let rendering = false, pending = null;
 async function go(n, printed) {
-  if (printed) $("#where").textContent = "→ page " + printed + " du livre";
+  if (printed) { $("#where").textContent = "→ page " + printed + " du livre"; if (window.innerWidth <= 820) document.querySelector(".right").scrollIntoView({ behavior: "smooth" }); }
   if (!doc) { want = n; return; }
   n = Math.max(1, Math.min(doc.numPages, n || 1)); cur = n; $("#pin").value = n;
   if (rendering) { pending = n; return; } rendering = true;
