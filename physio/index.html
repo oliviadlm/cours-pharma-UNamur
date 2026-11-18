@@ -2710,7 +2710,7 @@ go("home");
     let v = document.getElementById("viewer");
     if (!v) { v = document.createElement("div"); v.id = "viewer"; v.innerHTML = '<div class="vbar"><button onclick="closeViewer()">← Retour à la page générale</button><span class="vt"></span></div><iframe title="page"></iframe>'; document.body.appendChild(v); }
     const f = v.querySelector("iframe"); f.onload = () => { try { v.querySelector(".vt").textContent = f.contentDocument.title; } catch (e) {} };
-    f.src = u + (u.includes("?") ? "&" : "?") + "v=1795026514"; v.style.display = "flex"; document.documentElement.style.overflow = "hidden";
+    f.src = u + (u.includes("?") ? "&" : "?") + "v=1795026676"; v.style.display = "flex"; document.documentElement.style.overflow = "hidden";
   };
   window.closeViewer = function () {
     if (top_) return top_.closeViewer();
@@ -2723,7 +2723,7 @@ go("home");
     const h = a.getAttribute("href"); if (!h || a.target || /^(https?:|#|mailto:|javascript:)/i.test(h)) return;
     e.preventDefault();
     const url = new URL(h, location.href);
-    const isHome = /\/galenique\/(index\.html)?$/.test(url.pathname);
+    const isHome = /\/(galenique|physio)\/(index\.html)?$/.test(url.pathname);
     if (isHome) { const v = document.getElementById("viewer"); if (top_) top_.closeViewer(); else if (v && v.style.display === "flex") closeViewer(); else openViewer(url.href); return; }
     openViewer(url.href);
   }, true);
