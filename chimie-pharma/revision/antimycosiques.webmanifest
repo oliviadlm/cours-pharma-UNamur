@@ -1,0 +1,23 @@
+{
+ "name": "Antimycosiques — Chimie pharma",
+ "short_name": "Antimycosiques",
+ "start_url": "antimycosiques.html",
+ "scope": "./",
+ "display": "standalone",
+ "background_color": "#f3efe6",
+ "theme_color": "#1a3fd6",
+ "lang": "fr",
+ "icons": [
+  {
+   "src": "icons/antimycosiques-192.png",
+   "sizes": "192x192",
+   "type": "image/png"
+  },
+  {
+   "src": "icons/antimycosiques-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any"
+  }
+ ]
+}
