@@ -52,3 +52,5 @@
   quiz();
 })();
 (function(){var b=document.querySelectorAll('.tout-rep');b.forEach(function(x){x.addEventListener('click',function(){var d=document.querySelectorAll('details.rq');var open=!Array.prototype.some.call(d,function(e){return e.open});d.forEach(function(e){e.open=open})})})})();
+(function(){document.querySelectorAll('.pl-all').forEach(function(b){b.addEventListener('click',function(){var o=b.dataset.open==='1';document.querySelectorAll('#t-cours details').forEach(function(d){d.open=o})})});
+document.querySelectorAll('.filtres button').forEach(function(b){b.addEventListener('click',function(){if(b.dataset.f!=='tout'){document.querySelectorAll('#t-cours details.sec, #t-cours details.classe').forEach(function(d){d.open=true})}document.querySelectorAll('#t-cours details.sec').forEach(function(d){d.classList.toggle('hide',b.dataset.f!=='tout'&&!d.querySelector('.mol:not(.hide)'))})})});})();
