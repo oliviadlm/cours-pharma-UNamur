@@ -87,3 +87,6 @@ ul.code{list-style:none;padding:0;display:grid;gap:6px}
 @media (max-width:640px){.mol{grid-template-columns:1fr}.hero h1{font-size:1.6rem}}
 .sec-syl{color:var(--encre);background:var(--carte2);padding:10px 12px;border-radius:12px;margin-top:2rem}.sec-syl small{font:400 .8rem var(--texte);color:var(--doux);margin-left:auto}
 .bloc-c>summary{font-size:1rem;color:var(--encre);margin:6px 0 10px}
+ol.qprof li>span:nth-child(2){display:inline}
+details.rq{margin-top:6px}
+.tout-rep{border:1px solid var(--trait);background:var(--carte);border-radius:10px;padding:.45rem .8rem;cursor:pointer;font:inherit;color:inherit;display:inline-flex;gap:6px;align-items:center}

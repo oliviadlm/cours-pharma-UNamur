@@ -51,3 +51,4 @@
   }
   quiz();
 })();
+(function(){var b=document.querySelectorAll('.tout-rep');b.forEach(function(x){x.addEventListener('click',function(){var d=document.querySelectorAll('details.rq');var open=!Array.prototype.some.call(d,function(e){return e.open});d.forEach(function(e){e.open=open})})})})();
