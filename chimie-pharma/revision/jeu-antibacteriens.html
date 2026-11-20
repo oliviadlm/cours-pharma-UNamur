@@ -516,7 +516,7 @@ function importer(){function appliquer(t){try{t=(t||'').trim();if(t.indexOf('CHI
  if(navigator.clipboard&&navigator.clipboard.readText)navigator.clipboard.readText().then(function(t){if(t&&t.indexOf('CHIPHA1:')===0)appliquer(t);else appliquer(window.prompt('Colle ici le code de progression :',''))},function(){appliquer(window.prompt('Colle ici le code de progression :',''))});else appliquer(window.prompt('Colle ici le code de progression :',''))}
 function haut(){var d=$('#defile');if(d)d.scrollTop=0}
 /* ---------- mise à jour automatique : l'app vérifie s'il existe une version plus récente ---------- */
-var VERSION='1795153069';
+var VERSION='1795153928';
 function verifierVersion(){try{fetch(location.pathname+'?nocache='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():''}).then(function(t){var m=/var VERSION='(\d+)'/.exec(t);if(m&&m[1]!==VERSION&&!G){location.replace(location.pathname+'?v='+m[1]+location.hash)}}).catch(function(){})}catch(e){}}
 setTimeout(verifierVersion,1500);
 document.addEventListener('visibilitychange',function(){if(!document.hidden)verifierVersion()});
@@ -569,7 +569,8 @@ function accueil(){
 /* ---------- le salon : chaque chapitre est un endroit de la pièce ---------- */
 // [x %, y % (pieds sur le sol), nom du lieu]
 var SPOTS=[[24,84,'le bureau'],[33,72,'la télé'],[45,66,'la grande plante'],[58,66,'la baie vitrée'],[72,66,'le balcon'],[84,72,'le coin lumineux'],[76,85,'le coussin'],[58,90,'le pied du matelas'],[47,91,'le tapis'],[12,88,'le coin douillet']];
-var IW=2048, IH=1080, SAL=null;
+var IW=2048, IH=1080, SAL=null, GYRO={ok:false};
+function gyroActiver(){if(GYRO.ok)return;GYRO.ok=true;window.addEventListener('deviceorientation',function(e){if(window.__orientSalon)window.__orientSalon(e)})}
 function salonHTML(){
  var hr=new Date().getHours(), salut=(hr>=18||hr<5)?'Bonsoir':'Bonjour', fg='';
  for(var i=0;i<16;i++){var r=10+Math.random()*26;fg+='<i style="left:'+(Math.random()*100).toFixed(1)+'%;top:'+(Math.random()*100).toFixed(1)+'%;width:'+r.toFixed(0)+'px;height:'+r.toFixed(0)+'px;animation-delay:'+(-Math.random()*7).toFixed(1)+'s"></i>'}
@@ -637,10 +638,13 @@ function salon(){
   g0+=(g-g0)*.004; b0+=(b-b0)*.004;   // elle se recale lentement si tu changes de position
   var dg=g-g0, db=b-b0; if(Math.abs(dg)<1.2)dg=0; if(Math.abs(db)<1.2)db=0;   // petite zone morte contre les tremblements
   gyroOn=true; gx=cl(dg,-20,20)*1.1; gy=cl(db,-20,20)*.6}
+ // l'autorisation (iPhone) est demandée une seule fois et reste valable tant que l'app est ouverte
  var gb=$('#gyro');
+ window.__orientSalon=orient;
  if(window.DeviceOrientationEvent){
-  if(typeof DeviceOrientationEvent.requestPermission==='function'){gb.style.display='';gb.onclick=function(){DeviceOrientationEvent.requestPermission().then(function(r){if(r==='granted'){window.addEventListener('deviceorientation',orient);gb.style.display='none';toast(ic('move')+' Incline ton téléphone pour regarder la pièce')}}).catch(function(){})}}
-  else window.addEventListener('deviceorientation',orient);
+  if(GYRO.ok){gb.style.display='none'}
+  else if(typeof DeviceOrientationEvent.requestPermission==='function'){gb.style.display='';gb.onclick=function(){DeviceOrientationEvent.requestPermission().then(function(r){if(r==='granted'){gyroActiver();gb.style.display='none';toast(ic('move')+' Incline ton téléphone pour regarder la pièce')}}).catch(function(){})}}
+  else gyroActiver();
  }
  $('#recentrer').onclick=function(){son('clic');viser(pos[0],pos[1],true,1)};
  setTimeout(function(){var a=$('#astuce');if(a)a.style.opacity=0},5000);
@@ -648,7 +652,7 @@ function salon(){
  $$('.borne').forEach(function(b){b.onclick=function(){var ci=+b.dataset.c;if(!chapOuvert(ci)){son('mal');toast(ic('lock')+' Bats le boss de « '+CHAPS[ci-1].court+' » pour ouvrir ce lieu');return}son('clic');CI=ci;VUE='chap';accueil();haut()}});
  // nouveau chapitre ouvert : la gélule traverse la pièce jusqu'au lieu suivant
  if(ca>dep){haut();setTimeout(function(){var p=P(ca);pos=p;viser(p[0],p[1],true,1);setTimeout(function(){if(!vivant)return;S.pionAt=ca;save();bulle('Nouveau lieu ouvert : '+SPOTS[ca][2]);son('fete');confetti()},950)},900)}
- SAL={stop:function(){vivant=false;window.removeEventListener('deviceorientation',orient)}};
+ SAL={stop:function(){vivant=false;if(window.__orientSalon===orient)window.__orientSalon=null}};
 }
 var RZ; window.addEventListener('resize',function(){clearTimeout(RZ);RZ=setTimeout(function(){if(VUE==='monde'&&$('#salon')&&!$('#jeu').classList.contains('on'))accueil()},250)});
 /* écran d'un chapitre */
