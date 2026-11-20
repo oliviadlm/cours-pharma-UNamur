@@ -1,6 +1,6 @@
 # Monde « L'officine » : décor 4K vectoriel animé, ordonnances à préparer, balance, thème chaud.
 import re
-V = '8'
+V = '9'
 
 ANIM_BACK = r'''<svg class="anim" viewBox="0 0 4608 2160" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="gReflet" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".10"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset=".6" stop-color="#fff" stop-opacity=".05"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>
 <polygon points="1994,72 2865,72 2846,975 2005,975" fill="url(#gReflet)"/>
@@ -8,7 +8,7 @@ ANIM_BACK = r'''<svg class="anim" viewBox="0 0 4608 2160" preserveAspectRatio="n
 ANIM_MID = r'''<svg class="anim" viewBox="0 0 4608 2160" preserveAspectRatio="none" aria-hidden="true"><defs><clipPath id="cBal"><circle cx="2952" cy="1365" r="73"/></clipPath>
 <radialGradient id="gChauf"><stop offset="0" stop-color="#ff8a4a" stop-opacity=".9"/><stop offset="1" stop-color="#ff8a4a" stop-opacity="0"/></radialGradient></defs>
 <g clip-path="url(#cBal)"><circle class="a-bulle b1" cx="2921" cy="1424" r="9" fill="#fff" opacity=".75"/><circle class="a-bulle b2" cx="2956" cy="1424" r="6" fill="#fff" opacity=".75"/><circle class="a-bulle b3" cx="2984" cy="1424" r="11" fill="#fff" opacity=".75"/><circle class="a-bulle b4" cx="2941" cy="1424" r="6" fill="#fff" opacity=".75"/><circle class="a-bulle b5" cx="2972" cy="1424" r="8" fill="#fff" opacity=".75"/></g><ellipse class="a-chauffe" cx="2950" cy="1442" rx="87" ry="28" fill="url(#gChauf)"/>
-<g class="a-vapeur "><path d="M3552 1386 q-26 -55 0 -110 q26 -55 0 -110" stroke="#fff" stroke-width="14" fill="none" stroke-linecap="round"/></g><g class="a-vapeur v2"><path d="M3612 1386 q-23 -50 0 -99 q23 -50 0 -99" stroke="#fff" stroke-width="13" fill="none" stroke-linecap="round"/></g><g class="a-vapeur v3"><path d="M3582 1376 q-21 -44 0 -88 q21 -44 0 -88" stroke="#fff" stroke-width="11" fill="none" stroke-linecap="round"/></g><g class="a-vapeur v4"><path d="M2957 1174 q-16 -33 0 -66 q16 -33 0 -66" stroke="#fff" stroke-width="8" fill="none" stroke-linecap="round"/></g>
+
 <circle class="a-led" cx="61" cy="1475" r="9" fill="#ff5a3c"/></svg>'''
 
 CSS = r'''
@@ -26,6 +26,8 @@ CSS = r'''
 @keyframes tourne{to{transform:rotate(360deg)}}
 .a-chauffe{animation:lampe 2.2s ease-in-out infinite;mix-blend-mode:screen}
 .piece video.ville{inset:auto!important;position:absolute;object-fit:cover;filter:brightness(1.05) saturate(1.05)}
+.couche img.fumee{position:absolute;inset:auto;height:auto;aspect-ratio:1;object-fit:contain}
+body.figer .fumee{visibility:hidden}
 .couche{position:absolute;inset:0;pointer-events:none;will-change:transform}.couche img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;user-select:none;-webkit-user-select:none}
 .a-bulle{animation:bulle 2.6s ease-in infinite}.a-bulle.b2{animation-delay:-.6s}.a-bulle.b3{animation-delay:-1.3s;animation-duration:3.1s}.a-bulle.b4{animation-delay:-1.9s}.a-bulle.b5{animation-delay:-2.3s;animation-duration:2.2s}
 @keyframes bulle{0%{transform:translateY(0);opacity:0}15%{opacity:.8}100%{transform:translateY(-110px);opacity:0}}
@@ -92,7 +94,7 @@ def patch_head(head):
 def patch_engine(e, rep):
     # images au lieu de vidéos (décor vectoriel rendu en 4K)
     e = re.sub(r'<video class="hero-v"[^>]*><source[^>]*></video>', lambda m: '<img class="hero-v" src="decor/officine-1920.jpg?v=' + V + '" alt="" style="object-position:\'+heroX()+\'% 62%">', e)
-    e = re.sub(r'<div class="piece" id="piece"><video[^>]*><source[^>]*></video>', lambda m: '<div class="piece" id="piece"><img class=\"ville\" src=\"decor/ville-nuit.webp?v=8\" alt=\"\" style=\"left:43.27%;top:3.33%;width:18.91%;height:41.83%\"><img class="decor" src="decor/officine-fond.webp?v=' + V + '" alt="">' + ANIM_BACK.replace("'", "\\'").replace('\n', '') + '<div class="couche" data-k="1.7"><img src="decor/officine-milieu.webp?v=' + V + '" alt="">' + ANIM_MID.replace("'", "\\'").replace('\n', '') + '</div><div class="couche" data-k="2.8"><img src="decor/officine-devant.webp?v=' + V + '" alt=""></div>' , e)
+    e = re.sub(r'<div class="piece" id="piece"><video[^>]*><source[^>]*></video>', lambda m: '<div class="piece" id="piece"><img class=\"ville\" src=\"decor/ville-nuit.webp?v=8\" alt=\"\" style=\"left:43.27%;top:3.33%;width:18.91%;height:41.83%\"><img class="decor" src="decor/officine-fond.webp?v=' + V + '" alt="">' + ANIM_BACK.replace("'", "\\'").replace('\n', '') + '<div class="couche" data-k="1.7"><img src="decor/officine-milieu.webp?v=' + V + '" alt="">' + ANIM_MID.replace("'", "\\'").replace('\n', '') + '<img class=\"fumee f1\" src=\"decor/vapeur-colonne.webp?v=10\" alt=\"\" style=\"left:73.48%;top:47.30%;width:8.50%;opacity:0.95\"><img class=\"fumee f2\" src=\"decor/vapeur-bouffee.webp?v=10\" alt=\"\" style=\"left:62.38%;top:48.20%;width:3.60%;opacity:0.8\"></div><div class="couche" data-k="2.8"><img src="decor/officine-devant.webp?v=' + V + '" alt=""></div>' , e)
     e = re.sub(r'<video class="fete-bg"[^>]*><source[^>]*></video>', lambda m: '<img class="fete-bg" src="decor/officine-1920.jpg?v=' + V + '" alt="">', e)
     assert 'monde.mp4' not in e, 'vidéo restante'
     e = rep(e, "function entete(mini){", "function heroX(){var s=SPOTS[VUE==='chap'?CI:chapActuel()]||[50];return Math.round(s[0])}\nfunction entete(mini){")
@@ -147,7 +149,7 @@ MODES.ordonnances=function(){var srcs=[];CHAPS.forEach(function(c,ci){if(chapOuv
  var n=Math.max(1,ordoRestantes())||2, it=mel(srcs.slice(0,Math.max(n+2,4))).slice(0,ordoRestantes()||3).map(qOrdo);
  lancer({items:it,nom:'Ordonnances du jour',mode:'ordo',coeurs:99})};
 function papierHTML(x){var dt=new Date(),date=('0'+dt.getDate()).slice(-2)+'/'+('0'+(dt.getMonth()+1)).slice(-2)+'/'+dt.getFullYear();
- var pouce='<svg class="pouce g" viewBox="0 0 74 86"><path d="M20 86 C6 60 4 34 18 14 C26 2 44 2 50 14 C56 26 52 44 56 58 C60 72 64 80 66 86z" fill="#e9b892"/><path d="M24 22 C30 12 42 12 46 22 C48 30 40 36 34 34 C28 32 22 30 24 22z" fill="#f6d2b6"/></svg>';
+ var pouce='<svg class="pouce g" viewBox="0 0 74 86"><path d="M20 86 C6 60 4 34 18 14 C26 2 44 2 50 14 C56 26 52 44 56 58 C60 72 64 80 66 86z" fill="#5a3622"/><path d="M24 22 C30 12 42 12 46 22 C48 30 40 36 34 34 C28 32 22 30 24 22z" fill="#9c6b4f"/></svg>';
  return '<div class="papier"><div class="ent"><b>'+esc(x.med)+'</b><small>Médecin généraliste · Namur</small></div><div class="pat">Pour : '+esc(x.pat)+'</div><div class="rp">'+esc(x.ctx||'')+'</div><div class="bas"><span>Le '+date+'</span><svg class="sig" viewBox="0 0 110 34"><path d="M4 26 q12 -26 26 0 t26 -4 t24 -8 q-10 14 26 4" stroke="#1f3a8a" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></div><div class="tampon" id="tampon">PRÉPARÉ</div>'+pouce+pouce.replace('pouce g','pouce d')+'</div>'}
 function balanceHTML(cible){return '<div class="balance" id="bal"><div class="vitre"><div class="tas" id="tas"></div><div class="plat"></div></div><div class="ecran" id="lect">0,000 g</div><div class="cible">Pèse exactement ce que tu as calculé, avec les spatules</div><div class="spat">'+
  [['1','1 g'],['0.1','0,1 g'],['0.01','0,01 g'],['0.001','0,001 g'],['-1','− 1 g'],['-0.1','− 0,1'],['-0.01','− 0,01'],['-0.001','− 0,001']].map(function(b){return '<button data-p="'+b[0]+'"'+(b[0][0]==='-'?' class="moins"':'')+'>'+b[1]+'</button>'}).join('')+'</div><button class="peser" id="peser">Valider la pesée</button></div>'}
