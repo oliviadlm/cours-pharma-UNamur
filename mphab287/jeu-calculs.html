@@ -150,7 +150,7 @@ body.sans-scroll .defile{overflow:hidden}
 
 /* ===== monde : chambre de nuit ===== */
 .ciel{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(130% 70% at 50% 0%,#5a3a2a 0%,#2e211b 42%,#1e1613 100%);overflow:hidden}
-.ciel::before{content:"";position:absolute;inset:-60px;background:url(decor/monde-1920.jpg?v=4) center/cover;filter:blur(26px) saturate(1.3);opacity:.32}
+.ciel::before{content:"";position:absolute;inset:-60px;background:url(decor/officine-1920.jpg?v=5) center/cover;filter:blur(26px) saturate(1.3);opacity:.32}
 .ciel::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(30,22,19,0) 0%,rgba(30,22,19,.55) 70%,rgba(30,22,19,.85) 100%)}
 .ciel i{position:absolute;width:5px;height:5px;border-radius:50%;background:#ffe9a8;box-shadow:0 0 10px 3px rgba(255,214,107,.55);opacity:0;animation:luciole 9s ease-in-out infinite;z-index:1}
 @keyframes luciole{0%{opacity:0;transform:translate(0,0)}20%{opacity:.9}50%{transform:translate(18px,-40px)}80%{opacity:.7}100%{opacity:0;transform:translate(-10px,-90px)}}
@@ -446,8 +446,10 @@ video::-webkit-media-controls,video::-webkit-media-controls-start-playback-butto
 @keyframes lampe{0%,100%{opacity:.75}50%{opacity:1}}
 .a-trotteuse{transform-origin:2430px 330px;animation:tourne 60s steps(60) infinite}
 @keyframes tourne{to{transform:rotate(360deg)}}
+.a-chauffe{animation:lampe 2.2s ease-in-out infinite;mix-blend-mode:screen}
+.couche{position:absolute;inset:0;pointer-events:none;will-change:transform}.couche img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;user-select:none;-webkit-user-select:none}
 .a-bulle{animation:bulle 2.6s ease-in infinite}.a-bulle.b2{animation-delay:-.6s}.a-bulle.b3{animation-delay:-1.3s;animation-duration:3.1s}.a-bulle.b4{animation-delay:-1.9s}.a-bulle.b5{animation-delay:-2.3s;animation-duration:2.2s}
-@keyframes bulle{0%{transform:translateY(0);opacity:0}15%{opacity:.8}100%{transform:translateY(-190px);opacity:0}}
+@keyframes bulle{0%{transform:translateY(0);opacity:0}15%{opacity:.8}100%{transform:translateY(-110px);opacity:0}}
 .a-flamme{transform-origin:2600px 1132px;animation:flamme .35s ease-in-out infinite alternate}.a-flamme.f2{animation-duration:.27s}
 @keyframes flamme{from{transform:scale(1,1)}to{transform:scale(.88,1.14)}}
 .a-vapeur{opacity:0;animation:vapeur 5s ease-out infinite}.a-vapeur.v2{animation-delay:-1.6s}.a-vapeur.v3{animation-delay:-3.2s}.a-vapeur.v4{animation-delay:-2.4s;animation-duration:4s}
@@ -1483,7 +1485,7 @@ function importer(){function appliquer(t){try{t=(t||'').trim();if(t.indexOf('CHI
  if(navigator.clipboard&&navigator.clipboard.readText)navigator.clipboard.readText().then(function(t){if(t&&t.indexOf('CHIPHA1:')===0)appliquer(t);else appliquer(window.prompt('Colle ici le code de progression :',''))},function(){appliquer(window.prompt('Colle ici le code de progression :',''))});else appliquer(window.prompt('Colle ici le code de progression :',''))}
 function haut(){var d=$('#defile');if(d)d.scrollTop=0}
 /* ---------- mise à jour automatique : l'app vérifie s'il existe une version plus récente ---------- */
-var VERSION='1795187471';
+var VERSION='1795188380';
 function verifierVersion(){try{fetch(location.pathname+'?nocache='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():''}).then(function(t){var m=/var VERSION='(\d+)'/.exec(t);if(m&&m[1]!==VERSION&&!G){location.replace(location.pathname+'?v='+m[1]+location.hash)}}).catch(function(){})}catch(e){}}
 setTimeout(verifierVersion,1500);
 document.addEventListener('visibilitychange',function(){if(!document.hidden)verifierVersion()});
@@ -1497,7 +1499,7 @@ document.addEventListener('visibilitychange',function(){if(!document.hidden)lect
 function heroX(){var s=SPOTS[VUE==='chap'?CI:chapActuel()]||[50];return Math.round(s[0])}
 function entete(mini){
  var hr=new Date().getHours(), salut=(hr>=18||hr<5)?'Bonsoir':'Bonjour';
- return '<header class="hero'+(mini?' mini':'')+'"><img class="hero-v" src="decor/monde-1920.jpg?v=4" alt="" style="object-position:'+heroX()+'% 62%">'+
+ return '<header class="hero'+(mini?' mini':'')+'"><img class="hero-v" src="decor/officine-1920.jpg?v=5" alt="" style="object-position:'+heroX()+'% 62%">'+
  '<div class="hero-haut">'+(mini?'<button class="rond-btn" id="retour" aria-label="Retour à la carte">'+ic('back')+'</button><div class="hero-t"><small>'+salut+' Olivia</small><b>Retour au monde</b></div>':'<img class="logo" src="icons/jeu-180.png" alt=""><div class="hero-t"><small>'+salut+' Olivia</small><b>Méthodes de calculs</b></div>')+
  ''+'<div class="btns-col"><button class="rond-btn" id="son" aria-label="Son">'+ic(S.son===false?'mute':'vol')+'</button><button class="rond-btn" id="lecture" aria-label="Lecture ou pause de l\'animation">'+ic(S.pause?'play':'pause')+'</button></div>'+'</div>'+(mini?'':'%GUIR%')+'</header>'}
 function statsHTML(){
@@ -1536,13 +1538,13 @@ function accueil(){
 }
 /* ---------- le salon : chaque chapitre est un endroit de la pièce ---------- */
 // [x %, y % (pieds sur le sol), nom du lieu]
-var SPOTS=[[26,60,'le bureau'],[52,60,'la paillasse'],[75,60,'le bain-marie'],[85,82,'le moule à suppositoires'],[58,87,'le plateau de gélules'],[42,80,'la nacelle de pesée']];
-var IW=3840, IH=2160, SAL=null, GYRO={ok:false};
+var SPOTS=[[20.72,73.05,'le bureau'],[46.57,73.05,'la paillasse'],[79.28,73.05,'le bain-marie'],[88.03,76.48,'le moule à suppositoires'],[56.71,76.93,'le plateau de gélules'],[41.6,76.48,'la nacelle de pesée']];
+var IW=4608, IH=2160, SAL=null, GYRO={ok:false};
 function gyroActiver(){if(GYRO.ok)return;GYRO.ok=true;window.addEventListener('deviceorientation',function(e){if(window.__orientSalon)window.__orientSalon(e)})}
 function salonHTML(){
  var hr=new Date().getHours(), salut=(hr>=18||hr<5)?'Bonsoir':'Bonjour', fg='';
- fg='<img class="fgp g" src="decor/fg-gauche.png?v=4" alt=""><img class="fgp d" src="decor/fg-droite.png?v=4" alt="">';
- return '<section class="salon" id="salon"><div class="cam" id="cam"><div class="tilt" id="tilt"><div class="piece" id="piece"><img class="decor" src="decor/monde.jpg?v=4" alt=""><svg class="anim" viewBox="0 0 3840 2160" preserveAspectRatio="none" aria-hidden="true"><defs><clipPath id="cFen"><rect x="1480" y="230" width="560" height="640"/></clipPath><clipPath id="cBal"><circle cx="2600" cy="1010" r="102"/></clipPath><radialGradient id="aLampe" cx=".5" cy="0" r=".9"><stop offset="0" stop-color="#fff0bd" stop-opacity=".7"/><stop offset="1" stop-color="#fff0bd" stop-opacity="0"/></radialGradient></defs><g clip-path="url(#cFen)"><g class="a-nuages"><ellipse cx="1560" cy="330" rx="110" ry="34" fill="#fff" opacity=".85"/><ellipse cx="1620" cy="312" rx="70" ry="30" fill="#fff" opacity=".85"/><ellipse cx="1900" cy="420" rx="130" ry="36" fill="#fff" opacity=".75"/><ellipse cx="2220" cy="350" rx="110" ry="32" fill="#fff" opacity=".8"/></g><path class="a-oiseau" d="M1500 380 q14 -12 28 0 q14 -12 28 0" stroke="#5b4a52" stroke-width="5" fill="none"/></g><polygon class="a-lampe" points="1090,960 1350,960 1520,1310 900,1310" fill="url(#aLampe)"/><line class="a-trotteuse" x1="2430" y1="345" x2="2430" y2="248" stroke="#d9573f" stroke-width="5" stroke-linecap="round"/><circle cx="2430" cy="330" r="10" fill="#d9573f"/><g clip-path="url(#cBal)"><circle class="a-bulle" cx="2560" cy="1100" r="10" fill="#fff" opacity=".7"/><circle class="a-bulle b2" cx="2610" cy="1100" r="7" fill="#fff" opacity=".7"/><circle class="a-bulle b3" cx="2650" cy="1100" r="12" fill="#fff" opacity=".6"/><circle class="a-bulle b4" cx="2585" cy="1100" r="6" fill="#fff" opacity=".7"/><circle class="a-bulle b5" cx="2635" cy="1100" r="8" fill="#fff" opacity=".7"/></g><path class="a-flamme" d="M2600 1132 q-22 -34 0 -74 q22 40 0 74z" fill="#5aa9ff" opacity=".9"/><path class="a-flamme f2" d="M2600 1130 q-10 -20 0 -42 q10 22 0 42z" fill="#d6f0ff"/><g class="a-vapeur"><path d="M2900 1110 q-30 -60 0 -120 q30 -60 0 -120" stroke="#fff" stroke-width="16" fill="none" stroke-linecap="round"/></g><g class="a-vapeur v2"><path d="M2970 1110 q30 -60 0 -120 q-30 -60 0 -120" stroke="#fff" stroke-width="14" fill="none" stroke-linecap="round"/></g><g class="a-vapeur v3"><path d="M3040 1110 q-26 -50 0 -100 q26 -50 0 -100" stroke="#fff" stroke-width="12" fill="none" stroke-linecap="round"/></g><g class="a-vapeur v4"><path d="M2700 600 q-20 -40 0 -80 q20 -40 0 -80" stroke="#fff" stroke-width="10" fill="none" stroke-linecap="round"/></g><rect x="518" y="1062" width="324" height="66" fill="#2a4e52"/><text id="ecranOrdo" x="536" y="1104" font-family="\'Courier New\',monospace" font-size="28" font-weight="700" fill="#bff0d8">3 à préparer</text><rect class="a-curseur" x="800" y="1080" width="16" height="30" fill="#bff0d8"/><circle class="a-led" cx="112" cy="1116" r="12" fill="#ff5a3c"/><circle class="a-led2" cx="1458" cy="1240" r="7" fill="#9ff0c8"/></svg><div id="lieux"></div></div></div></div><div class="fg" id="fg">'+fg+'</div>'+
+ fg='';
+ return '<section class="salon" id="salon"><div class="cam" id="cam"><div class="tilt" id="tilt"><div class="piece" id="piece"><img class="decor" src="decor/officine-fond.jpg?v=5" alt=""><svg class="anim" viewBox="0 0 4608 2160" preserveAspectRatio="none" aria-hidden="true"><defs><clipPath id="cFen"><polygon points="2013,94 2845,94 2827,958 2022,958"/></clipPath></defs><g clip-path="url(#cFen)"><g class="a-nuages"><ellipse cx="2133" cy="184" rx="120" ry="34" fill="#fff" opacity=".8"/><ellipse cx="2203" cy="166" rx="80" ry="30" fill="#fff" opacity=".8"/><ellipse cx="2489" cy="284" rx="150" ry="38" fill="#fff" opacity=".7"/><ellipse cx="2725" cy="214" rx="110" ry="30" fill="#fff" opacity=".75"/></g><path class="a-oiseau" d="M2033 254 q14 -12 28 0 q14 -12 28 0" stroke="#5b4a52" stroke-width="5" fill="none"/></g><line class="a-trotteuse" style="transform-origin:3112px 78px" x1="3112" y1="95" x2="3112" y2="-11" stroke="#d9573f" stroke-width="5" stroke-linecap="round"/><circle cx="3112" cy="78" r="9" fill="#d9573f"/></svg><div class="couche" data-k="1.7"><img src="decor/officine-milieu.webp?v=5" alt=""><svg class="anim" viewBox="0 0 4608 2160" preserveAspectRatio="none" aria-hidden="true"><defs><clipPath id="cBal"><circle cx="2952" cy="1365" r="73"/></clipPath><radialGradient id="gChauf"><stop offset="0" stop-color="#ff8a4a" stop-opacity=".9"/><stop offset="1" stop-color="#ff8a4a" stop-opacity="0"/></radialGradient></defs><g clip-path="url(#cBal)"><circle class="a-bulle b1" cx="2921" cy="1424" r="9" fill="#fff" opacity=".75"/><circle class="a-bulle b2" cx="2956" cy="1424" r="6" fill="#fff" opacity=".75"/><circle class="a-bulle b3" cx="2984" cy="1424" r="11" fill="#fff" opacity=".75"/><circle class="a-bulle b4" cx="2941" cy="1424" r="6" fill="#fff" opacity=".75"/><circle class="a-bulle b5" cx="2972" cy="1424" r="8" fill="#fff" opacity=".75"/></g><ellipse class="a-chauffe" cx="2950" cy="1442" rx="87" ry="28" fill="url(#gChauf)"/><g class="a-vapeur "><path d="M3552 1386 q-26 -55 0 -110 q26 -55 0 -110" stroke="#fff" stroke-width="14" fill="none" stroke-linecap="round"/></g><g class="a-vapeur v2"><path d="M3612 1386 q-23 -50 0 -99 q23 -50 0 -99" stroke="#fff" stroke-width="13" fill="none" stroke-linecap="round"/></g><g class="a-vapeur v3"><path d="M3582 1376 q-21 -44 0 -88 q21 -44 0 -88" stroke="#fff" stroke-width="11" fill="none" stroke-linecap="round"/></g><g class="a-vapeur v4"><path d="M2957 1174 q-16 -33 0 -66 q16 -33 0 -66" stroke="#fff" stroke-width="8" fill="none" stroke-linecap="round"/></g><circle class="a-led" cx="61" cy="1475" r="9" fill="#ff5a3c"/></svg></div><div class="couche" data-k="2.8"><img src="decor/officine-devant.webp?v=5" alt=""></div><div id="lieux"></div></div></div></div><div class="fg" id="fg">'+fg+'</div>'+
  '<div class="hero-haut"><img class="logo" src="icons/jeu-180.png" alt=""><div class="hero-t"><small>'+salut+' Olivia</small><b>Méthodes de calculs</b></div>'+'<div class="btns-col"><button class="rond-btn" id="son" aria-label="Son">'+ic(S.son===false?'mute':'vol')+'</button><button class="rond-btn" id="lecture" aria-label="Lecture ou pause de l\'animation">'+ic(S.pause?'play':'pause')+'</button></div>'+'</div>'+
  '<div class="salon-bas"><div class="astuce" id="astuce"><span>'+ic('eye')+' Glisse dans tous les sens, pince pour voir toute l\'officine</span></div><button class="rond-btn" id="gyro" aria-label="Bouger avec le téléphone" style="display:none">'+ic('move')+'</button><button class="rond-btn" id="recentrer" aria-label="Revenir au chapitre en cours">'+ic('target')+'</button></div></section>'}
 function salon(){
@@ -1556,7 +1558,7 @@ function salon(){
  CHAPS.forEach(function(c,ci){var p=P(ci),ouv=chapOuvert(ci),k=prof(p[1]);
   h+='<div class="sol'+(ouv?' on':'')+(ci===ca?' ici':'')+'" style="left:'+p[0].toFixed(0)+'px;top:'+p[1].toFixed(0)+'px;transform:translate(-50%,-50%) scale('+k.toFixed(2)+')"></div>';
   h+='<button class="borne'+(ouv?'':' verrou')+(ci===ca?' ici':'')+'" data-c="'+ci+'" style="left:'+p[0].toFixed(0)+'px;top:'+(p[1]-PH*.19*k).toFixed(0)+'px"><span class="b-ic">'+(ouv?chapIc(ci):ic('lock'))+'<i>'+(ci+1)+'</i>'+(chapFini(ci)?'<em>'+ic('check')+'</em>':'')+'</span><span class="b-t">'+esc(ouv?c.court:'Chapitre '+(ci+1))+'</span></button>'});
- var ro=ordoRestantes(),po=[0.15*PW,0.70*PH];
+ var ro=ordoRestantes(),po=[0.0853*PW,0.7224*PH];
  h+='<button class="ordos'+(ro?'':' fini')+'" id="ordos" style="left:'+po[0].toFixed(0)+'px;top:'+po[1].toFixed(0)+'px"><span class="halo-o"></span><span class="t">'+ic('book')+'<span>Ordonnances</span>'+(ro?'<em>'+ro+'</em>':ic('check'))+'</span></button>';
  $('#lieux').innerHTML=h;
  var eo=document.getElementById('ecranOrdo');if(eo)eo.textContent=ro?ro+' à préparer':'tout est délivré';
@@ -1572,11 +1574,12 @@ function salon(){
  function viser(x,y,anim,z){if(z!=null)Z=z;camX=vw/2-x*Z;camY=vh*.6-y*Z;caler();poserCam(anim)}
  function zoomVers(z,px,py,anim){var wx=(px-camX)/Z,wy=(py-camY)/Z;Z=cl(z,ZMIN,ZMAX);camX=px-wx*Z;camY=py-wy*Z;caler();poserCam(anim)}
  viser(pos[0],pos[1],false);
- var t0=performance.now();
+ var t0=performance.now(), COUCHES=[].slice.call(piece.querySelectorAll('.couche')), LIEUX=$('#lieux');
  (function boucle(t){if(!vivant||!document.body.contains(el))return;
   var tx=gyroOn?gx:Math.sin((t-t0)/2600)*7, ty=gyroOn?gy:Math.cos((t-t0)/3400)*4;
   var dt=Math.min(64,t-(boucle.l||t));boucle.l=t;var k=1-Math.pow(.9,dt/16.7); cx+=(tx-cx)*k; cy+=(ty-cy)*k;   // lissage : la scène suit l'inclinaison en douceur, sans à-coups
   tilt.style.transform='translate3d('+cx.toFixed(2)+'px,'+cy.toFixed(2)+'px,0)';
+  var uu=(camX+PW*Z/2-vw/2)/(PW*Z),vv=(camY+PH*Z/2-vh/2)/(PH*Z);for(var q=0;q<COUCHES.length;q++){var kk=+COUCHES[q].dataset.k-1;COUCHES[q].style.transform='translate3d('+(cx*kk+uu*70*kk).toFixed(2)+'px,'+(cy*kk+vv*30*kk).toFixed(2)+'px,0)';if(q===0){LIEUX.style.transform=COUCHES[q].style.transform}}
   fgl.style.transform='translate3d('+(cx*2.4).toFixed(2)+'px,'+(cy*2.4).toFixed(2)+'px,0)';requestAnimationFrame(boucle)})(t0);
  var drag=null, bouge=false, vel=0, velY=0, pinch=null, tapT=0, tapP=null;
  // pincer à deux doigts : zoom autour du point entre les doigts
@@ -1666,7 +1669,7 @@ function son(t){if(S.son===false)return;try{AC=AC||new (window.AudioContext||win
 var FILE=[];
 function fete(o){FILE.push(o);if(FILE.length===1)setTimeout(montrerFete,o.delai||0)}
 function montrerFete(){var o=FILE[0];if(!o)return;var f=$('#fete');
- f.innerHTML='<img class="fete-bg" src="decor/monde-1920.jpg?v=4" alt=""><div class="rayons"></div><div class="fete-c"><div class="halo">'+o.gros+'</div><span class="sur">'+esc(o.sur)+'</span><h2>'+esc(o.titre)+'</h2>'+(o.sous?'<p>'+esc(o.sous)+'</p>':'')+(o.etoiles!=null?'<div class="etoiles">'+[1,2,3].map(function(k){return '<span class="'+(o.etoiles>=k?'on':'')+'" style="animation-delay:'+(0.5+k*0.18)+'s">'+icf('etoile')+'</span>'}).join('')+'</div>':'')+'<button class="suite on" id="fete-ok">'+(o.bouton||'Continuer')+'</button></div>';
+ f.innerHTML='<img class="fete-bg" src="decor/officine-1920.jpg?v=5" alt=""><div class="rayons"></div><div class="fete-c"><div class="halo">'+o.gros+'</div><span class="sur">'+esc(o.sur)+'</span><h2>'+esc(o.titre)+'</h2>'+(o.sous?'<p>'+esc(o.sous)+'</p>':'')+(o.etoiles!=null?'<div class="etoiles">'+[1,2,3].map(function(k){return '<span class="'+(o.etoiles>=k?'on':'')+'" style="animation-delay:'+(0.5+k*0.18)+'s">'+icf('etoile')+'</span>'}).join('')+'</div>':'')+'<button class="suite on" id="fete-ok">'+(o.bouton||'Continuer')+'</button></div>';
  f.classList.add('on');son('fete');vib([30,60,30]);setTimeout(confetti,250);
  $('#fete-ok').onclick=function(){son('clic');f.classList.remove('on');f.innerHTML='';FILE.shift();if(o.apres)o.apres();if(FILE.length)setTimeout(montrerFete,300)}}
 var BADGES=[['ordo10','10 ordonnances délivrées','book'],['premier','Premier pas','check'],['parfait','Sans faute','crown'],['combo10','Combo x10','eclair'],['streak3','3 jours de suite','target'],['streak7','7 jours de suite','trophy'],['dessin10','10 calculs posés','pen'],['boss','Boss vaincu','shield'],['cent','100 bonnes réponses','book'],['chap1','Premier chapitre','flag'],['monde','Carte terminée','map']];

@@ -1,25 +1,16 @@
 # Monde « L'officine » : décor 4K vectoriel animé, ordonnances à préparer, balance, thème chaud.
 import re
-V = '4'
+V = '5'
 
-ANIM = r'''<svg class="anim" viewBox="0 0 3840 2160" preserveAspectRatio="none" aria-hidden="true">
-<defs><clipPath id="cFen"><rect x="1480" y="230" width="560" height="640"/></clipPath><clipPath id="cBal"><circle cx="2600" cy="1010" r="102"/></clipPath>
-<radialGradient id="aLampe" cx=".5" cy="0" r=".9"><stop offset="0" stop-color="#fff0bd" stop-opacity=".7"/><stop offset="1" stop-color="#fff0bd" stop-opacity="0"/></radialGradient></defs>
-<g clip-path="url(#cFen)"><g class="a-nuages"><ellipse cx="1560" cy="330" rx="110" ry="34" fill="#fff" opacity=".85"/><ellipse cx="1620" cy="312" rx="70" ry="30" fill="#fff" opacity=".85"/><ellipse cx="1900" cy="420" rx="130" ry="36" fill="#fff" opacity=".75"/><ellipse cx="2220" cy="350" rx="110" ry="32" fill="#fff" opacity=".8"/></g>
-<path class="a-oiseau" d="M1500 380 q14 -12 28 0 q14 -12 28 0" stroke="#5b4a52" stroke-width="5" fill="none"/></g>
-<polygon class="a-lampe" points="1090,960 1350,960 1520,1310 900,1310" fill="url(#aLampe)"/>
-<line class="a-trotteuse" x1="2430" y1="345" x2="2430" y2="248" stroke="#d9573f" stroke-width="5" stroke-linecap="round"/><circle cx="2430" cy="330" r="10" fill="#d9573f"/>
-<g clip-path="url(#cBal)"><circle class="a-bulle" cx="2560" cy="1100" r="10" fill="#fff" opacity=".7"/><circle class="a-bulle b2" cx="2610" cy="1100" r="7" fill="#fff" opacity=".7"/><circle class="a-bulle b3" cx="2650" cy="1100" r="12" fill="#fff" opacity=".6"/><circle class="a-bulle b4" cx="2585" cy="1100" r="6" fill="#fff" opacity=".7"/><circle class="a-bulle b5" cx="2635" cy="1100" r="8" fill="#fff" opacity=".7"/></g>
-<path class="a-flamme" d="M2600 1132 q-22 -34 0 -74 q22 40 0 74z" fill="#5aa9ff" opacity=".9"/><path class="a-flamme f2" d="M2600 1130 q-10 -20 0 -42 q10 22 0 42z" fill="#d6f0ff"/>
-<g class="a-vapeur"><path d="M2900 1110 q-30 -60 0 -120 q30 -60 0 -120" stroke="#fff" stroke-width="16" fill="none" stroke-linecap="round"/></g>
-<g class="a-vapeur v2"><path d="M2970 1110 q30 -60 0 -120 q-30 -60 0 -120" stroke="#fff" stroke-width="14" fill="none" stroke-linecap="round"/></g>
-<g class="a-vapeur v3"><path d="M3040 1110 q-26 -50 0 -100 q26 -50 0 -100" stroke="#fff" stroke-width="12" fill="none" stroke-linecap="round"/></g>
-<g class="a-vapeur v4"><path d="M2700 600 q-20 -40 0 -80 q20 -40 0 -80" stroke="#fff" stroke-width="10" fill="none" stroke-linecap="round"/></g>
-<rect x="518" y="1062" width="324" height="66" fill="#2a4e52"/>
-<text id="ecranOrdo" x="536" y="1104" font-family="'Courier New',monospace" font-size="28" font-weight="700" fill="#bff0d8">3 à préparer</text><rect class="a-curseur" x="800" y="1080" width="16" height="30" fill="#bff0d8"/>
-<circle class="a-led" cx="112" cy="1116" r="12" fill="#ff5a3c"/>
-<circle class="a-led2" cx="1458" cy="1240" r="7" fill="#9ff0c8"/>
-</svg>'''
+ANIM_BACK = r'''<svg class="anim" viewBox="0 0 4608 2160" preserveAspectRatio="none" aria-hidden="true"><defs><clipPath id="cFen"><polygon points="2013,94 2845,94 2827,958 2022,958"/></clipPath></defs>
+<g clip-path="url(#cFen)"><g class="a-nuages"><ellipse cx="2133" cy="184" rx="120" ry="34" fill="#fff" opacity=".8"/><ellipse cx="2203" cy="166" rx="80" ry="30" fill="#fff" opacity=".8"/><ellipse cx="2489" cy="284" rx="150" ry="38" fill="#fff" opacity=".7"/><ellipse cx="2725" cy="214" rx="110" ry="30" fill="#fff" opacity=".75"/></g>
+<path class="a-oiseau" d="M2033 254 q14 -12 28 0 q14 -12 28 0" stroke="#5b4a52" stroke-width="5" fill="none"/></g>
+<line class="a-trotteuse" style="transform-origin:3112px 78px" x1="3112" y1="95" x2="3112" y2="-11" stroke="#d9573f" stroke-width="5" stroke-linecap="round"/><circle cx="3112" cy="78" r="9" fill="#d9573f"/></svg>'''
+ANIM_MID = r'''<svg class="anim" viewBox="0 0 4608 2160" preserveAspectRatio="none" aria-hidden="true"><defs><clipPath id="cBal"><circle cx="2952" cy="1365" r="73"/></clipPath>
+<radialGradient id="gChauf"><stop offset="0" stop-color="#ff8a4a" stop-opacity=".9"/><stop offset="1" stop-color="#ff8a4a" stop-opacity="0"/></radialGradient></defs>
+<g clip-path="url(#cBal)"><circle class="a-bulle b1" cx="2921" cy="1424" r="9" fill="#fff" opacity=".75"/><circle class="a-bulle b2" cx="2956" cy="1424" r="6" fill="#fff" opacity=".75"/><circle class="a-bulle b3" cx="2984" cy="1424" r="11" fill="#fff" opacity=".75"/><circle class="a-bulle b4" cx="2941" cy="1424" r="6" fill="#fff" opacity=".75"/><circle class="a-bulle b5" cx="2972" cy="1424" r="8" fill="#fff" opacity=".75"/></g><ellipse class="a-chauffe" cx="2950" cy="1442" rx="87" ry="28" fill="url(#gChauf)"/>
+<g class="a-vapeur "><path d="M3552 1386 q-26 -55 0 -110 q26 -55 0 -110" stroke="#fff" stroke-width="14" fill="none" stroke-linecap="round"/></g><g class="a-vapeur v2"><path d="M3612 1386 q-23 -50 0 -99 q23 -50 0 -99" stroke="#fff" stroke-width="13" fill="none" stroke-linecap="round"/></g><g class="a-vapeur v3"><path d="M3582 1376 q-21 -44 0 -88 q21 -44 0 -88" stroke="#fff" stroke-width="11" fill="none" stroke-linecap="round"/></g><g class="a-vapeur v4"><path d="M2957 1174 q-16 -33 0 -66 q16 -33 0 -66" stroke="#fff" stroke-width="8" fill="none" stroke-linecap="round"/></g>
+<circle class="a-led" cx="61" cy="1475" r="9" fill="#ff5a3c"/></svg>'''
 
 CSS = r'''
 /* ===== monde : l'officine ===== */
@@ -34,8 +25,10 @@ CSS = r'''
 @keyframes lampe{0%,100%{opacity:.75}50%{opacity:1}}
 .a-trotteuse{transform-origin:2430px 330px;animation:tourne 60s steps(60) infinite}
 @keyframes tourne{to{transform:rotate(360deg)}}
+.a-chauffe{animation:lampe 2.2s ease-in-out infinite;mix-blend-mode:screen}
+.couche{position:absolute;inset:0;pointer-events:none;will-change:transform}.couche img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;user-select:none;-webkit-user-select:none}
 .a-bulle{animation:bulle 2.6s ease-in infinite}.a-bulle.b2{animation-delay:-.6s}.a-bulle.b3{animation-delay:-1.3s;animation-duration:3.1s}.a-bulle.b4{animation-delay:-1.9s}.a-bulle.b5{animation-delay:-2.3s;animation-duration:2.2s}
-@keyframes bulle{0%{transform:translateY(0);opacity:0}15%{opacity:.8}100%{transform:translateY(-190px);opacity:0}}
+@keyframes bulle{0%{transform:translateY(0);opacity:0}15%{opacity:.8}100%{transform:translateY(-110px);opacity:0}}
 .a-flamme{transform-origin:2600px 1132px;animation:flamme .35s ease-in-out infinite alternate}.a-flamme.f2{animation-duration:.27s}
 @keyframes flamme{from{transform:scale(1,1)}to{transform:scale(.88,1.14)}}
 .a-vapeur{opacity:0;animation:vapeur 5s ease-out infinite}.a-vapeur.v2{animation-delay:-1.6s}.a-vapeur.v3{animation-delay:-3.2s}.a-vapeur.v4{animation-delay:-2.4s;animation-duration:4s}
@@ -87,7 +80,7 @@ body.figer .anim *,body.figer .anim{animation-play-state:paused!important}
 '''
 
 def patch_head(head):
-    head = head.replace('decor/monde.jpg?v=1', 'decor/monde-1920.jpg?v=' + V)
+    head = head.replace('decor/monde.jpg?v=1', 'decor/officine-1920.jpg?v=' + V)
     # thème : de la nuit bleue à l'officine chaude
     for a, b in [('#110f3d', '#1e1613'), ('rgba(17,15,61', 'rgba(30,22,19'), ('rgba(5,4,30', 'rgba(12,8,6'), ('#2c3192', '#5a3a2a'), ('#1b1960', '#2e211b'),
                  ('rgba(20,20,60', 'rgba(30,22,19'), ('rgba(20,18,70', 'rgba(30,22,19'), ('rgba(8,6,36', 'rgba(12,8,6'), ('#4a55d8', '#2f8a84'), ('#6d7cff', '#4fb3a9'),
@@ -98,17 +91,20 @@ def patch_head(head):
 
 def patch_engine(e, rep):
     # images au lieu de vidéos (décor vectoriel rendu en 4K)
-    e = re.sub(r'<video class="hero-v"[^>]*><source[^>]*></video>', lambda m: '<img class="hero-v" src="decor/monde-1920.jpg?v=' + V + '" alt="" style="object-position:\'+heroX()+\'% 62%">', e)
-    e = re.sub(r'<div class="piece" id="piece"><video[^>]*><source[^>]*></video>', lambda m: '<div class="piece" id="piece"><img class="decor" src="decor/monde.jpg?v=' + V + '" alt="">' + ANIM.replace("'", "\\'").replace('\n', '') , e)
-    e = re.sub(r'<video class="fete-bg"[^>]*><source[^>]*></video>', lambda m: '<img class="fete-bg" src="decor/monde-1920.jpg?v=' + V + '" alt="">', e)
+    e = re.sub(r'<video class="hero-v"[^>]*><source[^>]*></video>', lambda m: '<img class="hero-v" src="decor/officine-1920.jpg?v=' + V + '" alt="" style="object-position:\'+heroX()+\'% 62%">', e)
+    e = re.sub(r'<div class="piece" id="piece"><video[^>]*><source[^>]*></video>', lambda m: '<div class="piece" id="piece"><img class="decor" src="decor/officine-fond.jpg?v=' + V + '" alt="">' + ANIM_BACK.replace("'", "\\'").replace('\n', '') + '<div class="couche" data-k="1.7"><img src="decor/officine-milieu.webp?v=' + V + '" alt="">' + ANIM_MID.replace("'", "\\'").replace('\n', '') + '</div><div class="couche" data-k="2.8"><img src="decor/officine-devant.webp?v=' + V + '" alt=""></div>' , e)
+    e = re.sub(r'<video class="fete-bg"[^>]*><source[^>]*></video>', lambda m: '<img class="fete-bg" src="decor/officine-1920.jpg?v=' + V + '" alt="">', e)
     assert 'monde.mp4' not in e, 'vidéo restante'
     e = rep(e, "function entete(mini){", "function heroX(){var s=SPOTS[VUE==='chap'?CI:chapActuel()]||[50];return Math.round(s[0])}\nfunction entete(mini){")
     # lecture / pause : fige aussi les animations du décor
     e = rep(e, "function lecture(){", "function lecture(){document.body.classList.toggle('figer',!!S.pause);")
     # premier plan : accessoires flous au lieu des lucioles
     e = rep(e, " for(var i=0;i<16;i++){var r=10+Math.random()*26;fg+='<i style=\"left:'+(Math.random()*100).toFixed(1)+'%;top:'+(Math.random()*100).toFixed(1)+'%;width:'+r.toFixed(0)+'px;height:'+r.toFixed(0)+'px;animation-delay:'+(-Math.random()*7).toFixed(1)+'s\"></i>'}",
-           " fg='<img class=\"fgp g\" src=\"decor/fg-gauche.png?v=" + V + "\" alt=\"\"><img class=\"fgp d\" src=\"decor/fg-droite.png?v=" + V + "\" alt=\"\">';")
-    e = rep(e, "var IW=2048, IH=1080,", "var IW=3840, IH=2160,")
+           " fg='';")
+    e = rep(e, "var IW=2048, IH=1080,", "var IW=4608, IH=2160,")
+    # parallaxe : chaque plan glisse selon sa profondeur (gyroscope, dérive et panoramique)
+    e = rep(e, "  tilt.style.transform='translate3d('+cx.toFixed(2)+'px,'+cy.toFixed(2)+'px,0)';", "  tilt.style.transform='translate3d('+cx.toFixed(2)+'px,'+cy.toFixed(2)+'px,0)';\n  var uu=(camX+PW*Z/2-vw/2)/(PW*Z),vv=(camY+PH*Z/2-vh/2)/(PH*Z);for(var q=0;q<COUCHES.length;q++){var kk=+COUCHES[q].dataset.k-1;COUCHES[q].style.transform='translate3d('+(cx*kk+uu*70*kk).toFixed(2)+'px,'+(cy*kk+vv*30*kk).toFixed(2)+'px,0)';if(q===0){LIEUX.style.transform=COUCHES[q].style.transform}}")
+    e = rep(e, " var t0=performance.now();", " var t0=performance.now(), COUCHES=[].slice.call(piece.querySelectorAll('.couche')), LIEUX=$('#lieux');")
     e = e.replace("Glisse dans tous les sens, pince pour voir toute la pièce", "Glisse dans tous les sens, pince pour voir toute l\\'officine")
     # étagère de flacons au lieu de la guirlande
     old = e[e.find('function guirlande(n,lit){'):e.find('function lucioles(){')]
@@ -122,9 +118,9 @@ def patch_engine(e, rep):
     e = e.replace("'<div class=\"lum\">'+ic('bulb')", "'<div class=\"lum\">'+ic('flask')")
     # lieux des chapitres sur le décor
     old = e[e.find('var SPOTS=['):e.find('];', e.find('var SPOTS=['))+2]
-    e = rep(e, old, "var SPOTS=[[26,60,'le bureau'],[52,60,'la paillasse'],[75,60,'le bain-marie'],[85,82,'le moule à suppositoires'],[58,87,'le plateau de gélules'],[42,80,'la nacelle de pesée']];")
+    e = rep(e, old, "var SPOTS=[[20.72,73.05,'le bureau'],[46.57,73.05,'la paillasse'],[79.28,73.05,'le bain-marie'],[88.03,76.48,'le moule à suppositoires'],[56.71,76.93,'le plateau de gélules'],[41.6,76.48,'la nacelle de pesée']];")
     # ordonnances posées sur le bureau : un objet du monde qu'on touche
-    e = rep(e, " $('#lieux').innerHTML=h;", r''' var ro=ordoRestantes(),po=[0.15*PW,0.70*PH];
+    e = rep(e, " $('#lieux').innerHTML=h;", r''' var ro=ordoRestantes(),po=[0.0853*PW,0.7224*PH];
  h+='<button class="ordos'+(ro?'':' fini')+'" id="ordos" style="left:'+po[0].toFixed(0)+'px;top:'+po[1].toFixed(0)+'px"><span class="halo-o"></span><span class="t">'+ic('book')+'<span>Ordonnances</span>'+(ro?'<em>'+ro+'</em>':ic('check'))+'</span></button>';
  $('#lieux').innerHTML=h;
  var eo=document.getElementById('ecranOrdo');if(eo)eo.textContent=ro?ro+' à préparer':'tout est délivré';
