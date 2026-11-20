@@ -1,0 +1,23 @@
+{
+ "name": "Eau, électrolytes et éléments minéraux — Biochimie humaine",
+ "short_name": "Bioch 2.5",
+ "start_url": "ch2-5-eau-electrolytes.html",
+ "scope": "./",
+ "display": "standalone",
+ "background_color": "#f3efe6",
+ "theme_color": "#0e7490",
+ "lang": "fr",
+ "icons": [
+  {
+   "src": "icons/ch2-5-eau-electrolytes-192.png",
+   "sizes": "192x192",
+   "type": "image/png"
+  },
+  {
+   "src": "icons/ch2-5-eau-electrolytes-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any"
+  }
+ ]
+}
