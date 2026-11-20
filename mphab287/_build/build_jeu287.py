@@ -202,5 +202,6 @@ e = etagere287.patch(e, rep, monde287.V)
 head = head[:head.rfind('</style>')] + etagere287.CSS + etagere287.CSS_JN + head[head.rfind('</style>'):]
 js_th = 'window.TH=[' + TH[0] + ',\n' + TH[1] + '];'
 html = head + '<script>window.DATA=' + json.dumps(DATA, ensure_ascii=False) + ';\nwindow.EXC=' + json.dumps(etagere287.EXC, ensure_ascii=False) + ';\n' + js_th + '</script>\n<script>' + e + '</script></body></html>'
+html = re.sub(r'icons/jeu-(180|192|512)\.png(?!\?)', r'icons/jeu-\1.png?v=2', html)
 open(OUT, 'w').write(html)
 print('ok', len(html), OUT)
