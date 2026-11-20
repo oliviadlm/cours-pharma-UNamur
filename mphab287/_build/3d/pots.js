@@ -22,6 +22,15 @@ const ALU = new THREE.MeshStandardMaterial({ color: '#c9ccd1', roughness: .28, m
 const tour = (p, mat, seg = 64) => new THREE.Mesh(new THREE.LatheGeometry(p.map(q => new THREE.Vector2(q[0], q[1])), seg), mat);
 const cyl = (r, h, mat, y) => { const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, 48), mat); m.position.y = y; return m; };
 
+// ---------- étiquette (comme en vrai : tout contenant est étiqueté) ----------
+function etiquette(nom, ambre) { return canvasTex(640, 220, g => { g.fillStyle = '#fbf6ea'; g.fillRect(0, 0, 640, 220); bruit(g, 640, 220, 12, 5000);
+  g.strokeStyle = '#a8886a'; g.lineWidth = 7; g.strokeRect(12, 12, 616, 196); g.fillStyle = ambre ? '#8a1c1c' : '#2f6f6a'; g.fillRect(12, 12, 616, 26);
+  const mots = nom.split(' '), L = []; let l = ''; mots.forEach(w => { if ((l + ' ' + w).trim().length > 18) { if (l) L.push(l.trim()); l = w; } else l += ' ' + w; }); if (l.trim()) L.push(l.trim());
+  const lignes = L.slice(0, 3), f = lignes.length > 2 ? 40 : lignes.length > 1 ? 48 : 58; g.fillStyle = '#2a2230'; g.textAlign = 'center'; g.font = `800 ${f}px Helvetica, Arial, sans-serif`;
+  const y0 = 124 - (lignes.length - 1) * f * .55; lignes.forEach((t, i) => g.fillText(t, 320, y0 + i * f * 1.1 + f * .35));
+  g.fillStyle = '#7a6a5a'; g.font = '600 22px Helvetica, Arial'; g.fillText('Ph. Eur. · lot ' + (1000 + nom.length * 37 % 9000), 320, 196); }); }
+function bandeau(r, h, y, nom, ambre) { const m = new THREE.Mesh(new THREE.CylinderGeometry(r * 1.008, r * 1.008, h, 64, 1, true, -Math.PI * .4, Math.PI * .8), new THREE.MeshStandardMaterial({ map: etiquette(nom, ambre), roughness: .85 })); m.position.y = y; return m; }
+
 // ---------- matières ----------
 function liquide(r, h, col, visq) {
   const g = new THREE.Group();
@@ -67,24 +76,24 @@ function creme(r, h, col, transl) {
 // ---------- contenants ----------
 function flacon(s, lv) { const g = new THREE.Group(), h = .19, r = .05;
   g.add(tour([[0, 0], [r, 0], [r, h * .62], [r * .55, h * .82], [r * .34, h * .86], [r * .34, h], [0, h]], s.ambre ? AMBRE : VERRE));
-  g.add(liquide(r * .94, Math.max(.012, h * .6 * lv), s.col, s.visq)); g.add(cyl(r * .38, h * .14, NOIR, h * 1.04)); return g; }
+  g.add(liquide(r * .94, Math.max(.012, h * .6 * lv), s.col, s.visq)); g.add(cyl(r * .38, h * .14, NOIR, h * 1.04)); g.add(bandeau(r, .045, .0825, s.nom, s.ambre)); return g; }
 function compteGouttes(s, lv) { const g = new THREE.Group(), h = .13, r = .04;
   g.add(tour([[0, 0], [r, 0], [r, h * .7], [r * .5, h * .86], [r * .4, h * .9], [r * .4, h], [0, h]], AMBRE));
   g.add(liquide(r * .93, Math.max(.01, h * .65 * lv), s.col, false)); g.add(cyl(r * .45, .02, NOIR, h + .01));
-  g.add(tour([[0, h + .02], [r * .34, h + .02], [r * .36, h + .04], [r * .3, h + .065], [0, h + .07]], new THREE.MeshStandardMaterial({ color: '#2f2d30', roughness: .7 }))); return g; }
+  g.add(tour([[0, h + .02], [r * .34, h + .02], [r * .36, h + .04], [r * .3, h + .065], [0, h + .07]], new THREE.MeshStandardMaterial({ color: '#2f2d30', roughness: .7 }))); g.add(bandeau(r, .04, .042, s.nom, true)); return g; }
 function bocal(s, lv) { const g = new THREE.Group(), h = .165, r = .062, ri = r * .93, hh = Math.max(.02, h * (s.k === 'poudre' ? .64 : .78) * lv);
   g.add(tour([[0, 0], [r * .95, 0], [r, .01], [r, h * .92], [r * .9, h], [0, h]], s.ambre ? AMBRE : VERRE));
   if (s.k === 'poudre') { g.add(tasPoudre(ri, hh, s.col, s.grain ?? .5)); g.add(voile(ri * 1.003, hh, Math.min(h * .9, hh + .035), s.col)); }
   else if (s.k === 'couches') { const cs = s.cols, n = cs.length; cs.forEach((c, i) => { const m = tasPoudre(ri, hh / n * (i === n - 1 ? 1 : 1.0), c, .6); m.position.y = hh / n * i; if (i < n - 1) m.scale.y = 1; g.add(m); }); }
   else g.add(particules(ri, hh, s.k, s.col));
-  g.add(cyl(r * .98, .03, s.capBlanc ? BLANC : NOIR, h + .015)); return g; }
+  g.add(cyl(r * .98, .03, s.capBlanc ? BLANC : NOIR, h + .015)); g.add(bandeau(r, .036, .134, s.nom, s.ambre)); return g; }
 function pot(s, lv) { const g = new THREE.Group(), h = .075, r = .062;
-  g.add(tour([[0, 0], [r * .96, 0], [r, .008], [r, h], [r * .97, h * 1.02], [0, h * 1.02]], VERRE)); g.add(creme(r * .94, Math.max(.008, h * .8 * lv), s.col, s.transl));
+  g.add(tour([[0, 0], [r * .96, 0], [r, .008], [r, h], [r * .97, h * 1.02], [0, h * 1.02]], VERRE)); g.add(creme(r * .94, Math.max(.008, h * .8 * lv), s.col, s.transl)); g.add(bandeau(r, .028, .028, s.nom, false));
   return g; }
 function aerosol(s) { const g = new THREE.Group(), h = .15, r = .038;
   g.add(tour([[0, 0], [r * .9, 0], [r, .006], [r, h], [r * .7, h + .02], [r * .25, h + .028], [0, h + .03]], ALU));
   const band = new THREE.Mesh(new THREE.CylinderGeometry(r * 1.004, r * 1.004, h * .55, 48, 1, true), new THREE.MeshStandardMaterial({ color: s.col, roughness: .35, metalness: .3 })); band.position.y = h * .45; g.add(band);
-  g.add(cyl(.006, .012, NOIR, h + .036)); g.add(cyl(.011, .008, BLANC, h + .046)); return g; }
+  g.add(cyl(.006, .012, NOIR, h + .036)); g.add(cyl(.011, .008, BLANC, h + .046)); g.add(bandeau(r * 1.01, .04, .075, s.nom, false)); return g; }
 
 // ---------- décor de la vignette ----------
 const scene = new THREE.Scene(); scene.background = new THREE.Color(MUR); scene.environment = ENV; scene.environmentIntensity = .6;

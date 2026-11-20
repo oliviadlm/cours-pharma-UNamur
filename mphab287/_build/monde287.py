@@ -1,6 +1,6 @@
 # Monde « L'officine » : décor 4K vectoriel animé, ordonnances à préparer, balance, thème chaud.
 import re
-V = '10'
+V = '11'
 
 ANIM_BACK = r'''<svg class="anim" viewBox="0 0 4608 2160" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="gReflet" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".10"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset=".6" stop-color="#fff" stop-opacity=".05"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>
 <polygon points="1994,72 2865,72 2846,975 2005,975" fill="url(#gReflet)"/>

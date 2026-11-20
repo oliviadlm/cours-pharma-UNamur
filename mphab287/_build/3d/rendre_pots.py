@@ -2,6 +2,8 @@ import sys, json, base64, io, os
 from playwright.sync_api import sync_playwright
 from PIL import Image
 sys.path.insert(0, '.'); from specs_pots import SPECS, NIV
+EXN={e['id']:e['n'] for e in json.load(open('/home/claude/jeu287/exc.json'))['ex']}
+for k in SPECS: SPECS[k]['nom']=EXN[k]
 ids = sys.argv[2].split(',') if len(sys.argv) > 2 and sys.argv[2] != 'all' else list(SPECS)
 out = sys.argv[1]; os.makedirs(out, exist_ok=True)
 with sync_playwright() as p:

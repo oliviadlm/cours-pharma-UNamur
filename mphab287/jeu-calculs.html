@@ -150,7 +150,7 @@ body.sans-scroll .defile{overflow:hidden}
 
 /* ===== monde : chambre de nuit ===== */
 .ciel{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(130% 70% at 50% 0%,#5a3a2a 0%,#2e211b 42%,#1e1613 100%);overflow:hidden}
-.ciel::before{content:"";position:absolute;inset:-60px;background:url(decor/officine-1920-jour.jpg?v=10) center/cover;filter:blur(26px) saturate(1.3);opacity:.32}
+.ciel::before{content:"";position:absolute;inset:-60px;background:url(decor/officine-1920-jour.jpg?v=11) center/cover;filter:blur(26px) saturate(1.3);opacity:.32}
 .ciel::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(30,22,19,0) 0%,rgba(30,22,19,.55) 70%,rgba(30,22,19,.85) 100%)}
 .ciel i{position:absolute;width:5px;height:5px;border-radius:50%;background:#ffe9a8;box-shadow:0 0 10px 3px rgba(255,214,107,.55);opacity:0;animation:luciole 9s ease-in-out infinite;z-index:1}
 @keyframes luciole{0%{opacity:0;transform:translate(0,0)}20%{opacity:.9}50%{transform:translate(18px,-40px)}80%{opacity:.7}100%{opacity:0;transform:translate(-10px,-90px)}}
@@ -533,7 +533,7 @@ body.figer .anim *,body.figer .anim{animation-play-state:paused!important}
 #etag .fiche.on{display:block;animation:apparait .25s ease-out}
 #etag .fiche .ff{display:flex;gap:12px;align-items:center}#etag .fiche .fimg{width:76px;height:98px;flex:0 0 auto;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,.18)}
 #etag .fiche b{font-size:1.05rem}#etag .fiche .cat{display:inline-block;margin:4px 0;font-weight:800;font-size:.8rem;padding:2px 9px;border-radius:999px;background:#e6f0ed;color:#226b66}
-#etag .fiche p{margin:4px 0 0;font-size:.9rem;line-height:1.35}
+#etag .fiche p{margin:4px 0 0;font-size:.9rem;line-height:1.35}#etag .fiche p.vois{font-size:.8rem;color:#6b6070}
 #etag .fiche .fb2{display:flex;gap:8px;margin-top:10px}#etag .fiche .fb2 button{flex:1;border:0;border-radius:12px;padding:11px;font-weight:800;color:#fff}
 
 .rond-btn.amp.eteinte{color:#8a8070;background:rgba(20,14,10,.6)}
@@ -1527,7 +1527,7 @@ function importer(){function appliquer(t){try{t=(t||'').trim();if(t.indexOf('CHI
  if(navigator.clipboard&&navigator.clipboard.readText)navigator.clipboard.readText().then(function(t){if(t&&t.indexOf('CHIPHA1:')===0)appliquer(t);else appliquer(window.prompt('Colle ici le code de progression :',''))},function(){appliquer(window.prompt('Colle ici le code de progression :',''))});else appliquer(window.prompt('Colle ici le code de progression :',''))}
 function haut(){var d=$('#defile');if(d)d.scrollTop=0}
 /* ---------- mise à jour automatique : l'app vérifie s'il existe une version plus récente ---------- */
-var VERSION='1795193693';
+var VERSION='1795194957';
 function verifierVersion(){try{fetch(location.pathname+'?nocache='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():''}).then(function(t){var m=/var VERSION='(\d+)'/.exec(t);if(m&&m[1]!==VERSION&&!G){location.replace(location.pathname+'?v='+m[1]+location.hash)}}).catch(function(){})}catch(e){}}
 setTimeout(verifierVersion,1500);
 document.addEventListener('visibilitychange',function(){if(!document.hidden)verifierVersion()});
@@ -1541,7 +1541,7 @@ document.addEventListener('visibilitychange',function(){if(!document.hidden)lect
 function heroX(){var s=SPOTS[VUE==='chap'?CI:chapActuel()]||[50];return Math.round(s[0])}
 function entete(mini){
  var hr=new Date().getHours(), salut=(hr>=18||hr<5)?'Bonsoir':'Bonjour';
- return '<header class="hero'+(mini?' mini':'')+'"><img class="hero-v" data-jn="officine-1920-{m}.jpg?v=10" src="decor/officine-1920-'+JN()+'.jpg?v=10" alt="" style="object-position:'+heroX()+'% 62%">'+
+ return '<header class="hero'+(mini?' mini':'')+'"><img class="hero-v" data-jn="officine-1920-{m}.jpg?v=11" src="decor/officine-1920-'+JN()+'.jpg?v=11" alt="" style="object-position:'+heroX()+'% 62%">'+
  '<div class="hero-haut">'+(mini?'<button class="rond-btn" id="retour" aria-label="Retour à la carte">'+ic('back')+'</button><div class="hero-t"><small>'+salut+' Olivia</small><b>Retour au monde</b></div>':'<img class="logo" src="icons/jeu-180.png" alt=""><div class="hero-t"><small>'+salut+' Olivia</small><b>Méthodes de calculs</b></div>')+
  ''+'<div class="btns-col"><button class="rond-btn" id="son" aria-label="Son">'+ic(S.son===false?'mute':'vol')+'</button><button class="rond-btn" id="lecture" aria-label="Lecture ou pause de l\'animation">'+ic(S.pause?'play':'pause')+'</button><button class="rond-btn amp'+(JN()==='nuit'?' eteinte':'')+'" aria-label="Jour ou nuit">'+ic('bulb')+'</button></div>'+'</div>'+(mini?'':'%GUIR%')+'</header>'}
 function statsHTML(){
@@ -1586,7 +1586,7 @@ function gyroActiver(){if(GYRO.ok)return;GYRO.ok=true;window.addEventListener('d
 function salonHTML(){
  var hr=new Date().getHours(), salut=(hr>=18||hr<5)?'Bonsoir':'Bonjour', fg='';
  fg='';
- return '<section class="salon" id="salon"><div class="cam" id="cam"><div class="tilt" id="tilt"><div class="piece" id="piece"><img class="ville" src="decor/ville-nuit.webp?v=8" alt="" style="left:43.27%;top:3.33%;width:18.91%;height:41.83%"><img class="decor" data-jn="officine-fond-{m}.webp?v=10" src="decor/officine-fond-'+JN()+'.webp?v=10" alt=""><svg class="anim" viewBox="0 0 4608 2160" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="gReflet" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".10"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset=".6" stop-color="#fff" stop-opacity=".05"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs><polygon points="1994,72 2865,72 2846,975 2005,975" fill="url(#gReflet)"/><line class="a-trotteuse" style="transform-origin:3112px 78px" x1="3112" y1="95" x2="3112" y2="-11" stroke="#d9573f" stroke-width="5" stroke-linecap="round"/><circle cx="3112" cy="78" r="9" fill="#d9573f"/></svg><div class="couche" data-k="1.7"><img data-jn="officine-milieu-{m}.webp?v=10" src="decor/officine-milieu-'+JN()+'.webp?v=10" alt=""><svg class="anim" viewBox="0 0 4608 2160" preserveAspectRatio="none" aria-hidden="true"><defs><clipPath id="cBal"><circle cx="2952" cy="1365" r="73"/></clipPath><radialGradient id="gChauf"><stop offset="0" stop-color="#ff8a4a" stop-opacity=".9"/><stop offset="1" stop-color="#ff8a4a" stop-opacity="0"/></radialGradient></defs><g clip-path="url(#cBal)"><circle class="a-bulle b1" cx="2921" cy="1424" r="9" fill="#fff" opacity=".75"/><circle class="a-bulle b2" cx="2956" cy="1424" r="6" fill="#fff" opacity=".75"/><circle class="a-bulle b3" cx="2984" cy="1424" r="11" fill="#fff" opacity=".75"/><circle class="a-bulle b4" cx="2941" cy="1424" r="6" fill="#fff" opacity=".75"/><circle class="a-bulle b5" cx="2972" cy="1424" r="8" fill="#fff" opacity=".75"/></g><ellipse class="a-chauffe" cx="2950" cy="1442" rx="87" ry="28" fill="url(#gChauf)"/><circle class="a-led" cx="61" cy="1475" r="9" fill="#ff5a3c"/></svg><img class="fumee f1" src="decor/vapeur-colonne.webp?v=10" alt="" style="left:73.48%;top:47.30%;width:8.50%;opacity:0.95"><img class="fumee f2" src="decor/vapeur-bouffee.webp?v=10" alt="" style="left:62.38%;top:48.20%;width:3.60%;opacity:0.8"></div><div class="couche" data-k="2.8"><img data-jn="officine-devant-{m}.webp?v=10" src="decor/officine-devant-'+JN()+'.webp?v=10" alt=""></div><div id="lieux"></div></div></div></div><div class="fg" id="fg">'+fg+'</div>'+
+ return '<section class="salon" id="salon"><div class="cam" id="cam"><div class="tilt" id="tilt"><div class="piece" id="piece"><img class="ville" src="decor/ville-nuit.webp?v=8" alt="" style="left:43.27%;top:3.33%;width:18.91%;height:41.83%"><img class="decor" data-jn="officine-fond-{m}.webp?v=11" src="decor/officine-fond-'+JN()+'.webp?v=11" alt=""><svg class="anim" viewBox="0 0 4608 2160" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="gReflet" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".10"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset=".6" stop-color="#fff" stop-opacity=".05"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs><polygon points="1994,72 2865,72 2846,975 2005,975" fill="url(#gReflet)"/><line class="a-trotteuse" style="transform-origin:3112px 78px" x1="3112" y1="95" x2="3112" y2="-11" stroke="#d9573f" stroke-width="5" stroke-linecap="round"/><circle cx="3112" cy="78" r="9" fill="#d9573f"/></svg><div class="couche" data-k="1.7"><img data-jn="officine-milieu-{m}.webp?v=11" src="decor/officine-milieu-'+JN()+'.webp?v=11" alt=""><svg class="anim" viewBox="0 0 4608 2160" preserveAspectRatio="none" aria-hidden="true"><defs><clipPath id="cBal"><circle cx="2952" cy="1365" r="73"/></clipPath><radialGradient id="gChauf"><stop offset="0" stop-color="#ff8a4a" stop-opacity=".9"/><stop offset="1" stop-color="#ff8a4a" stop-opacity="0"/></radialGradient></defs><g clip-path="url(#cBal)"><circle class="a-bulle b1" cx="2921" cy="1424" r="9" fill="#fff" opacity=".75"/><circle class="a-bulle b2" cx="2956" cy="1424" r="6" fill="#fff" opacity=".75"/><circle class="a-bulle b3" cx="2984" cy="1424" r="11" fill="#fff" opacity=".75"/><circle class="a-bulle b4" cx="2941" cy="1424" r="6" fill="#fff" opacity=".75"/><circle class="a-bulle b5" cx="2972" cy="1424" r="8" fill="#fff" opacity=".75"/></g><ellipse class="a-chauffe" cx="2950" cy="1442" rx="87" ry="28" fill="url(#gChauf)"/><circle class="a-led" cx="61" cy="1475" r="9" fill="#ff5a3c"/></svg><img class="fumee f1" src="decor/vapeur-colonne.webp?v=10" alt="" style="left:73.48%;top:47.30%;width:8.50%;opacity:0.95"><img class="fumee f2" src="decor/vapeur-bouffee.webp?v=10" alt="" style="left:62.38%;top:48.20%;width:3.60%;opacity:0.8"></div><div class="couche" data-k="2.8"><img data-jn="officine-devant-{m}.webp?v=11" src="decor/officine-devant-'+JN()+'.webp?v=11" alt=""></div><div id="lieux"></div></div></div></div><div class="fg" id="fg">'+fg+'</div>'+
  '<div class="hero-haut"><img class="logo" src="icons/jeu-180.png" alt=""><div class="hero-t"><small>'+salut+' Olivia</small><b>Méthodes de calculs</b></div>'+'<div class="btns-col"><button class="rond-btn" id="son" aria-label="Son">'+ic(S.son===false?'mute':'vol')+'</button><button class="rond-btn" id="lecture" aria-label="Lecture ou pause de l\'animation">'+ic(S.pause?'play':'pause')+'</button><button class="rond-btn amp'+(JN()==='nuit'?' eteinte':'')+'" aria-label="Jour ou nuit">'+ic('bulb')+'</button></div>'+'</div>'+
  '<div class="salon-bas"><div class="astuce" id="astuce"><span>'+ic('eye')+' Glisse dans tous les sens, pince pour voir toute l\'officine</span></div><button class="rond-btn" id="gyro" aria-label="Bouger avec le téléphone" style="display:none">'+ic('move')+'</button><button class="rond-btn" id="recentrer" aria-label="Revenir au chapitre en cours">'+ic('target')+'</button></div></section>'}
 function salon(){
@@ -1713,7 +1713,7 @@ function son(t){if(S.son===false)return;try{AC=AC||new (window.AudioContext||win
 var FILE=[];
 function fete(o){FILE.push(o);if(FILE.length===1)setTimeout(montrerFete,o.delai||0)}
 function montrerFete(){var o=FILE[0];if(!o)return;var f=$('#fete');
- f.innerHTML='<img class="fete-bg" data-jn="officine-1920-{m}.jpg?v=10" src="decor/officine-1920-'+JN()+'.jpg?v=10" alt=""><div class="rayons"></div><div class="fete-c"><div class="halo">'+o.gros+'</div><span class="sur">'+esc(o.sur)+'</span><h2>'+esc(o.titre)+'</h2>'+(o.sous?'<p>'+esc(o.sous)+'</p>':'')+(o.etoiles!=null?'<div class="etoiles">'+[1,2,3].map(function(k){return '<span class="'+(o.etoiles>=k?'on':'')+'" style="animation-delay:'+(0.5+k*0.18)+'s">'+icf('etoile')+'</span>'}).join('')+'</div>':'')+'<button class="suite on" id="fete-ok">'+(o.bouton||'Continuer')+'</button></div>';
+ f.innerHTML='<img class="fete-bg" data-jn="officine-1920-{m}.jpg?v=11" src="decor/officine-1920-'+JN()+'.jpg?v=11" alt=""><div class="rayons"></div><div class="fete-c"><div class="halo">'+o.gros+'</div><span class="sur">'+esc(o.sur)+'</span><h2>'+esc(o.titre)+'</h2>'+(o.sous?'<p>'+esc(o.sous)+'</p>':'')+(o.etoiles!=null?'<div class="etoiles">'+[1,2,3].map(function(k){return '<span class="'+(o.etoiles>=k?'on':'')+'" style="animation-delay:'+(0.5+k*0.18)+'s">'+icf('etoile')+'</span>'}).join('')+'</div>':'')+'<button class="suite on" id="fete-ok">'+(o.bouton||'Continuer')+'</button></div>';
  f.classList.add('on');son('fete');vib([30,60,30]);setTimeout(confetti,250);
  $('#fete-ok').onclick=function(){son('clic');f.classList.remove('on');f.innerHTML='';FILE.shift();if(o.apres)o.apres();if(FILE.length)setTimeout(montrerFete,300)}}
 var BADGES=[['ordo10','10 ordonnances délivrées','book'],['premier','Premier pas','check'],['parfait','Sans faute','crown'],['combo10','Combo x10','eclair'],['streak3','3 jours de suite','target'],['streak7','7 jours de suite','trophy'],['dessin10','10 calculs posés','pen'],['boss','Boss vaincu','shield'],['cent','100 bonnes réponses','book'],['chap1','Premier chapitre','flag'],['monde','Carte terminée','map']];
@@ -1764,7 +1764,7 @@ function ordoFin(x,bon){S.total++;if(x.id)noter(x.id,bon);if(bon)bien(x);else ma
 var EXC=window.EXC, EXBY={}; EXC.ex.forEach(function(e){EXBY[e.id]=e});
 function exM(id){return Math.min(boxOf('ex:'+id).b,3)/3}
 function coupe(t,n){var m=t.split(' '),l='',o=[];m.forEach(function(w){if((l+' '+w).trim().length>n){if(l)o.push(l.trim());l=w}else l+=' '+w});if(l.trim())o.push(l.trim());return o}
-var POTV='?v=2';
+var POTV='?v=3';
 function potSrc(e,plein){return 'decor/pots/'+e.id+'-'+Math.max(0,Math.min(3,Math.round(plein*3)))+'.webp'+POTV}
 function potHTML(e,plein){var L=coupe(e.n,13).slice(0,4);
  return '<span class="pv"><img src="'+potSrc(e,plein)+'" alt="" loading="lazy" decoding="async" width="92" height="118"></span><span class="tag">'+L.map(esc).join('<br>')+'</span>'}
@@ -1776,23 +1776,33 @@ function etagere(){var o=$('#etag');if(!o){o=document.createElement('div');o.id=
  '<div class="et-prog"><i style="width:'+Math.round(100*exMaitrises()/EXC.ex.length)+'%"></i></div>'+
  '<div class="et-modes"><button data-em="apprendre" class="on">'+ic('eye')+'Apprendre</button><button data-em="commande">'+ic('target')+'Commande</button><button data-em="ranger">'+ic('flask')+'Ranger</button><button data-em="quiz">'+ic('brain')+'Quiz</button></div></div>'+
  '<div class="et-demande" id="et-dem"></div><div class="et-corps" id="et-corps">';
- EXC.fam.forEach(function(f){var cats=[];EXC.ex.forEach(function(e){if(e.fam===f[0]&&cats.indexOf(e.cat)<0)cats.push(e.cat)});
-  h+='<div class="meuble"><h3>'+esc(f[1])+'</h3>';
-  cats.forEach(function(c){h+='<div class="rayon"><span class="plaque">'+esc(c)+'</span><div class="pots">'+EXC.ex.filter(function(e){return e.fam===f[0]&&e.cat===c}).map(function(e){return '<button class="pot" data-x="'+e.id+'" aria-label="'+esc(e.n)+'">'+potHTML(e,exM(e.id))+'</button>'}).join('')+'</div></div>'});
-  h+='</div>'});
- h+='<p class="note" style="margin:6px 16px">Le niveau du pot monte à chaque fois que tu reconnais l\'excipient : un pot plein = excipient maîtrisé.</p></div><div class="fiche" id="et-fiche"></div>';
- o.innerHTML=h;o.classList.add('on');ETQ=null;
+ h+='</div><div class="fiche" id="et-fiche"></div>';
+ o.innerHTML=h;o.classList.add('on');ETQ=null;etCorps(false);
  $('#et-ret').onclick=function(){son('clic');o.classList.remove('on');accueil()};
  $$('#etag .et-modes button').forEach(function(b){b.onclick=function(){son('clic');var m=b.dataset.em;
   if(m==='ranger'){o.classList.remove('on');etRanger();return}if(m==='quiz'){o.classList.remove('on');etQuiz();return}
-  $$('#etag .et-modes button').forEach(function(x){x.classList.toggle('on',x===b)});if(m==='commande')etCommande();else{ETQ=null;$('#et-dem').classList.remove('on')}}});
- $$('#etag .pot').forEach(function(b){b.onclick=function(){var e=EXBY[b.dataset.x];if(ETQ){etReponse(b,e);return}etFiche(e,b)}});
+  $$('#etag .et-modes button').forEach(function(x){x.classList.toggle('on',x===b)});if(m==='commande'){etCorps(true);etCommande()}else{ETQ=null;$('#et-dem').classList.remove('on');etCorps(false)}}});
 }
+function potBtn(e){return '<button class="pot" data-x="'+e.id+'" aria-label="'+esc(e.n)+'">'+potHTML(e,exM(e.id))+'</button>'}
+/* rangé = pour apprendre (les rayons sont nommés) ; en désordre = pour se tester (aucun indice de famille) */
+function etCorps(desordre){var h='',c=$('#et-corps');
+ if(!desordre){EXC.fam.forEach(function(f){var cats=[];EXC.ex.forEach(function(e){if(e.fam===f[0]&&cats.indexOf(e.cat)<0)cats.push(e.cat)});
+   h+='<div class="meuble"><h3>'+esc(f[1])+'</h3>';
+   cats.forEach(function(k){h+='<div class="rayon"><span class="plaque">'+esc(k)+'</span><div class="pots">'+EXC.ex.filter(function(e){return e.fam===f[0]&&e.cat===k}).map(potBtn).join('')+'</div></div>'});
+   h+='</div>'});
+  h+='<p class="note" style="margin:6px 16px">Ici tout est rangé et nommé : c\'est pour apprendre. Touche un pot pour lire sa fiche. Le pot se remplit quand tu le reconnais sans aide, en Commande, Ranger ou Quiz.</p>'}
+ else{var L=mel(EXC.ex.slice());h+='<div class="meuble"><h3>Réserve en désordre · aucun rayon n\'est nommé</h3>';
+  for(var i=0;i<L.length;i+=6)h+='<div class="rayon"><div class="pots">'+L.slice(i,i+6).map(potBtn).join('')+'</div></div>';
+  h+='</div><p class="note" style="margin:6px 16px">Tout a été mélangé : retrouve chaque produit grâce à ce que tu sais de lui.</p>'}
+ c.innerHTML=h;c.scrollTop=0;
+ $$('#etag .pot').forEach(function(b){b.onclick=function(){var e=EXBY[b.dataset.x];if(ETQ){etReponse(b,e);return}etFiche(e,b)}})}
 function etMaj(b,e){b.innerHTML=potHTML(e,exM(e.id))}
 function etFiche(e,b){var f=$('#et-fiche');son('clic');
- f.innerHTML='<div class="ff"><img class="fimg" src="'+potSrc(e,exM(e.id))+'" alt="">'+'<div><b>'+esc(e.n)+'</b><div id="et-cache"><p>Quelle famille, et à quoi sert-il ? Réponds dans ta tête, puis retourne.</p></div><div id="et-rev" style="display:none"><span class="cat">'+esc(e.cat)+'</span>'+(e.d?'<p>'+esc(e.d)+'</p>':'')+'</div></div></div><div class="fb2" id="et-b1"><button style="background:#2f8a84" id="et-ret2">Retourner</button></div><div class="fb2" id="et-b2" style="display:none"><button style="background:#e5484d" data-v="0">À revoir</button><button style="background:#16a34a" data-v="1">Je savais</button></div>';
- f.classList.add('on');$('#et-ret2').onclick=function(){son('clic');$('#et-cache').style.display='none';$('#et-rev').style.display='';$('#et-b1').style.display='none';$('#et-b2').style.display=''};
- $$('#et-b2 button').forEach(function(x){x.onclick=function(){var ok=x.dataset.v==='1';noter('ex:'+e.id,ok);if(ok){S.xp+=3;S.todayXp+=3}save();etMaj(b,e);f.classList.remove('on');son(ok?'bien':'clic')}})}
+ var voisins=EXC.ex.filter(function(x){return x.cat===e.cat&&x.id!==e.id}).map(function(x){return x.n});
+ f.innerHTML='<div class="ff"><img class="fimg" src="'+potSrc(e,exM(e.id))+'" alt=""><div><b>'+esc(e.n)+'</b><br><span class="cat">'+esc(e.cat)+'</span>'+(e.d?'<p>'+esc(e.d)+'</p>':'')+
+  (voisins.length?'<p class="vois">Même rayon : '+esc(voisins.slice(0,4).join(' · '))+(voisins.length>4?' …':'')+'</p>':'')+'</div></div>'+
+  '<div class="fb2"><button style="background:#2f8a84" id="et-ok">Compris</button></div>';
+ f.classList.add('on');$('#et-ok').onclick=function(){son('clic');f.classList.remove('on')}}
 function etCommande(){var L=mel(EXC.req.slice()).slice(0,6);
  mel(EXC.ex.map(function(e){return e.cat}).filter(function(v,i,a){return a.indexOf(v)===i})).slice(0,2).forEach(function(c){L.push({t:'Apporte-moi un excipient de la famille « '+c+' ».',ok:EXC.ex.filter(function(e){return e.cat===c}).map(function(e){return e.id})})});
  ETQ={l:mel(L),i:0,ok:0,err:0};etQuestion()}
@@ -1814,7 +1824,7 @@ function etQuiz(){var it=EXC.quiz.map(function(q){return {id:'ex:'+q.id,kind:'qc
 function JN(){return S.jour===false?'nuit':'jour'}
 function basculeJour(){S.jour=!(S.jour!==false);save();son('clic');vib(10);var m=JN();
  $$('img[data-jn]').forEach(function(i){i.src='decor/'+i.dataset.jn.replace('{m}',m)});
- var v=$('img.ville');if(v)v.src=m==='jour'?'decor/ville-jour.webp?v='+'10':'decor/ville-nuit.webp?v='+'10';
+ var v=$('img.ville');if(v)v.src=m==='jour'?'decor/ville-jour.webp?v='+'11':'decor/ville-nuit.webp?v='+'11';
  document.body.classList.toggle('nuit',m==='nuit');$$('.amp').forEach(function(b){b.innerHTML=ic('bulb');b.classList.toggle('eteinte',m==='nuit')});
  toast(ic('bulb')+(m==='jour'?' Lumière allumée : il fait jour':' Lumière tamisée : bonsoir'))}
 document.body.classList.toggle('nuit',JN()==='nuit');

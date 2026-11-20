@@ -86,7 +86,7 @@ CSS = r'''
 #etag .fiche.on{display:block;animation:apparait .25s ease-out}
 #etag .fiche .ff{display:flex;gap:12px;align-items:center}#etag .fiche .fimg{width:76px;height:98px;flex:0 0 auto;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,.18)}
 #etag .fiche b{font-size:1.05rem}#etag .fiche .cat{display:inline-block;margin:4px 0;font-weight:800;font-size:.8rem;padding:2px 9px;border-radius:999px;background:#e6f0ed;color:#226b66}
-#etag .fiche p{margin:4px 0 0;font-size:.9rem;line-height:1.35}
+#etag .fiche p{margin:4px 0 0;font-size:.9rem;line-height:1.35}#etag .fiche p.vois{font-size:.8rem;color:#6b6070}
 #etag .fiche .fb2{display:flex;gap:8px;margin-top:10px}#etag .fiche .fb2 button{flex:1;border:0;border-radius:12px;padding:11px;font-weight:800;color:#fff}
 '''
 
@@ -95,7 +95,7 @@ JS = r'''
 var EXC=window.EXC, EXBY={}; EXC.ex.forEach(function(e){EXBY[e.id]=e});
 function exM(id){return Math.min(boxOf('ex:'+id).b,3)/3}
 function coupe(t,n){var m=t.split(' '),l='',o=[];m.forEach(function(w){if((l+' '+w).trim().length>n){if(l)o.push(l.trim());l=w}else l+=' '+w});if(l.trim())o.push(l.trim());return o}
-var POTV='?v=2';
+var POTV='?v=3';
 function potSrc(e,plein){return 'decor/pots/'+e.id+'-'+Math.max(0,Math.min(3,Math.round(plein*3)))+'.webp'+POTV}
 function potHTML(e,plein){var L=coupe(e.n,13).slice(0,4);
  return '<span class="pv"><img src="'+potSrc(e,plein)+'" alt="" loading="lazy" decoding="async" width="92" height="118"></span><span class="tag">'+L.map(esc).join('<br>')+'</span>'}
@@ -107,23 +107,33 @@ function etagere(){var o=$('#etag');if(!o){o=document.createElement('div');o.id=
  '<div class="et-prog"><i style="width:'+Math.round(100*exMaitrises()/EXC.ex.length)+'%"></i></div>'+
  '<div class="et-modes"><button data-em="apprendre" class="on">'+ic('eye')+'Apprendre</button><button data-em="commande">'+ic('target')+'Commande</button><button data-em="ranger">'+ic('flask')+'Ranger</button><button data-em="quiz">'+ic('brain')+'Quiz</button></div></div>'+
  '<div class="et-demande" id="et-dem"></div><div class="et-corps" id="et-corps">';
- EXC.fam.forEach(function(f){var cats=[];EXC.ex.forEach(function(e){if(e.fam===f[0]&&cats.indexOf(e.cat)<0)cats.push(e.cat)});
-  h+='<div class="meuble"><h3>'+esc(f[1])+'</h3>';
-  cats.forEach(function(c){h+='<div class="rayon"><span class="plaque">'+esc(c)+'</span><div class="pots">'+EXC.ex.filter(function(e){return e.fam===f[0]&&e.cat===c}).map(function(e){return '<button class="pot" data-x="'+e.id+'" aria-label="'+esc(e.n)+'">'+potHTML(e,exM(e.id))+'</button>'}).join('')+'</div></div>'});
-  h+='</div>'});
- h+='<p class="note" style="margin:6px 16px">Le niveau du pot monte à chaque fois que tu reconnais l\'excipient : un pot plein = excipient maîtrisé.</p></div><div class="fiche" id="et-fiche"></div>';
- o.innerHTML=h;o.classList.add('on');ETQ=null;
+ h+='</div><div class="fiche" id="et-fiche"></div>';
+ o.innerHTML=h;o.classList.add('on');ETQ=null;etCorps(false);
  $('#et-ret').onclick=function(){son('clic');o.classList.remove('on');accueil()};
  $$('#etag .et-modes button').forEach(function(b){b.onclick=function(){son('clic');var m=b.dataset.em;
   if(m==='ranger'){o.classList.remove('on');etRanger();return}if(m==='quiz'){o.classList.remove('on');etQuiz();return}
-  $$('#etag .et-modes button').forEach(function(x){x.classList.toggle('on',x===b)});if(m==='commande')etCommande();else{ETQ=null;$('#et-dem').classList.remove('on')}}});
- $$('#etag .pot').forEach(function(b){b.onclick=function(){var e=EXBY[b.dataset.x];if(ETQ){etReponse(b,e);return}etFiche(e,b)}});
+  $$('#etag .et-modes button').forEach(function(x){x.classList.toggle('on',x===b)});if(m==='commande'){etCorps(true);etCommande()}else{ETQ=null;$('#et-dem').classList.remove('on');etCorps(false)}}});
 }
+function potBtn(e){return '<button class="pot" data-x="'+e.id+'" aria-label="'+esc(e.n)+'">'+potHTML(e,exM(e.id))+'</button>'}
+/* rangé = pour apprendre (les rayons sont nommés) ; en désordre = pour se tester (aucun indice de famille) */
+function etCorps(desordre){var h='',c=$('#et-corps');
+ if(!desordre){EXC.fam.forEach(function(f){var cats=[];EXC.ex.forEach(function(e){if(e.fam===f[0]&&cats.indexOf(e.cat)<0)cats.push(e.cat)});
+   h+='<div class="meuble"><h3>'+esc(f[1])+'</h3>';
+   cats.forEach(function(k){h+='<div class="rayon"><span class="plaque">'+esc(k)+'</span><div class="pots">'+EXC.ex.filter(function(e){return e.fam===f[0]&&e.cat===k}).map(potBtn).join('')+'</div></div>'});
+   h+='</div>'});
+  h+='<p class="note" style="margin:6px 16px">Ici tout est rangé et nommé : c\'est pour apprendre. Touche un pot pour lire sa fiche. Le pot se remplit quand tu le reconnais sans aide, en Commande, Ranger ou Quiz.</p>'}
+ else{var L=mel(EXC.ex.slice());h+='<div class="meuble"><h3>Réserve en désordre · aucun rayon n\'est nommé</h3>';
+  for(var i=0;i<L.length;i+=6)h+='<div class="rayon"><div class="pots">'+L.slice(i,i+6).map(potBtn).join('')+'</div></div>';
+  h+='</div><p class="note" style="margin:6px 16px">Tout a été mélangé : retrouve chaque produit grâce à ce que tu sais de lui.</p>'}
+ c.innerHTML=h;c.scrollTop=0;
+ $$('#etag .pot').forEach(function(b){b.onclick=function(){var e=EXBY[b.dataset.x];if(ETQ){etReponse(b,e);return}etFiche(e,b)}})}
 function etMaj(b,e){b.innerHTML=potHTML(e,exM(e.id))}
 function etFiche(e,b){var f=$('#et-fiche');son('clic');
- f.innerHTML='<div class="ff"><img class="fimg" src="'+potSrc(e,exM(e.id))+'" alt="">'+'<div><b>'+esc(e.n)+'</b><div id="et-cache"><p>Quelle famille, et à quoi sert-il ? Réponds dans ta tête, puis retourne.</p></div><div id="et-rev" style="display:none"><span class="cat">'+esc(e.cat)+'</span>'+(e.d?'<p>'+esc(e.d)+'</p>':'')+'</div></div></div><div class="fb2" id="et-b1"><button style="background:#2f8a84" id="et-ret2">Retourner</button></div><div class="fb2" id="et-b2" style="display:none"><button style="background:#e5484d" data-v="0">À revoir</button><button style="background:#16a34a" data-v="1">Je savais</button></div>';
- f.classList.add('on');$('#et-ret2').onclick=function(){son('clic');$('#et-cache').style.display='none';$('#et-rev').style.display='';$('#et-b1').style.display='none';$('#et-b2').style.display=''};
- $$('#et-b2 button').forEach(function(x){x.onclick=function(){var ok=x.dataset.v==='1';noter('ex:'+e.id,ok);if(ok){S.xp+=3;S.todayXp+=3}save();etMaj(b,e);f.classList.remove('on');son(ok?'bien':'clic')}})}
+ var voisins=EXC.ex.filter(function(x){return x.cat===e.cat&&x.id!==e.id}).map(function(x){return x.n});
+ f.innerHTML='<div class="ff"><img class="fimg" src="'+potSrc(e,exM(e.id))+'" alt=""><div><b>'+esc(e.n)+'</b><br><span class="cat">'+esc(e.cat)+'</span>'+(e.d?'<p>'+esc(e.d)+'</p>':'')+
+  (voisins.length?'<p class="vois">Même rayon : '+esc(voisins.slice(0,4).join(' · '))+(voisins.length>4?' …':'')+'</p>':'')+'</div></div>'+
+  '<div class="fb2"><button style="background:#2f8a84" id="et-ok">Compris</button></div>';
+ f.classList.add('on');$('#et-ok').onclick=function(){son('clic');f.classList.remove('on')}}
 function etCommande(){var L=mel(EXC.req.slice()).slice(0,6);
  mel(EXC.ex.map(function(e){return e.cat}).filter(function(v,i,a){return a.indexOf(v)===i})).slice(0,2).forEach(function(c){L.push({t:'Apporte-moi un excipient de la famille « '+c+' ».',ok:EXC.ex.filter(function(e){return e.cat===c}).map(function(e){return e.id})})});
  ETQ={l:mel(L),i:0,ok:0,err:0};etQuestion()}
