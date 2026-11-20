@@ -99,7 +99,8 @@ canvas.dessin{width:100%;height:260px;background:#fff;border:2px dashed #c7cbd8;
 .erreurs{background:var(--carte);color:var(--encre);border-radius:16px;padding:12px;text-align:left;margin-top:10px;font-size:.88rem}
 .erreurs li{margin-bottom:6px}
 .toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 14px);transform:translateX(-50%) translateY(-120px);background:#fff;color:var(--encre);border-radius:16px;padding:10px 16px;font-weight:700;box-shadow:0 10px 30px rgba(0,0,0,.35);transition:transform .35s;z-index:9;display:flex;gap:8px;align-items:center;max-width:92%}
-.toast.on{transform:translateX(-50%) translateY(0)}
+.toast.on{transform:translateX(-50%) translateY(0);visibility:visible;transition:transform .35s}
+.toast{visibility:hidden;transition:transform .35s,visibility 0s .35s;transform:translateX(-50%) translateY(calc(-100% - env(safe-area-inset-top) - 60px))!important}.toast.on{transform:translateX(-50%) translateY(0)!important}
 .badges{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .badge{background:rgba(255,255,255,.07);border-radius:14px;padding:8px 4px;text-align:center;font-size:.66rem;opacity:.45}
 .badge.on{opacity:1;background:rgba(245,184,46,.18)}
@@ -237,11 +238,11 @@ body.sans-scroll{overflow:hidden}
 video::-webkit-media-controls,video::-webkit-media-controls-start-playback-button,video::-webkit-media-controls-overlay-play-button{display:none!important;-webkit-appearance:none;opacity:0}
 
 /* ===== salon immersif ===== */
-.salon{position:relative;width:100vw;margin:calc(-1*(env(safe-area-inset-top) + 10px)) 0 0 calc(50% - 50vw);height:calc(70vh + env(safe-area-inset-top));min-height:440px;max-height:780px;overflow:hidden;touch-action:pan-y;perspective:900px;-webkit-mask-image:linear-gradient(180deg,#000 90%,transparent);mask-image:linear-gradient(180deg,#000 90%,transparent);-webkit-user-select:none;user-select:none}
+.salon{position:relative;width:100vw;margin:calc(-1*(env(safe-area-inset-top) + 10px)) 0 0 calc(50% - 50vw);height:calc(70vh + env(safe-area-inset-top));min-height:440px;max-height:780px;overflow:hidden;touch-action:none;perspective:900px;-webkit-mask-image:linear-gradient(180deg,#000 90%,transparent);mask-image:linear-gradient(180deg,#000 90%,transparent);-webkit-user-select:none;user-select:none}
 .salon .cam,.salon .tilt{position:absolute;left:0;top:0;will-change:transform;transform-style:preserve-3d}
 .salon .piece{position:relative}
 .salon .piece video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
-.salon::before{content:"";position:absolute;left:0;right:0;top:0;height:30%;background:linear-gradient(180deg,rgba(17,15,61,.75),rgba(17,15,61,0));z-index:5;pointer-events:none}
+.salon::before{content:"";position:absolute;left:0;right:0;top:0;height:calc(env(safe-area-inset-top) + 90px);background:linear-gradient(180deg,rgba(17,15,61,.55),rgba(17,15,61,0));z-index:5;pointer-events:none}
 .salon .fg{position:absolute;inset:-60px;z-index:4;pointer-events:none}
 .salon .fg i{position:absolute;border-radius:50%;background:radial-gradient(circle,rgba(255,236,170,.9),rgba(255,214,107,0) 70%);animation:pouss 7s ease-in-out infinite}
 @keyframes pouss{0%,100%{opacity:.15;transform:translateY(0)}50%{opacity:.85;transform:translateY(-26px)}}
@@ -538,7 +539,7 @@ function salonHTML(){
  for(var i=0;i<16;i++){var r=10+Math.random()*26;fg+='<i style="left:'+(Math.random()*100).toFixed(1)+'%;top:'+(Math.random()*100).toFixed(1)+'%;width:'+r.toFixed(0)+'px;height:'+r.toFixed(0)+'px;animation-delay:'+(-Math.random()*7).toFixed(1)+'s"></i>'}
  return '<section class="salon" id="salon"><div class="cam" id="cam"><div class="tilt" id="tilt"><div class="piece" id="piece"><video autoplay muted loop playsinline preload="auto" poster="decor/chambre.jpg?v=hd"><source src="decor/chambre.mp4?v=hd" type="video/mp4"></video><div id="lieux"></div></div></div></div><div class="fg" id="fg">'+fg+'</div>'+
  '<div class="hero-haut"><img class="logo" src="icons/jeu-180.png" alt=""><div class="hero-t"><small>'+salut+' Olivia</small><b>Chimie pharma</b></div>'+'<div class="btns-col"><button class="rond-btn" id="son" aria-label="Son">'+ic(S.son===false?'mute':'vol')+'</button><button class="rond-btn" id="lecture" aria-label="Lecture ou pause de l\'animation">'+ic(S.pause?'play':'pause')+'</button></div>'+'</div>'+
- '<div class="salon-bas"><div class="astuce" id="astuce"><span>'+ic('eye')+' Glisse pour regarder, pince pour voir toute la pièce</span></div><button class="rond-btn" id="gyro" aria-label="Bouger avec le téléphone" style="display:none">'+ic('move')+'</button><button class="rond-btn" id="recentrer" aria-label="Revenir au chapitre en cours">'+ic('target')+'</button></div></section>'}
+ '<div class="salon-bas"><div class="astuce" id="astuce"><span>'+ic('eye')+' Glisse dans tous les sens, pince pour voir toute la pièce</span></div><button class="rond-btn" id="gyro" aria-label="Bouger avec le téléphone" style="display:none">'+ic('move')+'</button><button class="rond-btn" id="recentrer" aria-label="Revenir au chapitre en cours">'+ic('target')+'</button></div></section>'}
 function salon(){
  var el=$('#salon'); if(!el)return; if(SAL&&SAL.stop)SAL.stop();
  var cam=$('#cam'), tilt=$('#tilt'), piece=$('#piece'), fgl=$('#fg'), vw=el.clientWidth, vh=el.clientHeight;
@@ -568,7 +569,7 @@ function salon(){
   var dt=Math.min(64,t-(boucle.l||t));boucle.l=t;var k=1-Math.pow(.9,dt/16.7); cx+=(tx-cx)*k; cy+=(ty-cy)*k;   // lissage : la scène suit l'inclinaison en douceur, sans à-coups
   tilt.style.transform='translate3d('+cx.toFixed(2)+'px,'+cy.toFixed(2)+'px,0)';
   fgl.style.transform='translate3d('+(cx*2.4).toFixed(2)+'px,'+(cy*2.4).toFixed(2)+'px,0)';requestAnimationFrame(boucle)})(t0);
- var drag=null, bouge=false, vel=0, pinch=null, tapT=0, tapP=null;
+ var drag=null, bouge=false, vel=0, velY=0, pinch=null, tapT=0, tapP=null;
  // pincer à deux doigts : zoom autour du point entre les doigts
  function ecart(t){return Math.sqrt(Math.pow(t[0].clientX-t[1].clientX,2)+Math.pow(t[0].clientY-t[1].clientY,2))}
  function milieu(t){var r=el.getBoundingClientRect();return [(t[0].clientX+t[1].clientX)/2-r.left,(t[0].clientY+t[1].clientY)/2-r.top]}
@@ -585,10 +586,13 @@ function salon(){
  // ordinateur : double-clic et pincement du pavé tactile (ctrl + molette)
  el.addEventListener('dblclick',function(e){if(Date.now()-dernierToucher<1000||e.target.closest('.hero-haut,.salon-bas,.borne'))return;var r=el.getBoundingClientRect();zoomVers(Z<.95?1:ZMIN,e.clientX-r.left,e.clientY-r.top,true)});
  el.addEventListener('wheel',function(e){if(!e.ctrlKey)return;e.preventDefault();var r=el.getBoundingClientRect();zoomVers(Z*Math.exp(-e.deltaY*.01),e.clientX-r.left,e.clientY-r.top,false)},{passive:false});
- el.onpointerdown=function(e){if(!e.isPrimary||pinch||e.target.closest('.hero-haut,.salon-bas'))return;drag={x:e.clientX,cx:camX,t:e.timeStamp,lx:e.clientX};bouge=false;vel=0};
- el.onpointermove=function(e){if(!drag)return;var d=e.clientX-drag.x;if(!bouge&&Math.abs(d)>7){bouge=true;$('#astuce').style.opacity=0}
-  if(bouge&&!pinch){camX=drag.cx+d;caler();poserCam(false);var dt=Math.max(1,e.timeStamp-drag.t);vel=(e.clientX-drag.lx)/dt;drag.t=e.timeStamp;drag.lx=e.clientX}};
- el.onpointerup=el.onpointercancel=function(){if(!drag)return;drag=null;if(bouge){var v=vel*16;(function iner(){v*=.92;if(Math.abs(v)<.4)return;camX=camX+v;caler();poserCam(false);requestAnimationFrame(iner)})()}};
+ el.onpointerdown=function(e){if(!e.isPrimary||pinch||e.target.closest('.hero-haut,.salon-bas'))return;drag={x:e.clientX,y:e.clientY,cx:camX,cy:camY,t:e.timeStamp,lx:e.clientX,ly:e.clientY,page:0};bouge=false;vel=0;velY=0};
+ el.onpointermove=function(e){if(!drag)return;var d=e.clientX-drag.x,dv=e.clientY-drag.y;if(!bouge&&(Math.abs(d)>7||Math.abs(dv)>7)){bouge=true;$('#astuce').style.opacity=0}
+  if(bouge&&!pinch){camX=drag.cx+d;var voulu=drag.cy+dv;camY=voulu;caler();
+   // au bord haut ou bas de la pièce, le reste du geste fait défiler la page
+   var reste=voulu-camY-drag.page;if(Math.abs(reste)>.5){window.scrollBy(0,-reste);drag.page+=reste}
+   poserCam(false);var dt=Math.max(1,e.timeStamp-drag.t);vel=(e.clientX-drag.lx)/dt;velY=(e.clientY-drag.ly)/dt;drag.t=e.timeStamp;drag.lx=e.clientX;drag.ly=e.clientY}};
+ el.onpointerup=el.onpointercancel=function(){if(!drag)return;drag=null;if(bouge){var v=vel*16,w=velY*16;(function iner(){v*=.92;w*=.92;if(Math.abs(v)<.4&&Math.abs(w)<.4)return;camX+=v;camY+=w;caler();poserCam(false);requestAnimationFrame(iner)})()}};
  el.addEventListener('click',function(e){if(bouge){e.stopPropagation();e.preventDefault();bouge=false}},true);
  // gyroscope (iPhone : il faut l'autoriser une fois par un toucher)
  function orient(e){if(e.gamma==null||e.beta==null)return;var g=e.gamma,b=e.beta,o=(screen.orientation&&screen.orientation.angle)||window.orientation||0;
