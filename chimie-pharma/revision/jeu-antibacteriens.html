@@ -227,6 +227,11 @@ body.sans-scroll{overflow:hidden}
 @keyframes tourne{to{transform:rotate(360deg)}}
 @keyframes flotte{50%{transform:translateY(-8px) scale(1.04)}}
 .confetti{z-index:31}
+.salon .cam{transform-origin:0 0}
+.salon .borne{transform:translate(-50%,-100%) scale(var(--iz,1));transform-origin:50% 100%}
+.salon.loin .borne .b-t{display:none}
+.salon.loin .borne::after{height:8px}
+
 .hero-haut{align-items:flex-start}.hero-haut .logo,.hero-haut .hero-t{margin-top:0}
 .btns-col{display:flex;flex-direction:column;gap:8px}
 video::-webkit-media-controls,video::-webkit-media-controls-start-playback-button,video::-webkit-media-controls-overlay-play-button{display:none!important;-webkit-appearance:none;opacity:0}
@@ -533,7 +538,7 @@ function salonHTML(){
  for(var i=0;i<16;i++){var r=10+Math.random()*26;fg+='<i style="left:'+(Math.random()*100).toFixed(1)+'%;top:'+(Math.random()*100).toFixed(1)+'%;width:'+r.toFixed(0)+'px;height:'+r.toFixed(0)+'px;animation-delay:'+(-Math.random()*7).toFixed(1)+'s"></i>'}
  return '<section class="salon" id="salon"><div class="cam" id="cam"><div class="tilt" id="tilt"><div class="piece" id="piece"><video autoplay muted loop playsinline preload="auto" poster="decor/chambre.jpg"><source src="decor/chambre.mp4" type="video/mp4"></video><div id="lieux"></div></div></div></div><div class="fg" id="fg">'+fg+'</div>'+
  '<div class="hero-haut"><img class="logo" src="icons/jeu-180.png" alt=""><div class="hero-t"><small>'+salut+' Olivia</small><b>Chimie pharma</b></div>'+'<div class="btns-col"><button class="rond-btn" id="son" aria-label="Son">'+ic(S.son===false?'mute':'vol')+'</button><button class="rond-btn" id="lecture" aria-label="Lecture ou pause de l\'animation">'+ic(S.pause?'play':'pause')+'</button></div>'+'</div>'+
- '<div class="salon-bas"><div class="astuce" id="astuce"><span>'+ic('eye')+' Glisse pour regarder autour</span></div><button class="rond-btn" id="gyro" aria-label="Bouger avec le téléphone" style="display:none">'+ic('move')+'</button><button class="rond-btn" id="recentrer" aria-label="Revenir au chapitre en cours">'+ic('target')+'</button></div></section>'}
+ '<div class="salon-bas"><div class="astuce" id="astuce"><span>'+ic('eye')+' Glisse pour regarder, pince pour voir toute la pièce</span></div><button class="rond-btn" id="gyro" aria-label="Bouger avec le téléphone" style="display:none">'+ic('move')+'</button><button class="rond-btn" id="recentrer" aria-label="Revenir au chapitre en cours">'+ic('target')+'</button></div></section>'}
 function salon(){
  var el=$('#salon'); if(!el)return; if(SAL&&SAL.stop)SAL.stop();
  var cam=$('#cam'), tilt=$('#tilt'), piece=$('#piece'), fgl=$('#fg'), vw=el.clientWidth, vh=el.clientHeight;
@@ -548,10 +553,14 @@ function salon(){
  $('#lieux').innerHTML=h;
  var pos=P(dep);
  // caméra : panoramique au doigt + inertie ; le gyroscope et une légère dérive donnent la profondeur
- var camX=0, camY=0, minX=vw-PW, minY=vh-PH, gx=0, gy=0, cx=0, cy=0, g0=null, b0=null, gyroOn=false;
+ var camX=0, camY=0, Z=1, ZMIN=Math.min(1,vw/PW), ZMAX=1.8, gx=0, gy=0, cx=0, cy=0, g0=null, b0=null, gyroOn=false;
  function cl(v,a,b){return Math.max(a,Math.min(b,v))}
- function poserCam(anim){cam.style.transition=anim?'transform .9s cubic-bezier(.3,.8,.3,1)':'none';cam.style.transform='translate3d('+camX.toFixed(1)+'px,'+camY.toFixed(1)+'px,0)'}
- function viser(x,y,anim){camX=cl(vw/2-x,minX,0);camY=cl(vh*.6-y,minY,0);poserCam(anim)}
+ // zoom : Z=1 vue normale ; ZMIN = toute la pièce visible en largeur (taille d'origine de l'image)
+ function caler(){var w=PW*Z,h=PH*Z;camX=w<=vw?(vw-w)/2:cl(camX,vw-w,0);camY=h<=vh?(vh-h)/2:cl(camY,vh-h,0)}
+ function poserCam(anim){cam.style.transition=anim?'transform .9s cubic-bezier(.3,.8,.3,1)':'none';cam.style.transform='translate3d('+camX.toFixed(1)+'px,'+camY.toFixed(1)+'px,0) scale('+Z.toFixed(4)+')';
+  $('#lieux').style.setProperty('--iz',Math.min(1/Z,2.3).toFixed(3));el.classList.toggle('loin',Z<.6)}
+ function viser(x,y,anim,z){if(z!=null)Z=z;camX=vw/2-x*Z;camY=vh*.6-y*Z;caler();poserCam(anim)}
+ function zoomVers(z,px,py,anim){var wx=(px-camX)/Z,wy=(py-camY)/Z;Z=cl(z,ZMIN,ZMAX);camX=px-wx*Z;camY=py-wy*Z;caler();poserCam(anim)}
  viser(pos[0],pos[1],false);
  var t0=performance.now();
  (function boucle(t){if(!vivant||!document.body.contains(el))return;
@@ -559,11 +568,27 @@ function salon(){
   var dt=Math.min(64,t-(boucle.l||t));boucle.l=t;var k=1-Math.pow(.9,dt/16.7); cx+=(tx-cx)*k; cy+=(ty-cy)*k;   // lissage : la scène suit l'inclinaison en douceur, sans à-coups
   tilt.style.transform='translate3d('+cx.toFixed(2)+'px,'+cy.toFixed(2)+'px,0)';
   fgl.style.transform='translate3d('+(cx*2.4).toFixed(2)+'px,'+(cy*2.4).toFixed(2)+'px,0)';requestAnimationFrame(boucle)})(t0);
- var drag=null, bouge=false, vel=0;
- el.onpointerdown=function(e){if(e.target.closest('.hero-haut,.salon-bas'))return;drag={x:e.clientX,cx:camX,t:e.timeStamp,lx:e.clientX};bouge=false;vel=0};
+ var drag=null, bouge=false, vel=0, pinch=null, tapT=0, tapP=null;
+ // pincer à deux doigts : zoom autour du point entre les doigts
+ function ecart(t){return Math.sqrt(Math.pow(t[0].clientX-t[1].clientX,2)+Math.pow(t[0].clientY-t[1].clientY,2))}
+ function milieu(t){var r=el.getBoundingClientRect();return [(t[0].clientX+t[1].clientX)/2-r.left,(t[0].clientY+t[1].clientY)/2-r.top]}
+ var posT=null;
+ el.addEventListener('touchstart',function(e){if(e.touches.length===1){var r0=el.getBoundingClientRect();posT=[e.touches[0].clientX-r0.left,e.touches[0].clientY-r0.top]}if(e.touches.length===2&&!e.target.closest('.hero-haut,.salon-bas')){e.preventDefault();drag=null;bouge=true;var m=milieu(e.touches);pinch={d:ecart(e.touches),z:Z,wx:(m[0]-camX)/Z,wy:(m[1]-camY)/Z};$('#astuce').style.opacity=0}},{passive:false});
+ el.addEventListener('touchmove',function(e){if(pinch&&e.touches.length===2){e.preventDefault();var m=milieu(e.touches);Z=cl(pinch.z*ecart(e.touches)/pinch.d,ZMIN,ZMAX);camX=m[0]-pinch.wx*Z;camY=m[1]-pinch.wy*Z;caler();poserCam(false)}},{passive:false});
+ var dernierToucher=0;
+ el.addEventListener('touchend',function(e){dernierToucher=Date.now();
+  if(pinch){if(e.touches.length<2){pinch=null;setTimeout(function(){bouge=false},80)}return}
+  if(e.touches.length||bouge||e.target.closest('.hero-haut,.salon-bas,.borne'))return;
+  var t=e.changedTouches&&e.changedTouches[0],r=el.getBoundingClientRect(),p=t?[t.clientX-r.left,t.clientY-r.top]:posT,now=Date.now();if(!p)return;
+  if(now-tapT<320&&tapP&&Math.abs(p[0]-tapP[0])<40&&Math.abs(p[1]-tapP[1])<40){e.preventDefault();tapT=0;zoomVers(Z<.95?1:ZMIN,p[0],p[1],true);son('clic')}else{tapT=now;tapP=p}});
+ el.addEventListener('gesturestart',function(e){e.preventDefault()});
+ // ordinateur : double-clic et pincement du pavé tactile (ctrl + molette)
+ el.addEventListener('dblclick',function(e){if(Date.now()-dernierToucher<1000||e.target.closest('.hero-haut,.salon-bas,.borne'))return;var r=el.getBoundingClientRect();zoomVers(Z<.95?1:ZMIN,e.clientX-r.left,e.clientY-r.top,true)});
+ el.addEventListener('wheel',function(e){if(!e.ctrlKey)return;e.preventDefault();var r=el.getBoundingClientRect();zoomVers(Z*Math.exp(-e.deltaY*.01),e.clientX-r.left,e.clientY-r.top,false)},{passive:false});
+ el.onpointerdown=function(e){if(!e.isPrimary||pinch||e.target.closest('.hero-haut,.salon-bas'))return;drag={x:e.clientX,cx:camX,t:e.timeStamp,lx:e.clientX};bouge=false;vel=0};
  el.onpointermove=function(e){if(!drag)return;var d=e.clientX-drag.x;if(!bouge&&Math.abs(d)>7){bouge=true;$('#astuce').style.opacity=0}
-  if(bouge){camX=cl(drag.cx+d,minX,0);poserCam(false);var dt=Math.max(1,e.timeStamp-drag.t);vel=(e.clientX-drag.lx)/dt;drag.t=e.timeStamp;drag.lx=e.clientX}};
- el.onpointerup=el.onpointercancel=function(){if(!drag)return;drag=null;if(bouge){var v=vel*16;(function iner(){v*=.92;if(Math.abs(v)<.4)return;camX=cl(camX+v,minX,0);poserCam(false);requestAnimationFrame(iner)})()}};
+  if(bouge&&!pinch){camX=drag.cx+d;caler();poserCam(false);var dt=Math.max(1,e.timeStamp-drag.t);vel=(e.clientX-drag.lx)/dt;drag.t=e.timeStamp;drag.lx=e.clientX}};
+ el.onpointerup=el.onpointercancel=function(){if(!drag)return;drag=null;if(bouge){var v=vel*16;(function iner(){v*=.92;if(Math.abs(v)<.4)return;camX=camX+v;caler();poserCam(false);requestAnimationFrame(iner)})()}};
  el.addEventListener('click',function(e){if(bouge){e.stopPropagation();e.preventDefault();bouge=false}},true);
  // gyroscope (iPhone : il faut l'autoriser une fois par un toucher)
  function orient(e){if(e.gamma==null||e.beta==null)return;var g=e.gamma,b=e.beta,o=(screen.orientation&&screen.orientation.angle)||window.orientation||0;
@@ -577,12 +602,12 @@ function salon(){
   if(typeof DeviceOrientationEvent.requestPermission==='function'){gb.style.display='';gb.onclick=function(){DeviceOrientationEvent.requestPermission().then(function(r){if(r==='granted'){window.addEventListener('deviceorientation',orient);gb.style.display='none';toast(ic('move')+' Incline ton téléphone pour regarder la pièce')}}).catch(function(){})}}
   else window.addEventListener('deviceorientation',orient);
  }
- $('#recentrer').onclick=function(){son('clic');viser(pos[0],pos[1],true)};
+ $('#recentrer').onclick=function(){son('clic');viser(pos[0],pos[1],true,1)};
  setTimeout(function(){var a=$('#astuce');if(a)a.style.opacity=0},5000);
  function bulle(txt){var o=$('.bulle2',piece);if(o)o.remove();var b=document.createElement('div');b.className='bulle2';b.style.left=pos[0]+'px';b.style.top=(pos[1]-PH*.19*prof(pos[1])-62)+'px';b.textContent=txt;piece.appendChild(b);setTimeout(function(){b.remove()},2400)}
  $$('.borne').forEach(function(b){b.onclick=function(){var ci=+b.dataset.c;if(!chapOuvert(ci)){son('mal');toast(ic('lock')+' Bats le boss de « '+CHAPS[ci-1].court+' » pour ouvrir ce lieu');return}son('clic');CI=ci;VUE='chap';accueil();window.scrollTo(0,0)}});
  // nouveau chapitre ouvert : la gélule traverse la pièce jusqu'au lieu suivant
- if(ca>dep){window.scrollTo(0,0);setTimeout(function(){var p=P(ca);pos=p;viser(p[0],p[1],true);setTimeout(function(){if(!vivant)return;S.pionAt=ca;save();bulle('Nouveau lieu ouvert : '+SPOTS[ca][2]);son('fete');confetti()},950)},900)}
+ if(ca>dep){window.scrollTo(0,0);setTimeout(function(){var p=P(ca);pos=p;viser(p[0],p[1],true,1);setTimeout(function(){if(!vivant)return;S.pionAt=ca;save();bulle('Nouveau lieu ouvert : '+SPOTS[ca][2]);son('fete');confetti()},950)},900)}
  SAL={stop:function(){vivant=false;window.removeEventListener('deviceorientation',orient)}};
 }
 var RZ; window.addEventListener('resize',function(){clearTimeout(RZ);RZ=setTimeout(function(){if(VUE==='monde'&&$('#salon')&&!$('#jeu').classList.contains('on'))accueil()},250)});
