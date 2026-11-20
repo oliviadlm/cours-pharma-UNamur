@@ -20,7 +20,7 @@ def rep(src, old, new, n=1):
 head = rep(head, '<title>Chimie pharma — le jeu</title>', '<title>Méthodes de calculs — le jeu</title>')
 head = rep(head, 'href="jeu-chipha.webmanifest"', 'href="jeu-calculs.webmanifest"')
 head = rep(head, 'content="Chipha jeu"', 'content="Calculs jeu"')
-head = head.replace('decor/chambre.jpg?v=hd', 'decor/monde.jpg?v=1')
+head = head.replace('decor/chambre.jpg?v=hd', 'decor/monde.jpg?v=1').replace('content="#110f3d"', 'content="#1e1613"')
 CSS = r'''
 /* ===== MPHAB287 : calculs ===== */
 .ordo{white-space:pre-wrap;font:600 15px/1.45 ui-monospace,Menlo,Consolas,monospace;background:#fbf7ec;border:1px solid #eadfc4;border-left:4px solid #c9a24a;color:#3a2f12;border-radius:12px;padding:10px 12px;margin:6px 0 10px;text-align:left}
@@ -184,14 +184,18 @@ e = rep(e, "alt=\"Structure correcte\"", "alt=\"Correction\"")
 # monde : lieux des chapitres (à replacer sur le décor définitif)
 e = rep(e, "var SPOTS=[[24,84,'le bureau'],[33,72,'la télé'],[45,66,'la grande plante'],[58,66,'la baie vitrée'],[72,66,'le balcon'],[84,72,'le coin lumineux'],[76,85,'le coussin'],[58,90,'le pied du matelas'],[47,91,'le tapis'],[12,88,'le coin douillet']];",
         "var SPOTS=[[30,78,'la balance'],[62,74,'le comptoir'],[82,80,'l\\'étagère'],[46,88,'le mortier'],[14,84,'la vitrine'],[72,90,'le registre']];")
-e = rep(e, "var VERSION='1795183781';", "var VERSION='" + str(int(time.time())) + "';")
+e = re.sub(r"var VERSION='\d+';", "var VERSION='" + str(int(time.time())) + "';", e)
 e = e.replace("Bats le boss d\\'un chapitre pour ouvrir le lieu suivant du salon.", "Bats le boss d\\'un chapitre pour ouvrir le lieu suivant.")
 e = e.replace('<b>Retour au salon</b>', '<b>Retour au monde</b>')
 e = e.replace("<div class=\"sect\">Le salon · ", "<div class=\"sect\">Le monde · ")
 e = e.replace("le salon t\\'emmène jusqu\\'à ce nouveau lieu.", "la caméra t\\'emmène jusqu\\'à ce nouveau lieu.")
 
 e = rep(e, "var G=null;", "var G=null; window.__G=function(){return G}; window.__lancerNiveau=function(ci,n){lancerNiveau(ci,n)}; window.__S=function(){return S};")
-e = rep(e, "var RZ; window.addEventListener('resize',function(){clearTimeout(RZ);RZ=setTimeout(", "var RZT; window.addEventListener('resize',function(){clearTimeout(RZT);RZT=setTimeout(")
+e = e.replace("var RZ; window.addEventListener('resize',function(){clearTimeout(RZ);RZ=setTimeout(", "var RZT; window.addEventListener('resize',function(){clearTimeout(RZT);RZT=setTimeout(")
+sys.path.insert(0, "/home/claude/jeu287"); import monde287
+head = monde287.patch_head(head)
+e = monde287.patch_engine(e, rep)
+e = monde287.patch_ordo(e, rep)
 js_th = 'window.TH=[' + TH[0] + ',\n' + TH[1] + '];'
 html = head + '<script>window.DATA=' + json.dumps(DATA, ensure_ascii=False) + ';\n' + js_th + '</script>\n<script>' + e + '</script></body></html>'
 open(OUT, 'w').write(html)
