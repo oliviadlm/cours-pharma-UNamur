@@ -515,19 +515,12 @@ function accueil(){
 // [x %, y % (pieds sur le sol), nom du lieu]
 var SPOTS=[[24,84,'le bureau'],[33,72,'la télé'],[45,66,'la grande plante'],[58,66,'la baie vitrée'],[72,66,'le balcon'],[84,72,'le coin lumineux'],[76,85,'le coussin'],[58,90,'le pied du matelas'],[47,91,'le tapis'],[12,88,'le coin douillet']];
 var IW=2048, IH=1080, SAL=null;
-function perso(){return '<svg class="gel" viewBox="0 0 100 124" aria-hidden="true"><ellipse class="pied p1" cx="38" cy="115" rx="9.5" ry="6"/><ellipse class="pied p2" cx="62" cy="115" rx="9.5" ry="6"/><g class="corps">'+
- '<path class="bras b1" d="M22 66 q-11 5 -13 15"/><path class="bras b2" d="M78 66 q11 5 13 15"/>'+
- '<path d="M20 58V40a30 30 0 0 1 60 0v18z" fill="#ff7aa2"/><path d="M20 58v22a30 30 0 0 0 60 0V58z" fill="#fff4ea"/>'+
- '<path d="M20 80V40a30 30 0 0 1 60 0v40a30 30 0 0 1-60 0z" fill="none" stroke="#2b1d5c" stroke-width="3.6"/><path d="M20 58h60" stroke="#2b1d5c" stroke-width="3"/>'+
- '<path d="M31 27q4-8 12-11" stroke="#fff" stroke-width="4.5" stroke-linecap="round" fill="none" opacity=".75"/><path d="M68 92q2 6 -2 10" stroke="#e9dccf" stroke-width="4" stroke-linecap="round" fill="none"/>'+
- '<g class="yeux"><ellipse cx="39" cy="46" rx="6" ry="7.5" fill="#2b1d5c"/><ellipse cx="61" cy="46" rx="6" ry="7.5" fill="#2b1d5c"/><circle cx="41" cy="43" r="2.4" fill="#fff"/><circle cx="63" cy="43" r="2.4" fill="#fff"/></g>'+
- '<ellipse cx="29" cy="54" rx="5" ry="3" fill="#ff3f7a" opacity=".5"/><ellipse cx="71" cy="54" rx="5" ry="3" fill="#ff3f7a" opacity=".5"/><path d="M45 53q5 5 10 0" stroke="#2b1d5c" stroke-width="2.6" fill="none" stroke-linecap="round"/></g></svg>'}
 function salonHTML(){
  var hr=new Date().getHours(), salut=(hr>=18||hr<5)?'Bonsoir':'Bonjour', fg='';
  for(var i=0;i<16;i++){var r=10+Math.random()*26;fg+='<i style="left:'+(Math.random()*100).toFixed(1)+'%;top:'+(Math.random()*100).toFixed(1)+'%;width:'+r.toFixed(0)+'px;height:'+r.toFixed(0)+'px;animation-delay:'+(-Math.random()*7).toFixed(1)+'s"></i>'}
  return '<section class="salon" id="salon"><div class="cam" id="cam"><div class="tilt" id="tilt"><div class="piece" id="piece"><video autoplay muted loop playsinline preload="auto" poster="decor/chambre.jpg"><source src="decor/chambre.mp4" type="video/mp4"></video><div id="lieux"></div></div></div></div><div class="fg" id="fg">'+fg+'</div>'+
  '<div class="hero-haut"><img class="logo" src="icons/jeu-180.png" alt=""><div class="hero-t"><small>'+salut+' Olivia</small><b>Chimie pharma</b></div><button class="rond-btn" id="son" aria-label="Son">'+ic(S.son===false?'mute':'vol')+'</button></div>'+
- '<div class="salon-bas"><div class="astuce" id="astuce"><span>'+ic('eye')+' Glisse pour regarder autour</span></div><button class="rond-btn" id="gyro" aria-label="Bouger avec le téléphone" style="display:none">'+ic('move')+'</button><button class="rond-btn" id="recentrer" aria-label="Retrouver ma gélule">'+ic('target')+'</button></div></section>'}
+ '<div class="salon-bas"><div class="astuce" id="astuce"><span>'+ic('eye')+' Glisse pour regarder autour</span></div><button class="rond-btn" id="gyro" aria-label="Bouger avec le téléphone" style="display:none">'+ic('move')+'</button><button class="rond-btn" id="recentrer" aria-label="Revenir au chapitre en cours">'+ic('target')+'</button></div></section>'}
 function salon(){
  var el=$('#salon'); if(!el)return; if(SAL&&SAL.stop)SAL.stop();
  var cam=$('#cam'), tilt=$('#tilt'), piece=$('#piece'), fgl=$('#fg'), vw=el.clientWidth, vh=el.clientHeight;
@@ -539,16 +532,14 @@ function salon(){
  CHAPS.forEach(function(c,ci){var p=P(ci),ouv=chapOuvert(ci),k=prof(p[1]);
   h+='<div class="sol'+(ouv?' on':'')+(ci===ca?' ici':'')+'" style="left:'+p[0].toFixed(0)+'px;top:'+p[1].toFixed(0)+'px;transform:translate(-50%,-50%) scale('+k.toFixed(2)+')"></div>';
   h+='<button class="borne'+(ouv?'':' verrou')+(ci===ca?' ici':'')+'" data-c="'+ci+'" style="left:'+p[0].toFixed(0)+'px;top:'+(p[1]-PH*.19*k).toFixed(0)+'px"><span class="b-ic">'+(ouv?chapIc(ci):ic('lock'))+'<i>'+(ci+1)+'</i>'+(chapFini(ci)?'<em>'+ic('check')+'</em>':'')+'</span><span class="b-t">'+esc(ouv?c.court:'Chapitre '+(ci+1))+'</span></button>'});
- h+='<div class="perso" id="perso">'+perso()+'</div>';
  $('#lieux').innerHTML=h;
- var pe=$('#perso'), pos=P(dep);
- function placer(x,y){var k=prof(y);pos=[x,y];pe.style.left=x.toFixed(1)+'px';pe.style.top=y.toFixed(1)+'px';pe.style.width=(PH*.12*k).toFixed(1)+'px';pe.style.zIndex=y>PH*.8?4:2}
+ var pos=P(dep);
  // caméra : panoramique au doigt + inertie ; le gyroscope et une légère dérive donnent la profondeur
  var camX=0, camY=0, minX=vw-PW, minY=vh-PH, gx=0, gy=0, gyroOn=false;
  function cl(v,a,b){return Math.max(a,Math.min(b,v))}
  function poserCam(anim){cam.style.transition=anim?'transform .9s cubic-bezier(.3,.8,.3,1)':'none';cam.style.transform='translate3d('+camX.toFixed(1)+'px,'+camY.toFixed(1)+'px,0)'}
  function viser(x,y,anim){camX=cl(vw/2-x,minX,0);camY=cl(vh*.6-y,minY,0);poserCam(anim)}
- placer(pos[0],pos[1]); viser(pos[0],pos[1],false);
+ viser(pos[0],pos[1],false);
  var t0=performance.now();
  (function boucle(t){if(!vivant||!document.body.contains(el))return;var dx=gyroOn?gx:Math.sin((t-t0)/2600)*7, dy=gyroOn?gy:Math.cos((t-t0)/3400)*4;
   tilt.style.transform='translate3d('+dx.toFixed(1)+'px,'+dy.toFixed(1)+'px,0) rotateY('+(-dx*.06).toFixed(2)+'deg) rotateX('+(dy*.05).toFixed(2)+'deg)';
@@ -568,17 +559,10 @@ function salon(){
  }
  $('#recentrer').onclick=function(){son('clic');viser(pos[0],pos[1],true)};
  setTimeout(function(){var a=$('#astuce');if(a)a.style.opacity=0},5000);
- pe.onclick=function(){pe.classList.remove('hop');void pe.offsetWidth;pe.classList.add('hop');son('clic');bulle(pick(['Allez, on joue ?','Encore un niveau ?','Je t\'attends ici','On révise ensemble ?','Prête pour le boss ?'],1)[0])};
- function bulle(txt){var o=$('.bulle2',piece);if(o)o.remove();var b=document.createElement('div');b.className='bulle2';b.style.left=pos[0]+'px';b.style.top=(pos[1]-PH*.12*prof(pos[1])*1.3-8)+'px';b.textContent=txt;piece.appendChild(b);setTimeout(function(){b.remove()},2400)}
+ function bulle(txt){var o=$('.bulle2',piece);if(o)o.remove();var b=document.createElement('div');b.className='bulle2';b.style.left=pos[0]+'px';b.style.top=(pos[1]-PH*.19*prof(pos[1])-62)+'px';b.textContent=txt;piece.appendChild(b);setTimeout(function(){b.remove()},2400)}
  $$('.borne').forEach(function(b){b.onclick=function(){var ci=+b.dataset.c;if(!chapOuvert(ci)){son('mal');toast(ic('lock')+' Bats le boss de « '+CHAPS[ci-1].court+' » pour ouvrir ce lieu');return}son('clic');CI=ci;VUE='chap';accueil();window.scrollTo(0,0)}});
  // nouveau chapitre ouvert : la gélule traverse la pièce jusqu'au lieu suivant
- if(ca>dep){window.scrollTo(0,0);setTimeout(function(){bulle('Un nouveau lieu est ouvert !')},500);setTimeout(function(){marcher(dep)},1600)}
- function marcher(i){
-  if(!vivant)return; if(i>=ca){pe.classList.remove('marche');S.pionAt=ca;save();bulle('Bienvenue : '+SPOTS[ca][2]);son('fete');confetti();return}
-  pe.classList.add('marche'); var p0=P(i),p1=P(i+1),dist=Math.sqrt(Math.pow(p1[0]-p0[0],2)+Math.pow(p1[1]-p0[1],2)),dur=Math.max(1400,dist*7),st=null;
-  pe.classList.toggle('gauche',p1[0]<p0[0]);
-  function f(t){if(!vivant)return;if(!st)st=t;var k=Math.min(1,(t-st)/dur),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2,x=p0[0]+(p1[0]-p0[0])*e,y=p0[1]+(p1[1]-p0[1])*e;placer(x,y);viser(x,y,false);if(k<1)requestAnimationFrame(f);else marcher(i+1)}
-  requestAnimationFrame(f)}
+ if(ca>dep){window.scrollTo(0,0);setTimeout(function(){var p=P(ca);pos=p;viser(p[0],p[1],true);setTimeout(function(){if(!vivant)return;S.pionAt=ca;save();bulle('Nouveau lieu ouvert : '+SPOTS[ca][2]);son('fete');confetti()},950)},900)}
  SAL={stop:function(){vivant=false;window.removeEventListener('deviceorientation',orient)}};
 }
 var RZ; window.addEventListener('resize',function(){clearTimeout(RZ);RZ=setTimeout(function(){if(VUE==='monde'&&$('#salon')&&!$('#jeu').classList.contains('on'))accueil()},250)});
@@ -651,7 +635,7 @@ var MODES={
 };
 function hud(){var n=G.items.length,c='';
  if(G.coeurs<20){for(var k=0;k<3;k++)c+='<span class="'+(k<G.coeurs?'':'vide')+'">'+icf('coeur')+'</span>'}
- return '<div class="hud"><button class="quit" id="quit">'+ic('x')+'</button><div class="progw"><div class="prog"><i style="width:'+Math.round(100*G.i/n)+'%"></i></div><span class="pionmini" style="left:calc(14px + (100% - 28px) * '+(G.i/n).toFixed(3)+')">'+perso()+'</span></div><div class="coeurs">'+c+'</div></div>'+(G.timer?'<div class="timer" id="tm"></div>':'')+'<div class="combo" id="combo">'+(G.combo>=3?'Combo x'+G.combo+' · bonus':'')+'</div>'}
+ return '<div class="hud"><button class="quit" id="quit">'+ic('x')+'</button><div class="progw"><div class="prog"><i style="width:'+Math.round(100*G.i/n)+'%"></i></div></div><div class="coeurs">'+c+'</div></div>'+(G.timer?'<div class="timer" id="tm"></div>':'')+'<div class="combo" id="combo">'+(G.combo>=3?'Combo x'+G.combo+' · bonus':'')+'</div>'}
 function montrer(){
  var x=G.items[G.i]; if(!x){terminer();return}
  var h=hud()+'<div class="q"><div class="type">'+ic(x.type[0])+' '+esc(x.type[1])+'</div>';
@@ -875,7 +859,7 @@ function terminer(){
   if(!bAvant&&nivOuvert(ci,b))fetes.push({gros:ic('crown'),sur:'Boss débloqué',titre:'Examen blanc : '+CHAPS[ci].court,sous:'Tout le chapitre mélangé, comme le jour J.',bouton:'Je suis prête'});
   if(T==='boss'&&avant<1&&etoiles>=1){badge('boss');badge('chap1');
    fetes.push({gros:ic('shield'),sur:'Chapitre '+(ci+1)+' terminé',titre:CHAPS[ci].court+' : boss vaincu',etoiles:etoiles});
-   if(ci+1<CHAPS.length)fetes.push({gros:'<span style="width:84px;display:block">'+perso()+'</span>',sur:'Nouveau chapitre débloqué',titre:CHAPS[ci+1].court,sous:'Ouvre ton coffre puis retourne au menu : ta gélule va traverser le salon jusqu\'à ce nouveau lieu.',bouton:'Génial',apres:function(){VUE='monde'}});
+   if(ci+1<CHAPS.length)fetes.push({gros:'<span style="width:96px;height:96px;border-radius:24px;background:#fff;display:grid;place-items:center;overflow:hidden">'+chapIc(ci+1).replace('<img ','<img style="width:76px;height:76px;object-fit:contain" ')+'</span>',sur:'Nouveau chapitre débloqué',titre:CHAPS[ci+1].court,sous:'Ouvre ton coffre puis retourne au menu : le salon t\'emmène jusqu\'à ce nouveau lieu.',bouton:'Génial',apres:function(){VUE='monde'}});
    else{badge('monde');fetes.push({gros:ic('trophy'),sur:'Carte terminée',titre:'Tous les chapitres sont battus',sous:'Tu as fait le tour de la chimie pharmaceutique. Garde le rythme avec la révision du jour.'})}}
   if(T==='n'&&etoiles===3&&avant<3)fetes.push({gros:icf('etoile'),sur:'Niveau maîtrisé',titre:Lv[n].t,sous:'Trois étoiles : la guirlande brille un peu plus.',etoiles:3});}
  var rApres=rang().r[1]; if(rApres!==rAvant)fetes.push({gros:ic('trophy'),sur:'Nouveau rang',titre:rApres,sous:'Ta chambre s\'agrandit : continue comme ça.'});
