@@ -516,7 +516,7 @@ function importer(){function appliquer(t){try{t=(t||'').trim();if(t.indexOf('CHI
  if(navigator.clipboard&&navigator.clipboard.readText)navigator.clipboard.readText().then(function(t){if(t&&t.indexOf('CHIPHA1:')===0)appliquer(t);else appliquer(window.prompt('Colle ici le code de progression :',''))},function(){appliquer(window.prompt('Colle ici le code de progression :',''))});else appliquer(window.prompt('Colle ici le code de progression :',''))}
 function haut(){var d=$('#defile');if(d)d.scrollTop=0}
 /* ---------- mise à jour automatique : l'app vérifie s'il existe une version plus récente ---------- */
-var VERSION='1795153928';
+var VERSION='1795181886';
 function verifierVersion(){try{fetch(location.pathname+'?nocache='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():''}).then(function(t){var m=/var VERSION='(\d+)'/.exec(t);if(m&&m[1]!==VERSION&&!G){location.replace(location.pathname+'?v='+m[1]+location.hash)}}).catch(function(){})}catch(e){}}
 setTimeout(verifierVersion,1500);
 document.addEventListener('visibilitychange',function(){if(!document.hidden)verifierVersion()});
@@ -809,6 +809,17 @@ function atelier(x){
  var root=$('#atl'),cv=$('#cv'),c=cv.getContext('2d'),W=0,H=0,dpr=Math.min(window.devicePixelRatio||1,3);
  var S=[],hist=[[]],hi=0,cur=null,sel=[],selDrag=null,atome='O',pointeurs={},panDrag=null,off={x:0,y:0},zm=1,raf=0;
  var TW=[2.2,3.4,5.5]; // épaisseurs
+ // tout l'atelier (nom de la molécule, outils, papier, boutons) tient dans l'écran : rien à faire défiler pendant le dessin
+ function ajuster(){
+  if(!document.body.contains(root))return;
+  if(root.classList.contains('plein')){cv.style.height='';cv.style.minHeight='';taille();return}
+  var d=$('#defile'),q=root.closest('.q'),ref=(q&&q.querySelector('.grand'))||root;
+  if(!d){taille();return}
+  var placer=function(){d.scrollTop=Math.max(0,ref.getBoundingClientRect().top-d.getBoundingClientRect().top+d.scrollTop-8)};
+  var calc=function(){var fb=$('.fondu-bas'),bas=(fb?fb.offsetHeight:26),dessous=root.getBoundingClientRect().bottom-cv.getBoundingClientRect().bottom,
+    padQ=q?parseFloat(getComputedStyle(q).paddingBottom)||0:0,h=Math.round(d.getBoundingClientRect().bottom-cv.getBoundingClientRect().top-dessous-padQ-bas-4);
+   cv.style.height=Math.max(240,Math.min(1000,h))+'px';cv.style.minHeight='240px';cv.style.maxHeight='none'};
+  placer();calc();placer();calc();taille()}
  function taille(){var r=cv.getBoundingClientRect();W=r.width;H=r.height;cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);c.setTransform(dpr,0,0,dpr,0,0);dessiner()}
  function clone(a){return JSON.parse(JSON.stringify(a))}
  function commit(){hist=hist.slice(0,hi+1);hist.push(clone(S));if(hist.length>60)hist.shift();hi=hist.length-1}
@@ -915,7 +926,7 @@ function atelier(x){
   if(x==='refaire'&&hi<hist.length-1){hi++;S=clone(hist[hi]);sel=[]}
   if(x==='vider'&&S.length){S=[];sel=[];off={x:0,y:0};zm=1;commit()}
   if(x==='recadrer'){zm=1;off={x:0,y:0}}
-  if(x==='plein'){root.classList.toggle('plein');document.body.classList.toggle('sans-scroll',root.classList.contains('plein'));setTimeout(taille,30)}
+  if(x==='plein'){root.classList.toggle('plein');document.body.classList.toggle('sans-scroll',root.classList.contains('plein'));setTimeout(ajuster,30)}
   demander()}});
  // le bouton Comparer quitte le plein écran
  var F=$('#atl-f'),note=false;
@@ -937,7 +948,7 @@ function atelier(x){
  cal.addEventListener('wheel',function(e){e.preventDefault();T.s=Math.max(.3,Math.min(4,T.s*(e.deltaY<0?1.08:1/1.08)));appl()},{passive:false});
  appl();
  $$('#atl-note button').forEach(function(b){b.onclick=function(){if(note)return;note=true;auto(x,+b.dataset.v);$$('#atl-note button').forEach(function(z){z.style.opacity=z===b?1:.35});$('#atl-suite').classList.add('on')}});
- $('#atl-suite').onclick=function(){root.classList.remove('plein');document.body.classList.remove('sans-scroll');window.removeEventListener('resize',taille);if(G&&G.coeurs<=0){terminer();return}G.i++;montrer()};
+ $('#atl-suite').onclick=function(){root.classList.remove('plein');document.body.classList.remove('sans-scroll');window.removeEventListener('resize',ajuster);if(G&&G.coeurs<=0){terminer();return}G.i++;montrer()};
  // deux doigts : sur une sélection (outil Déplacer) -> déplacer et agrandir la sélection ; sinon -> déplacer le papier et zoomer
  var deux=null;
  function tinfo(e){var r=cv.getBoundingClientRect(),a=e.touches[0],b=e.touches[1];return {m:[(a.clientX+b.clientX)/2-r.left,(a.clientY+b.clientY)/2-r.top],d:Math.max(10,Math.sqrt(Math.pow(a.clientX-b.clientX,2)+Math.pow(a.clientY-b.clientY,2)))}}
@@ -953,7 +964,7 @@ function atelier(x){
  cv.addEventListener('touchcancel',function(){deux=null},{passive:true});
  // ordinateur : ctrl + molette (pincement du pavé tactile) = zoom du papier
  cv.addEventListener('wheel',function(e){if(!e.ctrlKey)return;e.preventDefault();var r=cv.getBoundingClientRect(),m=[e.clientX-r.left,e.clientY-r.top],w0=[(m[0]-off.x)/zm,(m[1]-off.y)/zm];zm=Math.max(.4,Math.min(4,zm*Math.exp(-e.deltaY*.01)));off.x=m[0]-w0[0]*zm;off.y=m[1]-w0[1]*zm;demander()},{passive:false});
- window.addEventListener('resize',taille);
+ window.addEventListener('resize',ajuster); setTimeout(ajuster,30);
  choisir(ATL.outil);
 }
 
