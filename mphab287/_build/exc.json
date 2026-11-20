@@ -1,0 +1,802 @@
+{
+ "ex": [
+  {
+   "id": "x0",
+   "n": "Eau purifiée",
+   "cat": "Solvant",
+   "d": "différente de l'eau pour préparation injectable",
+   "fam": "liq"
+  },
+  {
+   "id": "x1",
+   "n": "Isopropanol",
+   "cat": "Solvant",
+   "d": "",
+   "fam": "liq"
+  },
+  {
+   "id": "x2",
+   "n": "Éthanol",
+   "cat": "Solvant",
+   "d": "co-solvant ; aussi conservateur en dermatologie",
+   "fam": "liq"
+  },
+  {
+   "id": "x3",
+   "n": "Propylène glycol",
+   "cat": "Solvant",
+   "d": "co-solvant, humectant, plastifiant ; d = 1,04",
+   "fam": "liq"
+  },
+  {
+   "id": "x4",
+   "n": "Glycérine",
+   "cat": "Solvant",
+   "d": "aussi isotonisant, humectant, viscosifiant, conservateur (dermato)",
+   "fam": "liq"
+  },
+  {
+   "id": "x5",
+   "n": "Chlorure de benzalkonium",
+   "cat": "Conservateur",
+   "d": "conservateur de référence des collyres (ammonium quaternaire)",
+   "fam": "liq"
+  },
+  {
+   "id": "x6",
+   "n": "Alcool benzylique",
+   "cat": "Conservateur",
+   "d": "le plus fréquent pour les injectables",
+   "fam": "liq"
+  },
+  {
+   "id": "x7",
+   "n": "Acide sorbique",
+   "cat": "Conservateur",
+   "d": "1er choix en dermatologie",
+   "fam": "liq"
+  },
+  {
+   "id": "x8",
+   "n": "Parabens",
+   "cat": "Conservateur",
+   "d": "PAS pour les injectables ; méthyl-/propylparaben contre les moisissures",
+   "fam": "liq"
+  },
+  {
+   "id": "x9",
+   "n": "Sorbate de potassium",
+   "cat": "Conservateur",
+   "d": "",
+   "fam": "liq"
+  },
+  {
+   "id": "x10",
+   "n": "Chlorocrésol",
+   "cat": "Conservateur",
+   "d": "dérivé phénolique, peu utilisé en collyre car irritant",
+   "fam": "liq"
+  },
+  {
+   "id": "x11",
+   "n": "Acide benzoïque",
+   "cat": "Conservateur",
+   "d": "",
+   "fam": "liq"
+  },
+  {
+   "id": "x12",
+   "n": "Benzoate sodique",
+   "cat": "Conservateur",
+   "d": "",
+   "fam": "liq"
+  },
+  {
+   "id": "x13",
+   "n": "Chlorbutanol",
+   "cat": "Conservateur",
+   "d": "pommades ophtalmiques",
+   "fam": "liq"
+  },
+  {
+   "id": "x14",
+   "n": "Chlorhexidine",
+   "cat": "Conservateur",
+   "d": "collyres : ammonium quaternaire, alternative aux mercuriels",
+   "fam": "liq"
+  },
+  {
+   "id": "x15",
+   "n": "Phénylmercure (merphène), thiomersal",
+   "cat": "Conservateur",
+   "d": "dérivés mercuriques : aujourd'hui INTERDITS",
+   "fam": "liq"
+  },
+  {
+   "id": "x16",
+   "n": "Laurylsulfate de sodium",
+   "cat": "Tensio-actif",
+   "d": "anionique (dérivé sulfurique) ; mouillant, lubrifiant soluble",
+   "fam": "ta"
+  },
+  {
+   "id": "x17",
+   "n": "Dioctylsulfosuccinate sodique",
+   "cat": "Tensio-actif",
+   "d": "anionique",
+   "fam": "ta"
+  },
+  {
+   "id": "x18",
+   "n": "Stéarate de triéthanolamine",
+   "cat": "Tensio-actif",
+   "d": "anionique (sel d'acide gras)",
+   "fam": "ta"
+  },
+  {
+   "id": "x19",
+   "n": "N-alkylbétaïnes",
+   "cat": "Tensio-actif",
+   "d": "amphotère",
+   "fam": "ta"
+  },
+  {
+   "id": "x20",
+   "n": "Lécithine",
+   "cat": "Tensio-actif",
+   "d": "amphotère (phospholipide) ; lipides pour administration parentérale",
+   "fam": "ta"
+  },
+  {
+   "id": "x21",
+   "n": "Span (esters de sorbitane)",
+   "cat": "Tensio-actif",
+   "d": "non ionique, E/H",
+   "fam": "ta"
+  },
+  {
+   "id": "x22",
+   "n": "Tween (polysorbates)",
+   "cat": "Tensio-actif",
+   "d": "non ionique : sorbitane + acide gras + PEG",
+   "fam": "ta"
+  },
+  {
+   "id": "x23",
+   "n": "Cétomacrogols, stéaromacrogols",
+   "cat": "Tensio-actif",
+   "d": "non ioniques (éthers de polyoxyéthylèneglycol)",
+   "fam": "ta"
+  },
+  {
+   "id": "x24",
+   "n": "Lanoline, alcool cétylique, cholestérol",
+   "cat": "Tensio-actif",
+   "d": "type E/H",
+   "fam": "ta"
+  },
+  {
+   "id": "x25",
+   "n": "Triéthanolamine, savon de sodium",
+   "cat": "Tensio-actif",
+   "d": "type H/E (crèmes)",
+   "fam": "ta"
+  },
+  {
+   "id": "x26",
+   "n": "BHT, BHA, tocophérol",
+   "cat": "Antioxydant",
+   "d": "phase huileuse des émulsions (acides gras insaturés)",
+   "fam": "liq"
+  },
+  {
+   "id": "x27",
+   "n": "Sulfites",
+   "cat": "Antioxydant",
+   "d": "phase aqueuse ; injectables",
+   "fam": "liq"
+  },
+  {
+   "id": "x28",
+   "n": "Vitamine C (acide ascorbique)",
+   "cat": "Antioxydant",
+   "d": "phase aqueuse ; injectables",
+   "fam": "liq"
+  },
+  {
+   "id": "x29",
+   "n": "Chlorure de sodium",
+   "cat": "Isotonisant",
+   "d": "isotonisant de référence des collyres",
+   "fam": "phys"
+  },
+  {
+   "id": "x30",
+   "n": "Nitrate de sodium",
+   "cat": "Isotonisant",
+   "d": "collyres avec sel d'argent",
+   "fam": "phys"
+  },
+  {
+   "id": "x31",
+   "n": "Na₂HPO₄ / NaH₂PO₄",
+   "cat": "Isotonisant",
+   "d": "tampon phosphate, collyres",
+   "fam": "phys"
+  },
+  {
+   "id": "x32",
+   "n": "Acide borique / borax",
+   "cat": "Isotonisant",
+   "d": "collyres, PAS pour les injectables (aussi ajusteur de pH)",
+   "fam": "phys"
+  },
+  {
+   "id": "x33",
+   "n": "Sorbitol, glucose",
+   "cat": "Isotonisant",
+   "d": "",
+   "fam": "phys"
+  },
+  {
+   "id": "x34",
+   "n": "Méthylcellulose",
+   "cat": "Viscosifiant",
+   "d": "collyres ; pommades hydrophiles",
+   "fam": "phys"
+  },
+  {
+   "id": "x35",
+   "n": "HPMC (hypromellose)",
+   "cat": "Viscosifiant",
+   "d": "collyres, suspensions ; aussi enrobage",
+   "fam": "phys"
+  },
+  {
+   "id": "x36",
+   "n": "Alcool polyvinylique",
+   "cat": "Viscosifiant",
+   "d": "collyres",
+   "fam": "phys"
+  },
+  {
+   "id": "x37",
+   "n": "PVP (polyvinylpyrrolidone)",
+   "cat": "Viscosifiant",
+   "d": "collyres ; aussi liant",
+   "fam": "phys"
+  },
+  {
+   "id": "x38",
+   "n": "Alginate, CMC",
+   "cat": "Viscosifiant",
+   "d": "phase aqueuse des émulsions",
+   "fam": "phys"
+  },
+  {
+   "id": "x39",
+   "n": "Carbopol, carbomère, gomme adragante",
+   "cat": "Viscosifiant",
+   "d": "pommades hydrophiles",
+   "fam": "phys"
+  },
+  {
+   "id": "x40",
+   "n": "Vaseline",
+   "cat": "Gélifiant",
+   "d": "oléogel (hydrophobe), thixotrope",
+   "fam": "phys"
+  },
+  {
+   "id": "x41",
+   "n": "Polyéthylène, savon d'aluminium, silice colloïdale",
+   "cat": "Gélifiant",
+   "d": "oléogels – lipogels",
+   "fam": "phys"
+  },
+  {
+   "id": "x42",
+   "n": "Carbomères, silicates de Mg/Al, amidon, dérivés de cellulose",
+   "cat": "Gélifiant",
+   "d": "hydrogels",
+   "fam": "phys"
+  },
+  {
+   "id": "x43",
+   "n": "Tampons phosphates",
+   "cat": "Ajusteur de pH",
+   "d": "collyres, PAS pour les injectables",
+   "fam": "phys"
+  },
+  {
+   "id": "x44",
+   "n": "Acide acétique, acide gluconique, diéthanolamine",
+   "cat": "Ajusteur de pH",
+   "d": "injectables",
+   "fam": "phys"
+  },
+  {
+   "id": "x45",
+   "n": "Citrate sodique, acide citrique",
+   "cat": "Ajusteur de pH",
+   "d": "",
+   "fam": "phys"
+  },
+  {
+   "id": "x46",
+   "n": "Glycérine, solution de sorbitol, propylène glycol",
+   "cat": "Humectant",
+   "d": "",
+   "fam": "phys"
+  },
+  {
+   "id": "x47",
+   "n": "Paraffine, alcool cétostéarylique, cire",
+   "cat": "Modificateur de consistance",
+   "d": "la cire augmente la consistance",
+   "fam": "phys"
+  },
+  {
+   "id": "x48",
+   "n": "Myristate d'isopropyle",
+   "cat": "Modificateur de consistance",
+   "d": "diminue la consistance ; aussi lubrifiant de valve (spray)",
+   "fam": "phys"
+  },
+  {
+   "id": "x49",
+   "n": "Stéarate de magnésium",
+   "cat": "Lubrifiant",
+   "d": "insoluble : de référence pour comprimés et gélules",
+   "fam": "solides"
+  },
+  {
+   "id": "x50",
+   "n": "Talc",
+   "cat": "Lubrifiant",
+   "d": "diminue l'adhérence aux outils ; agent d'écoulement",
+   "fam": "solides"
+  },
+  {
+   "id": "x51",
+   "n": "PEG 4000-8000, benzoate de sodium",
+   "cat": "Lubrifiant",
+   "d": "lubrifiants solubles",
+   "fam": "solides"
+  },
+  {
+   "id": "x52",
+   "n": "Silice colloïdale anhydre",
+   "cat": "Lubrifiant",
+   "d": "aussi régulateur d'écoulement",
+   "fam": "solides"
+  },
+  {
+   "id": "x53",
+   "n": "Cellulose microcristalline (Avicel)",
+   "cat": "Liant",
+   "d": "granulation sèche et compression directe ; aussi diluant",
+   "fam": "solides"
+  },
+  {
+   "id": "x54",
+   "n": "Gomme arabique, gélatine, PVP, PEG 4000/6000",
+   "cat": "Liant",
+   "d": "granulation humide",
+   "fam": "solides"
+  },
+  {
+   "id": "x55",
+   "n": "Lactose",
+   "cat": "Diluant",
+   "d": "diluant de référence des comprimés",
+   "fam": "solides"
+  },
+  {
+   "id": "x56",
+   "n": "Mannitol",
+   "cat": "Diluant",
+   "d": "aussi édulcorant, rafraîchissant",
+   "fam": "solides"
+  },
+  {
+   "id": "x57",
+   "n": "Phosphate de calcium, Encompress",
+   "cat": "Diluant",
+   "d": "",
+   "fam": "solides"
+  },
+  {
+   "id": "x58",
+   "n": "Amidon",
+   "cat": "Désintégrant",
+   "d": "aussi liant et agent d'écoulement",
+   "fam": "solides"
+  },
+  {
+   "id": "x59",
+   "n": "Carboxyméthylamidon, croscarmellose (CMC), PVP réticulée (crospovidone)",
+   "cat": "Désintégrant",
+   "d": "super désintégrants",
+   "fam": "solides"
+  },
+  {
+   "id": "x60",
+   "n": "Éthylcellulose",
+   "cat": "Enrobage",
+   "d": "insoluble : formes à action prolongée",
+   "fam": "solides"
+  },
+  {
+   "id": "x61",
+   "n": "Acétophtalate de cellulose, HPMCP, gomme laque, zéine",
+   "cat": "Enrobage",
+   "d": "entériques (résistent à l'acidité gastrique)",
+   "fam": "solides"
+  },
+  {
+   "id": "x62",
+   "n": "Dérivés acryliques à fonctions amines / carboxyliques",
+   "cat": "Enrobage",
+   "d": "solubles dans l'estomac / dans l'intestin",
+   "fam": "solides"
+  },
+  {
+   "id": "x63",
+   "n": "Trométamol (TRIS), triéthanolamine, NaOH",
+   "cat": "Agent neutralisant",
+   "d": "",
+   "fam": "solides"
+  },
+  {
+   "id": "x64",
+   "n": "Propylène glycol, glycérol, sorbitol",
+   "cat": "Plastifiant",
+   "d": "plastifiants pour gélules",
+   "fam": "solides"
+  },
+  {
+   "id": "x65",
+   "n": "Saccharine sodique, saccharose, aspartame, cyclamate",
+   "cat": "Édulcorant",
+   "d": "aspartame E951 : contre-indiqué en phénylcétonurie",
+   "fam": "solides"
+  },
+  {
+   "id": "x66",
+   "n": "E100 à E199",
+   "cat": "Colorant",
+   "d": "rarement en préparation magistrale",
+   "fam": "solides"
+  },
+  {
+   "id": "x67",
+   "n": "Azote, CO₂, protoxyde d'azote, HFC",
+   "cat": "Gaz propulseur",
+   "d": "",
+   "fam": "solides"
+  }
+ ],
+ "q": [
+  {
+   "c": "liq",
+   "front": "Conservateur le plus fréquent des injectables ?",
+   "back": "Alcool benzylique"
+  },
+  {
+   "c": "liq",
+   "front": "Conservateur de 1er choix en dermatologie ?",
+   "back": "Acide sorbique"
+  },
+  {
+   "c": "liq",
+   "front": "Conservateur de référence des collyres ?",
+   "back": "Chlorure de benzalkonium"
+  },
+  {
+   "c": "liq",
+   "front": "Conservateur interdit pour les injectables ?",
+   "back": "Parabens"
+  },
+  {
+   "c": "phys",
+   "front": "Isotonisant pour collyre contenant un sel d'argent ?",
+   "back": "Nitrate de sodium"
+  },
+  {
+   "c": "solides",
+   "front": "Enrobage acrylique soluble dans l'intestin ?",
+   "back": "Dérivés à fonctions carboxyliques"
+  },
+  {
+   "c": "solides",
+   "front": "E200-E299 ?",
+   "back": "Conservateurs"
+  },
+  {
+   "c": "solides",
+   "front": "E300-E399 ?",
+   "back": "Antioxydants"
+  }
+ ],
+ "quiz": [
+  {
+   "id": "p1",
+   "c": "liq",
+   "q": "Le conservateur le plus fréquent des préparations injectables est",
+   "o": [
+    "le chlorure de benzalkonium",
+    "l'alcool benzylique",
+    "les parabens",
+    "le thiomersal"
+   ],
+   "a": 1,
+   "ex": "Parabens : pas pour les injectables ; thiomersal : interdit."
+  },
+  {
+   "c": "liq",
+   "q": "En dermatologie, le conservateur de premier choix est",
+   "o": [
+    "l'acide sorbique",
+    "le phénylmercure",
+    "l'alcool benzylique",
+    "le BHT"
+   ],
+   "a": 0,
+   "ex": "Acide sorbique."
+  },
+  {
+   "c": "liq",
+   "q": "Les dérivés mercuriques (merphène, thiomersal) dans les collyres sont",
+   "o": [
+    "recommandés",
+    "aujourd'hui interdits",
+    "réservés aux pommades",
+    "des antioxydants"
+   ],
+   "a": 1,
+   "ex": "Remplacés par ammoniums quaternaires, chlorhexidine."
+  },
+  {
+   "c": "liq",
+   "q": "Dans une émulsion, quel antioxydant mettre dans la phase huileuse ?",
+   "o": [
+    "Sulfite",
+    "Vitamine C",
+    "BHT",
+    "NaCl"
+   ],
+   "a": 2,
+   "ex": "BHT, BHA, tocophérol en phase huileuse ; sulfites, vitamine C en phase aqueuse."
+  },
+  {
+   "c": "liq",
+   "q": "Le chlorocrésol est peu utilisé dans les collyres car",
+   "o": [
+    "inefficace",
+    "irritant",
+    "interdit",
+    "trop cher"
+   ],
+   "a": 1,
+   "ex": "Dérivé phénolique irritant."
+  },
+  {
+   "id": "p2",
+   "c": "ta",
+   "q": "La lécithine est un tensio-actif",
+   "o": [
+    "anionique",
+    "cationique",
+    "amphotère",
+    "non ionique"
+   ],
+   "a": 2,
+   "ex": "Phospholipide."
+  },
+  {
+   "c": "ta",
+   "q": "Le Tween est formé de",
+   "o": [
+    "sorbitane + acide gras + PEG",
+    "acide gras + sodium",
+    "ammonium quaternaire",
+    "glycérol + phosphate"
+   ],
+   "a": 0,
+   "ex": "Polysorbate."
+  },
+  {
+   "c": "ta",
+   "q": "La lanoline est un tensio-actif de type",
+   "o": [
+    "H/E",
+    "E/H",
+    "cationique",
+    "anti-mousse"
+   ],
+   "a": 1,
+   "ex": "Suppositoire, dermatologie."
+  },
+  {
+   "id": "p3",
+   "c": "phys",
+   "q": "Pour un collyre contenant un sel d'argent, l'isotonisant est",
+   "o": [
+    "le chlorure de sodium",
+    "le nitrate de sodium",
+    "le glucose obligatoirement",
+    "le borax"
+   ],
+   "a": 1,
+   "ex": "Le chlorure précipiterait l'argent."
+  },
+  {
+   "c": "phys",
+   "q": "Les tampons phosphates et l'acide borique/borax sont utilisés pour les",
+   "o": [
+    "injectables",
+    "collyres (mais pas les injectables)",
+    "suppositoires",
+    "comprimés"
+   ],
+   "a": 1,
+   "ex": "Liste du cours."
+  },
+  {
+   "c": "phys",
+   "q": "Quel gélifiant donne un oléogel thixotrope ?",
+   "o": [
+    "Carbopol",
+    "Vaseline",
+    "Amidon",
+    "Alginate"
+   ],
+   "a": 1,
+   "ex": "Oléogel hydrophobe."
+  },
+  {
+   "c": "phys",
+   "q": "Le myristate d'isopropyle dans une pommade",
+   "o": [
+    "augmente la consistance",
+    "diminue la consistance",
+    "est un conservateur",
+    "est un isotonisant"
+   ],
+   "a": 1,
+   "ex": "La cire augmente la consistance."
+  },
+  {
+   "c": "phys",
+   "q": "Un humectant parmi ceux-ci :",
+   "o": [
+    "Propylène glycol",
+    "Stéarate de magnésium",
+    "Lactose",
+    "Talc"
+   ],
+   "a": 0,
+   "ex": "Glycérine, sorbitol, PG."
+  },
+  {
+   "id": "p4",
+   "c": "solides",
+   "q": "Un super désintégrant :",
+   "o": [
+    "Lactose",
+    "PVP réticulée (crospovidone)",
+    "Stéarate de magnésium",
+    "Éthylcellulose"
+   ],
+   "a": 1,
+   "ex": "Avec carboxyméthylamidon et carboxyméthylcellulose."
+  },
+  {
+   "c": "solides",
+   "q": "Le liant de la compression directe :",
+   "o": [
+    "Gomme arabique",
+    "Cellulose microcristalline",
+    "Gélatine",
+    "Mucilage d'amidon"
+   ],
+   "a": 1,
+   "ex": "Granulation sèche et compression directe."
+  },
+  {
+   "c": "solides",
+   "q": "Un enrobage entérique :",
+   "o": [
+    "Éthylcellulose",
+    "Acétophtalate de cellulose",
+    "Méthylcellulose",
+    "PEG"
+   ],
+   "a": 1,
+   "ex": "Aussi HPMCP, gomme laque, zéine."
+  },
+  {
+   "c": "solides",
+   "q": "Un dérivé acrylique à fonctions amines se dissout",
+   "o": [
+    "dans l'estomac",
+    "dans l'intestin",
+    "jamais",
+    "dans la bouche"
+   ],
+   "a": 0,
+   "ex": "Les carboxyliques dans l'intestin."
+  },
+  {
+   "c": "solides",
+   "q": "Les numéros E300 à E399 désignent",
+   "o": [
+    "les colorants",
+    "les conservateurs",
+    "les antioxydants",
+    "les édulcorants"
+   ],
+   "a": 2,
+   "ex": "E100 colorants, E200 conservateurs, E300 antioxydants."
+  },
+  {
+   "c": "solides",
+   "q": "Le stéarate de magnésium est un lubrifiant",
+   "o": [
+    "soluble",
+    "insoluble",
+    "liquide",
+    "gazeux"
+   ],
+   "a": 1,
+   "ex": "Lubrifiants solubles : PEG, laurylsulfate, benzoate."
+  },
+  {
+   "t": "open",
+   "c": "liq",
+   "q": "Quels conservateurs antimicrobiens utiliser selon la voie (injectable, dermatologie, collyre) ? Lesquels sont à proscrire ?",
+   "a": "Obligatoires pour les multidoses. Injectables : alcool benzylique (le plus fréquent) ; pas de parabens. Dermatologie : acide sorbique (1er choix), aussi glycérine, éthanol, parabens. Collyres : ammoniums quaternaires (chlorure de benzalkonium, cétylpyridinium, benzéthonium), chlorhexidine ; chlorocrésol peu utilisé (irritant) ; parabens si moisissures (rare) ; chlorbutanol/alcools aromatiques pour pommades ophtalmiques. Interdits : dérivés mercuriques (phénylmercure = merphène, thiomersal).",
+   "keys": [
+    "multidoses",
+    "alcool benzylique / injectables",
+    "pas de parabens en injectable",
+    "acide sorbique / dermato",
+    "benzalkonium / collyres",
+    "mercuriels interdits"
+   ]
+  },
+  {
+   "t": "open",
+   "c": "solides",
+   "q": "Citez les grandes familles d'excipients d'un comprimé et donnez un exemple pour chacune.",
+   "a": "Diluants (lactose, mannitol, cellulose microcristalline) ; liants (cellulose microcristalline en compression directe ; PVP, gélatine, gommes en granulation humide) ; désintégrants (amidon) et super désintégrants (crospovidone, carboxyméthylamidon) ; lubrifiants (stéarate de magnésium ; talc ; PEG solubles) ; agents d'écoulement (silice colloïdale, talc) ; enrobages (gastrosolubles cellulosiques, entériques : acétophtalate de cellulose, HPMCP ; prolongés : éthylcellulose) ; édulcorants, colorants (E100-199).",
+   "keys": [
+    "diluant",
+    "liant",
+    "désintégrant / super",
+    "lubrifiant",
+    "agent d'écoulement",
+    "enrobage"
+   ]
+  }
+ ],
+ "concepts": [
+  {
+   "id": "liq",
+   "t": "Solvants, conservateurs, antioxydants"
+  },
+  {
+   "id": "ta",
+   "t": "Tensio-actifs"
+  },
+  {
+   "id": "phys",
+   "t": "Isotonisants, viscosifiants, gélifiants, pH, humectants, consistance"
+  },
+  {
+   "id": "solides",
+   "t": "Excipients des formes solides"
+  }
+ ]
+}

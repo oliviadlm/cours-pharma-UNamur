@@ -8,17 +8,18 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
 
 const W = 4608, H = 2160;
+const JOUR = new URLSearchParams(location.search).get('mode') === 'jour';
 const L_BACK = 1, L_MID = 2, L_FRONT = 3;
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
 renderer.setPixelRatio(1); renderer.setSize(W, H);
 renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = new URLSearchParams(location.search).get('mode') === 'jour' ? 1.1 : .92;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 document.body.appendChild(renderer.domElement);
 const scene = new THREE.Scene();
 const pmrem = new THREE.PMREMGenerator(renderer);
 scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-scene.environmentIntensity = 0.4;
+scene.environmentIntensity = JOUR ? 0.6 : 0.32;
 
 const camera = new THREE.PerspectiveCamera(44, W / H, 0.05, 50);
 camera.position.set(0, 1.78, 3.3); camera.lookAt(0, 1.43, 0);
@@ -310,14 +311,14 @@ thermo.position.set(1.95, Y + .007, .82); thermo.rotation.y = .5; poser(thermo, 
 const gants = boite(.24, .1, .12, new THREE.MeshStandardMaterial({ color: '#7fc6c1', roughness: .6 }), 2.2, Y + .05, .38, L_MID, .01);
 
 // ---------- lumières
-scene.add(new THREE.HemisphereLight('#ffe9d2', '#5a4034', .28));
-[[-1.6, .3], [.15, .25], [1.8, .3]].forEach(([x, z]) => { const p = new THREE.SpotLight('#ffd6a0', 14, 4.5, .95, .7, 1.2); p.position.set(x, 3.0, z + 1.2); p.target.position.set(x, .9, z); p.castShadow = true; p.shadow.mapSize.set(2048, 2048); p.shadow.radius = 8; p.shadow.camera.layers.enableAll(); scene.add(p, p.target); });
-const soleil = new THREE.DirectionalLight('#ffd7a8', 1.7); soleil.position.set(-2.6, 3.6, 2.6); soleil.target.position.set(0, .9, .3);
+scene.add(new THREE.HemisphereLight(JOUR ? '#eef5ff' : '#ffe9d2', '#5a4034', JOUR ? .55 : .2));
+[[-1.6, .3], [.15, .25], [1.8, .3]].forEach(([x, z]) => { const p = new THREE.SpotLight(JOUR ? '#fff4e6' : '#ffd6a0', JOUR ? 7 : 10, 4.5, .95, .7, 1.2); p.position.set(x, 3.0, z + 1.2); p.target.position.set(x, .9, z); p.castShadow = true; p.shadow.mapSize.set(2048, 2048); p.shadow.radius = 8; p.shadow.camera.layers.enableAll(); scene.add(p, p.target); });
+const soleil = new THREE.DirectionalLight(JOUR ? '#fff1dc' : '#ffd7a8', JOUR ? 3.4 : 1.1); soleil.position.set(-2.6, 3.6, 2.6); soleil.target.position.set(0, .9, .3);
 soleil.castShadow = true; soleil.shadow.mapSize.set(4096, 4096); Object.assign(soleil.shadow.camera, { left: -4, right: 4, top: 3.5, bottom: -2.5, near: .5, far: 10 }); soleil.shadow.radius = 4; soleil.shadow.bias = -.0004;
 scene.add(soleil, soleil.target);
 const face2 = new THREE.DirectionalLight('#ffe6cc', .35); face2.position.set(2, 2.4, 4); scene.add(face2);
 const fenetre = new THREE.RectAreaLight ? null : null;
-const lumFen = new THREE.PointLight('#ffb070', 1.2, 2.2, 1.6); lumFen.position.set(.15, 2.05, .45); scene.add(lumFen);
+const lumFen = new THREE.PointLight(JOUR ? '#eaf4ff' : '#ffb070', JOUR ? 4.5 : .8, JOUR ? 3.6 : 2.2, 1.4); lumFen.position.set(.15, 2.05, .45); scene.add(lumFen);
 [soleil.shadow.camera, spot.shadow.camera].forEach(c => c.layers.enableAll());
 camera.layers.enableAll();
 

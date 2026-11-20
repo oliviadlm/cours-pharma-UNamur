@@ -1,6 +1,6 @@
 # Monde « L'officine » : décor 4K vectoriel animé, ordonnances à préparer, balance, thème chaud.
 import re
-V = '7'
+V = '8'
 
 ANIM_BACK = r'''<svg class="anim" viewBox="0 0 4608 2160" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="gReflet" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".10"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset=".6" stop-color="#fff" stop-opacity=".05"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>
 <polygon points="1994,72 2865,72 2846,975 2005,975" fill="url(#gReflet)"/>
@@ -92,7 +92,7 @@ def patch_head(head):
 def patch_engine(e, rep):
     # images au lieu de vidéos (décor vectoriel rendu en 4K)
     e = re.sub(r'<video class="hero-v"[^>]*><source[^>]*></video>', lambda m: '<img class="hero-v" src="decor/officine-1920.jpg?v=' + V + '" alt="" style="object-position:\'+heroX()+\'% 62%">', e)
-    e = re.sub(r'<div class="piece" id="piece"><video[^>]*><source[^>]*></video>', lambda m: '<div class="piece" id="piece"><video class=\"ville\" autoplay muted loop playsinline preload=\"auto\" poster=\"decor/ville-nuit.jpg?v=7\" style=\"left:43.27%;top:3.33%;width:18.91%;height:41.83%\"><source src=\"decor/ville-nuit.mp4?v=7\" type=\"video/mp4\"></video><img class="decor" src="decor/officine-fond.webp?v=' + V + '" alt="">' + ANIM_BACK.replace("'", "\\'").replace('\n', '') + '<div class="couche" data-k="1.7"><img src="decor/officine-milieu.webp?v=' + V + '" alt="">' + ANIM_MID.replace("'", "\\'").replace('\n', '') + '</div><div class="couche" data-k="2.8"><img src="decor/officine-devant.webp?v=' + V + '" alt=""></div>' , e)
+    e = re.sub(r'<div class="piece" id="piece"><video[^>]*><source[^>]*></video>', lambda m: '<div class="piece" id="piece"><img class=\"ville\" src=\"decor/ville-nuit.webp?v=8\" alt=\"\" style=\"left:43.27%;top:3.33%;width:18.91%;height:41.83%\"><img class="decor" src="decor/officine-fond.webp?v=' + V + '" alt="">' + ANIM_BACK.replace("'", "\\'").replace('\n', '') + '<div class="couche" data-k="1.7"><img src="decor/officine-milieu.webp?v=' + V + '" alt="">' + ANIM_MID.replace("'", "\\'").replace('\n', '') + '</div><div class="couche" data-k="2.8"><img src="decor/officine-devant.webp?v=' + V + '" alt=""></div>' , e)
     e = re.sub(r'<video class="fete-bg"[^>]*><source[^>]*></video>', lambda m: '<img class="fete-bg" src="decor/officine-1920.jpg?v=' + V + '" alt="">', e)
     assert 'monde.mp4' not in e, 'vidéo restante'
     e = rep(e, "function entete(mini){", "function heroX(){var s=SPOTS[VUE==='chap'?CI:chapActuel()]||[50];return Math.round(s[0])}\nfunction entete(mini){")
