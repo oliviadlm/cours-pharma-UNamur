@@ -670,7 +670,7 @@ function importer(){function appliquer(t){try{t=(t||'').trim();if(t.indexOf('CHI
  if(navigator.clipboard&&navigator.clipboard.readText)navigator.clipboard.readText().then(function(t){if(t&&t.indexOf('CHIPHA1:')===0)appliquer(t);else appliquer(window.prompt('Colle ici le code de progression :',''))},function(){appliquer(window.prompt('Colle ici le code de progression :',''))});else appliquer(window.prompt('Colle ici le code de progression :',''))}
 function haut(){var d=$('#defile');if(d)d.scrollTop=0}
 /* ---------- mise à jour automatique : l'app vérifie s'il existe une version plus récente ---------- */
-var VERSION='1795183781';
+var VERSION='1795185801';
 function verifierVersion(){try{fetch(location.pathname+'?nocache='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():''}).then(function(t){var m=/var VERSION='(\d+)'/.exec(t);if(m&&m[1]!==VERSION&&!G){location.replace(location.pathname+'?v='+m[1]+location.hash)}}).catch(function(){})}catch(e){}}
 setTimeout(verifierVersion,1500);
 document.addEventListener('visibilitychange',function(){if(!document.hidden)verifierVersion()});
@@ -808,7 +808,7 @@ function salon(){
  if(ca>dep){haut();setTimeout(function(){var p=P(ca);pos=p;viser(p[0],p[1],true,1);setTimeout(function(){if(!vivant)return;S.pionAt=ca;save();bulle('Nouveau lieu ouvert : '+SPOTS[ca][2]);son('fete');confetti()},950)},900)}
  SAL={stop:function(){vivant=false;if(window.__orientSalon===orient)window.__orientSalon=null}};
 }
-var RZ; window.addEventListener('resize',function(){clearTimeout(RZ);RZ=setTimeout(function(){if(VUE==='monde'&&$('#salon')&&!$('#jeu').classList.contains('on'))accueil()},250)});
+var RZT; window.addEventListener('resize',function(){clearTimeout(RZT);RZT=setTimeout(function(){if(VUE==='monde'&&$('#salon')&&!$('#jeu').classList.contains('on'))accueil()},250)});
 /* écran d'un chapitre */
 function ecranChap(ci){
  var c=CHAPS[ci], L=c.niveaux, na=nivActuel(ci), ids=idsChap(ci), p=maitrise(ids), dess=molsChap(ci).some(function(m){return m.dessin&&m.img});
