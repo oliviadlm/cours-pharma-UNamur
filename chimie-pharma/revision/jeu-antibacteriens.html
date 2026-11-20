@@ -117,7 +117,7 @@ canvas.dessin{width:100%;height:260px;background:#fff;border:2px dashed #c7cbd8;
 .atl-taille{display:flex;gap:4px}.atl-t{width:34px;height:34px;border-radius:10px;background:#f1f3f8;display:grid;place-items:center}.atl-t i{display:block;border-radius:50%;background:#1b2233}.atl-t.on{background:#dbe3ff}
 .atl-atomes{display:none;flex-wrap:nowrap;overflow-x:auto;gap:5px;padding:4px 2px;scrollbar-width:none}.atl-atomes::-webkit-scrollbar{display:none}.atl-atomes.on{display:flex}
 .atl-atomes button{flex:none;min-width:40px;padding:7px 8px;border-radius:10px;background:#f1f3f8;color:#1b2233;font-weight:700;font-size:.9rem}.atl-atomes button.on{background:#1a3fd6;color:#fff}
-.atl-zone{position:relative}
+.atl-zone{position:relative;overflow:hidden;border-radius:14px}
 .atl canvas{display:block;width:100%;height:56vh;max-height:520px;min-height:300px;background:#fff;border:2px solid #e3e6ee;border-radius:14px;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;cursor:crosshair}
 .atl-aide{position:absolute;left:8px;right:8px;bottom:6px;font-size:.7rem;color:#8a91a3;pointer-events:none;text-align:center}
 .atl-b3 button{flex:1;display:flex;gap:4px;align-items:center;justify-content:center;padding:9px 6px;border-radius:12px;background:#f1f3f8;color:#1b2233;font-size:.78rem}
@@ -128,10 +128,13 @@ body.sans-scroll{overflow:hidden}
 @media (min-width:700px){.atl canvas{height:62vh;max-height:none}}
 
 
-.atl-calque{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);max-width:80%;max-height:80%;opacity:0;pointer-events:none;transition:opacity .2s;mix-blend-mode:multiply}
-.atl-calque.on{opacity:.38}
+.atl-calque{position:absolute;left:50%;top:45%;transform:translate(-50%,-50%);max-width:80%;max-height:70%;opacity:0;pointer-events:none;mix-blend-mode:multiply;touch-action:none;-webkit-user-drag:none;user-select:none;transform-origin:center}
+.atl-calque.on{pointer-events:auto;cursor:move;outline:2px dashed rgba(59,95,240,.55);outline-offset:4px;border-radius:6px}
 .atl-feuille{position:absolute;left:6px;right:6px;bottom:6px;background:#fff;border-radius:16px;box-shadow:0 -6px 30px rgba(15,21,48,.25);padding:10px;transform:translateY(calc(100% + 12px));opacity:0;transition:transform .28s cubic-bezier(.2,.8,.2,1),opacity .2s;pointer-events:none;max-height:72%;display:flex;flex-direction:column}
 .atl-feuille.mini .atl-f-corps{display:none}
+.atl-ajust{display:none;gap:6px;align-items:center;margin-top:8px;flex-wrap:wrap}.atl-feuille.mini .atl-ajust{display:flex}
+.atl-ajust button{min-width:40px;background:#f1f3f8;color:#1b2233;border-radius:10px;padding:8px 10px;font-weight:700}
+.atl-ajust label{flex:1;display:flex;gap:6px;align-items:center;font-size:.72rem;color:#5d6577;min-width:150px}.atl-ajust input{flex:1}
 .atl-feuille.on{transform:none;opacity:1;pointer-events:auto}
 .atl-f-tete{display:flex;gap:6px;align-items:center;color:#1b2233}.atl-f-tete b{flex:1}
 .atl-f-tete button{background:#f1f3f8;color:#1b2233;border-radius:10px;padding:6px 10px;font-size:.8rem}.atl-f-tete button.on{background:#1a3fd6;color:#fff}
@@ -369,7 +372,7 @@ function atelierHTML(x){
  '<div class="atl-atomes" id="atl-at">'+ATL_ATOMES.map(function(a){return '<button data-a="'+a+'">'+a+'</button>'}).join('')+'</div>'+
  '<div class="atl-zone"><canvas id="cv"></canvas><img class="atl-calque" id="atl-calque" src="'+x.img+'" alt=""><div class="atl-aide" id="atl-aide"></div>'+
  '<div class="atl-feuille" id="atl-f"><div class="atl-f-tete"><b>Correction</b><button id="atl-sup">Superposer</button><button id="atl-cache">Masquer</button></div><div class="atl-f-corps"><img src="'+x.img+'" alt="Structure correcte"><p>'+esc(x.grand)+(x.expl?' · '+esc(x.expl):'')+'</p></div>'+
- '<div class="atl-note" id="atl-note"><button class="a1" data-v="0">Raté</button><button class="a2" data-v="1">Presque</button><button class="a3" data-v="2">Juste</button></div><button class="atl-suite" id="atl-suite">Continuer</button></div></div>'+
+ '<div class="atl-ajust" id="atl-ajust"><button data-z="-1" aria-label="Rapetisser">−</button><button data-z="1" aria-label="Agrandir">+</button><label>Transparence <input type="range" id="atl-op" min="15" max="90" value="40"></label><button data-z="0">Recentrer</button></div><div class="atl-note" id="atl-note"><button class="a1" data-v="0">Raté</button><button class="a2" data-v="1">Presque</button><button class="a3" data-v="2">Juste</button></div><button class="atl-suite" id="atl-suite">Continuer</button></div></div>'+
  '<div class="atl-barre atl-b3"><button data-x="annuler">'+aic('annuler')+'</button><button data-x="refaire">'+aic('refaire')+'</button><button data-x="vider">'+aic('vider')+'</button><button data-x="plein">'+aic('plein')+'<span>Plein écran</span></button><button id="voir" class="atl-voir">Corriger</button></div></div>';
 }
 function atelier(x){
@@ -477,10 +480,22 @@ function atelier(x){
  // le bouton Comparer quitte le plein écran
  var F=$('#atl-f'),note=false;
  function ouvrir(){F.classList.add('on');root.classList.add('compare')}
- function fermer(){F.classList.remove('on','mini');$('#atl-sup').classList.remove('on');root.classList.remove('compare');$('#atl-calque').classList.remove('on')}
+ function fermer(){F.classList.remove('on','mini');$('#atl-sup').classList.remove('on');cal.style.opacity=0;root.classList.remove('compare');$('#atl-calque').classList.remove('on')}
  $('#voir').onclick=function(){F.classList.contains('on')?fermer():ouvrir()};
  $('#atl-cache').onclick=fermer;
- $('#atl-sup').onclick=function(){$('#atl-calque').classList.toggle('on');this.classList.toggle('on');F.classList.toggle('mini',this.classList.contains('on'))};
+ var cal=$('#atl-calque'),T={x:0,y:0,s:1,o:.4},cp={},pinch=null;
+ function appl(){cal.style.transform='translate(-50%,-50%) translate('+T.x+'px,'+T.y+'px) scale('+T.s+')';cal.style.opacity=cal.classList.contains('on')?T.o:0}
+ $('#atl-sup').onclick=function(){cal.classList.toggle('on');this.classList.toggle('on');F.classList.toggle('mini',this.classList.contains('on'));aide(cal.classList.contains('on')?'Glisse la correction pour la placer, pince à deux doigts pour la redimensionner.':AIDES[ATL.outil]);appl()};
+ $$('#atl-ajust button').forEach(function(b){b.onclick=function(){var z=+b.dataset.z;if(z===0){T.x=0;T.y=0;T.s=1}else T.s=Math.max(.3,Math.min(4,T.s*(z>0?1.15:1/1.15)));appl()}});
+ $('#atl-op').oninput=function(){T.o=this.value/100;appl()};
+ cal.addEventListener('pointerdown',function(e){e.preventDefault();e.stopPropagation();cal.setPointerCapture(e.pointerId);cp[e.pointerId]=[e.clientX,e.clientY];var k=Object.keys(cp);if(k.length===2){var a=cp[k[0]],b=cp[k[1]];pinch={d:Math.hypot(a[0]-b[0],a[1]-b[1]),s:T.s}}},{passive:false});
+ cal.addEventListener('pointermove',function(e){if(!cp[e.pointerId])return;e.preventDefault();var prev=cp[e.pointerId],k=Object.keys(cp);cp[e.pointerId]=[e.clientX,e.clientY];
+  if(k.length>=2&&pinch){var a=cp[k[0]],b=cp[k[1]];var d=Math.hypot(a[0]-b[0],a[1]-b[1]);T.s=Math.max(.3,Math.min(4,pinch.s*d/pinch.d));T.x+=(e.clientX-prev[0])/2;T.y+=(e.clientY-prev[1])/2}
+  else{T.x+=e.clientX-prev[0];T.y+=e.clientY-prev[1]}appl()},{passive:false});
+ function calFin(e){delete cp[e.pointerId];if(Object.keys(cp).length<2)pinch=null}
+ cal.addEventListener('pointerup',calFin);cal.addEventListener('pointercancel',calFin);
+ cal.addEventListener('wheel',function(e){e.preventDefault();T.s=Math.max(.3,Math.min(4,T.s*(e.deltaY<0?1.08:1/1.08)));appl()},{passive:false});
+ appl();
  $$('#atl-note button').forEach(function(b){b.onclick=function(){if(note)return;note=true;auto(x,+b.dataset.v);$$('#atl-note button').forEach(function(z){z.style.opacity=z===b?1:.35});$('#atl-suite').classList.add('on')}});
  $('#atl-suite').onclick=function(){root.classList.remove('plein');document.body.classList.remove('sans-scroll');window.removeEventListener('resize',taille);if(G&&G.coeurs<=0){terminer();return}G.i++;montrer()};
  // deux doigts sur le canevas = déplacer tout le dessin
