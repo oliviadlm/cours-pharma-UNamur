@@ -116,7 +116,7 @@
       <div class="page-head">
         <h1>${esc(c.num)}. ${esc(c.title)}</h1>
         ${c.subtitle ? `<p>${esc(c.subtitle)}</p>` : ''}
-        <div class="row"><a class="btn primary" href="#/cartes/ch/${id}">Réviser ce chapitre</a><a class="btn ghost" href="#/molecules/${id}">Atlas des molécules</a><span class="small muted">Maîtrise ${Math.round(mastery(id) * 100)} %</span></div>
+        <div class="row"><a class="btn primary" href="#/cartes/ch/${id}">Réviser ce chapitre</a><a class="btn" href="jeu-phyto.html#${id}">Jouer</a><a class="btn" href="jeu-phyto.html#${id}">Jouer</a><a class="btn ghost" href="#/molecules/${id}">Atlas des molécules</a><span class="small muted">Maîtrise ${Math.round(mastery(id) * 100)} %</span></div>
       </div>
       <div class="tabs" role="tablist">${tabs.map(t => `<button role="tab" data-tab="${t[0]}" class="${t[0] === tab ? 'on' : ''}" aria-selected="${t[0] === tab}">${t[1]}</button>`).join('')}</div>
       <div id="tabBody" class="fiche"></div>`;
