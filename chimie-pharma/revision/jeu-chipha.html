@@ -227,6 +227,10 @@ body.sans-scroll{overflow:hidden}
 @keyframes tourne{to{transform:rotate(360deg)}}
 @keyframes flotte{50%{transform:translateY(-8px) scale(1.04)}}
 .confetti{z-index:31}
+.hero-haut{align-items:flex-start}.hero-haut .logo,.hero-haut .hero-t{margin-top:0}
+.btns-col{display:flex;flex-direction:column;gap:8px}
+video::-webkit-media-controls,video::-webkit-media-controls-start-playback-button,video::-webkit-media-controls-overlay-play-button{display:none!important;-webkit-appearance:none;opacity:0}
+
 /* ===== salon immersif ===== */
 .salon{position:relative;width:100vw;margin:calc(-1*(env(safe-area-inset-top) + 10px)) 0 0 calc(50% - 50vw);height:calc(70vh + env(safe-area-inset-top));min-height:440px;max-height:780px;overflow:hidden;touch-action:pan-y;perspective:900px;-webkit-mask-image:linear-gradient(180deg,#000 90%,transparent);mask-image:linear-gradient(180deg,#000 90%,transparent);-webkit-user-select:none;user-select:none}
 .salon .cam,.salon .tilt{position:absolute;left:0;top:0;will-change:transform;transform-style:preserve-3d}
@@ -377,6 +381,7 @@ var P={
  flag:'<path d="M4 22V3M4 4h13l-2 4 2 4H4"/>',
  back:'<path d="M15 18 9 12l6-6"/>',
  move:'<rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M2 9v6M22 9v6"/>',
+ pause:'<path d="M8 5v14M16 5v14"/>',
  map:'<path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/>',
  shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>'
 };
@@ -475,12 +480,18 @@ function composerCartes(items,nb){var d=dayNum();
  var due=mel(items.filter(function(x){var b=S.box[x.id];return b&&b.d<=d&&b.b<5})), neufs=mel(items.filter(function(x){return !S.box[x.id]})), reste=items.filter(function(x){var b=S.box[x.id];return b&&!(b.d<=d&&b.b<5)}).sort(function(a,b){return S.box[a.id].d-S.box[b.id].d});
  return due.concat(neufs).concat(reste).slice(0,nb)}
 
+/* ---------- animation du décor : lecture / pause ---------- */
+function lecture(){var lb=$('#lecture');$$('#accueil video').forEach(function(v){v.muted=true;v.setAttribute('playsinline','');if(S.pause)v.pause();else{var p=v.play();if(p&&p.catch)p.catch(function(){})}});
+ if(lb)lb.innerHTML=ic(S.pause?'play':'pause')}
+// iPhone en mode app bloque parfois la lecture automatique : on relance au premier toucher
+document.addEventListener('touchstart',function(){if(!S.pause)$$('video').forEach(function(v){if(v.paused){var p=v.play();if(p&&p.catch)p.catch(function(){})}})},{passive:true});
+document.addEventListener('visibilitychange',function(){if(!document.hidden)lecture()});
 /* ---------- haut de page commun ---------- */
 function entete(mini){
  var hr=new Date().getHours(), salut=(hr>=18||hr<5)?'Bonsoir':'Bonjour';
  return '<header class="hero'+(mini?' mini':'')+'"><video class="hero-v" autoplay muted loop playsinline preload="auto" poster="decor/chambre.jpg"><source src="decor/chambre.mp4" type="video/mp4"></video>'+
  '<div class="hero-haut">'+(mini?'<button class="rond-btn" id="retour" aria-label="Retour à la carte">'+ic('back')+'</button><div class="hero-t"><small>'+salut+' Olivia</small><b>Retour au salon</b></div>':'<img class="logo" src="icons/jeu-180.png" alt=""><div class="hero-t"><small>'+salut+' Olivia</small><b>Chimie pharma</b></div>')+
- '<button class="rond-btn" id="son" aria-label="Son">'+ic(S.son===false?'mute':'vol')+'</button></div>'+(mini?'':'%GUIR%')+'</header>'}
+ ''+'<div class="btns-col"><button class="rond-btn" id="son" aria-label="Son">'+ic(S.son===false?'mute':'vol')+'</button><button class="rond-btn" id="lecture" aria-label="Lecture ou pause de l\'animation">'+ic(S.pause?'play':'pause')+'</button></div>'+'</div>'+(mini?'':'%GUIR%')+'</header>'}
 function statsHTML(){
  var R=rang(), pct=R.n?Math.round(100*(S.xp-R.r[0])/(R.n[0]-R.r[0])):100, od=Math.min(S.todayXp,OBJ), C=2*Math.PI*24, tot=0;
  CHAPS.forEach(function(_,ci){tot+=etoilesChap(ci)});
@@ -489,6 +500,8 @@ function statsHTML(){
  return h}
 function brancher(){
  var so=$('#son'); if(so) so.onclick=function(){S.son=S.son===false;save();accueil();son('bien')};
+ var lb=$('#lecture'); if(lb) lb.onclick=function(){S.pause=!S.pause;save();son('clic');lecture()};
+ lecture();
  var re=$('#retour'); if(re) re.onclick=function(){son('clic');VUE='monde';accueil()};
 }
 
@@ -519,7 +532,7 @@ function salonHTML(){
  var hr=new Date().getHours(), salut=(hr>=18||hr<5)?'Bonsoir':'Bonjour', fg='';
  for(var i=0;i<16;i++){var r=10+Math.random()*26;fg+='<i style="left:'+(Math.random()*100).toFixed(1)+'%;top:'+(Math.random()*100).toFixed(1)+'%;width:'+r.toFixed(0)+'px;height:'+r.toFixed(0)+'px;animation-delay:'+(-Math.random()*7).toFixed(1)+'s"></i>'}
  return '<section class="salon" id="salon"><div class="cam" id="cam"><div class="tilt" id="tilt"><div class="piece" id="piece"><video autoplay muted loop playsinline preload="auto" poster="decor/chambre.jpg"><source src="decor/chambre.mp4" type="video/mp4"></video><div id="lieux"></div></div></div></div><div class="fg" id="fg">'+fg+'</div>'+
- '<div class="hero-haut"><img class="logo" src="icons/jeu-180.png" alt=""><div class="hero-t"><small>'+salut+' Olivia</small><b>Chimie pharma</b></div><button class="rond-btn" id="son" aria-label="Son">'+ic(S.son===false?'mute':'vol')+'</button></div>'+
+ '<div class="hero-haut"><img class="logo" src="icons/jeu-180.png" alt=""><div class="hero-t"><small>'+salut+' Olivia</small><b>Chimie pharma</b></div>'+'<div class="btns-col"><button class="rond-btn" id="son" aria-label="Son">'+ic(S.son===false?'mute':'vol')+'</button><button class="rond-btn" id="lecture" aria-label="Lecture ou pause de l\'animation">'+ic(S.pause?'play':'pause')+'</button></div>'+'</div>'+
  '<div class="salon-bas"><div class="astuce" id="astuce"><span>'+ic('eye')+' Glisse pour regarder autour</span></div><button class="rond-btn" id="gyro" aria-label="Bouger avec le téléphone" style="display:none">'+ic('move')+'</button><button class="rond-btn" id="recentrer" aria-label="Revenir au chapitre en cours">'+ic('target')+'</button></div></section>'}
 function salon(){
  var el=$('#salon'); if(!el)return; if(SAL&&SAL.stop)SAL.stop();
