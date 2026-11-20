@@ -150,7 +150,7 @@ body.sans-scroll .defile{overflow:hidden}
 
 /* ===== monde : chambre de nuit ===== */
 .ciel{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(130% 70% at 50% 0%,#5a3a2a 0%,#2e211b 42%,#1e1613 100%);overflow:hidden}
-.ciel::before{content:"";position:absolute;inset:-60px;background:url(decor/officine-1920-jour.jpg?v=9) center/cover;filter:blur(26px) saturate(1.3);opacity:.32}
+.ciel::before{content:"";position:absolute;inset:-60px;background:url(decor/officine-1920-jour.jpg?v=10) center/cover;filter:blur(26px) saturate(1.3);opacity:.32}
 .ciel::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(30,22,19,0) 0%,rgba(30,22,19,.55) 70%,rgba(30,22,19,.85) 100%)}
 .ciel i{position:absolute;width:5px;height:5px;border-radius:50%;background:#ffe9a8;box-shadow:0 0 10px 3px rgba(255,214,107,.55);opacity:0;animation:luciole 9s ease-in-out infinite;z-index:1}
 @keyframes luciole{0%{opacity:0;transform:translate(0,0)}20%{opacity:.9}50%{transform:translate(18px,-40px)}80%{opacity:.7}100%{opacity:0;transform:translate(-10px,-90px)}}
@@ -486,8 +486,6 @@ body.figer .anim *,body.figer .anim{animation-play-state:paused!important}
 .papier .rp:first-line{font-size:30px}
 .papier .bas{display:flex;justify-content:space-between;align-items:flex-end;padding:0 16px 12px;font:700 18px Caveat,cursive;color:#5d7a76}
 .papier .sig{width:110px;height:34px}
-.papier .pouce{position:absolute;bottom:-30px;width:46px;height:54px;pointer-events:none}
-.papier .pouce.g{left:-16px;transform:rotate(18deg)}.papier .pouce.d{right:-16px;transform:scaleX(-1) rotate(18deg)}
 .tampon{position:absolute;right:18px;top:64px;border:4px solid #c62f2f;color:#c62f2f;font:900 22px/1 system-ui;letter-spacing:.08em;padding:8px 12px;border-radius:8px;transform:rotate(-14deg) scale(2.4);opacity:0;transition:transform .35s cubic-bezier(.2,1.6,.4,1),opacity .2s}
 .tampon.on{transform:rotate(-14deg) scale(1);opacity:.9}
 .prep-t{font-weight:800;font-size:15px;margin:6px 2px 8px;display:flex;align-items:center;gap:8px;color:var(--encre)}
@@ -522,17 +520,18 @@ body.figer .anim *,body.figer .anim{animation-play-state:paused!important}
 #etag .et-corps{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:6px 0 calc(env(safe-area-inset-bottom) + 30px)}
 #etag .meuble{margin:14px 10px 6px;background:linear-gradient(90deg,#7a4a2a,#8c5a36 8%,#7a4a2a 92%,#6b3f22);border-radius:12px;padding:8px 8px 4px;box-shadow:0 10px 24px rgba(0,0,0,.25)}
 #etag .meuble h3{margin:2px 6px 8px;color:#fbe7c8;font-size:.85rem;text-transform:uppercase;letter-spacing:.08em}
-#etag .rayon{background:linear-gradient(180deg,#f3e6d4,#e9d6bd);border-radius:8px;margin-bottom:10px;padding:6px 6px 0;position:relative}
-#etag .rayon::after{content:"";display:block;height:12px;margin:0 -6px;background:linear-gradient(180deg,#a96b40,#7d4a2a);border-radius:0 0 8px 8px;box-shadow:0 4px 6px rgba(0,0,0,.25)}
-#etag .plaque{display:inline-block;font-size:.72rem;font-weight:800;color:#5b3a24;background:#fff8ec;border:1px solid #d9c3a3;border-radius:6px;padding:2px 8px;margin:0 0 4px 2px}
-#etag .pots{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 4px;align-items:flex-end}
-#etag .pot{flex:0 0 auto;width:92px;background:none;border:0;padding:0;transition:transform .15s}
-#etag .pot svg{width:92px;height:118px;display:block;filter:drop-shadow(0 4px 4px rgba(0,0,0,.18))}
-#etag .pot.ok{animation:sautPot .5s}#etag .pot.ko{animation:secoue .4s}#etag .pot.montre{outline:4px solid #2f8a84;border-radius:12px}
+#etag .rayon{background:#efe2cf;border-radius:8px;margin-bottom:10px;padding:6px 0 8px;position:relative;overflow:hidden}
+#etag .plaque{position:relative;z-index:1;display:inline-block;font-size:.72rem;font-weight:800;color:#5b3a24;background:#fff8ec;border:1px solid #d9c3a3;border-radius:6px;padding:2px 8px;margin:0 0 4px 8px}
+#etag .pots{display:flex;gap:0;overflow-x:auto;padding:0;align-items:flex-start;background:linear-gradient(180deg,#efe2cf 0,#efe2cf 98.5px,#c58a58 98.5px,#c58a58 118px,#b97c49 118px,#7d4a2a 130px,rgba(0,0,0,0) 130px);background-attachment:local;-webkit-overflow-scrolling:touch}
+#etag .pots::after{content:"";flex:1 0 0;min-width:0;height:130px;background:linear-gradient(180deg,#efe2cf 0,#efe2cf 98.5px,#c58a58 98.5px,#c58a58 118px,#b97c49 118px,#7d4a2a 130px,rgba(0,0,0,0) 130px)}
+#etag .pot{flex:0 0 auto;width:92px;background:linear-gradient(180deg,#efe2cf 0,#efe2cf 98.5px,#c58a58 98.5px,#c58a58 118px,#b97c49 118px,#7d4a2a 130px,rgba(0,0,0,0) 130px);border:0;padding:0 0 2px;transition:transform .15s;color:inherit;font:inherit}
+#etag .pot .pv{display:block;width:92px;height:118px;overflow:hidden}#etag .pot .pv img{display:block;width:92px;height:118px}
+#etag .pot .tag{display:block;margin:15px 5px 0;padding:3px 2px;background:#fffaf0;border:1px solid #d9c7a8;border-radius:4px;font:700 9px/1.18 -apple-system,Helvetica,Arial,sans-serif;color:#2f2433;text-align:center;box-shadow:0 2px 3px rgba(0,0,0,.12);overflow-wrap:anywhere}
+#etag .pot.ok{animation:sautPot .5s}#etag .pot.ko{animation:secoue .4s}#etag .pot.montre{outline:4px solid #2f8a84;outline-offset:-4px;border-radius:12px}
 @keyframes sautPot{40%{transform:translateY(-14px) scale(1.06)}}@keyframes secoue{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 #etag .fiche{position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom) + 12px);background:#fffdf6;border-radius:18px;padding:14px 16px;box-shadow:0 18px 40px rgba(0,0,0,.35);display:none;z-index:3}
 #etag .fiche.on{display:block;animation:apparait .25s ease-out}
-#etag .fiche .ff{display:flex;gap:12px;align-items:center}#etag .fiche svg{width:76px;height:98px;flex:0 0 auto}
+#etag .fiche .ff{display:flex;gap:12px;align-items:center}#etag .fiche .fimg{width:76px;height:98px;flex:0 0 auto;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,.18)}
 #etag .fiche b{font-size:1.05rem}#etag .fiche .cat{display:inline-block;margin:4px 0;font-weight:800;font-size:.8rem;padding:2px 9px;border-radius:999px;background:#e6f0ed;color:#226b66}
 #etag .fiche p{margin:4px 0 0;font-size:.9rem;line-height:1.35}
 #etag .fiche .fb2{display:flex;gap:8px;margin-top:10px}#etag .fiche .fb2 button{flex:1;border:0;border-radius:12px;padding:11px;font-weight:800;color:#fff}
@@ -1528,7 +1527,7 @@ function importer(){function appliquer(t){try{t=(t||'').trim();if(t.indexOf('CHI
  if(navigator.clipboard&&navigator.clipboard.readText)navigator.clipboard.readText().then(function(t){if(t&&t.indexOf('CHIPHA1:')===0)appliquer(t);else appliquer(window.prompt('Colle ici le code de progression :',''))},function(){appliquer(window.prompt('Colle ici le code de progression :',''))});else appliquer(window.prompt('Colle ici le code de progression :',''))}
 function haut(){var d=$('#defile');if(d)d.scrollTop=0}
 /* ---------- mise à jour automatique : l'app vérifie s'il existe une version plus récente ---------- */
-var VERSION='1795191076';
+var VERSION='1795193693';
 function verifierVersion(){try{fetch(location.pathname+'?nocache='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():''}).then(function(t){var m=/var VERSION='(\d+)'/.exec(t);if(m&&m[1]!==VERSION&&!G){location.replace(location.pathname+'?v='+m[1]+location.hash)}}).catch(function(){})}catch(e){}}
 setTimeout(verifierVersion,1500);
 document.addEventListener('visibilitychange',function(){if(!document.hidden)verifierVersion()});
@@ -1542,7 +1541,7 @@ document.addEventListener('visibilitychange',function(){if(!document.hidden)lect
 function heroX(){var s=SPOTS[VUE==='chap'?CI:chapActuel()]||[50];return Math.round(s[0])}
 function entete(mini){
  var hr=new Date().getHours(), salut=(hr>=18||hr<5)?'Bonsoir':'Bonjour';
- return '<header class="hero'+(mini?' mini':'')+'"><img class="hero-v" data-jn="officine-1920-{m}.jpg?v=9" src="decor/officine-1920-'+JN()+'.jpg?v=9" alt="" style="object-position:'+heroX()+'% 62%">'+
+ return '<header class="hero'+(mini?' mini':'')+'"><img class="hero-v" data-jn="officine-1920-{m}.jpg?v=10" src="decor/officine-1920-'+JN()+'.jpg?v=10" alt="" style="object-position:'+heroX()+'% 62%">'+
  '<div class="hero-haut">'+(mini?'<button class="rond-btn" id="retour" aria-label="Retour à la carte">'+ic('back')+'</button><div class="hero-t"><small>'+salut+' Olivia</small><b>Retour au monde</b></div>':'<img class="logo" src="icons/jeu-180.png" alt=""><div class="hero-t"><small>'+salut+' Olivia</small><b>Méthodes de calculs</b></div>')+
  ''+'<div class="btns-col"><button class="rond-btn" id="son" aria-label="Son">'+ic(S.son===false?'mute':'vol')+'</button><button class="rond-btn" id="lecture" aria-label="Lecture ou pause de l\'animation">'+ic(S.pause?'play':'pause')+'</button><button class="rond-btn amp'+(JN()==='nuit'?' eteinte':'')+'" aria-label="Jour ou nuit">'+ic('bulb')+'</button></div>'+'</div>'+(mini?'':'%GUIR%')+'</header>'}
 function statsHTML(){
@@ -1587,7 +1586,7 @@ function gyroActiver(){if(GYRO.ok)return;GYRO.ok=true;window.addEventListener('d
 function salonHTML(){
  var hr=new Date().getHours(), salut=(hr>=18||hr<5)?'Bonsoir':'Bonjour', fg='';
  fg='';
- return '<section class="salon" id="salon"><div class="cam" id="cam"><div class="tilt" id="tilt"><div class="piece" id="piece"><img class="ville" src="decor/ville-nuit.webp?v=8" alt="" style="left:43.27%;top:3.33%;width:18.91%;height:41.83%"><img class="decor" data-jn="officine-fond-{m}.webp?v=9" src="decor/officine-fond-'+JN()+'.webp?v=9" alt=""><svg class="anim" viewBox="0 0 4608 2160" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="gReflet" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".10"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset=".6" stop-color="#fff" stop-opacity=".05"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs><polygon points="1994,72 2865,72 2846,975 2005,975" fill="url(#gReflet)"/><line class="a-trotteuse" style="transform-origin:3112px 78px" x1="3112" y1="95" x2="3112" y2="-11" stroke="#d9573f" stroke-width="5" stroke-linecap="round"/><circle cx="3112" cy="78" r="9" fill="#d9573f"/></svg><div class="couche" data-k="1.7"><img data-jn="officine-milieu-{m}.webp?v=9" src="decor/officine-milieu-'+JN()+'.webp?v=9" alt=""><svg class="anim" viewBox="0 0 4608 2160" preserveAspectRatio="none" aria-hidden="true"><defs><clipPath id="cBal"><circle cx="2952" cy="1365" r="73"/></clipPath><radialGradient id="gChauf"><stop offset="0" stop-color="#ff8a4a" stop-opacity=".9"/><stop offset="1" stop-color="#ff8a4a" stop-opacity="0"/></radialGradient></defs><g clip-path="url(#cBal)"><circle class="a-bulle b1" cx="2921" cy="1424" r="9" fill="#fff" opacity=".75"/><circle class="a-bulle b2" cx="2956" cy="1424" r="6" fill="#fff" opacity=".75"/><circle class="a-bulle b3" cx="2984" cy="1424" r="11" fill="#fff" opacity=".75"/><circle class="a-bulle b4" cx="2941" cy="1424" r="6" fill="#fff" opacity=".75"/><circle class="a-bulle b5" cx="2972" cy="1424" r="8" fill="#fff" opacity=".75"/></g><ellipse class="a-chauffe" cx="2950" cy="1442" rx="87" ry="28" fill="url(#gChauf)"/><circle class="a-led" cx="61" cy="1475" r="9" fill="#ff5a3c"/></svg><img class="fumee f1" src="decor/vapeur-colonne.webp?v=10" alt="" style="left:73.48%;top:47.30%;width:8.50%;opacity:0.95"><img class="fumee f2" src="decor/vapeur-bouffee.webp?v=10" alt="" style="left:62.38%;top:48.20%;width:3.60%;opacity:0.8"></div><div class="couche" data-k="2.8"><img data-jn="officine-devant-{m}.webp?v=9" src="decor/officine-devant-'+JN()+'.webp?v=9" alt=""></div><div id="lieux"></div></div></div></div><div class="fg" id="fg">'+fg+'</div>'+
+ return '<section class="salon" id="salon"><div class="cam" id="cam"><div class="tilt" id="tilt"><div class="piece" id="piece"><img class="ville" src="decor/ville-nuit.webp?v=8" alt="" style="left:43.27%;top:3.33%;width:18.91%;height:41.83%"><img class="decor" data-jn="officine-fond-{m}.webp?v=10" src="decor/officine-fond-'+JN()+'.webp?v=10" alt=""><svg class="anim" viewBox="0 0 4608 2160" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="gReflet" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".10"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset=".6" stop-color="#fff" stop-opacity=".05"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs><polygon points="1994,72 2865,72 2846,975 2005,975" fill="url(#gReflet)"/><line class="a-trotteuse" style="transform-origin:3112px 78px" x1="3112" y1="95" x2="3112" y2="-11" stroke="#d9573f" stroke-width="5" stroke-linecap="round"/><circle cx="3112" cy="78" r="9" fill="#d9573f"/></svg><div class="couche" data-k="1.7"><img data-jn="officine-milieu-{m}.webp?v=10" src="decor/officine-milieu-'+JN()+'.webp?v=10" alt=""><svg class="anim" viewBox="0 0 4608 2160" preserveAspectRatio="none" aria-hidden="true"><defs><clipPath id="cBal"><circle cx="2952" cy="1365" r="73"/></clipPath><radialGradient id="gChauf"><stop offset="0" stop-color="#ff8a4a" stop-opacity=".9"/><stop offset="1" stop-color="#ff8a4a" stop-opacity="0"/></radialGradient></defs><g clip-path="url(#cBal)"><circle class="a-bulle b1" cx="2921" cy="1424" r="9" fill="#fff" opacity=".75"/><circle class="a-bulle b2" cx="2956" cy="1424" r="6" fill="#fff" opacity=".75"/><circle class="a-bulle b3" cx="2984" cy="1424" r="11" fill="#fff" opacity=".75"/><circle class="a-bulle b4" cx="2941" cy="1424" r="6" fill="#fff" opacity=".75"/><circle class="a-bulle b5" cx="2972" cy="1424" r="8" fill="#fff" opacity=".75"/></g><ellipse class="a-chauffe" cx="2950" cy="1442" rx="87" ry="28" fill="url(#gChauf)"/><circle class="a-led" cx="61" cy="1475" r="9" fill="#ff5a3c"/></svg><img class="fumee f1" src="decor/vapeur-colonne.webp?v=10" alt="" style="left:73.48%;top:47.30%;width:8.50%;opacity:0.95"><img class="fumee f2" src="decor/vapeur-bouffee.webp?v=10" alt="" style="left:62.38%;top:48.20%;width:3.60%;opacity:0.8"></div><div class="couche" data-k="2.8"><img data-jn="officine-devant-{m}.webp?v=10" src="decor/officine-devant-'+JN()+'.webp?v=10" alt=""></div><div id="lieux"></div></div></div></div><div class="fg" id="fg">'+fg+'</div>'+
  '<div class="hero-haut"><img class="logo" src="icons/jeu-180.png" alt=""><div class="hero-t"><small>'+salut+' Olivia</small><b>Méthodes de calculs</b></div>'+'<div class="btns-col"><button class="rond-btn" id="son" aria-label="Son">'+ic(S.son===false?'mute':'vol')+'</button><button class="rond-btn" id="lecture" aria-label="Lecture ou pause de l\'animation">'+ic(S.pause?'play':'pause')+'</button><button class="rond-btn amp'+(JN()==='nuit'?' eteinte':'')+'" aria-label="Jour ou nuit">'+ic('bulb')+'</button></div>'+'</div>'+
  '<div class="salon-bas"><div class="astuce" id="astuce"><span>'+ic('eye')+' Glisse dans tous les sens, pince pour voir toute l\'officine</span></div><button class="rond-btn" id="gyro" aria-label="Bouger avec le téléphone" style="display:none">'+ic('move')+'</button><button class="rond-btn" id="recentrer" aria-label="Revenir au chapitre en cours">'+ic('target')+'</button></div></section>'}
 function salon(){
@@ -1714,7 +1713,7 @@ function son(t){if(S.son===false)return;try{AC=AC||new (window.AudioContext||win
 var FILE=[];
 function fete(o){FILE.push(o);if(FILE.length===1)setTimeout(montrerFete,o.delai||0)}
 function montrerFete(){var o=FILE[0];if(!o)return;var f=$('#fete');
- f.innerHTML='<img class="fete-bg" data-jn="officine-1920-{m}.jpg?v=9" src="decor/officine-1920-'+JN()+'.jpg?v=9" alt=""><div class="rayons"></div><div class="fete-c"><div class="halo">'+o.gros+'</div><span class="sur">'+esc(o.sur)+'</span><h2>'+esc(o.titre)+'</h2>'+(o.sous?'<p>'+esc(o.sous)+'</p>':'')+(o.etoiles!=null?'<div class="etoiles">'+[1,2,3].map(function(k){return '<span class="'+(o.etoiles>=k?'on':'')+'" style="animation-delay:'+(0.5+k*0.18)+'s">'+icf('etoile')+'</span>'}).join('')+'</div>':'')+'<button class="suite on" id="fete-ok">'+(o.bouton||'Continuer')+'</button></div>';
+ f.innerHTML='<img class="fete-bg" data-jn="officine-1920-{m}.jpg?v=10" src="decor/officine-1920-'+JN()+'.jpg?v=10" alt=""><div class="rayons"></div><div class="fete-c"><div class="halo">'+o.gros+'</div><span class="sur">'+esc(o.sur)+'</span><h2>'+esc(o.titre)+'</h2>'+(o.sous?'<p>'+esc(o.sous)+'</p>':'')+(o.etoiles!=null?'<div class="etoiles">'+[1,2,3].map(function(k){return '<span class="'+(o.etoiles>=k?'on':'')+'" style="animation-delay:'+(0.5+k*0.18)+'s">'+icf('etoile')+'</span>'}).join('')+'</div>':'')+'<button class="suite on" id="fete-ok">'+(o.bouton||'Continuer')+'</button></div>';
  f.classList.add('on');son('fete');vib([30,60,30]);setTimeout(confetti,250);
  $('#fete-ok').onclick=function(){son('clic');f.classList.remove('on');f.innerHTML='';FILE.shift();if(o.apres)o.apres();if(FILE.length)setTimeout(montrerFete,300)}}
 var BADGES=[['ordo10','10 ordonnances délivrées','book'],['premier','Premier pas','check'],['parfait','Sans faute','crown'],['combo10','Combo x10','eclair'],['streak3','3 jours de suite','target'],['streak7','7 jours de suite','trophy'],['dessin10','10 calculs posés','pen'],['boss','Boss vaincu','shield'],['cent','100 bonnes réponses','book'],['chap1','Premier chapitre','flag'],['monde','Carte terminée','map']];
@@ -1747,8 +1746,7 @@ var __ordoDef=function(){var srcs=[];CHAPS.forEach(function(c,ci){if(chapOuvert(
  var n=Math.max(1,ordoRestantes())||2, it=mel(srcs.slice(0,Math.max(n+2,4))).slice(0,ordoRestantes()||3).map(qOrdo);
  lancer({items:it,nom:'Ordonnances du jour',mode:'ordo',coeurs:99})};
 function papierHTML(x){var dt=new Date(),date=('0'+dt.getDate()).slice(-2)+'/'+('0'+(dt.getMonth()+1)).slice(-2)+'/'+dt.getFullYear();
- var pouce='<svg class="pouce g" viewBox="0 0 74 86"><path d="M20 86 C6 60 4 34 18 14 C26 2 44 2 50 14 C56 26 52 44 56 58 C60 72 64 80 66 86z" fill="#5a3622"/><path d="M24 22 C30 12 42 12 46 22 C48 30 40 36 34 34 C28 32 22 30 24 22z" fill="#9c6b4f"/></svg>';
- return '<div class="papier"><div class="ent"><b>'+esc(x.med)+'</b><small>Médecin généraliste · Namur</small></div><div class="pat">Pour : '+esc(x.pat)+'</div><div class="rp">'+esc(x.ctx||'')+'</div><div class="bas"><span>Le '+date+'</span><svg class="sig" viewBox="0 0 110 34"><path d="M4 26 q12 -26 26 0 t26 -4 t24 -8 q-10 14 26 4" stroke="#1f3a8a" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></div><div class="tampon" id="tampon">PRÉPARÉ</div>'+pouce+pouce.replace('pouce g','pouce d')+'</div>'}
+ return '<div class="papier"><div class="ent"><b>'+esc(x.med)+'</b><small>Médecin généraliste · Namur</small></div><div class="pat">Pour : '+esc(x.pat)+'</div><div class="rp">'+esc(x.ctx||'')+'</div><div class="bas"><span>Le '+date+'</span><svg class="sig" viewBox="0 0 110 34"><path d="M4 26 q12 -26 26 0 t26 -4 t24 -8 q-10 14 26 4" stroke="#1f3a8a" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></div><div class="tampon" id="tampon">PRÉPARÉ</div>'+'</div>'}
 function balanceHTML(cible){return '<div class="balance" id="bal"><div class="vitre"><div class="tas" id="tas"></div><div class="plat"></div></div><div class="ecran" id="lect">0,000 g</div><div class="cible">Pèse exactement ce que tu as calculé, avec les spatules</div><div class="spat">'+
  [['1','1 g'],['0.1','0,1 g'],['0.01','0,01 g'],['0.001','0,001 g'],['-1','− 1 g'],['-0.1','− 0,1'],['-0.01','− 0,01'],['-0.001','− 0,001']].map(function(b){return '<button data-p="'+b[0]+'"'+(b[0][0]==='-'?' class="moins"':'')+'>'+b[1]+'</button>'}).join('')+'</div><button class="peser" id="peser">Valider la pesée</button></div>'}
 function balance(x,cible,fin){var m=0,lect=$('#lect'),tas=$('#tas');
@@ -1766,13 +1764,11 @@ function ordoFin(x,bon){S.total++;if(x.id)noter(x.id,bon);if(bon)bien(x);else ma
 var EXC=window.EXC, EXBY={}; EXC.ex.forEach(function(e){EXBY[e.id]=e});
 function exM(id){return Math.min(boxOf('ex:'+id).b,3)/3}
 function coupe(t,n){var m=t.split(' '),l='',o=[];m.forEach(function(w){if((l+' '+w).trim().length>n){if(l)o.push(l.trim());l=w}else l+=' '+w});if(l.trim())o.push(l.trim());return o}
-function potSVG(e,plein){var c=EXC.col[e.cat]||'#eee',h=Math.round(16+58*plein),L=coupe(e.n,12).slice(0,4),fs=L.length>2?8.5:9.5;
- return '<svg viewBox="0 0 92 118"><rect x="22" y="2" width="48" height="14" rx="4" fill="#3a2f36"/><rect x="18" y="14" width="56" height="8" rx="3" fill="#574a52"/>'+
- '<path d="M14 26 q0-6 8-6 h48 q8 0 8 6 v80 q0 10-10 10 h-44 q-10 0-10-10z" fill="rgba(255,255,255,.55)" stroke="#c9bba6" stroke-width="2"/>'+
- '<rect x="16" y="'+(114-h)+'" width="60" height="'+(h-2)+'" rx="8" fill="'+c+'"/>'+
- '<rect x="11" y="42" width="70" height="'+(12+L.length*11)+'" rx="4" fill="#fffaf0" stroke="#d9c7a8"/>'+L.map(function(l,i){return '<text x="46" y="'+(55+i*11)+'" font-size="'+fs+'" font-weight="700" text-anchor="middle" fill="#2f2433" font-family="-apple-system,Helvetica,Arial">'+esc(l)+'</text>'}).join('')+
- '<path d="M20 30 v60" stroke="#fff" stroke-width="5" opacity=".5" stroke-linecap="round"/></svg>'}
-function potImg(e){return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(potSVG(e,.6).replace('<svg ','<svg xmlns="http://www.w3.org/2000/svg" width="184" height="236" '))}
+var POTV='?v=2';
+function potSrc(e,plein){return 'decor/pots/'+e.id+'-'+Math.max(0,Math.min(3,Math.round(plein*3)))+'.webp'+POTV}
+function potHTML(e,plein){var L=coupe(e.n,13).slice(0,4);
+ return '<span class="pv"><img src="'+potSrc(e,plein)+'" alt="" loading="lazy" decoding="async" width="92" height="118"></span><span class="tag">'+L.map(esc).join('<br>')+'</span>'}
+function potImg(e){return potSrc(e,2/3)}
 function exMaitrises(){return EXC.ex.filter(function(e){return exM(e.id)>=1}).length}
 var ETQ=null;
 function etagere(){var o=$('#etag');if(!o){o=document.createElement('div');o.id='etag';document.body.appendChild(o)}
@@ -1782,7 +1778,7 @@ function etagere(){var o=$('#etag');if(!o){o=document.createElement('div');o.id=
  '<div class="et-demande" id="et-dem"></div><div class="et-corps" id="et-corps">';
  EXC.fam.forEach(function(f){var cats=[];EXC.ex.forEach(function(e){if(e.fam===f[0]&&cats.indexOf(e.cat)<0)cats.push(e.cat)});
   h+='<div class="meuble"><h3>'+esc(f[1])+'</h3>';
-  cats.forEach(function(c){h+='<div class="rayon"><span class="plaque">'+esc(c)+'</span><div class="pots">'+EXC.ex.filter(function(e){return e.fam===f[0]&&e.cat===c}).map(function(e){return '<button class="pot" data-x="'+e.id+'" aria-label="'+esc(e.n)+'">'+potSVG(e,exM(e.id))+'</button>'}).join('')+'</div></div>'});
+  cats.forEach(function(c){h+='<div class="rayon"><span class="plaque">'+esc(c)+'</span><div class="pots">'+EXC.ex.filter(function(e){return e.fam===f[0]&&e.cat===c}).map(function(e){return '<button class="pot" data-x="'+e.id+'" aria-label="'+esc(e.n)+'">'+potHTML(e,exM(e.id))+'</button>'}).join('')+'</div></div>'});
   h+='</div>'});
  h+='<p class="note" style="margin:6px 16px">Le niveau du pot monte à chaque fois que tu reconnais l\'excipient : un pot plein = excipient maîtrisé.</p></div><div class="fiche" id="et-fiche"></div>';
  o.innerHTML=h;o.classList.add('on');ETQ=null;
@@ -1792,9 +1788,9 @@ function etagere(){var o=$('#etag');if(!o){o=document.createElement('div');o.id=
   $$('#etag .et-modes button').forEach(function(x){x.classList.toggle('on',x===b)});if(m==='commande')etCommande();else{ETQ=null;$('#et-dem').classList.remove('on')}}});
  $$('#etag .pot').forEach(function(b){b.onclick=function(){var e=EXBY[b.dataset.x];if(ETQ){etReponse(b,e);return}etFiche(e,b)}});
 }
-function etMaj(b,e){b.innerHTML=potSVG(e,exM(e.id))}
+function etMaj(b,e){b.innerHTML=potHTML(e,exM(e.id))}
 function etFiche(e,b){var f=$('#et-fiche');son('clic');
- f.innerHTML='<div class="ff">'+potSVG(e,exM(e.id))+'<div><b>'+esc(e.n)+'</b><div id="et-cache"><p>Quelle famille, et à quoi sert-il ? Réponds dans ta tête, puis retourne.</p></div><div id="et-rev" style="display:none"><span class="cat">'+esc(e.cat)+'</span>'+(e.d?'<p>'+esc(e.d)+'</p>':'')+'</div></div></div><div class="fb2" id="et-b1"><button style="background:#2f8a84" id="et-ret2">Retourner</button></div><div class="fb2" id="et-b2" style="display:none"><button style="background:#e5484d" data-v="0">À revoir</button><button style="background:#16a34a" data-v="1">Je savais</button></div>';
+ f.innerHTML='<div class="ff"><img class="fimg" src="'+potSrc(e,exM(e.id))+'" alt="">'+'<div><b>'+esc(e.n)+'</b><div id="et-cache"><p>Quelle famille, et à quoi sert-il ? Réponds dans ta tête, puis retourne.</p></div><div id="et-rev" style="display:none"><span class="cat">'+esc(e.cat)+'</span>'+(e.d?'<p>'+esc(e.d)+'</p>':'')+'</div></div></div><div class="fb2" id="et-b1"><button style="background:#2f8a84" id="et-ret2">Retourner</button></div><div class="fb2" id="et-b2" style="display:none"><button style="background:#e5484d" data-v="0">À revoir</button><button style="background:#16a34a" data-v="1">Je savais</button></div>';
  f.classList.add('on');$('#et-ret2').onclick=function(){son('clic');$('#et-cache').style.display='none';$('#et-rev').style.display='';$('#et-b1').style.display='none';$('#et-b2').style.display=''};
  $$('#et-b2 button').forEach(function(x){x.onclick=function(){var ok=x.dataset.v==='1';noter('ex:'+e.id,ok);if(ok){S.xp+=3;S.todayXp+=3}save();etMaj(b,e);f.classList.remove('on');son(ok?'bien':'clic')}})}
 function etCommande(){var L=mel(EXC.req.slice()).slice(0,6);
@@ -1818,7 +1814,7 @@ function etQuiz(){var it=EXC.quiz.map(function(q){return {id:'ex:'+q.id,kind:'qc
 function JN(){return S.jour===false?'nuit':'jour'}
 function basculeJour(){S.jour=!(S.jour!==false);save();son('clic');vib(10);var m=JN();
  $$('img[data-jn]').forEach(function(i){i.src='decor/'+i.dataset.jn.replace('{m}',m)});
- var v=$('img.ville');if(v)v.src=m==='jour'?'decor/ville-jour.webp?v='+'9':'decor/ville-nuit.webp?v='+'9';
+ var v=$('img.ville');if(v)v.src=m==='jour'?'decor/ville-jour.webp?v='+'10':'decor/ville-nuit.webp?v='+'10';
  document.body.classList.toggle('nuit',m==='nuit');$$('.amp').forEach(function(b){b.innerHTML=ic('bulb');b.classList.toggle('eteinte',m==='nuit')});
  toast(ic('bulb')+(m==='jour'?' Lumière allumée : il fait jour':' Lumière tamisée : bonsoir'))}
 document.body.classList.toggle('nuit',JN()==='nuit');

@@ -7,3 +7,8 @@ Reconstruire le jeu :
 
 Pour ajouter un chapitre : ajouter sa page de théorie (concepts, cards, quiz, gens, worked, sprints), ses exercices de séance,
 puis une entrée dans CH, MC, CARTES et TABLES de build_data.py, et un lieu dans SPOTS (build_jeu287.py).
+
+## Pots réalistes de l étagère
+- 3d/pots.js + 3d/specs_pots.py : une vignette 3D par excipient (état réel : liquide, poudre, cristaux, pâte, gaz) et par niveau de maîtrise (0 à 3).
+- Rendu : python3 3d/rendre_pots.py ../decor/pots all (serveur http sur le dossier 3d, port 8390) -> decor/pots/xN-{0..3}.webp (276x354).
+- Le mur (#efe2cf), le dessus de planche (#c58a58) et le bord (dégradé) sont repris en CSS pour que les vignettes se raccordent.

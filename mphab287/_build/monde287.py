@@ -1,6 +1,6 @@
 # Monde « L'officine » : décor 4K vectoriel animé, ordonnances à préparer, balance, thème chaud.
 import re
-V = '9'
+V = '10'
 
 ANIM_BACK = r'''<svg class="anim" viewBox="0 0 4608 2160" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="gReflet" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".10"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset=".6" stop-color="#fff" stop-opacity=".05"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>
 <polygon points="1994,72 2865,72 2846,975 2005,975" fill="url(#gReflet)"/>
@@ -64,8 +64,6 @@ body.figer .anim *,body.figer .anim{animation-play-state:paused!important}
 .papier .rp:first-line{font-size:30px}
 .papier .bas{display:flex;justify-content:space-between;align-items:flex-end;padding:0 16px 12px;font:700 18px Caveat,cursive;color:#5d7a76}
 .papier .sig{width:110px;height:34px}
-.papier .pouce{position:absolute;bottom:-30px;width:46px;height:54px;pointer-events:none}
-.papier .pouce.g{left:-16px;transform:rotate(18deg)}.papier .pouce.d{right:-16px;transform:scaleX(-1) rotate(18deg)}
 .tampon{position:absolute;right:18px;top:64px;border:4px solid #c62f2f;color:#c62f2f;font:900 22px/1 system-ui;letter-spacing:.08em;padding:8px 12px;border-radius:8px;transform:rotate(-14deg) scale(2.4);opacity:0;transition:transform .35s cubic-bezier(.2,1.6,.4,1),opacity .2s}
 .tampon.on{transform:rotate(-14deg) scale(1);opacity:.9}
 .prep-t{font-weight:800;font-size:15px;margin:6px 2px 8px;display:flex;align-items:center;gap:8px;color:var(--encre)}
@@ -149,8 +147,7 @@ MODES.ordonnances=function(){var srcs=[];CHAPS.forEach(function(c,ci){if(chapOuv
  var n=Math.max(1,ordoRestantes())||2, it=mel(srcs.slice(0,Math.max(n+2,4))).slice(0,ordoRestantes()||3).map(qOrdo);
  lancer({items:it,nom:'Ordonnances du jour',mode:'ordo',coeurs:99})};
 function papierHTML(x){var dt=new Date(),date=('0'+dt.getDate()).slice(-2)+'/'+('0'+(dt.getMonth()+1)).slice(-2)+'/'+dt.getFullYear();
- var pouce='<svg class="pouce g" viewBox="0 0 74 86"><path d="M20 86 C6 60 4 34 18 14 C26 2 44 2 50 14 C56 26 52 44 56 58 C60 72 64 80 66 86z" fill="#5a3622"/><path d="M24 22 C30 12 42 12 46 22 C48 30 40 36 34 34 C28 32 22 30 24 22z" fill="#9c6b4f"/></svg>';
- return '<div class="papier"><div class="ent"><b>'+esc(x.med)+'</b><small>Médecin généraliste · Namur</small></div><div class="pat">Pour : '+esc(x.pat)+'</div><div class="rp">'+esc(x.ctx||'')+'</div><div class="bas"><span>Le '+date+'</span><svg class="sig" viewBox="0 0 110 34"><path d="M4 26 q12 -26 26 0 t26 -4 t24 -8 q-10 14 26 4" stroke="#1f3a8a" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></div><div class="tampon" id="tampon">PRÉPARÉ</div>'+pouce+pouce.replace('pouce g','pouce d')+'</div>'}
+ return '<div class="papier"><div class="ent"><b>'+esc(x.med)+'</b><small>Médecin généraliste · Namur</small></div><div class="pat">Pour : '+esc(x.pat)+'</div><div class="rp">'+esc(x.ctx||'')+'</div><div class="bas"><span>Le '+date+'</span><svg class="sig" viewBox="0 0 110 34"><path d="M4 26 q12 -26 26 0 t26 -4 t24 -8 q-10 14 26 4" stroke="#1f3a8a" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></div><div class="tampon" id="tampon">PRÉPARÉ</div>'+'</div>'}
 function balanceHTML(cible){return '<div class="balance" id="bal"><div class="vitre"><div class="tas" id="tas"></div><div class="plat"></div></div><div class="ecran" id="lect">0,000 g</div><div class="cible">Pèse exactement ce que tu as calculé, avec les spatules</div><div class="spat">'+
  [['1','1 g'],['0.1','0,1 g'],['0.01','0,01 g'],['0.001','0,001 g'],['-1','− 1 g'],['-0.1','− 0,1'],['-0.01','− 0,01'],['-0.001','− 0,001']].map(function(b){return '<button data-p="'+b[0]+'"'+(b[0][0]==='-'?' class="moins"':'')+'>'+b[1]+'</button>'}).join('')+'</div><button class="peser" id="peser">Valider la pesée</button></div>'}
 function balance(x,cible,fin){var m=0,lect=$('#lect'),tas=$('#tas');

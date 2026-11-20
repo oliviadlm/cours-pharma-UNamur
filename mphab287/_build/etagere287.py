@@ -73,17 +73,18 @@ CSS = r'''
 #etag .et-corps{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:6px 0 calc(env(safe-area-inset-bottom) + 30px)}
 #etag .meuble{margin:14px 10px 6px;background:linear-gradient(90deg,#7a4a2a,#8c5a36 8%,#7a4a2a 92%,#6b3f22);border-radius:12px;padding:8px 8px 4px;box-shadow:0 10px 24px rgba(0,0,0,.25)}
 #etag .meuble h3{margin:2px 6px 8px;color:#fbe7c8;font-size:.85rem;text-transform:uppercase;letter-spacing:.08em}
-#etag .rayon{background:linear-gradient(180deg,#f3e6d4,#e9d6bd);border-radius:8px;margin-bottom:10px;padding:6px 6px 0;position:relative}
-#etag .rayon::after{content:"";display:block;height:12px;margin:0 -6px;background:linear-gradient(180deg,#a96b40,#7d4a2a);border-radius:0 0 8px 8px;box-shadow:0 4px 6px rgba(0,0,0,.25)}
-#etag .plaque{display:inline-block;font-size:.72rem;font-weight:800;color:#5b3a24;background:#fff8ec;border:1px solid #d9c3a3;border-radius:6px;padding:2px 8px;margin:0 0 4px 2px}
-#etag .pots{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 4px;align-items:flex-end}
-#etag .pot{flex:0 0 auto;width:92px;background:none;border:0;padding:0;transition:transform .15s}
-#etag .pot svg{width:92px;height:118px;display:block;filter:drop-shadow(0 4px 4px rgba(0,0,0,.18))}
-#etag .pot.ok{animation:sautPot .5s}#etag .pot.ko{animation:secoue .4s}#etag .pot.montre{outline:4px solid #2f8a84;border-radius:12px}
+#etag .rayon{background:#efe2cf;border-radius:8px;margin-bottom:10px;padding:6px 0 8px;position:relative;overflow:hidden}
+#etag .plaque{position:relative;z-index:1;display:inline-block;font-size:.72rem;font-weight:800;color:#5b3a24;background:#fff8ec;border:1px solid #d9c3a3;border-radius:6px;padding:2px 8px;margin:0 0 4px 8px}
+#etag .pots{display:flex;gap:0;overflow-x:auto;padding:0;align-items:flex-start;background:linear-gradient(180deg,#efe2cf 0,#efe2cf 98.5px,#c58a58 98.5px,#c58a58 118px,#b97c49 118px,#7d4a2a 130px,rgba(0,0,0,0) 130px);background-attachment:local;-webkit-overflow-scrolling:touch}
+#etag .pots::after{content:"";flex:1 0 0;min-width:0;height:130px;background:linear-gradient(180deg,#efe2cf 0,#efe2cf 98.5px,#c58a58 98.5px,#c58a58 118px,#b97c49 118px,#7d4a2a 130px,rgba(0,0,0,0) 130px)}
+#etag .pot{flex:0 0 auto;width:92px;background:linear-gradient(180deg,#efe2cf 0,#efe2cf 98.5px,#c58a58 98.5px,#c58a58 118px,#b97c49 118px,#7d4a2a 130px,rgba(0,0,0,0) 130px);border:0;padding:0 0 2px;transition:transform .15s;color:inherit;font:inherit}
+#etag .pot .pv{display:block;width:92px;height:118px;overflow:hidden}#etag .pot .pv img{display:block;width:92px;height:118px}
+#etag .pot .tag{display:block;margin:15px 5px 0;padding:3px 2px;background:#fffaf0;border:1px solid #d9c7a8;border-radius:4px;font:700 9px/1.18 -apple-system,Helvetica,Arial,sans-serif;color:#2f2433;text-align:center;box-shadow:0 2px 3px rgba(0,0,0,.12);overflow-wrap:anywhere}
+#etag .pot.ok{animation:sautPot .5s}#etag .pot.ko{animation:secoue .4s}#etag .pot.montre{outline:4px solid #2f8a84;outline-offset:-4px;border-radius:12px}
 @keyframes sautPot{40%{transform:translateY(-14px) scale(1.06)}}@keyframes secoue{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 #etag .fiche{position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom) + 12px);background:#fffdf6;border-radius:18px;padding:14px 16px;box-shadow:0 18px 40px rgba(0,0,0,.35);display:none;z-index:3}
 #etag .fiche.on{display:block;animation:apparait .25s ease-out}
-#etag .fiche .ff{display:flex;gap:12px;align-items:center}#etag .fiche svg{width:76px;height:98px;flex:0 0 auto}
+#etag .fiche .ff{display:flex;gap:12px;align-items:center}#etag .fiche .fimg{width:76px;height:98px;flex:0 0 auto;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,.18)}
 #etag .fiche b{font-size:1.05rem}#etag .fiche .cat{display:inline-block;margin:4px 0;font-weight:800;font-size:.8rem;padding:2px 9px;border-radius:999px;background:#e6f0ed;color:#226b66}
 #etag .fiche p{margin:4px 0 0;font-size:.9rem;line-height:1.35}
 #etag .fiche .fb2{display:flex;gap:8px;margin-top:10px}#etag .fiche .fb2 button{flex:1;border:0;border-radius:12px;padding:11px;font-weight:800;color:#fff}
@@ -94,13 +95,11 @@ JS = r'''
 var EXC=window.EXC, EXBY={}; EXC.ex.forEach(function(e){EXBY[e.id]=e});
 function exM(id){return Math.min(boxOf('ex:'+id).b,3)/3}
 function coupe(t,n){var m=t.split(' '),l='',o=[];m.forEach(function(w){if((l+' '+w).trim().length>n){if(l)o.push(l.trim());l=w}else l+=' '+w});if(l.trim())o.push(l.trim());return o}
-function potSVG(e,plein){var c=EXC.col[e.cat]||'#eee',h=Math.round(16+58*plein),L=coupe(e.n,12).slice(0,4),fs=L.length>2?8.5:9.5;
- return '<svg viewBox="0 0 92 118"><rect x="22" y="2" width="48" height="14" rx="4" fill="#3a2f36"/><rect x="18" y="14" width="56" height="8" rx="3" fill="#574a52"/>'+
- '<path d="M14 26 q0-6 8-6 h48 q8 0 8 6 v80 q0 10-10 10 h-44 q-10 0-10-10z" fill="rgba(255,255,255,.55)" stroke="#c9bba6" stroke-width="2"/>'+
- '<rect x="16" y="'+(114-h)+'" width="60" height="'+(h-2)+'" rx="8" fill="'+c+'"/>'+
- '<rect x="11" y="42" width="70" height="'+(12+L.length*11)+'" rx="4" fill="#fffaf0" stroke="#d9c7a8"/>'+L.map(function(l,i){return '<text x="46" y="'+(55+i*11)+'" font-size="'+fs+'" font-weight="700" text-anchor="middle" fill="#2f2433" font-family="-apple-system,Helvetica,Arial">'+esc(l)+'</text>'}).join('')+
- '<path d="M20 30 v60" stroke="#fff" stroke-width="5" opacity=".5" stroke-linecap="round"/></svg>'}
-function potImg(e){return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(potSVG(e,.6).replace('<svg ','<svg xmlns="http://www.w3.org/2000/svg" width="184" height="236" '))}
+var POTV='?v=2';
+function potSrc(e,plein){return 'decor/pots/'+e.id+'-'+Math.max(0,Math.min(3,Math.round(plein*3)))+'.webp'+POTV}
+function potHTML(e,plein){var L=coupe(e.n,13).slice(0,4);
+ return '<span class="pv"><img src="'+potSrc(e,plein)+'" alt="" loading="lazy" decoding="async" width="92" height="118"></span><span class="tag">'+L.map(esc).join('<br>')+'</span>'}
+function potImg(e){return potSrc(e,2/3)}
 function exMaitrises(){return EXC.ex.filter(function(e){return exM(e.id)>=1}).length}
 var ETQ=null;
 function etagere(){var o=$('#etag');if(!o){o=document.createElement('div');o.id='etag';document.body.appendChild(o)}
@@ -110,7 +109,7 @@ function etagere(){var o=$('#etag');if(!o){o=document.createElement('div');o.id=
  '<div class="et-demande" id="et-dem"></div><div class="et-corps" id="et-corps">';
  EXC.fam.forEach(function(f){var cats=[];EXC.ex.forEach(function(e){if(e.fam===f[0]&&cats.indexOf(e.cat)<0)cats.push(e.cat)});
   h+='<div class="meuble"><h3>'+esc(f[1])+'</h3>';
-  cats.forEach(function(c){h+='<div class="rayon"><span class="plaque">'+esc(c)+'</span><div class="pots">'+EXC.ex.filter(function(e){return e.fam===f[0]&&e.cat===c}).map(function(e){return '<button class="pot" data-x="'+e.id+'" aria-label="'+esc(e.n)+'">'+potSVG(e,exM(e.id))+'</button>'}).join('')+'</div></div>'});
+  cats.forEach(function(c){h+='<div class="rayon"><span class="plaque">'+esc(c)+'</span><div class="pots">'+EXC.ex.filter(function(e){return e.fam===f[0]&&e.cat===c}).map(function(e){return '<button class="pot" data-x="'+e.id+'" aria-label="'+esc(e.n)+'">'+potHTML(e,exM(e.id))+'</button>'}).join('')+'</div></div>'});
   h+='</div>'});
  h+='<p class="note" style="margin:6px 16px">Le niveau du pot monte à chaque fois que tu reconnais l\'excipient : un pot plein = excipient maîtrisé.</p></div><div class="fiche" id="et-fiche"></div>';
  o.innerHTML=h;o.classList.add('on');ETQ=null;
@@ -120,9 +119,9 @@ function etagere(){var o=$('#etag');if(!o){o=document.createElement('div');o.id=
   $$('#etag .et-modes button').forEach(function(x){x.classList.toggle('on',x===b)});if(m==='commande')etCommande();else{ETQ=null;$('#et-dem').classList.remove('on')}}});
  $$('#etag .pot').forEach(function(b){b.onclick=function(){var e=EXBY[b.dataset.x];if(ETQ){etReponse(b,e);return}etFiche(e,b)}});
 }
-function etMaj(b,e){b.innerHTML=potSVG(e,exM(e.id))}
+function etMaj(b,e){b.innerHTML=potHTML(e,exM(e.id))}
 function etFiche(e,b){var f=$('#et-fiche');son('clic');
- f.innerHTML='<div class="ff">'+potSVG(e,exM(e.id))+'<div><b>'+esc(e.n)+'</b><div id="et-cache"><p>Quelle famille, et à quoi sert-il ? Réponds dans ta tête, puis retourne.</p></div><div id="et-rev" style="display:none"><span class="cat">'+esc(e.cat)+'</span>'+(e.d?'<p>'+esc(e.d)+'</p>':'')+'</div></div></div><div class="fb2" id="et-b1"><button style="background:#2f8a84" id="et-ret2">Retourner</button></div><div class="fb2" id="et-b2" style="display:none"><button style="background:#e5484d" data-v="0">À revoir</button><button style="background:#16a34a" data-v="1">Je savais</button></div>';
+ f.innerHTML='<div class="ff"><img class="fimg" src="'+potSrc(e,exM(e.id))+'" alt="">'+'<div><b>'+esc(e.n)+'</b><div id="et-cache"><p>Quelle famille, et à quoi sert-il ? Réponds dans ta tête, puis retourne.</p></div><div id="et-rev" style="display:none"><span class="cat">'+esc(e.cat)+'</span>'+(e.d?'<p>'+esc(e.d)+'</p>':'')+'</div></div></div><div class="fb2" id="et-b1"><button style="background:#2f8a84" id="et-ret2">Retourner</button></div><div class="fb2" id="et-b2" style="display:none"><button style="background:#e5484d" data-v="0">À revoir</button><button style="background:#16a34a" data-v="1">Je savais</button></div>';
  f.classList.add('on');$('#et-ret2').onclick=function(){son('clic');$('#et-cache').style.display='none';$('#et-rev').style.display='';$('#et-b1').style.display='none';$('#et-b2').style.display=''};
  $$('#et-b2 button').forEach(function(x){x.onclick=function(){var ok=x.dataset.v==='1';noter('ex:'+e.id,ok);if(ok){S.xp+=3;S.todayXp+=3}save();etMaj(b,e);f.classList.remove('on');son(ok?'bien':'clic')}})}
 function etCommande(){var L=mel(EXC.req.slice()).slice(0,6);
