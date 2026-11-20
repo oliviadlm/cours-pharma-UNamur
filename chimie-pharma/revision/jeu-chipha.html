@@ -232,6 +232,7 @@ body.sans-scroll .defile{overflow:hidden}
 @keyframes tourne{to{transform:rotate(360deg)}}
 @keyframes flotte{50%{transform:translateY(-8px) scale(1.04)}}
 .confetti{z-index:31}
+.transfert{display:grid;grid-template-columns:1fr 1fr;gap:8px}.transfert button{display:flex;gap:6px;align-items:center;justify-content:center;padding:11px 8px;border-radius:14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);font-size:.8rem;font-weight:600}
 .salon .cam{transform-origin:0 0}
 .salon .borne{transform:translate(-50%,-100%) scale(var(--iz,1));transform-origin:50% 100%}
 .salon.loin .borne .b-t{display:none}
@@ -490,9 +491,23 @@ function composerCartes(items,nb){var d=dayNum();
  var due=mel(items.filter(function(x){var b=S.box[x.id];return b&&b.d<=d&&b.b<5})), neufs=mel(items.filter(function(x){return !S.box[x.id]})), reste=items.filter(function(x){var b=S.box[x.id];return b&&!(b.d<=d&&b.b<5)}).sort(function(a,b){return S.box[a.id].d-S.box[b.id].d});
  return due.concat(neufs).concat(reste).slice(0,nb)}
 
+/* ---------- transfert de progression (Safari <-> app) ---------- */
+function exporter(){var code='CHIPHA1:'+btoa(unescape(encodeURIComponent(JSON.stringify(S))));
+ function ok(){toast(ic('check')+' Progression copiée : ouvre l\'autre version et touche « Coller »')}
+ if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(code).then(ok,function(){window.prompt('Copie ce code :',code)});else window.prompt('Copie ce code :',code)}
+function fusionner(A){if(!A||typeof A!=='object')throw 0;
+ S.xp=Math.max(S.xp||0,A.xp||0);S.correct=Math.max(S.correct||0,A.correct||0);S.total=Math.max(S.total||0,A.total||0);S.sessions=Math.max(S.sessions||0,A.sessions||0);S.dessins=Math.max(S.dessins||0,A.dessins||0);S.gel=Math.max(S.gel||0,A.gel||0);
+ if((A.lastDay||0)>(S.lastDay||0)||((A.lastDay||0)===(S.lastDay||0)&&(A.streak||0)>(S.streak||0))){S.streak=A.streak||0;S.lastDay=A.lastDay}
+ if(A.todayDay===S.todayDay)S.todayXp=Math.max(S.todayXp||0,A.todayXp||0);
+ Object.keys(A.best||{}).forEach(function(k){var nk=/^n\d+$/.test(k)?'antibacteriens:'+(k==='n6'?bossI(0):k.slice(1)):k;S.best[nk]=Math.max(S.best[nk]||0,A.best[k]||0)});
+ Object.keys(A.box||{}).forEach(function(k){var nk=/^p:\d+$/.test(k)?'p:antibacteriens:'+k.slice(2):k,a=A.box[k],b=S.box[nk];if(!b||a.b>b.b||(a.b===b.b&&a.d>b.d))S.box[nk]=a});
+ Object.keys(A.badges||{}).forEach(function(k){S.badges[k]=1});
+ S.pionAt=Math.max(S.pionAt||0,A.pionAt||0);save()}
+function importer(){function appliquer(t){try{t=(t||'').trim();if(t.indexOf('CHIPHA1:')!==0)throw 0;fusionner(JSON.parse(decodeURIComponent(escape(atob(t.slice(8))))));toast(ic('check')+' Progression fusionnée');accueil()}catch(e){toast(ic('x')+' Code non reconnu : copie-le d\'abord avec « Copier ma progression »')}}
+ if(navigator.clipboard&&navigator.clipboard.readText)navigator.clipboard.readText().then(function(t){if(t&&t.indexOf('CHIPHA1:')===0)appliquer(t);else appliquer(window.prompt('Colle ici le code de progression :',''))},function(){appliquer(window.prompt('Colle ici le code de progression :',''))});else appliquer(window.prompt('Colle ici le code de progression :',''))}
 function haut(){var d=$('#defile');if(d)d.scrollTop=0}
 /* ---------- mise à jour automatique : l'app vérifie s'il existe une version plus récente ---------- */
-var VERSION='1795152102';
+var VERSION='1795152785';
 function verifierVersion(){try{fetch(location.pathname+'?nocache='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():''}).then(function(t){var m=/var VERSION='(\d+)'/.exec(t);if(m&&m[1]!==VERSION&&!G){location.replace(location.pathname+'?v='+m[1]+location.hash)}}).catch(function(){})}catch(e){}}
 setTimeout(verifierVersion,1500);
 document.addEventListener('visibilitychange',function(){if(!document.hidden)verifierVersion()});
@@ -534,9 +549,11 @@ function accueil(){
  h+='<div class="modes" style="margin-top:12px"><button class="mode vedette" data-m="revision">'+ic('repeat')+'<b>Révision du jour'+(nd?' ('+nd+')':'')+'</b><small>'+(nd?'Toutes tes cartes à revoir aujourd\'hui, tous chapitres confondus : c\'est le moment idéal, ta mémoire est en train de les oublier.':'Rien à revoir pour l\'instant : joue un niveau pour remplir ta pile.')+'</small></button></div>';
  h+='<div class="sect">Le salon · '+CHAPS.filter(function(_,i){return chapFini(i)}).length+' / '+CHAPS.length+' chapitres terminés · touche un lieu dans la pièce pour l\'ouvrir</div>';
  h+='<div class="sect">Badges</div><div class="badges">'+BADGES.map(function(b){return '<div class="badge'+(S.badges[b[0]]?' on':'')+'">'+ic(b[2])+esc(b[1])+'</div>'}).join('')+'</div>';
+ h+='<div class="sect">Ma progression</div><div class="transfert"><button id="exp">'+ic('repeat')+' Copier ma progression</button><button id="imp">'+ic('check')+' Coller une progression</button></div><p class="note" style="margin-top:8px">Safari et l\'app de l\'écran d\'accueil ont chacun leur mémoire, et supprimer l\'app efface la sienne. Copie ta progression d\'un côté, colle-la de l\'autre : les deux sont fusionnées, rien n\'est perdu.</p>';
  h+='<p class="note">Bats le boss d\'un chapitre pour ouvrir le lieu suivant du salon. Tes progrès restent sur cet appareil. Pour l\'ouvrir comme une app : Partager › Sur l\'écran d\'accueil.</p>';
  $('#accueil').innerHTML=h; brancher();
  $('#go').onclick=function(){son('clic');lancerNiveau(ca,na)};
+ $('#exp').onclick=exporter; $('#imp').onclick=importer;
  $$('#accueil .mode').forEach(function(b){b.onclick=function(){MODES[b.dataset.m]()}});
  salon();
 }
