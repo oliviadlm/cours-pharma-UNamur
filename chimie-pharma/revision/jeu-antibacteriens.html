@@ -232,6 +232,14 @@ body.sans-scroll .defile{overflow:hidden}
 @keyframes tourne{to{transform:rotate(360deg)}}
 @keyframes flotte{50%{transform:translateY(-8px) scale(1.04)}}
 .confetti{z-index:31}
+/* iOS 26.1+ en mode app : la zone de l'heure est floutée par le système -> bande unie dessous, décor juste en dessous */
+.barre-haut{position:fixed;left:0;right:0;top:0;height:env(safe-area-inset-top);background:#110f3d;z-index:28;pointer-events:none}
+.fondu-bas{position:fixed;left:0;right:0;bottom:0;height:calc(env(safe-area-inset-bottom) + 26px);background:linear-gradient(rgba(17,15,61,0),#110f3d 70%);z-index:2;pointer-events:none}
+.salon{margin-top:-10px!important;height:70vh!important}
+.salon .hero-haut{top:12px!important}
+.salon::before{height:90px!important}
+.hero.mini .hero-haut{top:calc(env(safe-area-inset-top) + 12px)}
+
 .transfert{display:grid;grid-template-columns:1fr 1fr;gap:8px}.transfert button{display:flex;gap:6px;align-items:center;justify-content:center;padding:11px 8px;border-radius:14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);font-size:.8rem;font-weight:600}
 .salon .cam{transform-origin:0 0}
 .salon .borne{transform:translate(-50%,-100%) scale(var(--iz,1));transform-origin:50% 100%}
@@ -354,6 +362,7 @@ video::-webkit-media-controls,video::-webkit-media-controls-start-playback-butto
  <section class="accueil" id="accueil"></section>
  <section class="jeu" id="jeu"></section>
 </div></div>
+<div class="barre-haut"></div><div class="fondu-bas"></div>
 <div class="toast" id="toast"></div>
 <div class="fete" id="fete"></div>
 <canvas class="confetti" id="confetti"></canvas>
@@ -507,7 +516,7 @@ function importer(){function appliquer(t){try{t=(t||'').trim();if(t.indexOf('CHI
  if(navigator.clipboard&&navigator.clipboard.readText)navigator.clipboard.readText().then(function(t){if(t&&t.indexOf('CHIPHA1:')===0)appliquer(t);else appliquer(window.prompt('Colle ici le code de progression :',''))},function(){appliquer(window.prompt('Colle ici le code de progression :',''))});else appliquer(window.prompt('Colle ici le code de progression :',''))}
 function haut(){var d=$('#defile');if(d)d.scrollTop=0}
 /* ---------- mise à jour automatique : l'app vérifie s'il existe une version plus récente ---------- */
-var VERSION='1795152785';
+var VERSION='1795153069';
 function verifierVersion(){try{fetch(location.pathname+'?nocache='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():''}).then(function(t){var m=/var VERSION='(\d+)'/.exec(t);if(m&&m[1]!==VERSION&&!G){location.replace(location.pathname+'?v='+m[1]+location.hash)}}).catch(function(){})}catch(e){}}
 setTimeout(verifierVersion,1500);
 document.addEventListener('visibilitychange',function(){if(!document.hidden)verifierVersion()});
