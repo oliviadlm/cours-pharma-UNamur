@@ -232,6 +232,36 @@ body.sans-scroll .defile{overflow:hidden}
 @keyframes tourne{to{transform:rotate(360deg)}}
 @keyframes flotte{50%{transform:translateY(-8px) scale(1.04)}}
 .confetti{z-index:31}
+/* zone de réponse des cartes : clavier, papier, voix */
+.rz{margin-top:14px}
+.rz-onglets{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:#eef0f6;border-radius:14px;padding:4px}
+.rz-onglets button{display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 4px;border-radius:11px;font-weight:700;font-size:.85rem;color:#5a6075}
+.rz-onglets button .ic{width:17px;height:17px}
+.rz-onglets button.on{background:#fff;color:var(--encre);box-shadow:0 2px 6px rgba(20,20,60,.12)}
+.rz-p{display:none;margin-top:10px}.rz-p.on{display:block}
+.rz textarea{width:100%;box-sizing:border-box;min-height:180px;resize:vertical;border:2px solid #e3e6ee;border-radius:14px;padding:12px;font:16px/1.45 -apple-system,system-ui,sans-serif;color:var(--encre);background:#fbfbfe}
+.rz textarea:focus{outline:none;border-color:#6d7cff}
+.rz-outils{display:flex;gap:6px;margin-bottom:8px}
+.rz-outils button{flex:1;padding:8px 4px;border-radius:10px;background:#eef0f6;font-weight:700;font-size:.8rem;color:#5a6075;display:flex;gap:5px;align-items:center;justify-content:center}
+.rz-outils button .ic{width:16px;height:16px}
+.rz-outils button.on{background:var(--encre);color:#fff}
+.rz canvas{display:block;width:100%;height:260px;background:#fff;border:2px solid #e3e6ee;border-radius:14px;touch-action:none;background-image:repeating-linear-gradient(transparent 0 31px,#e9ecf5 31px 32px)}
+.rz-rec{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border-radius:14px;background:linear-gradient(135deg,#ff7aa2,#d9577a);color:#fff;font-weight:800;box-shadow:0 4px 0 #a83d5e}
+.rz-rec.on{background:#1f2433;box-shadow:0 4px 0 #000}
+.rz-rec .point{width:12px;height:12px;border-radius:50%;background:#ff3b5c;animation:clign 1s infinite}
+@keyframes clign{50%{opacity:.25}}
+.rz-etat{font-size:.78rem;color:#6b7186;margin:8px 2px}
+.rz-trans{min-height:120px;border:2px dashed #e3e6ee;border-radius:14px;padding:12px;font-size:.95rem;line-height:1.45;color:var(--encre);background:#fbfbfe}
+.rz-trans:empty::before{content:attr(data-vide);color:#a3a8b8}
+.rz-trans i{color:#8a90a5}
+.rz audio{width:100%;margin-top:8px}
+.ta-rep{margin-top:12px;border:2px solid #dfe3f3;border-radius:14px;padding:10px 12px;background:#f8f9ff}
+.ta-rep b{display:block;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:#4a55d8;margin-bottom:6px}
+.ta-rep p{margin:0;white-space:pre-wrap;font-size:.93rem}
+.ta-rep img{width:100%;border-radius:10px;border:1px solid #e3e6ee;background:#fff}
+.ta-rep audio{width:100%;margin-top:6px}
+.reveal::before{content:"Corrigé";display:block;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:#14a37f;font-weight:800;margin-bottom:6px}
+
 /* iOS 26.1+ en mode app : la zone de l'heure est floutée par le système -> bande unie dessous, décor juste en dessous */
 .barre-haut{position:fixed;left:0;right:0;top:0;height:env(safe-area-inset-top);background:#110f3d;z-index:28;pointer-events:none}
 .fondu-bas{position:fixed;left:0;right:0;bottom:0;height:calc(env(safe-area-inset-bottom) + 26px);background:linear-gradient(rgba(17,15,61,0),#110f3d 70%);z-index:2;pointer-events:none}
@@ -401,6 +431,8 @@ var P={
  flag:'<path d="M4 22V3M4 4h13l-2 4 2 4H4"/>',
  back:'<path d="M15 18 9 12l6-6"/>',
  move:'<rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M2 9v6M22 9v6"/>',
+ clavier:'<rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/>',
+ stop:'<rect x="6" y="6" width="12" height="12" rx="2"/>',
  pause:'<path d="M8 5v14M16 5v14"/>',
  map:'<path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/>',
  shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>'
@@ -500,6 +532,59 @@ function composerCartes(items,nb){var d=dayNum();
  var due=mel(items.filter(function(x){var b=S.box[x.id];return b&&b.d<=d&&b.b<5})), neufs=mel(items.filter(function(x){return !S.box[x.id]})), reste=items.filter(function(x){var b=S.box[x.id];return b&&!(b.d<=d&&b.b<5)}).sort(function(a,b){return S.box[a.id].d-S.box[b.id].d});
  return due.concat(neufs).concat(reste).slice(0,nb)}
 
+
+/* ---------- zone de réponse des cartes : clavier, papier (doigt ou Apple Pencil), voix avec transcription ---------- */
+var RZ={stop:null,resume:function(){return ''}};
+function zoneReponse(){var m=S.rzMode||'clavier';
+ return '<div class="rz" id="rz"><div class="rz-onglets">'+[['clavier','clavier','Clavier'],['papier','pen','Papier'],['voix','mic','Voix']].map(function(o){return '<button data-m="'+o[0]+'" class="'+(m===o[0]?'on':'')+'">'+ic(o[1])+o[2]+'</button>'}).join('')+'</div>'+
+ '<div class="rz-p'+(m==='clavier'?' on':'')+'" data-p="clavier"><textarea id="rz-t" placeholder="Écris ta réponse comme à l\'examen…" autocapitalize="sentences"></textarea></div>'+
+ '<div class="rz-p'+(m==='papier'?' on':'')+'" data-p="papier"><div class="rz-outils"><button data-pt="stylo" class="on">'+ic('pen')+'Stylo</button><button data-pt="gomme">'+aic('gomme')+'Gomme</button><button data-pt="annuler">'+aic('annuler')+'</button><button data-pt="vider">'+aic('vider')+'</button></div><canvas id="rz-cv"></canvas></div>'+
+ '<div class="rz-p'+(m==='voix'?' on':'')+'" data-p="voix"><button class="rz-rec" id="rz-rec">'+ic('mic')+'Répondre à voix haute</button><div class="rz-etat" id="rz-etat"></div><div class="rz-trans" id="rz-trans" contenteditable="true" data-vide="Ta réponse transcrite apparaîtra ici (tu peux la corriger au doigt)."></div><audio id="rz-audio" controls hidden></audio></div></div>'}
+function reponse(){
+ var root=$('#rz'); if(!root)return;
+ var cv=$('#rz-cv'),c=cv.getContext('2d'),dpr=Math.min(window.devicePixelRatio||1,3),traits=[],cur=null,outil='stylo',penVu=false,papierUtilise=false,W=0,H=0;
+ // onglets
+ $$('.rz-onglets button',root).forEach(function(b){b.onclick=function(){S.rzMode=b.dataset.m;save();$$('.rz-onglets button',root).forEach(function(z){z.classList.toggle('on',z===b)});$$('.rz-p',root).forEach(function(p){p.classList.toggle('on',p.dataset.p===b.dataset.m)});if(b.dataset.m==='papier')taille();if(b.dataset.m==='clavier')$('#rz-t').focus()}});
+ // papier : hauteur adaptée à l'écran, traits lissés, pression du Pencil, paume ignorée
+ function taille(){if(!cv.offsetParent)return;var d=$('#defile'),top=cv.getBoundingClientRect().top,bas=d?d.getBoundingClientRect().bottom:innerHeight;cv.style.height=Math.max(220,Math.min(560,Math.round(bas-top-130)))+'px';
+  var r=cv.getBoundingClientRect();W=r.width;H=r.height;cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);c.setTransform(dpr,0,0,dpr,0,0);dessiner()}
+ function dessiner(){c.clearRect(0,0,W,H);traits.concat(cur?[cur]:[]).forEach(function(t){c.globalCompositeOperation=t.g?'destination-out':'source-over';c.strokeStyle='#1f2433';c.lineCap='round';c.lineJoin='round';
+  for(var i=1;i<t.p.length;i++){var a=t.p[i-1],b=t.p[i];c.lineWidth=t.g?18:Math.max(1.2,2.6*(b[2]||.5)*1.6);c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.stroke()}});c.globalCompositeOperation='source-over'}
+ function pos(e){var r=cv.getBoundingClientRect();return [e.clientX-r.left,e.clientY-r.top,e.pointerType==='pen'?(e.pressure||.5):.55]}
+ cv.onpointerdown=function(e){if(e.pointerType==='pen')penVu=true;if(penVu&&e.pointerType==='touch')return;e.preventDefault();cv.setPointerCapture(e.pointerId);cur={g:outil==='gomme',p:[pos(e)],id:e.pointerId};papierUtilise=true};
+ cv.onpointermove=function(e){if(!cur||e.pointerId!==cur.id)return;e.preventDefault();var ev=e.getCoalescedEvents?e.getCoalescedEvents():[e];ev.forEach(function(q){var p=pos(q),l=cur.p[cur.p.length-1];if(e.pointerType!=='pen'){p[0]=l[0]+(p[0]-l[0])*.55;p[1]=l[1]+(p[1]-l[1])*.55}cur.p.push(p)});dessiner()};
+ cv.onpointerup=cv.onpointercancel=function(e){if(!cur||e.pointerId!==cur.id)return;traits.push(cur);cur=null;dessiner()};
+ $$('.rz-outils button',root).forEach(function(b){b.onclick=function(){var t=b.dataset.pt;if(t==='annuler'){traits.pop();dessiner();return}if(t==='vider'){traits=[];dessiner();return}outil=t;$$('.rz-outils button[data-pt=stylo],.rz-outils button[data-pt=gomme]',root).forEach(function(z){z.classList.toggle('on',z===b)})}});
+ if((S.rzMode||'clavier')==='papier')setTimeout(taille,30);
+ // voix : enregistrement + transcription en direct (reconnaissance vocale du navigateur, en français)
+ var SR=window.SpeechRecognition||window.webkitSpeechRecognition,rec=null,mr=null,flux=null,morceaux=[],actif=false,texteFinal='',t0=0,minuteur=null,audioURL='';
+ var btn=$('#rz-rec'),etat=$('#rz-etat'),zone=$('#rz-trans'),lecteur=$('#rz-audio');
+ function majEtat(){var s=Math.round((Date.now()-t0)/1000);etat.textContent='Enregistrement… '+Math.floor(s/60)+':'+String(s%60).padStart(2,'0')+(SR?' · transcription en direct':'')}
+ function demarrer(){
+  texteFinal=(zone.innerText||'').trim();if(texteFinal)texteFinal+=' ';
+  actif=true;btn.classList.add('on');btn.innerHTML='<span class="point"></span>Arrêter';t0=Date.now();majEtat();minuteur=setInterval(majEtat,500);
+  if(SR){try{rec=new SR();rec.lang='fr-FR';rec.continuous=true;rec.interimResults=true;
+   rec.onresult=function(ev){var inter='';for(var i=ev.resultIndex;i<ev.results.length;i++){var r=ev.results[i];if(r.isFinal)texteFinal+=r[0].transcript.trim()+' ';else inter+=r[0].transcript}zone.innerHTML=esc(texteFinal)+(inter?'<i>'+esc(inter)+'</i>':'')};
+   rec.onerror=function(ev){if(ev.error==='not-allowed'||ev.error==='service-not-allowed'){etat.textContent='Micro ou transcription refusés : autorise le micro pour cette app dans Réglages, ou utilise le micro du clavier dans l\'onglet Clavier.'}};
+   rec.onend=function(){if(actif){try{rec.start()}catch(e){}}};rec.start()}catch(e){rec=null}}
+  // enregistrement audio pour pouvoir se réécouter
+  if(navigator.mediaDevices&&window.MediaRecorder){navigator.mediaDevices.getUserMedia({audio:true}).then(function(s){if(!actif){s.getTracks().forEach(function(t){t.stop()});return}flux=s;morceaux=[];mr=new MediaRecorder(s);mr.ondataavailable=function(e){if(e.data&&e.data.size)morceaux.push(e.data)};
+   mr.onstop=function(){if(morceaux.length){if(audioURL)URL.revokeObjectURL(audioURL);audioURL=URL.createObjectURL(new Blob(morceaux,{type:mr.mimeType||'audio/mp4'}));lecteur.src=audioURL;lecteur.hidden=false}};mr.start()}).catch(function(){if(!SR)etat.textContent='Micro indisponible : autorise le micro, ou utilise le micro du clavier dans l\'onglet Clavier.'})}
+  else if(!SR){etat.textContent='Ce mode n\'est pas disponible ici : utilise le micro du clavier dans l\'onglet Clavier.'}
+ }
+ function arreter(){if(!actif)return;actif=false;clearInterval(minuteur);btn.classList.remove('on');btn.innerHTML=ic('mic')+'Reprendre à voix haute';
+  if(rec){try{rec.stop()}catch(e){}rec=null}if(mr&&mr.state!=='inactive')mr.stop();if(flux)flux.getTracks().forEach(function(t){t.stop()});flux=null;
+  zone.textContent=(zone.innerText||'').trim();etat.textContent=SR?'Transcription terminée : tu peux corriger le texte au doigt, puis retourner la carte.':'Enregistrement prêt à réécouter. La transcription automatique n\'est pas proposée par cet appareil.'}
+ btn.onclick=function(){son('clic');if(actif)arreter();else demarrer()};
+ if(!SR)zone.setAttribute('data-vide','Ici : tes notes. La transcription automatique n\'est pas proposée par cet appareil, mais ton enregistrement est gardé pour le réécouter.');
+ RZ.stop=function(){arreter();RZ.stop=null};
+ // résumé affiché au-dessus du corrigé
+ RZ.resume=function(){arreter();var m=S.rzMode||'clavier',h='';
+  if(m==='clavier'){var t=($('#rz-t').value||'').trim();if(t)h='<p>'+esc(t)+'</p>'}
+  else if(m==='papier'){if(traits.length)h='<img src="'+cv.toDataURL('image/png')+'" alt="Ta réponse manuscrite">'}
+  else{var t2=(zone.innerText||'').trim();if(t2)h='<p>'+esc(t2)+'</p>';if(audioURL)h+='<audio controls src="'+audioURL+'"></audio>'}
+  return h?'<div class="ta-rep"><b>Ta réponse</b>'+h+'</div>':''};
+}
 /* ---------- transfert de progression (Safari <-> app) ---------- */
 function exporter(){var code='CHIPHA1:'+btoa(unescape(encodeURIComponent(JSON.stringify(S))));
  function ok(){toast(ic('check')+' Progression copiée : ouvre l\'autre version et touche « Coller »')}
@@ -516,7 +601,7 @@ function importer(){function appliquer(t){try{t=(t||'').trim();if(t.indexOf('CHI
  if(navigator.clipboard&&navigator.clipboard.readText)navigator.clipboard.readText().then(function(t){if(t&&t.indexOf('CHIPHA1:')===0)appliquer(t);else appliquer(window.prompt('Colle ici le code de progression :',''))},function(){appliquer(window.prompt('Colle ici le code de progression :',''))});else appliquer(window.prompt('Colle ici le code de progression :',''))}
 function haut(){var d=$('#defile');if(d)d.scrollTop=0}
 /* ---------- mise à jour automatique : l'app vérifie s'il existe une version plus récente ---------- */
-var VERSION='1795181886';
+var VERSION='1795182419';
 function verifierVersion(){try{fetch(location.pathname+'?nocache='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():''}).then(function(t){var m=/var VERSION='(\d+)'/.exec(t);if(m&&m[1]!==VERSION&&!G){location.replace(location.pathname+'?v='+m[1]+location.hash)}}).catch(function(){})}catch(e){}}
 setTimeout(verifierVersion,1500);
 document.addEventListener('visibilitychange',function(){if(!document.hidden)verifierVersion()});
@@ -726,13 +811,14 @@ function hud(){var n=G.items.length,c='';
  if(G.coeurs<20){for(var k=0;k<3;k++)c+='<span class="'+(k<G.coeurs?'':'vide')+'">'+icf('coeur')+'</span>'}
  return '<div class="hud"><button class="quit" id="quit">'+ic('x')+'</button><div class="progw"><div class="prog"><i style="width:'+Math.round(100*G.i/n)+'%"></i></div></div><div class="coeurs">'+c+'</div></div>'+(G.timer?'<div class="timer" id="tm"></div>':'')+'<div class="combo" id="combo">'+(G.combo>=3?'Combo x'+G.combo+' · bonus':'')+'</div>'}
 function montrer(){
+ if(RZ.stop)RZ.stop();
  var x=G.items[G.i]; if(!x){terminer();return}
  var h=hud()+'<div class="q"><div class="type">'+ic(x.type[0])+' '+esc(x.type[1])+'</div>';
  if(x.img&&x.kind!=='dessin') h+='<img class="struct" src="'+x.img+'" alt="">';
  if(x.grand) h+='<div class="grand">'+esc(x.grand)+'</div>';
  h+='<h2>'+esc(x.titre)+'</h2>';
  if(x.kind==='qcm'||x.kind==='vf') h+='<div class="choix'+(x.kind==='vf'?' vf':'')+'">'+x.choix.map(function(c){return '<button class="ch">'+esc(c)+'</button>'}).join('')+'</div>';
- if(x.kind==='carte') h+='<button class="voir" id="voir">'+ic('eye')+' Retourner la carte</button><div class="reveal" id="rev">'+esc(x.rep)+'</div><div class="auto" id="auto"><button class="a1" data-v="0">Je ne savais pas</button><button class="a2" data-v="1">À moitié</button><button class="a3" data-v="2">Je savais</button></div>';
+ if(x.kind==='carte') h+=zoneReponse()+'<button class="voir" id="voir">'+ic('eye')+' Retourner la carte</button><div id="ta-rep"></div><div class="reveal" id="rev">'+esc(x.rep)+'</div><div class="auto" id="auto"><button class="a1" data-v="0">Je ne savais pas</button><button class="a2" data-v="1">À moitié</button><button class="a3" data-v="2">Je savais</button></div>';
  if(x.kind==='dessin') h+=atelierHTML(x);
  if(x.kind==='paires') h+=paires(x);
  h+='<div class="fb" id="fb"></div></div><button class="suite" id="suite">Continuer</button>';
@@ -740,7 +826,7 @@ function montrer(){
  $('#quit').onclick=function(){if(confirmQuit())accueil()};
  $('#suite').onclick=function(){G.i++;montrer()};
  if(x.kind==='qcm'||x.kind==='vf') $$('.ch').forEach(function(b){b.onclick=function(){repondre(x,b)}});
- if(x.kind==='carte'){ $('#voir').onclick=function(){$('#rev').classList.add('on');$('#auto').classList.add('on');this.style.display='none'}; $$('#auto button').forEach(function(b){b.onclick=function(){auto(x,+b.dataset.v)}}); }
+ if(x.kind==='carte'){ reponse(); $('#voir').onclick=function(){var r=RZ.resume();if(r)$('#ta-rep').innerHTML=r;$('#rz').style.display='none';$('#rev').classList.add('on');$('#auto').classList.add('on');this.style.display='none';$('#ta-rep').scrollIntoView({block:'start',behavior:'smooth'})}; $$('#auto button').forEach(function(b){b.onclick=function(){auto(x,+b.dataset.v)}}); }
  if(x.kind==='dessin') atelier(x);
  if(x.kind==='paires') bindPaires(x);
 }
