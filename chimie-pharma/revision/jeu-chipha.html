@@ -126,6 +126,10 @@ canvas.dessin{width:100%;height:260px;background:#fff;border:2px dashed #c7cbd8;
 .atl.plein{position:fixed;inset:0;z-index:20;border-radius:0;margin:0;padding:calc(env(safe-area-inset-top) + 6px) 8px calc(env(safe-area-inset-bottom) + 6px);display:flex;flex-direction:column}
 .atl.plein .atl-zone{flex:1;display:flex}.atl.plein canvas{height:auto;flex:1;max-height:none}
 body.sans-scroll{overflow:hidden}
+/* la page ne défile pas elle-même : un cadre intérieur défile (évite le flou d'iOS sous l'heure en mode app) */
+html,body{height:100%;overflow:hidden}
+.defile{position:fixed;inset:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;z-index:1}
+body.sans-scroll .defile{overflow:hidden}
 @media (min-width:700px){.atl canvas{height:62vh;max-height:none}}
 
 
@@ -345,10 +349,10 @@ video::-webkit-media-controls,video::-webkit-media-controls-start-playback-butto
 <symbol id="i-eclair" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></symbol>
 <symbol id="i-coeur" viewBox="0 0 24 24"><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z"/></symbol>
 </defs></svg>
-<div class="app">
+<div class="defile" id="defile"><div class="app">
  <section class="accueil" id="accueil"></section>
  <section class="jeu" id="jeu"></section>
-</div>
+</div></div>
 <div class="toast" id="toast"></div>
 <div class="fete" id="fete"></div>
 <canvas class="confetti" id="confetti"></canvas>
@@ -486,6 +490,12 @@ function composerCartes(items,nb){var d=dayNum();
  var due=mel(items.filter(function(x){var b=S.box[x.id];return b&&b.d<=d&&b.b<5})), neufs=mel(items.filter(function(x){return !S.box[x.id]})), reste=items.filter(function(x){var b=S.box[x.id];return b&&!(b.d<=d&&b.b<5)}).sort(function(a,b){return S.box[a.id].d-S.box[b.id].d});
  return due.concat(neufs).concat(reste).slice(0,nb)}
 
+function haut(){var d=$('#defile');if(d)d.scrollTop=0}
+/* ---------- mise à jour automatique : l'app vérifie s'il existe une version plus récente ---------- */
+var VERSION='1795152102';
+function verifierVersion(){try{fetch(location.pathname+'?nocache='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():''}).then(function(t){var m=/var VERSION='(\d+)'/.exec(t);if(m&&m[1]!==VERSION&&!G){location.replace(location.pathname+'?v='+m[1]+location.hash)}}).catch(function(){})}catch(e){}}
+setTimeout(verifierVersion,1500);
+document.addEventListener('visibilitychange',function(){if(!document.hidden)verifierVersion()});
 /* ---------- animation du décor : lecture / pause ---------- */
 function lecture(){var lb=$('#lecture');$$('#accueil video').forEach(function(v){v.muted=true;v.setAttribute('playsinline','');if(S.pause)v.pause();else{var p=v.play();if(p&&p.catch)p.catch(function(){})}});
  if(lb)lb.innerHTML=ic(S.pause?'play':'pause')}
@@ -590,7 +600,7 @@ function salon(){
  el.onpointermove=function(e){if(!drag)return;var d=e.clientX-drag.x,dv=e.clientY-drag.y;if(!bouge&&(Math.abs(d)>7||Math.abs(dv)>7)){bouge=true;$('#astuce').style.opacity=0}
   if(bouge&&!pinch){camX=drag.cx+d;var voulu=drag.cy+dv;camY=voulu;caler();
    // au bord haut ou bas de la pièce, le reste du geste fait défiler la page
-   var reste=voulu-camY-drag.page;if(Math.abs(reste)>.5){window.scrollBy(0,-reste);drag.page+=reste}
+   var reste=voulu-camY-drag.page;if(Math.abs(reste)>.5){$('#defile').scrollBy(0,-reste);drag.page+=reste}
    poserCam(false);var dt=Math.max(1,e.timeStamp-drag.t);vel=(e.clientX-drag.lx)/dt;velY=(e.clientY-drag.ly)/dt;drag.t=e.timeStamp;drag.lx=e.clientX;drag.ly=e.clientY}};
  el.onpointerup=el.onpointercancel=function(){if(!drag)return;drag=null;if(bouge){var v=vel*16,w=velY*16;(function iner(){v*=.92;w*=.92;if(Math.abs(v)<.4&&Math.abs(w)<.4)return;camX+=v;camY+=w;caler();poserCam(false);requestAnimationFrame(iner)})()}};
  el.addEventListener('click',function(e){if(bouge){e.stopPropagation();e.preventDefault();bouge=false}},true);
@@ -609,9 +619,9 @@ function salon(){
  $('#recentrer').onclick=function(){son('clic');viser(pos[0],pos[1],true,1)};
  setTimeout(function(){var a=$('#astuce');if(a)a.style.opacity=0},5000);
  function bulle(txt){var o=$('.bulle2',piece);if(o)o.remove();var b=document.createElement('div');b.className='bulle2';b.style.left=pos[0]+'px';b.style.top=(pos[1]-PH*.19*prof(pos[1])-62)+'px';b.textContent=txt;piece.appendChild(b);setTimeout(function(){b.remove()},2400)}
- $$('.borne').forEach(function(b){b.onclick=function(){var ci=+b.dataset.c;if(!chapOuvert(ci)){son('mal');toast(ic('lock')+' Bats le boss de « '+CHAPS[ci-1].court+' » pour ouvrir ce lieu');return}son('clic');CI=ci;VUE='chap';accueil();window.scrollTo(0,0)}});
+ $$('.borne').forEach(function(b){b.onclick=function(){var ci=+b.dataset.c;if(!chapOuvert(ci)){son('mal');toast(ic('lock')+' Bats le boss de « '+CHAPS[ci-1].court+' » pour ouvrir ce lieu');return}son('clic');CI=ci;VUE='chap';accueil();haut()}});
  // nouveau chapitre ouvert : la gélule traverse la pièce jusqu'au lieu suivant
- if(ca>dep){window.scrollTo(0,0);setTimeout(function(){var p=P(ca);pos=p;viser(p[0],p[1],true,1);setTimeout(function(){if(!vivant)return;S.pionAt=ca;save();bulle('Nouveau lieu ouvert : '+SPOTS[ca][2]);son('fete');confetti()},950)},900)}
+ if(ca>dep){haut();setTimeout(function(){var p=P(ca);pos=p;viser(p[0],p[1],true,1);setTimeout(function(){if(!vivant)return;S.pionAt=ca;save();bulle('Nouveau lieu ouvert : '+SPOTS[ca][2]);son('fete');confetti()},950)},900)}
  SAL={stop:function(){vivant=false;window.removeEventListener('deviceorientation',orient)}};
 }
 var RZ; window.addEventListener('resize',function(){clearTimeout(RZ);RZ=setTimeout(function(){if(VUE==='monde'&&$('#salon')&&!$('#jeu').classList.contains('on'))accueil()},250)});
@@ -696,7 +706,7 @@ function montrer(){
  if(x.kind==='dessin') h+=atelierHTML(x);
  if(x.kind==='paires') h+=paires(x);
  h+='<div class="fb" id="fb"></div></div><button class="suite" id="suite">Continuer</button>';
- $('#jeu').innerHTML=h; window.scrollTo(0,0);
+ $('#jeu').innerHTML=h; haut();
  $('#quit').onclick=function(){if(confirmQuit())accueil()};
  $('#suite').onclick=function(){G.i++;montrer()};
  if(x.kind==='qcm'||x.kind==='vf') $$('.ch').forEach(function(b){b.onclick=function(){repondre(x,b)}});
