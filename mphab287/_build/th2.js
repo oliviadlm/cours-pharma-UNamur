@@ -1,0 +1,809 @@
+
+/* ================= DONNÉES DU COURS ================= */
+const de = s => (/^[aeéèêiouyh]/i.test(s) ? "d'" : "de ") + s;
+const r10 = x => Math.round(x * 1e10) / 1e10;
+const ROM = [[100, "C"], [90, "XC"], [50, "L"], [40, "XL"], [10, "X"], [9, "IX"], [5, "V"], [4, "IV"], [1, "I"]];
+const roman = n => { let s = ""; for (const [v, r] of ROM) while (n >= v) { s += r; n -= v; } return s; };
+const TRIT = [["1 ‰", 1, 1000], ["2 ‰", 2, 500], ["1 %", 10, 100], ["5 %", 50, 20], ["10 %", 100, 10]]; // [libellé, mg de PA pour 1000 mg, facteur]
+const PAS = [["phénobarbital", 0.82], ["aminophylline", 0.88], ["paracétamol", 0.72], ["acide acétylsalicylique", 0.65], ["codéine phosphate", 0.69], ["caféine", 0.74], ["diclofénac sodique", 0.64], ["bismuth sous-gallate", 0.37], ["oxyde de zinc", 0.16], ["oxytétracycline", 0.61]];
+
+const DATA = {
+id: "s2",
+kicker: "MPHAB287 · Méthodes de calculs appliquées aux sciences pharmaceutiques",
+title: "Séance 2 · Théorie : triturations et suppositoires",
+sub: "Trituration · µg et chiffres romains · gélules complexes · coulée des suppositoires · facteur de déplacement · masse d'excipient",
+
+concepts: [
+{ id: "trit", title: "La trituration : le principe",
+  html: `<p>Parfois, la quantité de principe actif (PA) à peser est <span class="k">trop petite pour être mesurée avec précision</span> avec l'équipement de l'officine.</p>
+  <p>On mélange alors <span class="k">un excès de PA à un diluant</span> : c'est la <b>trituration</b>. On prélève ensuite <span class="k">la quantité de mélange qui contient la dose de PA nécessaire</span>.</p>
+  <p><b>Notation</b> : une trituration est caractérisée par sa teneur en PA :</p>
+  <table><tr><th>Trituration</th><th>PA contenu</th></tr>
+  <tr><td>1 ‰ (1 pour mille, écrit « 1/00 » ou « 10/00 »)</td><td><span class="k">1 mg de PA pour 1000 mg</span> de trituration</td></tr>
+  <tr><td>1 %</td><td><span class="k">1 g de PA pour 100 g</span> (10 mg pour 1000 mg)</td></tr>
+  <tr><td>10 %</td><td><span class="k">10 g de PA pour 100 g</span> (100 mg pour 1000 mg)</td></tr></table>
+  <p><b>Idée clé</b> : plus la trituration est diluée, plus la masse à peser est <span class="k">grande</span>, donc plus la pesée est précise.</p>`,
+  why: [["Pourquoi ne pas peser directement 0,4 mg de PA ?", "Une si petite masse se pèse avec une erreur relative énorme sur une balance d'officine. En pesant 400 mg d'une trituration à 1 ‰, la même erreur absolue devient négligeable."],
+        ["Pourquoi parle-t-on d'« excès » de PA ?", "On prépare plus de trituration (donc plus de PA) que nécessaire, puis on n'en prélève qu'une partie : le reste est conservé ou jeté."]],
+  talk: { prompt: "Explique à un camarade ce qu'est une trituration et pourquoi on en a besoin.", check: ["Quantité de PA trop petite pour une pesée précise", "Excès de PA mélangé à un diluant", "On prélève la quantité de mélange qui contient la dose", "Plus dilué = masse pesée plus grande = plus précis"] },
+  traps: ["Confondre ‰ (pour mille) et % (pour cent) : facteur 10 d'écart.", "Croire que la trituration change la dose reçue : elle ne change que la masse pesée."] },
+
+{ id: "tritcalc", title: "Calculer une trituration",
+  html: `<p><b>Marche à suivre</b> (exemple du cours : éthinylœstradiol 20 µg, dt XX, trituration à 1 ‰) :</p>
+  <ol><li><b>Quantité de PA nécessaire</b> : <span class="k">20 µg × 20 = 400 µg = 0,4 mg</span>.</li>
+  <li><b>Quantité de trituration</b> : 1 ‰ = 1 mg de PA pour 1000 mg → <span class="k">0,4 mg de PA dans 400 mg</span> de trituration.</li></ol>
+  <div class="formula">trituration = PA ÷ (teneur)  ·  1 ‰ → ×1000 · 2 ‰ → ×500 · 1 % → ×100 · 10 % → ×10</div>
+  <p><b>Calcul inverse</b> (retrouver la dose) : PA = masse de trituration × teneur. Ex. 500 mg de trituration à 1 % pour 50 pilules → <span class="k">5 mg de PA → 0,1 mg par pilule</span>.</p>
+  <p><b>Trituration d'une crème</b> : bétaméthasone 0,05 % (m/m) ad 200 g → 0,1 g de PA → trituration à 10 % : <span class="k">1 g</span>.</p>`,
+  why: [["Pourquoi 2 ‰ correspond-il à « × 500 » ?", "2 mg de PA pour 1000 mg de trituration : pour 1 mg de PA il faut 500 mg de trituration."],
+        ["Pourquoi commencer par la quantité totale de PA ?", "La trituration se pèse une seule fois pour toute la préparation : c'est la quantité totale de PA (dose × nombre d'unités) qu'il faut couvrir."]],
+  talk: { prompt: "Explique comment trouver la masse de trituration à 2 ‰ pour 10 gélules à 50 µg d'éthinylœstradiol.", check: ["50 µg × 10 = 500 µg = 0,5 mg de PA", "2 ‰ = 2 mg pour 1000 mg", "0,5 mg × 500 = 250 mg de trituration"] },
+  traps: ["Répondre la quantité de PA (0,1 g) au lieu de la quantité de trituration (1 g).", "Oublier de convertir les µg en mg avant d'appliquer le facteur.", "Multiplier par 100 pour une trituration à 1 ‰ (c'est × 1000)."] },
+
+{ id: "lecture", title: "Lire le Rp : µg et chiffres romains",
+  html: `<p><b>Microgramme</b> : 1 mg = <span class="k">1000 µg</span> ; 1 µg = <span class="k">0,001 mg</span>.</p>
+  <p><b>Chiffres romains</b> (souvent dans « dt ») :</p>
+  <table><tr><th>Symbole</th><th>Valeur</th></tr><tr><td>I</td><td>1</td></tr><tr><td>V</td><td><span class="k">5</span></td></tr><tr><td>X</td><td><span class="k">10</span></td></tr><tr><td>L</td><td><span class="k">50</span></td></tr><tr><td>C</td><td><span class="k">100</span></td></tr></table>
+  <p>Un symbole plus petit placé <b>avant</b> un plus grand se <span class="k">soustrait</span> : IV = 4, IX = 9, XL = 40, XC = 90. Placé après, il s'ajoute : VI = 6, XX = 20, LX = 60.</p>
+  <p>Ex. « pf 1 suppositoire dt VI » = <span class="k">6 suppositoires</span> ; « dt XX » = <span class="k">20</span>.</p>`,
+  why: [["Pourquoi « dt X » et « dt XX » sont-ils des pièges ?", "Une lecture rapide confond facilement 10 et 20 : toute la préparation serait alors faite en double ou en moitié."]],
+  talk: { prompt: "Lis à voix haute : « dt VI », « dt XIV », « dt XL », « dt XC ».", check: ["VI = 6", "XIV = 14", "XL = 40", "XC = 90"] },
+  traps: ["Lire IV comme 6.", "Oublier la conversion µg → mg (facteur 1000)."] },
+
+{ id: "gelmix", title: "Gélules complexes et spécialités",
+  html: `<p>Une même formule peut combiner plusieurs sources de PA. Pour chaque ligne, se demander : <b>sous quelle forme je l'apporte ?</b></p>
+  <table><tr><th>Ligne du Rp</th><th>Calcul</th></tr>
+  <tr><td>PA pur (ex. metformine 400 mg dt 120)</td><td><span class="k">400 × 120 = 48 000 mg = 48 g</span></td></tr>
+  <tr><td>« utiliser comprimés à 20 mg » (Cipramil® 10 mg dt 120)</td><td><span class="k">10 × 120 ÷ 20 = 60 comprimés</span></td></tr>
+  <tr><td>« utiliser gélules à 10 mg » (5 mg dt 120)</td><td><span class="k">5 × 120 ÷ 10 = 60 gélules</span> (on vide les gélules)</td></tr>
+  <tr><td>« utiliser trituration à 10 % » (5 mg dt 120)</td><td><span class="k">5 × 120 × 10 = 6000 mg = 6 g</span></td></tr></table>
+  <p><b>Lire la question</b> : « par gélule » → <span class="k">ne pas multiplier</span> par dt ; « à peser » → <span class="k">multiplier</span> par dt.</p>
+  <p>Ex. extraits secs fucus 10 ctg + cascara 80 mg = <span class="k">180 mg par gélule</span>.</p>`,
+  why: [["Pourquoi un comprimé de spécialité contient-il plus que le PA ?", "Il contient aussi des excipients : on compte en nombre de comprimés (dosage en PA), pas en masse de comprimé."]],
+  talk: { prompt: "Explique la différence de calcul entre « Cipramil® 10 mg (comprimés à 20 mg) » et « métoclopramide 5 mg (trituration à 10 %) » pour 120 gélules.", check: ["Cipramil : 1200 mg ÷ 20 = 60 comprimés", "Métoclopramide : 600 mg de PA", "Trituration 10 % → × 10 = 6 g à peser"] },
+  traps: ["Multiplier par 120 quand la question demande « par gélule ».", "Oublier que 10 ctg = 100 mg."] },
+
+{ id: "coulee", title: "Suppositoires : préparation par coulée",
+  html: `<p>Deux méthodes de préparation par coulée :</p>
+  <table><tr><th>Méthode</th><th>Principe</th></tr>
+  <tr><td><b>Fusion claire</b></td><td>Chauffer la masse <span class="k">2 à 3 °C au-dessus de sa température de fusion</span> ; incorporer le PA <span class="k">avant la coulée</span>. Attention à la <span class="k">sédimentation</span> du PA.</td></tr>
+  <tr><td><b>Fusion crémeuse</b></td><td>Faire fondre <span class="k">2/3 de la masse</span>, ajouter le <span class="k">1/3 restant froid</span> avant d'incorporer le PA. Coulée à l'état <span class="k">semi-solide</span> : diminue la sédimentation et accélère le durcissement.</td></tr></table>
+  <p><b>Les 4 étapes de calcul</b> (3 coulées) :</p>
+  <ol><li><span class="k">Étalonner le moule</span> avec la masse pure (sans PA) → E</li>
+  <li>Couler avec <span class="k">arbitrairement 10 % de PA</span> → M et S</li>
+  <li><span class="k">Calculer f</span></li>
+  <li>Calculer la masse d'excipient pour la préparation, en prévoyant <span class="k">1 suppositoire supplémentaire</span></li></ol>`,
+  why: [["Pourquoi la fusion crémeuse limite-t-elle la sédimentation ?", "La masse coulée est semi-solide, donc plus visqueuse : les particules de PA ont moins le temps de tomber au fond de l'alvéole."],
+        ["Pourquoi prévoir un suppositoire de plus ?", "Une partie de la masse reste dans le récipient et les ustensiles : sans marge, le dernier suppositoire serait incomplet."]],
+  talk: { prompt: "Compare la fusion claire et la fusion crémeuse, puis cite les 4 étapes du calcul.", check: ["Claire : 2-3 °C au-dessus de la T° de fusion, PA avant coulée, risque de sédimentation", "Crémeuse : 2/3 fondu + 1/3 froid, coulée semi-solide", "Avantages : moins de sédimentation, durcissement plus rapide", "Étapes : étalonner (E), 10 % de PA (M, S), calculer f, masse d'excipient avec 1 suppo en plus"] },
+  traps: ["Inverser 2/3 fondu et 1/3 froid.", "Oublier le suppositoire supplémentaire."] },
+
+{ id: "facteur", title: "Le facteur de déplacement (f)",
+  html: `<p>En incorporant du PA, on <span class="k">déplace une certaine quantité de masse</span> (excipient) dans l'alvéole du moule. Le facteur de déplacement f exprime <span class="k">la masse d'excipient déplacée par 1 g de PA</span>.</p>
+  <div class="formula">f = (E − M) ÷ S</div>
+  <table><tr><th>Lettre</th><th>Signification</th></tr>
+  <tr><td><b>E</b></td><td><span class="k">g d'excipient dans 1 suppositoire sans PA</span> (1<sup>re</sup> coulée)</td></tr>
+  <tr><td><b>M</b></td><td><span class="k">g de masse (excipient) dans 1 suppositoire avec PA</span> (2<sup>e</sup> coulée)</td></tr>
+  <tr><td><b>S</b></td><td><span class="k">g de PA dans 1 suppositoire</span></td></tr></table>
+  <p><b>Exemple du cours</b> : 7 suppositoires purs = 20,51 g → <span class="k">E = 2,93 g</span>. 11 suppositoires à 10 % = 33,528 g → 1 suppo = 3,048 g → <span class="k">M = 3,048 × 0,9 = 2,7432 g</span> et <span class="k">S = 3,048 × 0,1 = 0,3048 g</span>. f = (2,93 − 2,7432) ÷ 0,3048 = <span class="k">0,61</span>.</p>`,
+  why: [["Pourquoi M = 90 % et S = 10 % du suppositoire de la 2e coulée ?", "On a coulé un mélange contenant 10 % de PA : chaque suppositoire contient donc 10 % de PA (S) et 90 % de masse (M)."],
+        ["Que signifie f = 0,61 ?", "1 g d'oxytétracycline prend la place de 0,61 g d'excipient : il faut retirer 0,61 g d'excipient par g de PA ajouté."]],
+  talk: { prompt: "Explique d'où viennent E, M et S et calcule f avec l'exemple 20,50 g / 7 et 26,89 g / 9.", check: ["E = masse d'un suppositoire pur = 20,50 ÷ 7 = 2,93 g", "1 suppo à 10 % = 26,89 ÷ 9 = 2,99 g", "M = 2,99 × 0,9 = 2,689 g ; S = 2,99 × 0,1 = 0,299 g", "f = (2,93 − 2,689) ÷ 0,299 ≈ 0,81"] },
+  traps: ["Diviser par le nombre total de suppositoires au lieu de travailler sur 1 suppositoire.", "Prendre S = 10 % de E au lieu de 10 % du suppositoire avec PA.", "Écrire f = (M − E) ÷ S (signe inversé)."] },
+
+{ id: "base", title: "La masse d'excipient en pratique",
+  html: `<div class="formula">M = E − Σ (f<sub>i</sub> × S<sub>i</sub>)</div>
+  <p>Pour <b>1 suppositoire</b> : on part de E (masse d'un suppositoire d'excipient pur) et on retire, pour chaque PA, sa masse déplacée f × S (S en <b>grammes</b>).</p>
+  <p><b>E</b> = masse d'un suppositoire pur du moule (<span class="k">masse totale ÷ nombre</span>) ou le poids indiqué « suppo de 1 g / de 2 g ».</p>
+  <p><b>En pratique</b> : on multiplie par <span class="k">n + 1</span> suppositoires (dt + 1).</p>
+  <p><b>Exemple</b> : 6 suppositoires de 2 g à 125 mg de paracétamol (f = 0,72) : M = 2 − 0,72 × 0,125 = <span class="k">1,91 g</span> → × 7 = <span class="k">13,37 g</span>.</p>
+  <p>Les PA eux-mêmes se pèsent aussi pour n + 1 : 200 mg × 7 = <span class="k">1,4 g</span>.</p>`,
+  why: [["Pourquoi soustraire f × S et pas S ?", "1 g de PA ne remplace pas forcément 1 g d'excipient : il en remplace f g (selon sa densité relative à la base)."],
+        ["Pourquoi le piège « n » est-il si fréquent dans les QCM ?", "La réponse calculée pour n suppositoires est souvent proposée : elle est juste mathématiquement mais fausse « en pratique »."]],
+  talk: { prompt: "Explique comment calculer la base pour « phénobarbital 40 mg (f 0,82), aminophylline 200 mg (f 0,88), dt X » avec 8 suppos purs = 15,76 g.", check: ["E = 15,76 ÷ 8 = 1,97 g", "Σ f·S = 0,82 × 0,04 + 0,88 × 0,2 = 0,2088 g", "M = 1,97 − 0,2088 = 1,7612 g", "× 11 (dt X + 1) = 19,37 g"] },
+  traps: ["Oublier de convertir les mg de PA en g dans f × S.", "Multiplier par n au lieu de n + 1.", "Oublier un des PA dans la somme."] }
+],
+
+cards: [
+{ c: "trit", front: "Qu'est-ce qu'une trituration ?", back: "Un excès de PA mélangé à un diluant ; on prélève la quantité de mélange contenant la dose" },
+{ c: "trit", front: "Pourquoi faire une trituration ?", back: "La quantité de PA est trop petite pour être pesée avec précision" },
+{ c: "trit", front: "Trituration à 1 ‰ = ?", back: "1 mg de PA pour 1000 mg de trituration" },
+{ c: "trit", front: "Trituration à 1 % = ?", back: "1 g de PA pour 100 g (10 mg pour 1000 mg)" },
+{ c: "trit", front: "Trituration à 10 % = ?", back: "10 g de PA pour 100 g (100 mg pour 1000 mg)" },
+{ c: "tritcalc", front: "Trituration 1 ‰ : facteur à appliquer à la masse de PA ?", back: "× 1000" },
+{ c: "tritcalc", front: "Trituration 2 ‰ : facteur ?", back: "× 500" },
+{ c: "tritcalc", front: "Trituration 1 % : facteur ?", back: "× 100" },
+{ c: "tritcalc", front: "Trituration 10 % : facteur ?", back: "× 10" },
+{ c: "tritcalc", front: "Les 2 étapes du calcul d'une trituration ?", back: "1) Quantité totale de PA (dose × nombre) · 2) Quantité de trituration qui contient ce PA" },
+{ c: "tritcalc", front: "0,4 mg de PA, trituration 1 ‰ → ?", back: "400 mg de trituration" },
+{ c: "tritcalc", front: "500 mg de trituration à 1 % pour 50 pilules : dose par pilule ?", back: "0,1 mg" },
+{ c: "lecture", front: "1 mg = ? µg", back: "1000 µg" },
+{ c: "lecture", front: "dt VI", back: "6" },
+{ c: "lecture", front: "dt XX", back: "20" },
+{ c: "lecture", front: "dt XL", back: "40" },
+{ c: "lecture", front: "dt XC", back: "90" },
+{ c: "lecture", front: "L et C en chiffres romains ?", back: "L = 50 · C = 100" },
+{ c: "gelmix", front: "« Cipramil® 10 mg (comprimés à 20 mg) dt 120 » : nb de comprimés ?", back: "60" },
+{ c: "gelmix", front: "« 5 mg (trituration à 10 %) dt 120 » : masse de trituration ?", back: "6 g" },
+{ c: "gelmix", front: "Question « par gélule » : multiplie-t-on par dt ?", back: "Non" },
+{ c: "coulee", front: "Fusion claire : principe ?", back: "Chauffer 2-3 °C au-dessus de la T° de fusion, incorporer le PA avant la coulée (attention sédimentation)" },
+{ c: "coulee", front: "Fusion crémeuse : principe ?", back: "Fondre 2/3 de la masse, ajouter 1/3 froid, puis le PA ; coulée semi-solide" },
+{ c: "coulee", front: "Avantages de la fusion crémeuse ?", back: "Moins de sédimentation, durcissement plus rapide" },
+{ c: "coulee", front: "Les 4 étapes de calcul des suppositoires ?", back: "Étalonner le moule (E) · couler à 10 % de PA (M, S) · calculer f · masse d'excipient avec 1 suppo en plus" },
+{ c: "coulee", front: "% de PA arbitraire de la 2e coulée ?", back: "10 %" },
+{ c: "facteur", front: "Formule du facteur de déplacement ?", back: "f = (E − M) ÷ S" },
+{ c: "facteur", front: "E = ?", back: "g d'excipient dans 1 suppositoire sans PA (1re coulée)" },
+{ c: "facteur", front: "M = ?", back: "g de masse dans 1 suppositoire avec PA (2e coulée)" },
+{ c: "facteur", front: "S = ?", back: "g de PA dans 1 suppositoire" },
+{ c: "facteur", front: "Signification de f ?", back: "Masse d'excipient déplacée par 1 g de PA" },
+{ c: "facteur", front: "Suppo à 10 % de PA pesant 3,048 g : M et S ?", back: "M = 2,7432 g · S = 0,3048 g" },
+{ c: "base", front: "Formule de la masse d'excipient par suppositoire ?", back: "M = E − Σ (fi × Si)" },
+{ c: "base", front: "En pratique, on prépare combien de suppositoires ?", back: "n + 1" },
+{ c: "base", front: "Unité de S dans f × S ?", back: "Grammes (convertir les mg)" },
+{ c: "base", front: "8 suppos de 1 g à 100 mg d'aspirine (f 0,67) : base en pratique ?", back: "0,933 × 9 = 8,397 g" }
+],
+
+quiz: [
+{ id: "p1", c: "trit", q: "On réalise une trituration lorsque", o: ["le PA est instable", "la quantité de PA est trop petite pour être pesée avec précision", "le PA est liquide", "on veut masquer le goût"], a: 1, ex: "Une masse trop faible ne se pèse pas précisément : on la dilue dans un diluant." },
+{ c: "trit", q: "Une trituration à 1 ‰ contient", o: ["1 g de PA pour 100 g", "1 mg de PA pour 1000 mg", "1 mg de PA pour 100 mg", "10 mg de PA pour 1000 mg"], a: 1, ex: "‰ = pour mille." },
+{ c: "trit", q: "Une trituration à 1 % contient pour 1000 mg", o: ["1 mg de PA", "10 mg de PA", "100 mg de PA", "0,1 mg de PA"], a: 1, ex: "1 g/100 g = 10 mg/1000 mg." },
+{ c: "trit", t: "tf", q: "Vrai ou faux : plus la trituration est diluée, plus la masse à peser est grande.", a: 0, ex: "Vrai : c'est tout l'intérêt, une masse plus grande se pèse plus précisément." },
+{ c: "trit", t: "tf", q: "Vrai ou faux : la trituration modifie la dose de PA que reçoit le patient.", a: 1, ex: "Faux : seule la masse pesée change ; la dose de PA reste celle de la prescription." },
+{ id: "p2", c: "tritcalc", q: "Éthinylœstradiol 50 µg dt X, trituration à 2 ‰ : masse de trituration ?", o: ["25 mg", "250 mg", "2,5 mg", "2,5 g"], a: 1, ex: "50 µg × 10 = 0,5 mg ; 2 ‰ → × 500 = 250 mg." },
+{ c: "tritcalc", q: "30 pilules à 30 µg, trituration à 1 ‰ : masse de trituration ?", o: ["9 mg", "90 mg", "900 mg", "9 g"], a: 2, ex: "900 µg = 0,9 mg × 1000 = 900 mg." },
+{ c: "tritcalc", q: "50 pilules préparées avec 500 mg de trituration à 1 % : dose par pilule ?", o: ["0,01 mg", "0,1 mg", "1 mg", "10 mg"], a: 1, ex: "500 × 1 % = 5 mg ÷ 50 = 0,1 mg." },
+{ c: "tritcalc", q: "Dexaméthasone 0,25 mg dt 30, trituration à 1 % : masse à peser ?", o: ["7,5 mg", "75 mg", "750 mg", "7,5 g"], a: 2, ex: "7,5 mg de PA × 100 = 750 mg." },
+{ c: "tritcalc", q: "Bétaméthasone 0,05 % (m/m) ad 200 g, trituration à 10 % : masse de trituration ?", o: ["0,1 g", "0,5 g", "1 g", "10 g"], a: 2, ex: "0,1 g de PA × 10 = 1 g. 0,1 g est le piège (quantité de PA)." },
+{ c: "tritcalc", q: "Pour une trituration à 2 ‰, la masse de trituration vaut", o: ["PA × 200", "PA × 500", "PA × 1000", "PA × 50"], a: 1, ex: "2 mg pour 1000 mg → 1 mg pour 500 mg." },
+{ id: "p3", c: "lecture", q: "« dt XX » signifie", o: ["10", "20", "11", "22"], a: 1, ex: "X = 10 → XX = 20." },
+{ c: "lecture", q: "« dt XIV » signifie", o: ["16", "14", "9", "41"], a: 1, ex: "X + IV = 10 + 4." },
+{ c: "lecture", q: "20 µg égale", o: ["0,2 mg", "0,02 mg", "2 mg", "0,002 mg"], a: 1, ex: "÷ 1000." },
+{ c: "lecture", q: "« dt XL » signifie", o: ["60", "40", "90", "110"], a: 1, ex: "X avant L : 50 − 10 = 40." },
+{ id: "p4", c: "gelmix", q: "Cipramil® 10 mg (utiliser comprimés à 20 mg) pf 1 gél dt 120. Nombre de comprimés ?", o: ["30", "60", "120", "240"], a: 1, ex: "1200 mg ÷ 20 = 60." },
+{ c: "gelmix", q: "Métoclopramide 5 mg (trituration à 10 %) dt 120 : masse de trituration ?", o: ["0,6 g", "6 g", "60 g", "60 mg"], a: 1, ex: "600 mg de PA × 10 = 6000 mg = 6 g." },
+{ c: "gelmix", q: "Extrait sec de fucus 10 ctg + extrait sec de cascara 80 mg : extrait sec par gélule ?", o: ["0,09 g", "0,18 g", "0,9 g", "18 g"], a: 1, ex: "100 + 80 = 180 mg par gélule (pas × dt)." },
+{ c: "gelmix", q: "Metformine 400 mg dt 120 : masse à peser ?", o: ["400 mg", "4,8 g", "48 g", "480 mg"], a: 2, ex: "400 × 120 = 48 000 mg." },
+{ id: "p5", c: "coulee", q: "La fusion crémeuse consiste à", o: ["chauffer toute la masse 10 °C au-dessus de sa T° de fusion", "fondre 2/3 de la masse et ajouter 1/3 froid avant le PA", "fondre 1/3 et ajouter 2/3 froids", "couler à froid"], a: 1, ex: "2/3 fondu + 1/3 froid, puis le PA ; coulée semi-solide." },
+{ c: "coulee", q: "Dans la fusion claire, on chauffe la masse", o: ["juste à sa T° de fusion", "2 à 3 °C au-dessus de sa T° de fusion", "à 100 °C", "10 °C en dessous"], a: 1, ex: "2-3 °C au-dessus de la T° de fusion." },
+{ c: "coulee", q: "Le principal risque de la fusion claire est", o: ["la sédimentation du PA", "le durcissement trop rapide", "l'évaporation de la base", "l'oxydation"], a: 0, ex: "La masse très fluide laisse le PA tomber au fond." },
+{ c: "coulee", q: "La 2e coulée se fait avec un pourcentage arbitraire de PA de", o: ["1 %", "5 %", "10 %", "50 %"], a: 2, ex: "10 % de PA." },
+{ c: "coulee", q: "Pourquoi prépare-t-on un suppositoire de plus ?", o: ["Pour en garder un comme échantillon légal", "Pour compenser les pertes de masse lors de la coulée", "Pour tester le goût", "Parce que le moule a toujours une alvéole de plus"], a: 1, ex: "Une partie de la masse reste dans les ustensiles." },
+{ id: "p6", c: "facteur", q: "Le facteur de déplacement se calcule par", o: ["f = (M − E) ÷ S", "f = (E − M) ÷ S", "f = S ÷ (E − M)", "f = E ÷ M"], a: 1, ex: "f = (E − M) ÷ S." },
+{ c: "facteur", q: "E représente", o: ["la masse de PA par suppositoire", "la masse d'excipient dans 1 suppositoire sans PA", "la masse totale du moule", "le nombre de suppositoires"], a: 1, ex: "1re coulée, sans PA." },
+{ c: "facteur", q: "Un suppositoire de la 2e coulée (10 % de PA) pèse 3,048 g. S vaut", o: ["0,293 g", "0,3048 g", "2,7432 g", "0,1 g"], a: 1, ex: "10 % de 3,048 g." },
+{ c: "facteur", q: "f = 0,61 signifie que 1 g de PA", o: ["pèse 0,61 g", "déplace 0,61 g d'excipient", "représente 61 % du suppositoire", "doit être multiplié par 0,61"], a: 1, ex: "Masse d'excipient déplacée par 1 g de PA." },
+{ c: "facteur", q: "7 suppositoires purs pèsent 20,50 g ; 9 suppositoires à 10 % pèsent 26,89 g. f ≈", o: ["0,61", "0,81", "1,2", "0,29"], a: 1, ex: "E = 2,93 ; 1 suppo = 2,99 ; M = 2,689 ; S = 0,299 → f ≈ 0,81." },
+{ id: "p7", c: "base", q: "La masse d'excipient pour 1 suppositoire vaut", o: ["M = E + Σ f·S", "M = E − Σ f·S", "M = E − Σ S", "M = Σ f·S − E"], a: 1, ex: "M = E − Σ (fi × Si)." },
+{ c: "base", q: "Rp … p.f. 1 suppositoire dt X. Combien de suppositoires calcule-t-on « en pratique » ?", o: ["9", "10", "11", "12"], a: 2, ex: "n + 1 = 11." },
+{ c: "base", q: "8 suppositoires de 1 g à 100 mg d'aspirine (f = 0,67). Base en pratique ?", o: ["7,464 g", "8,397 g", "7,33 g", "9,77 g"], a: 1, ex: "M = 1 − 0,067 = 0,933 g × 9 = 8,397 g. 7,464 g = piège (8 suppos)." },
+{ c: "base", q: "Bismuth sous-gallate 200 mg, pf 1 suppo dt 6. Quantité de bismuth en pratique ?", o: ["1,2 g", "1,4 g", "1,397 g", "1,19 g"], a: 1, ex: "200 mg × 7 = 1,4 g." },
+{ c: "base", t: "tf", q: "Vrai ou faux : dans f × S, S peut rester en mg si E est en g.", a: 1, ex: "Faux : toutes les masses doivent être dans la même unité (g)." }
+],
+
+gens: {
+trit: { c: "tritcalc", method: "Trituration : PA → masse de mélange", make() {
+  const [lab, , fac] = pick(TRIT); const ug = Math.random() < .5;
+  const dose = ug ? pick([10, 20, 25, 30, 50, 100]) : pick([0.1, 0.2, 0.25, 0.5, 1, 2, 5]); const n = pick([10, 20, 30, 40, 50, 60]);
+  const paMg = r10((ug ? dose / 1000 : dose) * n); const ans = r10(paMg * fac);
+  return { ctx: `Rp PA ${fmt(dose)} ${ug ? "µg" : "mg"}\n   pf 1 gél dt ${roman(n)}`, q: `Masse de trituration à ${lab} à peser (mg) ?`, ans, unit: "mg", tol: { rel: 0.001 },
+    steps: [`dt ${roman(n)} = ${n}`, `PA total : ${fmt(dose)} ${ug ? "µg" : "mg"} × ${n} = ${fmt(paMg)} mg`, `Trituration à ${lab} → × ${fac}`, `${fmt(paMg)} × ${fac} = <b>${fmt(ans)} mg</b>`] };
+} },
+tritinv: { c: "tritcalc", method: "Trituration : retrouver la dose", make() {
+  const [lab, mgPer1000] = pick(TRIT); const m = pick([100, 200, 250, 500, 1000]); const n = pick([10, 20, 25, 50]);
+  const pa = r10(m * mgPer1000 / 1000); const ans = r10(pa / n);
+  return { q: `On a utilisé ${m} mg de trituration à ${lab} pour préparer ${n} pilules. Dose de PA par pilule (mg) ?`, ans, unit: "mg", tol: { rel: 0.001 },
+    steps: [`${lab} = ${mgPer1000} mg de PA pour 1000 mg`, `PA dans ${m} mg : ${fmt(pa)} mg`, `÷ ${n} = <b>${fmt(ans)} mg</b>`] };
+} },
+romain: { c: "lecture", method: "Lecture du Rp (µg, chiffres romains)", make() {
+  if (Math.random() < .5) { const n = pick([4, 6, 9, 11, 12, 14, 19, 20, 24, 30, 40, 45, 60, 90, 120]); return { q: `« dt ${roman(n)} » = combien d'unités ?`, ans: n, unit: "", steps: [`${roman(n)} = <b>${n}</b>`] }; }
+  const v = pick([20, 30, 50, 250, 400, 900, 1500]); return { q: `${v} µg = ? mg`, ans: r10(v / 1000), unit: "mg", tol: { rel: 0.001 }, steps: [`1 µg = 0,001 mg`, `${v} ÷ 1000 = <b>${fmt(v / 1000)} mg</b>`] };
+} },
+spec: { c: "gelmix", method: "Spécialité ou trituration dans une gélule", make() {
+  const n = pick([30, 60, 90, 120]);
+  if (Math.random() < .5) { const dos = pick([10, 20, 25, 50]); const d = pick([5, 10, 25].filter(x => x <= dos)); const tot = d * n; if (tot % dos) return this.make();
+    return { ctx: `Rp … PA ${d} mg (utiliser comprimés à ${dos} mg)\n   pf 1 gél dt ${n}`, q: "Nombre de comprimés à utiliser ?", ans: tot / dos, unit: "", steps: [`${d} × ${n} = ${tot} mg`, `${tot} ÷ ${dos} = <b>${tot / dos}</b>`] }; }
+  const d = pick([1, 2, 5, 10]); const [lab, , fac] = pick(TRIT.slice(2)); const tot = d * n; const ans = r10(tot * fac / 1000);
+  return { ctx: `Rp … PA ${d} mg (utiliser trituration à ${lab})\n   pf 1 gél dt ${n}`, q: "Masse de trituration à peser (g) ?", ans, unit: "g", tol: { rel: 0.001 }, steps: [`PA : ${d} × ${n} = ${tot} mg`, `× ${fac} = ${fmt(tot * fac)} mg = <b>${fmt(ans)} g</b>`] };
+} },
+facteur: { c: "facteur", method: "Facteur de déplacement f = (E − M) ÷ S", make() {
+  const E0 = pick([1.97, 2.0, 2.93, 3.0]); const f0 = pick([0.55, 0.61, 0.65, 0.7, 0.75, 0.81, 0.85]); const n1 = rnd(6, 8), n2 = rnd(8, 11);
+  const W0 = E0 / (0.9 + 0.1 * f0); const t1 = Math.round(n1 * E0 * 100) / 100; const t2 = Math.round(n2 * W0 * 1000) / 1000;
+  const E = t1 / n1, W = t2 / n2, M = W * 0.9, S = W * 0.1, f = (E - M) / S;
+  return { raw: { n1, t1, n2, t2 }, ctx: `${n1} suppositoires de masse pure pèsent ${fmt(t1)} g.\n${n2} suppositoires à 10 % de PA pèsent ${fmt(t2)} g.`, q: "Facteur de déplacement f (2 décimales) ?", ans: Math.round(f * 100) / 100, unit: "", tol: { abs: 0.02 },
+    steps: [`E = ${fmt(t1)} ÷ ${n1} = ${fmt(E, 4)} g`, `1 suppo à 10 % = ${fmt(t2)} ÷ ${n2} = ${fmt(W, 4)} g`, `M = ${fmt(W, 4)} × 0,9 = ${fmt(M, 4)} g ; S = ${fmt(S, 4)} g`, `f = (${fmt(E, 4)} − ${fmt(M, 4)}) ÷ ${fmt(S, 4)} = <b>${fmt(f, 2)}</b>`] };
+} },
+base: { c: "base", method: "Masse d'excipient M = E − Σ f·S (n + 1)", make() {
+  const n = pick([6, 8, 10, 12, 20]); const k = rnd(1, 2); const pas = shuffle(PAS).slice(0, k).map(([nm, f]) => [nm, f, pick([20, 40, 75, 100, 125, 200, 250, 300])]);
+  const mould = Math.random() < .5; let E, ctxE, stE;
+  if (mould) { const n0 = pick([6, 7, 8]); const e0 = pick([1.97, 2.0, 2.93]); const tot = Math.round(n0 * e0 * 100) / 100; E = tot / n0; ctxE = `\n${n0} suppositoires de masse pure (même moule) pèsent ${fmt(tot)} g.`; stE = `E = ${fmt(tot)} ÷ ${n0} = ${fmt(E, 4)} g`; }
+  else { E = pick([1, 2, 3]); ctxE = ""; stE = `E = ${E} g (suppositoire de ${E} g)`; }
+  const sum = pas.reduce((a, [, f, mg]) => a + f * mg / 1000, 0); const M = E - sum; const ans = r10(M * (n + 1));
+  return { ctx: `Rp ${pas.map(([nm, f, mg]) => `${nm} ${mg} mg (f = ${fmt(f)})`).join("\n   ")}\n   p.f. 1 suppositoire${mould ? "" : " de " + E + " g"} dt ${roman(n)}${ctxE}`, q: "Masse de base à peser en pratique (g) ?", ans, unit: "g", tol: { rel: 0.002 },
+    steps: [stE, `Σ f·S = ${pas.map(([, f, mg]) => `${fmt(f)} × ${fmt(mg / 1000)}`).join(" + ")} = ${fmt(sum, 4)} g`, `M = ${fmt(E, 4)} − ${fmt(sum, 4)} = ${fmt(M, 4)} g par suppositoire`, `dt ${roman(n)} = ${n} → en pratique ${n + 1}`, `${fmt(M, 4)} × ${n + 1} = <b>${fmt(ans, 4)} g</b>`] };
+} },
+paprat: { c: "base", method: "Quantité de PA en pratique (n + 1)", make() {
+  const [nm] = pick(PAS); const mg = pick([30, 75, 100, 130, 200, 300, 500]); const n = pick([6, 8, 10, 12, 20]);
+  const ans = r10(mg * (n + 1) / 1000);
+  return { ctx: `Rp ${nm} ${mg} mg\n   Witepsol qs\n   pf 1 suppo dt ${roman(n)}`, q: `Quantité ${de(nm)} à peser en pratique (g) ?`, ans, unit: "g", tol: { rel: 0.001 }, steps: [`dt ${roman(n)} = ${n} → ${n + 1} suppositoires en pratique`, `${mg} × ${n + 1} = ${mg * (n + 1)} mg = <b>${fmt(ans)} g</b>`] };
+} }
+},
+
+worked: [
+{ id: "w1", title: "Trituration (µg → mg → trituration)", gen: "trit", make() {
+  const dose = pick([20, 30, 50]); const n = pick([10, 20, 30]); const [lab, , fac] = pick([TRIT[0], TRIT[1]]);
+  const ug = dose * n, mg = r10(ug / 1000), t = r10(mg * fac);
+  return { ctx: `Rp éthinylœstradiol ${dose} µg\n   acétate de cyprotérone 0,25 cg\n   pf. 1 gél. dt ${roman(n)}`, q: `Quelle quantité de trituration d'éthinylœstradiol à ${lab} peser ?`, steps: [
+    { label: "Nombre de gélules", ans: n, unit: "", show: `dt ${roman(n)} = ${n}`, why: "Chiffres romains : X = 10." },
+    { label: "PA total en µg", ans: ug, unit: "µg", show: `${dose} × ${n} = ${ug} µg`, why: "Dose par gélule × nombre de gélules." },
+    { label: "PA total en mg", ans: mg, unit: "mg", tol: { rel: 0.001 }, show: `${ug} ÷ 1000 = ${fmt(mg)} mg`, why: "1 mg = 1000 µg ; on travaille en mg pour appliquer la teneur." },
+    { label: "Masse de trituration", ans: t, unit: "mg", tol: { rel: 0.001 }, show: `${lab} → × ${fac} : ${fmt(mg)} × ${fac} = ${fmt(t)} mg`, why: `${lab} : il faut ${fac} mg de trituration pour 1 mg de PA.` }] };
+} },
+{ id: "w2", title: "Facteur de déplacement f", gen: "facteur", make() {
+  const g = DATA.gens.facteur.make();
+  const { n1, t1, n2, t2 } = g.raw; const E = t1 / n1, W = t2 / n2, M = W * 0.9, S = W * 0.1, f = (E - M) / S;
+  return { ctx: g.ctx, q: "Calcule le facteur de déplacement du PA.", steps: [
+    { label: "E : masse d'un suppositoire pur", ans: E, unit: "g", tol: { rel: 0.003 }, show: `${fmt(t1)} ÷ ${n1} = ${fmt(E, 4)} g`, why: "1re coulée : on ramène à UN suppositoire." },
+    { label: "Masse d'un suppositoire à 10 %", ans: W, unit: "g", tol: { rel: 0.003 }, show: `${fmt(t2)} ÷ ${n2} = ${fmt(W, 4)} g`, why: "2e coulée : là aussi, un seul suppositoire." },
+    { label: "M : masse d'excipient dans ce suppositoire", ans: M, unit: "g", tol: { rel: 0.003 }, show: `${fmt(W, 4)} × 0,9 = ${fmt(M, 4)} g`, why: "Il contient 90 % de masse." },
+    { label: "S : masse de PA dans ce suppositoire", ans: S, unit: "g", tol: { rel: 0.005 }, show: `${fmt(W, 4)} × 0,1 = ${fmt(S, 4)} g`, why: "Il contient 10 % de PA." },
+    { label: "f = (E − M) ÷ S", ans: f, unit: "", tol: { abs: 0.02 }, show: `(${fmt(E, 4)} − ${fmt(M, 4)}) ÷ ${fmt(S, 4)} = ${fmt(f, 2)}`, why: "Masse d'excipient déplacée, ramenée à 1 g de PA." }] };
+} },
+{ id: "w3", title: "Masse de base, 1 PA (suppo de poids donné)", gen: "base", make() {
+  const n = pick([6, 8, 10]); const E = pick([1, 2]); const [nm, f] = pick(PAS); const mg = pick([100, 125, 200, 250]);
+  const fs = r10(f * mg / 1000), M = r10(E - fs), tot = r10(M * (n + 1));
+  return { ctx: `Préparer ${n} suppositoires de ${E} g contenant ${mg} mg ${de(nm)} (f = ${fmt(f)}).`, q: "Quelle quantité de base faut-il en pratique ?", steps: [
+    { label: "S en grammes", ans: mg / 1000, unit: "g", show: `${mg} mg = ${fmt(mg / 1000)} g`, why: "f × S doit être en g comme E." },
+    { label: "Masse d'excipient déplacée f × S", ans: fs, unit: "g", tol: { rel: 0.002 }, show: `${fmt(f)} × ${fmt(mg / 1000)} = ${fmt(fs)} g`, why: "Chaque g de PA déplace f g d'excipient." },
+    { label: "M par suppositoire", ans: M, unit: "g", tol: { rel: 0.002 }, show: `${E} − ${fmt(fs)} = ${fmt(M)} g`, why: "M = E − f·S." },
+    { label: "Nombre de suppositoires en pratique", ans: n + 1, unit: "", show: `${n} + 1 = ${n + 1}`, why: "On prévoit toujours un suppositoire supplémentaire." },
+    { label: "Base totale", ans: tot, unit: "g", tol: { rel: 0.002 }, show: `${fmt(M)} × ${n + 1} = ${fmt(tot)} g`, why: "Masse par suppositoire × nombre en pratique." }] };
+} },
+{ id: "w4", title: "Masse de base, plusieurs PA (moule étalonné)", gen: "base", make() {
+  const n = pick([10, 12, 20]); const n0 = pick([7, 8]); const e0 = pick([1.97, 2.93]); const t0 = Math.round(n0 * e0 * 100) / 100; const E = t0 / n0;
+  const pas = shuffle(PAS).slice(0, 2).map(([nm, f]) => [nm, f, pick([40, 75, 100, 200])]); const sum = pas.reduce((a, [, f, mg]) => a + f * mg / 1000, 0); const M = E - sum, tot = M * (n + 1);
+  return { ctx: `Rp ${pas.map(([nm, f, mg]) => `${nm} ${mg} mg (f = ${fmt(f)})`).join("\n   ")}\n   p.f. un suppositoire adulte dt ${roman(n)}\n${n0} suppositoires de masse pure (même moule) pèsent ${fmt(t0)} g.`, q: "Quelle quantité d'excipient peser en pratique ?", steps: [
+    { label: "E (étalonnage du moule)", ans: E, unit: "g", tol: { rel: 0.003 }, show: `${fmt(t0)} ÷ ${n0} = ${fmt(E, 4)} g`, why: "Masse d'un suppositoire d'excipient pur." },
+    { label: "Σ f × S", ans: sum, unit: "g", tol: { rel: 0.003 }, show: pas.map(([, f, mg]) => `${fmt(f)} × ${fmt(mg / 1000)}`).join(" + ") + ` = ${fmt(sum, 4)} g`, why: "On additionne la masse déplacée par chaque PA (S en g)." },
+    { label: "M par suppositoire", ans: M, unit: "g", tol: { rel: 0.003 }, show: `${fmt(E, 4)} − ${fmt(sum, 4)} = ${fmt(M, 4)} g`, why: "M = E − Σ f·S." },
+    { label: "Base totale en pratique", ans: tot, unit: "g", tol: { rel: 0.003 }, show: `dt ${roman(n)} = ${n} → ${n + 1} : ${fmt(M, 4)} × ${n + 1} = ${fmt(tot, 4)} g`, why: "n + 1 suppositoires." }] };
+} }
+],
+
+sprints: [
+{ id: "st", title: "Facteurs de trituration", target: 15, make() {
+  if (Math.random() < .5) { const [lab, , fac] = pick(TRIT); return { q: `Trituration à ${lab} : masse de trituration = PA × ?`, ans: fac, unit: "" }; }
+  const [lab, , fac] = pick(TRIT); const pa = pick([0.1, 0.2, 0.4, 0.5, 1, 2, 5]); return { q: `${fmt(pa)} mg de PA, trituration à ${lab} → ? mg`, ans: r10(pa * fac), unit: "mg" };
+} },
+{ id: "sr", title: "Chiffres romains (dt)", target: 20, make() { const n = pick([4, 5, 6, 9, 10, 11, 12, 14, 15, 19, 20, 24, 29, 30, 40, 44, 50, 60, 90, 100, 120]); return { q: `dt ${roman(n)} = ?`, ans: n, unit: "" }; } },
+{ id: "su", title: "µg ↔ mg ↔ g", target: 15, make() {
+  const k = rnd(0, 2);
+  if (k === 0) { const v = pick([20, 50, 250, 400, 900]); return { q: `${v} µg = ? mg`, ans: r10(v / 1000), unit: "mg" }; }
+  if (k === 1) { const v = pick([0.02, 0.05, 0.4, 2, 2.5]); return { q: `${fmt(v)} mg = ? µg`, ans: r10(v * 1000), unit: "µg" }; }
+  const v = pick([25, 125, 250, 600, 1800]); return { q: `${v} mg = ? g`, ans: r10(v / 1000), unit: "g" };
+} },
+{ id: "ss", title: "Suppositoires : réflexes", target: 12, make() {
+  const k = rnd(0, 3);
+  if (k === 0) { const n = pick([6, 8, 10, 12, 20]); return { q: `dt ${roman(n)} : combien de suppositoires couler en pratique ?`, ans: n + 1, unit: "" }; }
+  if (k === 1) { const W = pick([2.5, 3, 3.048, 2.99]); return { q: `Suppo à 10 % de PA pesant ${fmt(W)} g : S = ? g`, ans: r10(W * 0.1), unit: "g" }; }
+  if (k === 2) { const o = ["(E − M) ÷ S", "(M − E) ÷ S", "S ÷ (E − M)", "E − Σ f·S"]; return { q: "f = ?", o, a: 0 }; }
+  const f = pick([0.6, 0.7, 0.8]); const mg = pick([100, 200, 250]); return { q: `f = ${fmt(f)}, S = ${mg} mg : masse déplacée f × S = ? g`, ans: r10(f * mg / 1000), unit: "g" };
+} }
+],
+
+pretest: ["p1", "p2", "p3", "p4", "p5", "p6", "p7", "facteur", "base", "trit"]
+};
+
+const METHODS_HTML = `
+<div class="card"><h2>Pourquoi cette page est construite ainsi</h2>
+<p class="small" style="margin-top:0">Chaque outil de cette page applique une méthode dont l'efficacité a été mesurée dans des études contrôlées en psychologie cognitive et en sciences de l'éducation. La grande revue de Dunlosky et al. (2013) a évalué 10 techniques d'étude : <b>se tester</b> (pratique de récupération) et <b>espacer les révisions</b> obtiennent la note d'utilité la plus élevée ; l'<b>entrelacement</b>, l'<b>interrogation élaborative</b> et l'<b>auto-explication</b> une note moyenne ; <b>relire, surligner et résumer</b> une note faible.</p>
+<div class="box trap" style="margin-bottom:0"><b>À éviter :</b> relire le PDF plusieurs fois ou surligner. On a l'impression de savoir parce que le texte est familier, mais on ne s'entraîne pas à le retrouver seule, ce que l'examen exige.</div></div>
+
+<div class="card"><h2>Les méthodes, et où elles sont dans la page</h2>
+<div class="method"><b>1. Se tester plutôt que relire (pratique de récupération)</b><br><span class="small">Flashcards, Quiz, Séance du jour. Dans l'étude de Roediger &amp; Karpicke (2006), les étudiants qui s'étaient testés retenaient nettement plus une semaine plus tard que ceux qui avaient relu. Réponds toujours <b>avant</b> de voir la réponse, même si tu n'es pas sûre.</span></div>
+<div class="method"><b>2. Espacer les séances</b><br><span class="small">Plan J+1, J+3, J+7, J+14, J+30 et boîtes des flashcards. Cepeda et al. (2008, plus de 1 350 participants) montrent que l'intervalle optimal entre deux révisions augmente avec le délai jusqu'à l'examen. Mieux vaut 15 minutes réparties sur 5 jours que 75 minutes la veille.</span></div>
+<div class="method"><b>3. Réapprendre jusqu'au critère, sur plusieurs séances (réapprentissage successif)</b><br><span class="small">Dans les sessions, une question ratée revient jusqu'à ce que tu la réussisses ; puis elle revient les jours suivants. Rawson &amp; Dunlosky recommandent de réussir chaque élément au moins une fois par séance, sur environ 3 séances espacées : c'est ce qui rend le souvenir durable.</span></div>
+<div class="method"><b>4. Mélanger les types de problèmes (entrelacement)</b><br><span class="small">Onglet Mélange et Séance du jour. En maths, des élèves ayant mélangé les types d'exercices ont nettement mieux réussi un test surprise un mois plus tard (61 % contre 38 % dans un essai sur 787 élèves de Rohrer et al.). Le gain vient surtout du fait qu'il faut <b>choisir la méthode</b> : c'est pour cela que l'onglet Mélange te demande d'abord « quelle méthode ? ». C'est plus difficile sur le moment, et c'est normal.</span></div>
+<div class="method"><b>5. Exemples résolus puis aide qui s'estompe</b><br><span class="small">Onglet Exemples guidés. Au début d'un apprentissage, étudier un exemple résolu est plus efficace que de chercher seule (Sweller ; Renkl). Ensuite, on retire les étapes en commençant par la fin (« estompage arrière », Renkl &amp; Atkinson), jusqu'à résoudre seule. Le niveau s'adapte à tes réussites.</span></div>
+<div class="method"><b>6. Se demander « pourquoi ? » et s'expliquer les étapes</b><br><span class="small">Encadrés « Pourquoi ? » de la Leçon active et boutons « pourquoi ? » des exemples. Relier chaque règle à sa raison (interrogation élaborative, auto-explication) aide à comprendre et à transférer à des problèmes nouveaux.</span></div>
+<div class="method"><b>7. Expliquer à voix haute, sans regarder</b><br><span class="small">Encadrés « Explique à voix haute ». C'est une forme de rappel libre et d'auto-explication. La liste à cocher te montre ce que tu as oublié.</span></div>
+<div class="method"><b>8. Se tester avant d'apprendre (pré-test)</b><br><span class="small">Bouton Pré-test. Essayer de répondre avant d'avoir étudié, même en se trompant, améliore la mémorisation de ce qu'on apprend ensuite (Richland, Kornell &amp; Kao, 2009 ; Kornell, Hays &amp; Bjork, 2009).</span></div>
+<div class="method"><b>9. Noter sa certitude et corriger les erreurs « sûres »</b><br><span class="small">Boutons Sûre / Hésitante / Au hasard et tableau de calibration. Les erreurs commises avec une forte confiance sont paradoxalement les mieux corrigées après le feedback (effet d'hypercorrection, Butterfield &amp; Metcalfe, 2001). Comparer ta confiance à tes résultats t'apprend aussi à savoir ce que tu sais vraiment.</span></div>
+<div class="method"><b>10. Rendre les bases automatiques (sprints)</b><br><span class="small">Onglet Sprint. Quand les conversions, abréviations et densités sont instantanées, ta mémoire de travail reste disponible pour le raisonnement. On vise d'abord la précision, ensuite la vitesse. Honnêtement : cette idée est surtout étudiée pour le calcul de base chez les enfants, et une étude n'a pas trouvé d'avantage de rétention au simple entraînement chronométré par rapport à la même quantité de pratique. Utilise donc les sprints en complément, pas à la place des autres méthodes.</span></div>
+<div class="method"><b>11. Une méthode de calcul stable, avec les unités</b><br><span class="small">Dans les corrections, chaque étape garde son unité (mg, g, mL). En formation infirmière, apprendre à poser les calculs de doses avec les unités (analyse dimensionnelle) a amélioré la précision par rapport au calcul classique. Écris toujours l'unité à chaque ligne et vérifie l'ordre de grandeur.</span></div>
+</div>
+
+<div class="card"><h2>Mode d'emploi conseillé</h2><ol class="steps">
+<li><b>Jour 0 (45-60 min)</b> : Pré-test → Leçon active (notion par notion : « pourquoi ? », voix haute, « Me tester ») → Exemples guidés jusqu'au niveau 3 ou 4.</li>
+<li><b>J+1, J+3, J+7, J+14, J+30 (15-20 min)</b> : Séance du jour + 1 ou 2 sprints de 60 s + 5 problèmes mélangés.</li>
+<li><b>Quand une notion reste « En cours »</b> : rouvre-la dans la Leçon (mode « Masquer l'essentiel »), refais son test, puis un exemple guidé.</li>
+<li><b>Avant l'examen</b> : une séance la veille et l'avant-veille, et le Quiz complet en conditions réelles. Pas de grosse relecture la dernière nuit : dormir aide à consolider.</li>
+<li><b>Exercices du cours et du livre (Ansel)</b> : fais-les mélangés, pas chapitre par chapitre, et sans regarder la correction avant d'avoir une réponse.</li></ol></div>
+
+<div class="card src"><h2>Sources</h2><ul class="small">
+<li>Dunlosky, Rawson, Marsh, Nathan &amp; Willingham (2013), <i>Improving Students' Learning With Effective Learning Techniques</i>, Psychological Science in the Public Interest 14(1). <a href="https://doi.org/10.1177/1529100612453266" target="_blank">doi:10.1177/1529100612453266</a></li>
+<li>Roediger &amp; Karpicke (2006), <i>Test-Enhanced Learning</i>, Psychological Science 17(3). <a href="https://psychology.ecu.edu/wp-content/pv-uploads/sites/216/2019/03/Roediger-Karpicke-2006.pdf" target="_blank">PDF</a></li>
+<li>Cepeda, Vul, Rohrer, Wixted &amp; Pashler (2008), <i>Spacing Effects in Learning: A Temporal Ridgeline of Optimal Retention</i>, Psychological Science 19(11). <a href="https://escholarship.org/uc/item/0kp5q19x" target="_blank">eScholarship</a></li>
+<li>Rawson &amp; Dunlosky : réapprentissage successif. <a href="https://journals.sagepub.com/doi/full/10.1177/09637214221100484" target="_blank">Current Directions in Psychological Science</a> · <a href="https://www.retrievalpractice.org/archive/2018/successive-relearning" target="_blank">synthèse retrievalpractice.org</a></li>
+<li>Rohrer, Dedrick, Hartwig &amp; Cheung (2020), <i>A randomized controlled trial of interleaved mathematics practice</i>, Journal of Educational Psychology 112(1) · Rohrer, Dedrick &amp; Burgess (2014), <a href="https://link.springer.com/article/10.3758/s13423-014-0588-3" target="_blank">Psychonomic Bulletin &amp; Review</a></li>
+<li>Renkl, Atkinson, Maier &amp; Staley (2002) ; Atkinson, Renkl &amp; Merrill (2003) : estompage des exemples résolus. <a href="https://en.wikipedia.org/wiki/Worked-example_effect" target="_blank">Synthèse</a></li>
+<li>Butterfield &amp; Metcalfe (2001, 2006) : effet d'hypercorrection. <a href="https://core.ac.uk/download/357328401.pdf" target="_blank">PDF</a></li>
+<li>Richland, Kornell &amp; Kao (2009), <i>The Pretesting Effect</i>. <a href="https://learninglab.uchicago.edu/Pre-Testing_files/RichlandKornellKao.pdf" target="_blank">PDF</a></li>
+<li>Greenfield, Whelan &amp; Cohn (2006), <i>Use of dimensional analysis to reduce medication errors</i>, Journal of Nursing Education 45(2). <a href="https://psnet.ahrq.gov/issue/use-dimensional-analysis-reduce-medication-errors" target="_blank">PSNet</a></li>
+</ul></div>`;
+
+/* ================= MOTEUR ================= */
+const KEY = "mphab287-theorie-" + DATA.id;
+const INTERVALS = [0, 1, 3, 7, 14, 30, 60];
+const $ = s => document.querySelector(s);
+const V = () => $("#view");
+const rnd = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+function fmt(n, d = 8) {
+  if (typeof n !== "number" || !isFinite(n)) return String(n);
+  let s = (Math.round(n * 10 ** d) / 10 ** d).toFixed(d).replace(/0+$/, "").replace(/\.$/, "");
+  const [i, f] = s.split(".");
+  const ii = i.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  return f ? ii + "," + f : ii;
+}
+function parseNum(s) {
+  if (s == null) return NaN;
+  s = String(s).trim().replace(/\s| /g, "").replace(",", ".");
+  if (s === "½") return 0.5;
+  if (/^-?\d+(\.\d+)?\/\d+(\.\d+)?$/.test(s)) { const [a, b] = s.split("/"); return parseFloat(a) / parseFloat(b); }
+  if (!/^-?(\d+\.?\d*|\.\d+)(e-?\d+)?$/i.test(s)) return NaN;
+  return parseFloat(s);
+}
+function near(x, target, tol) {
+  if (isNaN(x)) return false;
+  if (tol && tol.abs != null) return Math.abs(x - target) <= tol.abs + 1e-12;
+  const rel = tol && tol.rel != null ? tol.rel : 0.005;
+  return Math.abs(x - target) <= Math.max(Math.abs(target) * rel, 1e-12);
+}
+const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+function today() { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+function addDays(iso, n) { const d = new Date(iso + "T12:00:00"); d.setDate(d.getDate() + n); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+function diffDays(a, b) { return Math.round((new Date(b + "T12:00:00") - new Date(a + "T12:00:00")) / 864e5); }
+function frDate(iso) { return new Date(iso + "T12:00:00").toLocaleDateString("fr-BE", { weekday: "short", day: "numeric", month: "short" }); }
+
+/* ---------- état sauvegardé ---------- */
+let S;
+function blank() { return { start: today(), cards: {}, items: {}, gens: {}, sprint: {}, worked: {}, days: [], daily: [], pretest: null, lessons: {}, conf: { sure: [0, 0], mid: [0, 0], guess: [0, 0] } }; }
+function load() { try { S = JSON.parse(localStorage.getItem(KEY)) || blank(); } catch (e) { S = blank(); } const b = blank(); for (const k in b) if (!(k in S)) S[k] = b[k]; }
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { } }
+function markDay() { const t = today(); if (!S.days.includes(t)) S.days.push(t); save(); }
+
+/* ---------- index du contenu ---------- */
+const CONCEPTS = Object.fromEntries(DATA.concepts.map(c => [c.id, c]));
+const CARDS = DATA.cards.map((c, i) => ({ ...c, id: c.id || "k" + i }));
+const ITEMS = DATA.quiz.map((q, i) => ({ ...q, id: q.id || "q" + i }));
+const GENS = DATA.gens;
+
+/* ---------- répétition espacée (Leitner) ---------- */
+function cardState(id) { return S.cards[id] || { box: 0, due: null, seen: 0, lapses: 0 }; }
+function gradeCard(id, g) { // g: 0 raté, 1 difficile, 2 bien, 3 facile
+  const st = cardState(id); st.seen++;
+  if (g === 0) { st.box = 0; st.lapses++; }
+  else if (g === 1) st.box = Math.max(1, st.box);
+  else if (g === 2) st.box = Math.min(INTERVALS.length - 1, st.box + 1);
+  else st.box = Math.min(INTERVALS.length - 1, st.box + 2);
+  st.due = addDays(today(), g === 0 ? 0 : INTERVALS[st.box]);
+  S.cards[id] = st; save();
+}
+function dueCards() { const t = today(); return CARDS.filter(c => { const s = S.cards[c.id]; return !s || !s.due || s.due <= t; }); }
+function logItem(id, ok) { (S.items[id] = S.items[id] || []).push(ok ? 1 : 0); if (S.items[id].length > 12) S.items[id].shift(); save(); }
+function logGen(id, ok) { (S.gens[id] = S.gens[id] || []).push(ok ? 1 : 0); if (S.gens[id].length > 15) S.gens[id].shift(); save(); }
+function logConf(c, ok) { if (!c) return; S.conf[c][1]++; if (ok) S.conf[c][0]++; save(); }
+
+/* ---------- maîtrise par notion ---------- */
+function mastery(cid) {
+  const parts = [];
+  const cs = CARDS.filter(c => c.c === cid);
+  if (cs.length) parts.push(cs.reduce((a, c) => a + Math.min(cardState(c.id).box, 4) / 4, 0) / cs.length);
+  const qs = ITEMS.filter(q => q.c === cid);
+  if (qs.length) parts.push(qs.reduce((a, q) => { const r = S.items[q.id] || []; const last = r.slice(-3); return a + (last.length ? last.reduce((x, y) => x + y, 0) / 3 : 0); }, 0) / qs.length);
+  const gs = Object.entries(GENS).filter(([k, g]) => g.c === cid);
+  if (gs.length) parts.push(gs.reduce((a, [k]) => { const r = (S.gens[k] || []).slice(-5); return a + (r.length ? r.reduce((x, y) => x + y, 0) / 5 : 0); }, 0) / gs.length);
+  return parts.length ? parts.reduce((a, b) => a + b, 0) / parts.length : 0;
+}
+function lvl(m) { return m >= .85 ? ["Automatique", "var(--ok)"] : m >= .6 ? ["Solide", "var(--accent)"] : m >= .25 ? ["En cours", "var(--warn)"] : ["À découvrir", "var(--muted)"]; }
+
+/* ================= NAVIGATION ================= */
+const TABS = [
+  ["home", "🏠 Accueil"], ["lesson", "📖 Leçon active"], ["cards", "🃏 Flashcards"], ["quiz", "❓ Quiz"],
+  ["worked", "🪜 Exemples guidés"], ["sprint", "⚡ Sprint"], ["mix", "🔀 Mélange"], ["mastery", "📊 Maîtrise"],
+  ["methods", "🧠 Méthodes"], ["settings", "⚙️"]
+];
+let cur = "home";
+function go(v, arg) { cur = v; stopTimers(); renderTabs(); (VIEWS[v])(arg); window.scrollTo({ top: 0 }); }
+function renderTabs() { $("#tabs").innerHTML = TABS.map(([k, l]) => `<button class="${k === cur ? "on" : ""}" onclick="go('${k}')">${l}</button>`).join(""); }
+let timers = [];
+function stopTimers() { timers.forEach(clearInterval); timers = []; document.onkeydown = null; }
+
+/* ================= LECTEUR DE SESSION (quiz, cartes, problèmes) ================= */
+let P = null; // session courante
+function startSession(title, queue, opts = {}) {
+  stopTimers(); cur = ""; renderTabs(); window.scrollTo({ top: 0 });
+  P = { title, queue: queue.slice(), done: [], i: 0, opts, total: queue.length, retry: {}, results: [] };
+  markDay(); renderItem();
+}
+function renderItem() {
+  stopTimers();
+  if (!P.queue.length) return endSession();
+  const it = P.queue[0];
+  const n = P.done.length, total = n + P.queue.length;
+  let h = `<div class="card"><div class="row" style="justify-content:space-between"><span class="pill">${esc(P.title)}</span>
+    <span class="small muted">${n} / ${total}</span></div>
+    <div class="bar" style="margin:10px 0 14px"><i style="width:${(n / total) * 100}%"></i></div>`;
+  if (it.c && CONCEPTS[it.c]) h += `<div class="small muted">${esc(CONCEPTS[it.c].title)}</div>`;
+  if (it.t === "card") h += cardHTML(it);
+  else if (it.t === "mcq" || it.t === "tf") h += mcqHTML(it);
+  else if (it.t === "num") h += numHTML(it);
+  h += `</div><div class="row"><button class="btn ghost sm" onclick="endSession()">Terminer la session</button></div>`;
+  V().innerHTML = h;
+  if (it.t === "num") { const inp = $("#ans"); inp && inp.focus({ preventScroll: true }); }
+  if (it.t === "card") document.onkeydown = e => { if (e.key === " " && !it._flip) { e.preventDefault(); flip(); } else if (it._flip && "1234".includes(e.key)) grade(+e.key - 1); };
+  if (it.t === "mcq" || it.t === "tf") document.onkeydown = e => { const k = +e.key; if (!it._ans && k >= 1 && k <= (it.o || ["Vrai", "Faux"]).length) selOpt(k - 1); };
+}
+function cardHTML(it) {
+  return `<div class="flash"><div>${it.front}</div>${it._flip ? `<div class="back">${it.back}</div>` : ""}</div>
+  ${it._flip ? `<div class="small muted" style="text-align:center;margin-top:8px">Sois honnête : ta réponse était-elle juste et rapide ?</div>
+   <div class="grades"><button class="btn g0" onclick="grade(0)">Raté<br><small>revient</small></button><button class="btn" onclick="grade(1)">Difficile</button>
+   <button class="btn" onclick="grade(2)">Bien</button><button class="btn g3" onclick="grade(3)">Facile</button></div>`
+      : `<div class="row" style="justify-content:center;margin-top:12px"><button class="btn primary" onclick="flip()">Retourner <span class="kbd">espace</span></button></div>
+   <div class="small muted" style="text-align:center;margin-top:6px">Réponds d'abord dans ta tête (ou à voix haute) avant de retourner.</div>`}`;
+}
+function flip() { P.queue[0]._flip = true; renderItem(); }
+function grade(g) {
+  const it = P.queue.shift(); gradeCard(it.id, g);
+  P.results.push({ it, ok: g >= 2 });
+  if (g === 0) { delete it._flip; P.queue.splice(Math.min(P.queue.length, 3), 0, it); } // rappel successif : revient tant que raté
+  else P.done.push(it);
+  renderItem();
+}
+function confHTML(disabled) {
+  return `<div class="conf"><div class="lab">Valide en indiquant ta certitude :</div><div class="row">
+  <button class="btn primary sm" ${disabled ? "disabled" : ""} onclick="submit('sure')">✅ Sûre</button>
+  <button class="btn sm" ${disabled ? "disabled" : ""} onclick="submit('mid')">🤔 Hésitante</button>
+  <button class="btn sm" ${disabled ? "disabled" : ""} onclick="submit('guess')">🎲 Au hasard</button></div></div>`;
+}
+function mcqHTML(it) {
+  const o = it.o || ["Vrai", "Faux"];
+  let h = (it.ctx ? `<div class="ctx">${esc(it.ctx)}</div>` : "") + `<div class="q">${it.q}</div><div class="opts">`;
+  o.forEach((t, k) => {
+    let cls = "";
+    if (it._ans) { if (k === it.a) cls = "ok"; else if (k === it._sel) cls = "ko"; }
+    else if (k === it._sel) cls = "sel";
+    h += `<button class="opt ${cls}" ${it._ans ? "disabled" : ""} onclick="selOpt(${k})"><span class="n">${k + 1}</span><span>${t}</span></button>`;
+  });
+  h += `</div>`;
+  if (!it._ans) h += confHTML(it._sel == null);
+  else h += fbHTML(it, it._sel === it.a, it.ex);
+  return h;
+}
+function selOpt(k) { P.queue[0]._sel = k; renderItem(); }
+function numHTML(it) {
+  let h = (it.ctx ? `<div class="ctx">${esc(it.ctx)}</div>` : "") + `<div class="q">${it.q}</div>`;
+  h += `<div class="row" style="flex-wrap:nowrap"><input id="ans" class="num ${it._ans ? (it._ok ? "ok" : "ko") : ""}" inputmode="decimal" autocomplete="off"
+     placeholder="ta réponse" ${it._ans ? `value="${esc(it._raw)}" disabled` : ""} onkeydown="if(event.key==='Enter'&&!${!!it._ans})submit('mid')">
+     ${it.unit ? `<b style="min-width:40px">${esc(it.unit)}</b>` : ""}</div>`;
+  if (!it._ans) h += confHTML(false) + `<div class="small muted" style="margin-top:6px">Virgule ou point acceptés. <span class="kbd">Entrée</span> = « hésitante ».</div>`;
+  else h += fbHTML(it, it._ok, (it.steps ? `<ol class="steps">${it.steps.map(s => `<li>${s}</li>`).join("")}</ol>` : "") + (it.ex || ""));
+  return h;
+}
+function fbHTML(it, ok, ex) {
+  const good = it.t === "num" ? `${fmt(it.ans)} ${it.unit || ""}` : (it.o || ["Vrai", "Faux"])[it.a];
+  let h = `<div class="fb ${ok ? "ok" : "ko"}"><b>${ok ? "Juste !" : "Pas encore."}</b> ${ok ? "" : `Réponse : <b>${good}</b>`}
+    ${ex ? `<div class="ex">${ex}</div>` : ""}</div>`;
+  if (!ok && it._conf === "sure") h += `<div class="hyper">💡 <b>Erreur commise avec assurance.</b> C'est justement ce type d'erreur qui se corrige le mieux quand on s'y arrête (effet d'hypercorrection) : relis l'explication et redis-la avec tes mots avant de continuer. Cette question reviendra dans quelques minutes.</div>`;
+  else if (!ok) h += `<div class="small muted" style="margin-top:8px">Cette question reviendra plus loin dans la session jusqu'à ce que tu la réussisses.</div>`;
+  if (ok && it._conf === "guess") h += `<div class="small muted" style="margin-top:8px">Juste, mais au hasard : elle comptera comme « à revoir ».</div>`;
+  h += `<div class="row" style="margin-top:12px"><button class="btn primary" id="nextBtn" onclick="nextItem()">Continuer →</button></div>`;
+  return h;
+}
+function submit(conf) {
+  const it = P.queue[0];
+  if (it.t === "num") {
+    const raw = $("#ans").value; const x = parseNum(raw);
+    if (isNaN(x)) { $("#ans").classList.add("ko"); return; }
+    it._raw = raw; it._ok = near(x, it.ans, it.tol);
+  } else { if (it._sel == null) return; it._ok = it._sel === it.a; }
+  it._ans = true; it._conf = conf; logConf(conf, it._ok);
+  const counted = it._ok && conf !== "guess";
+  if (it.gen) logGen(it.gen, counted); else logItem(it.id, counted);
+  P.results.push({ it, ok: it._ok, conf });
+  renderItem();
+  document.onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); nextItem(); } };
+  const nb = $("#nextBtn"); nb && nb.focus({ preventScroll: true });
+}
+function nextItem() {
+  const it = P.queue.shift();
+  const retry = !it._ok || it._conf === "guess";
+  if (retry && !P.opts.noRetry) {
+    const again = it.gen && GENS[it.gen] ? makeGen(it.gen) : { ...it, _ans: false, _sel: null, _ok: null, _conf: null, _raw: null };
+    P.queue.splice(Math.min(P.queue.length, 4), 0, again);
+  } else P.done.push(it);
+  renderItem();
+}
+function endSession() {
+  stopTimers();
+  const r = P ? P.results : [];
+  const first = {}; r.forEach(x => { const key = x.it.id || x.it.gen + x.it.q; if (!(key in first)) first[key] = x.ok; });
+  const n = Object.keys(first).length, ok = Object.values(first).filter(Boolean).length;
+  const sure = r.filter(x => x.conf === "sure"), sureOk = sure.filter(x => x.ok).length;
+  const misses = r.filter(x => !x.ok).map(x => x.it).filter((v, i, a) => a.findIndex(y => (y.q || y.front) === (v.q || v.front)) === i);
+  if (P && P.opts.onEnd) P.opts.onEnd(ok, n);
+  V().innerHTML = `<div class="card" style="text-align:center"><span class="pill">${esc(P ? P.title : "")}</span>
+   <div class="big" style="margin-top:10px">${ok} / ${n}</div><div class="muted">réussies du premier coup</div>
+   ${sure.length ? `<p class="small">Calibration : quand tu étais <b>sûre</b>, tu avais raison dans <b>${Math.round(sureOk / sure.length * 100)} %</b> des cas ${sureOk / sure.length < .9 ? "→ ta confiance dépasse encore ta maîtrise, continue à t'auto-tester." : "→ ta confiance est fiable."}</p>` : ""}
+   ${misses.length ? `<div style="text-align:left"><h3>À retravailler</h3><ul class="small">${misses.slice(0, 12).map(m => `<li>${m.q || m.front}</li>`).join("")}</ul></div>` : ""}
+   <div class="row" style="justify-content:center;margin-top:10px"><button class="btn primary" onclick="go('home')">Retour à l'accueil</button>
+   ${P && P.opts.again ? `<button class="btn" onclick="(${P.opts.again})()">Recommencer</button>` : ""}</div></div>`;
+  P = null;
+}
+function makeGen(id) { const g = GENS[id]; const x = g.make(); return { t: "num", gen: id, c: g.c, ...x }; }
+
+/* ================= VUES ================= */
+const VIEWS = {};
+
+VIEWS.home = () => {
+  const dc = dueCards().length;
+  const all = DATA.concepts.map(c => mastery(c.id)); const glob = all.reduce((a, b) => a + b, 0) / all.length;
+  const start = S.start, t = today();
+  const plan = [0, 1, 3, 7, 14, 30].map(d => { const day = addDays(start, d); return { d, day, done: S.daily.includes(day) || (d === 0 && S.days.includes(start)), today: day === t }; });
+  const streak = (() => { let n = 0, d = t; while (S.days.includes(d)) { n++; d = addDays(d, -1); } return n; })();
+  const firstTime = !S.pretest && !Object.keys(S.cards).length;
+  V().innerHTML = `
+  <div class="card">
+    <div class="row" style="justify-content:space-between;align-items:flex-start">
+      <div><h2 style="margin-bottom:2px">Séance du jour</h2>
+      <div class="muted small">${dc} flashcard${dc > 1 ? "s" : ""} à revoir · problèmes mélangés · questions sur tes notions faibles</div></div>
+      <div style="text-align:right"><div class="big" style="font-size:30px">${Math.round(glob * 100)} %</div><div class="small muted">maîtrise globale</div></div>
+    </div>
+    <div class="bar" style="margin:12px 0"><i style="width:${glob * 100}%"></i></div>
+    <div class="row"><button class="btn primary" onclick="daily()">▶ Lancer la séance du jour (~15 min)</button>
+    ${streak ? `<span class="small muted">🔥 ${streak} jour${streak > 1 ? "s" : ""} d'affilée</span>` : ""}</div>
+  </div>
+  ${firstTime ? `<div class="card" style="border-color:var(--accent)"><h2>Première fois ? Suis cet ordre</h2>
+    <ol class="steps"><li><b>Pré-test</b> (5 min) : réponds sans avoir révisé. Se tromper avant d'apprendre aide à mieux retenir ensuite.</li>
+    <li><b>Leçon active</b> : lis chaque notion, réponds aux « pourquoi ? », explique-la à voix haute, puis teste-toi.</li>
+    <li><b>Exemples guidés</b> : un exemple complet, puis de moins en moins d'aide jusqu'à le faire seule.</li>
+    <li><b>Séance du jour</b> : à refaire selon le plan ci-dessous (J+1, J+3, J+7…).</li></ol>
+    <div class="row" style="margin-top:8px"><button class="btn primary" onclick="pretest()">🎯 Commencer par le pré-test</button><button class="btn" onclick="go('lesson')">Aller à la leçon</button></div></div>` : ""}
+  <div class="card"><h2>Plan de révision espacée</h2>
+    <div class="small muted" style="margin-bottom:8px">Départ : ${frDate(start)}. Chaque case = une séance du jour. Les intervalles s'allongent : c'est l'oubli partiel entre deux séances qui rend le rappel efficace.</div>
+    <div class="plan">${plan.map(p => `<div class="${p.done ? "done" : ""} ${p.today ? "today" : ""}"><b>J+${p.d}</b>${frDate(p.day)}${p.done ? "<br>✓" : ""}</div>`).join("")}</div>
+    <div class="small muted" style="margin-top:8px">Avant l'examen : une séance la veille et l'avant-veille, surtout sur les notions « En cours ».</div>
+  </div>
+  <div class="grid2">
+    <button class="tile" onclick="pretest()"><b>🎯 Pré-test</b><span>${S.pretest ? `Fait : ${S.pretest.ok}/${S.pretest.n}. À refaire pour mesurer tes progrès.` : "Teste-toi avant d'apprendre"}</span></button>
+    <button class="tile" onclick="go('sprint')"><b>⚡ Sprint d'automatisme</b><span>60 secondes chrono, objectif : réponse juste et immédiate</span></button>
+    <button class="tile" onclick="go('mix')"><b>🔀 Problèmes mélangés</b><span>Identifier la bonne méthode puis calculer</span></button>
+    <button class="tile" onclick="go('mastery')"><b>📊 Ma maîtrise</b><span>Notion par notion, et prochaines révisions</span></button>
+  </div>`;
+};
+function daily() {
+  const due = shuffle(dueCards()).slice(0, 18).map(c => ({ t: "card", ...c }));
+  const weak = DATA.concepts.slice().sort((a, b) => mastery(a.id) - mastery(b.id)).slice(0, 4).map(c => c.id);
+  const qs = shuffle(ITEMS.filter(q => weak.includes(q.c))).slice(0, 6).map(q => ({ ...q, t: q.t || "mcq" }));
+  const gk = Object.keys(GENS); const probs = []; for (let i = 0; i < 6; i++) probs.push(makeGen(gk[i % gk.length]));
+  const q = shuffle([...qs, ...probs]); const mixed = [];
+  // entrelacer : cartes et questions alternées
+  while (due.length || q.length) { if (due.length) mixed.push(due.shift()); if (due.length) mixed.push(due.shift()); if (q.length) mixed.push(q.shift()); }
+  startSession("Séance du jour", mixed, { onEnd: () => { const t = today(); if (!S.daily.includes(t)) S.daily.push(t); save(); } });
+}
+function pretest() {
+  const ids = DATA.pretest;
+  const qs = ids.map(id => { const q = ITEMS.find(x => x.id === id); return q ? { ...q, t: q.t || "mcq" } : (GENS[id] ? makeGen(id) : null); }).filter(Boolean);
+  startSession("Pré-test", qs, { noRetry: true, onEnd: (ok, n) => { S.pretest = { ok, n, date: today() }; save(); } });
+}
+
+/* ---------- Leçon active ---------- */
+VIEWS.lesson = (open) => {
+  let h = `<div class="card"><h2>Leçon active</h2><p class="small muted" style="margin:0">Ne relis pas passivement. Pour chaque notion : lis une fois, active <b>« Masquer l'essentiel »</b> et essaie de retrouver les éléments floutés, réponds aux <b>pourquoi ?</b>, explique la notion <b>à voix haute</b> sans regarder, puis <b>teste-toi</b>.</p>
+  <div class="row" style="margin-top:10px"><label class="row small"><input type="checkbox" id="hk" onchange="document.body.classList.toggle('hidek',this.checked)" ${document.body.classList.contains("hidek") ? "checked" : ""}> Masquer l'essentiel (mode rappel)</label></div></div>`;
+  DATA.concepts.forEach((c, i) => {
+    const m = mastery(c.id), [l, col] = lvl(m);
+    h += `<details class="card lesson" ${open === c.id || (!open && i === 0) ? "open" : ""}><summary>${i + 1}. ${c.title} <span class="lvl" style="color:${col};margin-left:6px">${l}</span></summary>
+    <div class="content">${c.html}</div>
+    ${c.why && c.why.length ? `<div class="box why2"><h4>🤔 Pourquoi ? (interrogation élaborative)</h4>${c.why.map((w, j) => `<div style="margin:6px 0"><b>${w[0]}</b> <span class="why" onclick="this.nextElementSibling.classList.toggle('hidden')">voir une réponse</span><span class="whyx hidden">${w[1]}</span></div>`).join("")}</div>` : ""}
+    ${c.talk ? `<div class="box talk"><h4>🗣️ Explique à voix haute, sans regarder</h4><p style="margin:4px 0">${c.talk.prompt}</p>
+      <div class="small">Puis vérifie que tu as bien dit :</div>${c.talk.check.map(x => `<label class="row small" style="margin:3px 0;flex-wrap:nowrap;align-items:flex-start"><input type="checkbox"> <span>${x}</span></label>`).join("")}</div>` : ""}
+    ${c.traps && c.traps.length ? `<div class="box trap"><h4>⚠️ Pièges classiques</h4><ul style="margin:4px 0;padding-left:18px">${c.traps.map(x => `<li>${x}</li>`).join("")}</ul></div>` : ""}
+    <div class="row"><button class="btn primary sm" onclick="testConcept('${c.id}')">🧪 Me tester sur cette notion</button></div></details>`;
+  });
+  V().innerHTML = h;
+  V().querySelectorAll(".k").forEach(k => k.onclick = () => k.classList.toggle("shown"));
+};
+function testConcept(cid) {
+  const cards = CARDS.filter(c => c.c === cid).map(c => ({ t: "card", ...c }));
+  const qs = ITEMS.filter(q => q.c === cid).map(q => ({ ...q, t: q.t || "mcq" }));
+  const gs = Object.keys(GENS).filter(k => GENS[k].c === cid).slice(0, 3).map(makeGen);
+  S.lessons[cid] = today(); save();
+  startSession(CONCEPTS[cid].title, shuffle([...cards, ...qs]).concat(gs), { again: `()=>testConcept('${cid}')` });
+}
+
+/* ---------- Flashcards ---------- */
+VIEWS.cards = () => {
+  const due = dueCards();
+  const boxes = [0, 0, 0, 0, 0, 0, 0]; CARDS.forEach(c => boxes[cardState(c.id).box]++);
+  V().innerHTML = `<div class="card"><h2>Flashcards à répétition espacée</h2>
+  <p class="small muted" style="margin-top:0">Chaque carte revient selon ta réponse : <b>Raté</b> → elle revient dans la session jusqu'à ce que tu la réussisses ; <b>Bien</b> → 1, 3, 7, 14, 30 puis 60 jours. Réponds toujours <b>avant</b> de retourner : c'est l'effort de rappel qui fixe la mémoire.</p>
+  <div class="small">Boîtes : ${boxes.map((b, i) => `<span class="pill" style="margin:2px">${i === 0 ? "Nouvelles/ratées" : "+" + INTERVALS[i] + " j"} : ${b}</span>`).join("")}</div>
+  <div class="row" style="margin-top:12px"><button class="btn primary" ${due.length ? "" : "disabled"} onclick="startSession('Flashcards', shuffle(dueCards()).map(c=>({t:'card',...c})))">Réviser les ${due.length} cartes dues</button>
+  <button class="btn" onclick="startSession('Toutes les cartes', shuffle(CARDS).map(c=>({t:'card',...c})))">Toutes les cartes (${CARDS.length})</button></div></div>
+  <div class="card"><h3 style="margin-top:0">Par notion</h3><div class="grid2">${DATA.concepts.map(c => { const n = CARDS.filter(k => k.c === c.id).length; return n ? `<button class="tile" onclick="startSession('${esc(c.title).replace(/'/g, "\\'")}', shuffle(CARDS.filter(k=>k.c==='${c.id}')).map(c=>({t:'card',...c})))"><b>${c.title}</b><span>${n} cartes</span></button>` : ""; }).join("")}</div></div>`;
+};
+
+/* ---------- Quiz ---------- */
+VIEWS.quiz = () => {
+  V().innerHTML = `<div class="card"><h2>Quiz de théorie</h2>
+  <p class="small muted" style="margin-top:0">Avant de valider, indique ta <b>certitude</b>. Tu verras à la fin si ta confiance est bien calibrée. Les erreurs reviennent dans la session jusqu'à être corrigées.</p>
+  <div class="row"><button class="btn primary" onclick="startSession('Quiz complet', shuffle(ITEMS).map(q=>({...q,t:q.t||'mcq'})))">Tout le quiz (${ITEMS.length} questions, ordre mélangé)</button>
+  <button class="btn" onclick="startSession('Quiz express', shuffle(ITEMS).slice(0,10).map(q=>({...q,t:q.t||'mcq'})))">Express : 10 questions</button></div></div>
+  <div class="card"><h3 style="margin-top:0">Par notion</h3><div class="grid2">${DATA.concepts.map(c => { const n = ITEMS.filter(k => k.c === c.id).length; return n ? `<button class="tile" onclick="startSession('Quiz', shuffle(ITEMS.filter(k=>k.c==='${c.id}')).map(q=>({...q,t:q.t||'mcq'})))"><b>${c.title}</b><span>${n} questions</span></button>` : ""; }).join("")}</div></div>`;
+};
+
+/* ---------- Exemples guidés (estompage) ---------- */
+const FADE = ["Exemple complet", "Dernière étape à faire", "Deux dernières étapes", "Seule, toutes les étapes"];
+VIEWS.worked = () => {
+  V().innerHTML = `<div class="card"><h2>Exemples guidés à estompage progressif</h2>
+  <p class="small muted" style="margin-top:0">On commence par un exemple entièrement résolu (tu expliques chaque étape), puis l'aide disparaît <b>en partant de la fin</b> : d'abord la dernière étape à faire toi-même, puis les deux dernières, puis tout. Tu montes d'un niveau quand tu réussis, tu redescends si tu bloques. Chaque exemple a de nouveaux nombres.</p></div>
+  <div class="grid2">${DATA.worked.map((w, i) => { const l = S.worked[w.id] || 0; return `<button class="tile" onclick="worked(${i})"><b>${w.title}</b><span>Niveau ${l + 1}/4 · ${FADE[l]}</span></button>`; }).join("")}</div>`;
+};
+let W = null;
+function worked(i) {
+  markDay();
+  const w = DATA.worked[i]; const level = S.worked[w.id] || 0; const ex = w.make();
+  const nBlank = level === 0 ? 0 : level === 1 ? 1 : level === 2 ? Math.min(2, ex.steps.length) : ex.steps.length;
+  W = { i, w, ex, level, blanks: ex.steps.map((s, k) => k >= ex.steps.length - nBlank), checked: false };
+  renderWorked();
+}
+function renderWorked() {
+  const { w, ex, level, blanks, checked } = W;
+  let h = `<div class="card"><div class="row" style="justify-content:space-between"><span class="pill">${w.title}</span><span class="small muted">Niveau ${level + 1}/4 · ${FADE[level]}</span></div>
+   <div class="ctx" style="margin-top:12px">${esc(ex.ctx)}</div><div class="q">${ex.q}</div><ol class="wk">`;
+  ex.steps.forEach((s, k) => {
+    h += `<li><b>${s.label}</b>`;
+    if (!blanks[k]) h += `<div>${s.show} <span class="why" onclick="this.nextElementSibling.classList.toggle('hidden')">pourquoi ?</span><span class="whyx hidden">${s.why}</span></div>`;
+    else {
+      const st = W.res && W.res[k];
+      h += `<div class="blank"><input class="num ${checked ? (st ? "ok" : "ko") : ""}" id="w${k}" inputmode="decimal" autocomplete="off" ${checked ? "disabled" : ""} value="${checked ? esc(W.raw[k]) : ""}"> <b>${s.unit || ""}</b></div>
+       ${checked && !st ? `<div class="small" style="color:var(--ko)">Attendu : ${s.show}</div>` : ""}${checked ? `<div class="whyx">${s.why}</div>` : ""}`;
+    }
+    h += `</li>`;
+  });
+  h += `</ol>`;
+  if (level === 0 && !checked) h += `<div class="box talk"><b>Auto-explication :</b> avant de continuer, dis à voix haute pourquoi chaque étape est nécessaire. Clique « pourquoi ? » seulement pour vérifier.</div>
+     <div class="row"><button class="btn primary" onclick="W.checked=true;W.ok=true;finishWorked()">J'ai compris chaque étape → niveau suivant</button></div>`;
+  else if (!checked) h += `<div class="row"><button class="btn primary" onclick="checkWorked()">Vérifier</button></div>`;
+  else h += `<div class="fb ${W.ok ? "ok" : "ko"}"><b>${W.ok ? "Bravo, niveau suivant débloqué." : "Pas encore : on reste à ce niveau (ou on redescend) pour consolider."}</b></div>
+     <div class="row" style="margin-top:10px"><button class="btn primary" onclick="worked(${W.i})">Nouvel exemple →</button><button class="btn" onclick="go('worked')">Autre procédure</button></div>`;
+  h += `</div>`;
+  V().innerHTML = h;
+  const f = V().querySelector("input.num:not([disabled])"); f && f.focus({ preventScroll: true });
+  V().querySelectorAll("input.num").forEach(inp => inp.onkeydown = e => { if (e.key === "Enter") checkWorked(); });
+}
+function checkWorked() {
+  if (W.checked) return;
+  W.res = {}; W.raw = {}; let ok = true;
+  W.ex.steps.forEach((s, k) => { if (!W.blanks[k]) return; const raw = $("#w" + k).value; W.raw[k] = raw; const r = near(parseNum(raw), s.ans, s.tol); W.res[k] = r; if (!r) ok = false; });
+  W.checked = true; W.ok = ok; finishWorked();
+}
+function finishWorked() {
+  const id = W.w.id; const l = S.worked[id] || 0;
+  S.worked[id] = W.ok ? Math.min(3, l + 1) : Math.max(0, l - (l === 3 ? 1 : 0));
+  if (W.w.gen) logGen(W.w.gen, W.ok && W.level === 3);
+  save(); if (W.level === 0) worked(W.i); else renderWorked();
+}
+
+/* ---------- Sprint d'automatisme ---------- */
+VIEWS.sprint = () => {
+  V().innerHTML = `<div class="card"><h2>Sprint d'automatisme</h2>
+  <p class="small muted" style="margin-top:0">60 secondes, un maximum de réponses <b>justes</b>. Le but n'est pas la vitesse pour elle-même : quand ces bases deviennent instantanées, ta mémoire de travail reste libre pour le raisonnement des exercices. Objectif indiqué pour chaque série ; ne vise la vitesse qu'une fois la précision acquise.</p></div>
+  <div class="grid2">${DATA.sprints.map((s, i) => { const h = S.sprint[s.id] || []; const best = h.reduce((a, b) => Math.max(a, b.ok - b.ko), 0); return `<button class="tile" onclick="sprint(${i})"><b>${s.title}</b><span>Objectif : ${s.target} justes / min · record : ${best}${best >= s.target ? " ✅" : ""}</span></button>`; }).join("")}</div>`;
+};
+let SP = null;
+function sprint(i) {
+  markDay(); const s = DATA.sprints[i];
+  SP = { s, i, end: Date.now() + 60000, ok: 0, ko: 0, misses: [], cur: s.make() };
+  renderSprint();
+  timers.push(setInterval(() => { const left = Math.max(0, Math.ceil((SP.end - Date.now()) / 1000)); const t = $("#tm"); if (t) t.textContent = left; if (left <= 0) endSprint(); }, 200));
+}
+function renderSprint() {
+  const it = SP.cur;
+  let h = `<div class="card" style="text-align:center"><div class="row" style="justify-content:space-between"><span class="pill">${SP.s.title}</span><span class="timer" id="tm">${Math.ceil((SP.end - Date.now()) / 1000)}</span></div>
+   <div class="small muted">✅ ${SP.ok} · ❌ ${SP.ko}</div><div class="q" style="font-size:22px;margin:18px 0">${it.q}</div>`;
+  if (it.o) { h += `<div class="opts">${it.o.map((t, k) => `<button class="opt" onclick="spAns(${k})"><span class="n">${k + 1}</span><span>${t}</span></button>`).join("")}</div>`; }
+  else h += `<div class="row" style="justify-content:center;flex-wrap:nowrap"><input id="sp" class="num" style="max-width:220px;text-align:center" inputmode="decimal" autocomplete="off"><b>${it.unit || ""}</b></div><div class="small muted" style="margin-top:6px"><span class="kbd">Entrée</span> pour valider</div>`;
+  h += `<div id="spfb" style="min-height:24px;margin-top:10px"></div></div>`;
+  V().innerHTML = h;
+  if (!it.o) { const inp = $("#sp"); inp.focus({ preventScroll: true }); inp.onkeydown = e => { if (e.key === "Enter") spAns(inp.value); }; }
+  else document.onkeydown = e => { const k = +e.key; if (k >= 1 && k <= it.o.length) spAns(k - 1); };
+}
+function spAns(v) {
+  const it = SP.cur; let ok;
+  if (it.o) ok = v === it.a; else { const x = parseNum(v); if (isNaN(x)) return; ok = near(x, it.ans, it.tol); }
+  if (ok) SP.ok++; else { SP.ko++; SP.misses.push(`${it.q} → <b>${it.o ? it.o[it.a] : fmt(it.ans) + " " + (it.unit || "")}</b>`); }
+  SP.cur = SP.s.make(); renderSprint();
+  const fb = $("#spfb"); if (fb) fb.innerHTML = ok ? `<span style="color:var(--ok)">✓</span>` : `<span style="color:var(--ko)">✗ ${SP.misses[SP.misses.length - 1]}</span>`;
+}
+function endSprint() {
+  stopTimers(); const s = SP.s; (S.sprint[s.id] = S.sprint[s.id] || []).push({ d: today(), ok: SP.ok, ko: SP.ko }); save();
+  const hist = S.sprint[s.id].slice(-8); const score = SP.ok - SP.ko;
+  V().innerHTML = `<div class="card" style="text-align:center"><span class="pill">${s.title}</span><div class="big" style="margin-top:10px">${SP.ok} ✓ · ${SP.ko} ✗</div>
+  <p>${SP.ko === 0 && SP.ok >= s.target ? "🎯 Objectif atteint sans erreur : cette base devient automatique. Refais un sprint dans quelques jours pour vérifier que ça tient." : SP.ko > 2 ? "Trop d'erreurs : ralentis et vise d'abord 100 % de justes, la vitesse viendra." : `Objectif : ${s.target} justes en 60 s, zéro erreur.`}</p>
+  <div class="small muted">Tes derniers sprints : ${hist.map(x => `${x.ok}/${x.ko}`).join(" · ")}</div>
+  ${SP.misses.length ? `<div style="text-align:left"><h3>Erreurs à retenir</h3><ul class="small">${SP.misses.map(m => `<li>${m}</li>`).join("")}</ul></div>` : ""}
+  <div class="row" style="justify-content:center"><button class="btn primary" onclick="sprint(${SP.i})">Relancer</button><button class="btn" onclick="go('sprint')">Autre série</button></div></div>`;
+}
+
+/* ---------- Mélange (entrelacement + discrimination de méthode) ---------- */
+let MX = null;
+VIEWS.mix = () => {
+  MX = { n: 0, ok: 0 }; markDay(); nextMix();
+};
+function nextMix() {
+  const keys = Object.keys(GENS); let k; do { k = pick(keys); } while (MX.last === k && keys.length > 1); MX.last = k;
+  MX.cur = makeGen(k); MX.stage = 0; MX.methodOk = null; renderMix();
+}
+function renderMix() {
+  const it = MX.cur; const fams = [...new Set(Object.values(GENS).map(g => g.method))];
+  let h = `<div class="card"><div class="row" style="justify-content:space-between"><span class="pill">Problèmes mélangés</span><span class="small muted">${MX.ok} / ${MX.n} justes</span></div>
+  <p class="small muted">Les types de problèmes arrivent dans le désordre, comme à l'examen. D'abord : <b>quelle méthode ?</b> Ensuite seulement : le calcul.</p>
+  ${it.ctx ? `<div class="ctx">${esc(it.ctx)}</div>` : ""}<div class="q">${it.q}</div>`;
+  if (MX.stage === 0) {
+    MX.opts = MX.opts && MX.optsFor === it ? MX.opts : shuffle(fams).slice(0, 4); if (!MX.opts.includes(GENS[it.gen].method)) MX.opts[rnd(0, MX.opts.length - 1)] = GENS[it.gen].method; MX.optsFor = it;
+    h += `<div class="small" style="margin-bottom:6px"><b>Étape 1 :</b> quelle méthode s'applique ?</div><div class="opts">${MX.opts.map((m, k) => `<button class="opt" onclick="mixMethod(${k})"><span class="n">${k + 1}</span><span>${m}</span></button>`).join("")}</div>`;
+    document.onkeydown = e => { const k = +e.key; if (k >= 1 && k <= MX.opts.length) mixMethod(k - 1); };
+  } else {
+    h += `<div class="small" style="margin:0 0 8px;color:${MX.methodOk ? "var(--ok)" : "var(--ko)"}">${MX.methodOk ? "✓ Bonne méthode" : "✗ La méthode était"} : ${GENS[it.gen].method}</div>`;
+    h += `<div class="row" style="flex-wrap:nowrap"><input id="mx" class="num ${MX.stage === 2 ? (MX.calcOk ? "ok" : "ko") : ""}" inputmode="decimal" autocomplete="off" ${MX.stage === 2 ? `disabled value="${esc(MX.raw)}"` : ""}> <b>${it.unit || ""}</b></div>`;
+    if (MX.stage === 1) h += `<div class="row" style="margin-top:10px"><button class="btn primary" onclick="mixCalc()">Valider le calcul</button></div>`;
+    else h += `<div class="fb ${MX.calcOk ? "ok" : "ko"}"><b>${MX.calcOk ? "Juste !" : "Réponse : " + fmt(it.ans) + " " + (it.unit || "")}</b><div class="ex"><ol class="steps">${(it.steps || []).map(s => `<li>${s}</li>`).join("")}</ol></div></div>
+      <div class="row" style="margin-top:10px"><button class="btn primary" id="mxn" onclick="nextMix()">Problème suivant →</button><button class="btn ghost" onclick="go('home')">Arrêter</button></div>`;
+  }
+  h += `</div>`; V().innerHTML = h;
+  const inp = $("#mx"); if (inp && MX.stage === 1) { inp.focus({ preventScroll: true }); inp.onkeydown = e => { if (e.key === "Enter") mixCalc(); }; }
+  if (MX.stage === 2) { const b = $("#mxn"); b && b.focus({ preventScroll: true }); }
+}
+function mixMethod(k) { MX.methodOk = MX.opts[k] === GENS[MX.cur.gen].method; MX.stage = 1; document.onkeydown = null; renderMix(); }
+function mixCalc() { const raw = $("#mx").value; const x = parseNum(raw); if (isNaN(x)) return; MX.raw = raw; MX.calcOk = near(x, MX.cur.ans, MX.cur.tol); MX.n++; if (MX.calcOk && MX.methodOk) MX.ok++; logGen(MX.cur.gen, MX.calcOk && MX.methodOk); MX.stage = 2; renderMix(); }
+
+/* ---------- Maîtrise ---------- */
+VIEWS.mastery = () => {
+  const t = today(); const next = [];
+  for (let d = 0; d < 7; d++) { const day = addDays(t, d); next.push([day, CARDS.filter(c => { const s = S.cards[c.id]; return d === 0 ? (!s || !s.due || s.due <= day) : s && s.due === day; }).length]); }
+  const c = S.conf; const pc = a => a[1] ? Math.round(a[0] / a[1] * 100) + " %" : "–";
+  V().innerHTML = `<div class="card"><h2>Ma maîtrise</h2><p class="small muted" style="margin-top:0">Score par notion = flashcards (boîte atteinte) + quiz (3 dernières réponses) + problèmes (5 derniers). « Automatique » = au moins 85 %. Une réponse juste « au hasard » ne compte pas.</p>
+  ${DATA.concepts.map(x => { const m = mastery(x.id); const [l, col] = lvl(m); return `<div class="mast"><a href="#" onclick="go('lesson','${x.id}');return false" style="color:inherit">${x.title}</a><div class="bar"><i style="width:${m * 100}%;background:${col}"></i></div><span class="lvl" style="color:${col}">${Math.round(m * 100)}%</span></div>`; }).join("")}
+  </div>
+  <div class="card"><h3 style="margin-top:0">Calibration de ta confiance</h3><table class="tbl"><tr><th>Quand tu dis…</th><th>tu as raison</th><th>réponses</th></tr>
+  <tr><td>✅ Sûre</td><td>${pc(c.sure)}</td><td>${c.sure[1]}</td></tr><tr><td>🤔 Hésitante</td><td>${pc(c.mid)}</td><td>${c.mid[1]}</td></tr><tr><td>🎲 Au hasard</td><td>${pc(c.guess)}</td><td>${c.guess[1]}</td></tr></table>
+  <div class="small muted">Idéal : « Sûre » proche de 100 %. Si c'est plus bas, tu surestimes ce que tu sais : c'est le signal pour te tester davantage plutôt que relire.</div></div>
+  <div class="card"><h3 style="margin-top:0">Flashcards à revoir les 7 prochains jours</h3><div class="plan">${next.map(([d, n]) => `<div class="${d === t ? "today" : ""}"><b>${n}</b>${frDate(d)}</div>`).join("")}</div></div>
+  <div class="card"><h3 style="margin-top:0">Exemples guidés</h3>${DATA.worked.map(w => `<div class="mast"><span>${w.title}</span><div class="bar"><i style="width:${((S.worked[w.id] || 0) / 3) * 100}%"></i></div><span class="lvl">${(S.worked[w.id] || 0) + 1}/4</span></div>`).join("")}</div>`;
+};
+
+/* ---------- Méthodes (science de l'apprentissage) ---------- */
+VIEWS.methods = () => { V().innerHTML = METHODS_HTML; };
+
+/* ---------- Réglages ---------- */
+VIEWS.settings = () => {
+  V().innerHTML = `<div class="card"><h2>Sauvegarde de ta progression</h2>
+  <p class="small muted" style="margin-top:0">Ta progression est enregistrée dans ce navigateur. Dans Notion, la page intégrée a sa propre mémoire, distincte de la page ouverte directement. Pour changer d'appareil : copie le code ci-dessous et colle-le de l'autre côté.</p>
+  <textarea id="exp" rows="4" style="font-size:12px">${esc(JSON.stringify(S))}</textarea>
+  <div class="row" style="margin-top:8px"><button class="btn" onclick="navigator.clipboard&&navigator.clipboard.writeText($('#exp').value);this.textContent='Copié ✓'">Copier</button>
+  <button class="btn" onclick="try{S=JSON.parse($('#exp').value);save();go('home')}catch(e){alert('Code invalide')}">Importer le code collé</button></div></div>
+  <div class="card"><h2>Recommencer</h2><p class="small muted" style="margin-top:0">Efface toute la progression de cette séance (cartes, scores, plan).</p>
+  <button class="btn" style="border-color:var(--ko);color:var(--ko)" onclick="if(confirm('Tout effacer ?')){S=blank();save();go('home')}">Tout effacer</button></div>
+  <div class="card small muted">Raccourcis clavier : <span class="kbd">espace</span> retourner une carte · <span class="kbd">1</span>–<span class="kbd">4</span> noter une carte ou choisir une option · <span class="kbd">Entrée</span> valider / continuer.</div>`;
+};
+
+/* ================= DÉMARRAGE ================= */
+load();
+$("#hKick").textContent = DATA.kicker; $("#hTitle").textContent = DATA.title; $("#hSub").textContent = DATA.sub;
+go("home");
+</script>
+</body>
+</html>

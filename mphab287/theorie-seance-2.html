@@ -350,8 +350,8 @@ worked: [
     { label: "Masse de trituration", ans: t, unit: "mg", tol: { rel: 0.001 }, show: `${lab} → × ${fac} : ${fmt(mg)} × ${fac} = ${fmt(t)} mg`, why: `${lab} : il faut ${fac} mg de trituration pour 1 mg de PA.` }] };
 } },
 { id: "w2", title: "Facteur de déplacement f", gen: "facteur", make() {
-  const g = DATA.gens.facteur.make(); const nums = g.ctx.match(/[\d ]+(,\d+)?/g).map(s => parseNum(s));
-  const [n1, t1, n2, t2] = nums; const E = t1 / n1, W = t2 / n2, M = W * 0.9, S = W * 0.1, f = (E - M) / S;
+  const g = DATA.gens.facteur.make();
+  const { n1, t1, n2, t2 } = g.raw; const E = t1 / n1, W = t2 / n2, M = W * 0.9, S = W * 0.1, f = (E - M) / S;
   return { ctx: g.ctx, q: "Calcule le facteur de déplacement du PA.", steps: [
     { label: "E : masse d'un suppositoire pur", ans: E, unit: "g", tol: { rel: 0.003 }, show: `${fmt(t1)} ÷ ${n1} = ${fmt(E, 4)} g`, why: "1re coulée : on ramène à UN suppositoire." },
     { label: "Masse d'un suppositoire à 10 %", ans: W, unit: "g", tol: { rel: 0.003 }, show: `${fmt(t2)} ÷ ${n2} = ${fmt(W, 4)} g`, why: "2e coulée : là aussi, un seul suppositoire." },
@@ -916,5 +916,6 @@ load();
 $("#hKick").textContent = DATA.kicker; $("#hTitle").textContent = DATA.title; $("#hSub").textContent = DATA.sub;
 go("home");
 </script>
+<a class="btn-jouer-jeu" href="jeu-calculs.html#trit" target="_blank" rel="noopener" style="position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom));z-index:999;display:flex;align-items:center;gap:8px;background:#1a3fd6;color:#fff;font:700 15px/1 -apple-system,system-ui,sans-serif;padding:12px 16px;border-radius:999px;text-decoration:none;box-shadow:0 6px 18px rgba(26,63,214,.35)"><svg width="18" height="18" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>Jouer</a>
 </body>
 </html>

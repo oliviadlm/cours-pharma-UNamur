@@ -1,0 +1,1781 @@
+{
+ "th1": {
+  "concepts": [
+   {
+    "id": "masse",
+    "t": "Les unités de masse (pesée)",
+    "talk": {
+     "prompt": "Explique comment convertir 25 cg en mg, puis 12,5 mg en g, sans regarder.",
+     "check": [
+      "1 cg = 10 mg, donc 25 cg = 250 mg",
+      "1 mg = 0,001 g, donc 12,5 mg = 0,0125 g",
+      "Unité plus petite → on multiplie ; plus grande → on divise",
+      "J'ai vérifié l'ordre de grandeur"
+     ]
+    },
+    "traps": [
+     "Croire que 1 g = 100 mg (c'est 1000 mg ; 1 g = 100 cg).",
+     "Oublier le zéro de position : 12,5 mg = 0,0125 g (et non 0,125 g).",
+     "Confondre mg et µg (facteur 1000)."
+    ],
+    "why": [
+     [
+      "Pourquoi faut-il maîtriser les cg alors qu'on les utilise peu ailleurs ?",
+      "Les prescriptions et formulaires belges utilisent encore les cg/ctg (ex. « acide benzoïque 18 ctg »). Une erreur d'un facteur 10 sur une dose est une erreur médicamenteuse grave."
+     ],
+     [
+      "Pourquoi passer par le gramme quand on hésite ?",
+      "Le gramme sert de pivot : convertir d'abord en g puis vers l'unité voulue évite de mélanger les facteurs 10, 100 et 1000."
+     ]
+    ]
+   },
+   {
+    "id": "volume",
+    "t": "Les unités de volume et les cuillères",
+    "talk": {
+     "prompt": "Explique comment trouver le volume de suspension pour 8 jours à 4 cuillères à café par jour.",
+     "check": [
+      "1 C à c = 5 mL",
+      "4 × 5 = 20 mL par jour",
+      "20 × 8 = 160 mL"
+     ]
+    },
+    "traps": [
+     "Inverser C à s (15 mL) et C à d (10 mL).",
+     "Oublier de multiplier par le nombre de jours."
+    ],
+    "why": [
+     [
+      "Pourquoi le nombre de cuillères dans le flacon est-il si utile ?",
+      "Les formules donnent souvent la composition « par cuillère » : multiplier par le nombre de cuillères du flacon donne la quantité totale à peser."
+     ]
+    ]
+   },
+   {
+    "id": "magistrale",
+    "t": "La préparation magistrale",
+    "talk": {
+     "prompt": "Définis la préparation magistrale et cite ses 4 intérêts.",
+     "check": [
+      "Préparée extemporanément",
+      "À l'officine, sous la surveillance du pharmacien",
+      "Le plus souvent sur prescription médicale",
+      "Personnalisation de la posologie (âge, évolution)",
+      "Association de principes actifs",
+      "Spécialité non disponible",
+      "Intérêt économique"
+     ]
+    },
+    "traps": [
+     "Dire « toujours sur prescription » : c'est « le plus souvent ».",
+     "Oublier un des 4 intérêts (souvent l'intérêt économique)."
+    ],
+    "why": [
+     [
+      "Pourquoi « extemporanément » ?",
+      "La préparation est faite au moment du besoin, pour un patient donné, et non fabriquée à l'avance en série comme une spécialité industrielle."
+     ],
+     [
+      "Pourquoi l'adaptation de la posologie justifie-t-elle une préparation ?",
+      "Les spécialités n'existent qu'en quelques dosages (souvent adultes). Pour un enfant ou une posologie particulière, il faut des gélules au dosage exact."
+     ]
+    ]
+   },
+   {
+    "id": "abrev",
+    "t": "Lire une prescription : les abréviations",
+    "talk": {
+     "prompt": "Lis à voix haute « Rp X 10 mg, Y 5 mg pf 1 gél dt 20 » comme si tu l'expliquais à un stagiaire.",
+     "check": [
+      "Rp = prenez",
+      "10 mg de X et 5 mg de Y par gélule (pf 1 gél)",
+      "dt 20 = 20 gélules à délivrer",
+      "Quantités à peser : 200 mg de X et 100 mg de Y"
+     ]
+    },
+    "traps": [
+     "Confondre qs (autant qu'il en faut) et ad (jusqu'à).",
+     "Oublier de multiplier la dose par le nombre « dt »."
+    ],
+    "why": [
+     [
+      "Pourquoi « ad » change-t-il le calcul ?",
+      "Avec « ad 200 mL », le volume FINAL est 200 mL : les % m/V se calculent sur ce volume, pas sur la somme des ingrédients listés."
+     ],
+     [
+      "Pourquoi les doses du Rp sont-elles « par unité » ?",
+      "Le prescripteur écrit la composition d'UNE pièce (pf 1 gél) ; la quantité totale dépend du « dt »."
+     ]
+    ]
+   },
+   {
+    "id": "rp",
+    "t": "Du Rp à la quantité à peser",
+    "talk": {
+     "prompt": "Explique la démarche complète pour 160 mL de suspension à 100 mg/5 mL à partir de comprimés à 250 mg.",
+     "check": [
+      "Concentration 20 mg/mL → 3200 mg",
+      "3200 ÷ 250 = 12,8 → 13 comprimés",
+      "Excès 50 mg = 0,2 comprimé",
+      "Retirer 0,2 × masse d'un comprimé"
+     ]
+    },
+    "traps": [
+     "Confondre la quantité de PA (mg) avec le nombre de comprimés.",
+     "Retirer l'excès de PA en mg au lieu de la masse de poudre correspondante."
+    ],
+    "why": [
+     [
+      "Pourquoi arrondir au supérieur et non à l'inférieur ?",
+      "Avec moins de comprimés, il manquerait du PA : impossible à rattraper. Avec un de plus, on retire l'excès de poudre pesée."
+     ],
+     [
+      "Pourquoi la poudre à retirer est-elle proportionnelle à la masse du comprimé ?",
+      "Le PA est réparti uniformément dans la poudre broyée : retirer 0,2 comprimé de PA revient à retirer 0,2 × la masse d'un comprimé."
+     ]
+    ]
+   },
+   {
+    "id": "pct",
+    "t": "Les concentrations en %",
+    "talk": {
+     "prompt": "Explique comment trouver la dose de codéine dans 1 cuillère à café d'un sirop à 0,10 % (m/V).",
+     "check": [
+      "0,10 % = 0,10 g / 100 mL",
+      "= 1 mg/mL",
+      "C à c = 5 mL → 5 mg"
+     ]
+    },
+    "traps": [
+     "Calculer le % sur la somme des ingrédients au lieu du volume final (« ad »).",
+     "Oublier de convertir ctg/mg en g avant de calculer un %."
+    ],
+    "why": [
+     [
+      "Pourquoi préciser m/m, m/V ou V/V ?",
+      "Pour un liquide de densité ≠ 1, 100 g et 100 mL ne sont pas la même quantité : le même « % » donnerait des masses différentes."
+     ],
+     [
+      "Pourquoi 1 % (m/V) = 10 mg/mL ?",
+      "1 g dans 100 mL = 1000 mg dans 100 mL = 10 mg dans 1 mL."
+     ]
+    ]
+   },
+   {
+    "id": "densite",
+    "t": "Les densités",
+    "talk": {
+     "prompt": "Explique comment mesurer le volume de teinture (d = 0,9) pour 540 g de sirop à 5 % (m/m).",
+     "check": [
+      "5 % de 540 g = 27 g de teinture",
+      "V = m ÷ d",
+      "27 ÷ 0,9 = 30 mL",
+      "d < 1 donc volume > masse : cohérent"
+     ]
+    },
+    "traps": [
+     "Multiplier au lieu de diviser (V = m ÷ d, pas m × d).",
+     "Donner la masse (27 g) quand on demande un volume.",
+     "Oublier que la densité de l'eau vaut exactement 1."
+    ],
+    "why": [
+     [
+      "Pourquoi pèse-t-on les liquides visqueux ?",
+      "Un liquide visqueux colle aux parois de l'éprouvette : le volume mesuré serait imprécis. Peser la masse correspondante (m = V × d) est plus exact."
+     ],
+     [
+      "Pourquoi 27 g de teinture (d = 0,9) font-ils 30 mL ?",
+      "d < 1 : le liquide est plus léger que l'eau, donc il faut plus de volume pour la même masse : 27 ÷ 0,9 = 30 mL."
+     ]
+    ]
+   }
+  ],
+  "cards": [
+   {
+    "c": "masse",
+    "front": "1 g = ? mg",
+    "back": "1000 mg"
+   },
+   {
+    "c": "masse",
+    "front": "1 g = ? cg",
+    "back": "100 cg"
+   },
+   {
+    "c": "masse",
+    "front": "1 cg = ? mg",
+    "back": "10 mg"
+   },
+   {
+    "c": "masse",
+    "front": "1 mg = ? g",
+    "back": "0,001 g"
+   },
+   {
+    "c": "masse",
+    "front": "1 mg = ? µg",
+    "back": "1000 µg"
+   },
+   {
+    "c": "masse",
+    "front": "Que signifie « ctg » ?",
+    "back": "Centigramme (cg) = 10 mg"
+   },
+   {
+    "c": "masse",
+    "front": "25 cg = ? mg",
+    "back": "250 mg"
+   },
+   {
+    "c": "masse",
+    "front": "12,5 mg = ? g",
+    "back": "0,0125 g"
+   },
+   {
+    "c": "masse",
+    "front": "58 cg = ? g",
+    "back": "0,58 g"
+   },
+   {
+    "c": "masse",
+    "front": "Vers une unité plus petite (g → mg), on… ?",
+    "back": "Multiplie (le nombre grandit)"
+   },
+   {
+    "c": "volume",
+    "front": "C à s = ? mL",
+    "back": "15 mL (cuillère à soupe)"
+   },
+   {
+    "c": "volume",
+    "front": "C à d = ? mL",
+    "back": "10 mL (cuillère à dessert)"
+   },
+   {
+    "c": "volume",
+    "front": "C à c = ? mL",
+    "back": "5 mL (cuillère à café)"
+   },
+   {
+    "c": "volume",
+    "front": "1 L = ? mL",
+    "back": "1000 mL"
+   },
+   {
+    "c": "volume",
+    "front": "1 dL = ? mL",
+    "back": "100 mL"
+   },
+   {
+    "c": "volume",
+    "front": "Combien de C à c dans 300 mL ?",
+    "back": "60"
+   },
+   {
+    "c": "magistrale",
+    "front": "Définition de la préparation magistrale ?",
+    "back": "Médicament préparé extemporanément à l'officine, sous la surveillance du pharmacien, le plus souvent sur prescription médicale"
+   },
+   {
+    "c": "magistrale",
+    "front": "Les 4 intérêts de la préparation magistrale ?",
+    "back": "Personnaliser la posologie (âge, évolution) · associer des PA · spécialité non disponible · intérêt économique"
+   },
+   {
+    "c": "magistrale",
+    "front": "« Extemporanément » signifie… ?",
+    "back": "Préparé au moment du besoin, pour un patient donné"
+   },
+   {
+    "c": "magistrale",
+    "front": "Quel format de prescription a remplacé le papier ?",
+    "back": "La prescription électronique"
+   },
+   {
+    "c": "abrev",
+    "front": "R\\ ou Rp",
+    "back": "Prenez"
+   },
+   {
+    "c": "abrev",
+    "front": "S\\",
+    "back": "Indiquez sur l'étiquette (posologie)"
+   },
+   {
+    "c": "abrev",
+    "front": "Pf",
+    "back": "Pour faire une pièce de"
+   },
+   {
+    "c": "abrev",
+    "front": "Dt (n°)",
+    "back": "Donnez (nombre de doses unitaires à délivrer)"
+   },
+   {
+    "c": "abrev",
+    "front": "Qs",
+    "back": "Autant qu'il en faut (quantum satis)"
+   },
+   {
+    "c": "abrev",
+    "front": "Ad",
+    "back": "Jusqu'à"
+   },
+   {
+    "c": "rp",
+    "front": "Quantité totale de PA à peser = ?",
+    "back": "Dose par unité × nombre d'unités (dt)"
+   },
+   {
+    "c": "rp",
+    "front": "Nombre de comprimés d'une spécialité à utiliser = ?",
+    "back": "Quantité totale de PA ÷ dosage d'un comprimé (arrondi au supérieur)"
+   },
+   {
+    "c": "rp",
+    "front": "Résultat non entier (12,8 comprimés) : que fait-on ?",
+    "back": "On prend 13 comprimés, on broie, puis on retire l'excès de poudre au prorata"
+   },
+   {
+    "c": "rp",
+    "front": "Poudre à enlever = ?",
+    "back": "(PA en excès ÷ PA par comprimé) × masse d'un comprimé"
+   },
+   {
+    "c": "pct",
+    "front": "% (m/m) = ?",
+    "back": "g de substance pour 100 g de préparation"
+   },
+   {
+    "c": "pct",
+    "front": "% (m/V) = ?",
+    "back": "g de substance pour 100 mL de préparation"
+   },
+   {
+    "c": "pct",
+    "front": "% (V/V) = ?",
+    "back": "mL de substance pour 100 mL de préparation"
+   },
+   {
+    "c": "pct",
+    "front": "1 % (m/V) = ? mg/mL",
+    "back": "10 mg/mL"
+   },
+   {
+    "c": "pct",
+    "front": "3 % (m/V) ad 200 mL : masse de PA ?",
+    "back": "6 g"
+   },
+   {
+    "c": "pct",
+    "front": "Avec « ad 250 mL », sur quoi calcule-t-on le % ?",
+    "back": "Sur le volume final : 250 mL"
+   },
+   {
+    "c": "densite",
+    "front": "Formule de la masse à partir du volume ?",
+    "back": "m = V × d"
+   },
+   {
+    "c": "densite",
+    "front": "Formule du volume à partir de la masse ?",
+    "back": "V = m ÷ d"
+   },
+   {
+    "c": "densite",
+    "front": "Densité de l'eau ?",
+    "back": "1"
+   },
+   {
+    "c": "densite",
+    "front": "Densité de l'éthanol ?",
+    "back": "0,79"
+   },
+   {
+    "c": "densite",
+    "front": "Densité du méthanol ?",
+    "back": "0,80"
+   },
+   {
+    "c": "densite",
+    "front": "Densité du propylène glycol ?",
+    "back": "1,04"
+   },
+   {
+    "c": "densite",
+    "front": "Densité de l'isopropanol ?",
+    "back": "0,79"
+   },
+   {
+    "c": "densite",
+    "front": "Densité de l'éther ?",
+    "back": "0,71"
+   },
+   {
+    "c": "densite",
+    "front": "Densité de l'acétone ?",
+    "back": "0,79"
+   },
+   {
+    "c": "densite",
+    "front": "Densité de l'huile de paraffine ?",
+    "back": "0,86"
+   },
+   {
+    "c": "densite",
+    "front": "Pourquoi pèse-t-on certains liquides au lieu de les mesurer ?",
+    "back": "Liquides très visqueux : la mesure du volume serait imprécise"
+   }
+  ],
+  "quiz": [
+   {
+    "id": "p1",
+    "c": "masse",
+    "q": "25 cg est égal à",
+    "o": [
+     "2,5 mg",
+     "25 mg",
+     "250 mg",
+     "0,25 mg"
+    ],
+    "a": 2,
+    "ex": "1 cg = 10 mg → 25 × 10 = 250 mg."
+   },
+   {
+    "id": "p2",
+    "c": "masse",
+    "q": "1 g est égal à",
+    "o": [
+     "100 mg",
+     "100 cg",
+     "1000 cg",
+     "10 000 mg"
+    ],
+    "a": 1,
+    "ex": "1 g = 100 cg = 1000 mg."
+   },
+   {
+    "id": "p3",
+    "c": "masse",
+    "q": "12,5 mg est égal à",
+    "o": [
+     "0,125 g",
+     "0,0125 g",
+     "1,25 g",
+     "0,00125 g"
+    ],
+    "a": 1,
+    "ex": "12,5 ÷ 1000 = 0,0125 g."
+   },
+   {
+    "c": "masse",
+    "q": "20 µg est égal à",
+    "o": [
+     "0,2 mg",
+     "0,02 mg",
+     "2 mg",
+     "0,002 mg"
+    ],
+    "a": 1,
+    "ex": "1 µg = 0,001 mg → 20 µg = 0,02 mg."
+   },
+   {
+    "c": "masse",
+    "t": "tf",
+    "q": "Vrai ou faux : pour passer des grammes aux milligrammes, on déplace la virgule de 3 rangs vers la droite.",
+    "a": 0,
+    "ex": "Vrai : g → mg = × 1000."
+   },
+   {
+    "c": "masse",
+    "q": "Quelle masse est la plus grande ?",
+    "o": [
+     "0,5 g",
+     "45 cg",
+     "480 mg",
+     "490 000 µg"
+    ],
+    "a": 0,
+    "ex": "En mg : 500 / 450 / 480 / 490. La plus grande est 0,5 g."
+   },
+   {
+    "id": "p4",
+    "c": "volume",
+    "q": "Une cuillère à dessert (C à d) correspond à",
+    "o": [
+     "5 mL",
+     "10 mL",
+     "15 mL",
+     "20 mL"
+    ],
+    "a": 1,
+    "ex": "C à c 5 mL · C à d 10 mL · C à s 15 mL."
+   },
+   {
+    "c": "volume",
+    "q": "Un flacon de 250 mL contient combien de cuillères à café ?",
+    "o": [
+     "25",
+     "50",
+     "16",
+     "125"
+    ],
+    "a": 1,
+    "ex": "250 ÷ 5 = 50."
+   },
+   {
+    "c": "volume",
+    "q": "Traitement : 2 C à s par jour pendant 10 jours. Volume nécessaire ?",
+    "o": [
+     "150 mL",
+     "200 mL",
+     "300 mL",
+     "100 mL"
+    ],
+    "a": 2,
+    "ex": "2 × 15 mL × 10 j = 300 mL."
+   },
+   {
+    "id": "p5",
+    "c": "magistrale",
+    "q": "Une préparation magistrale est préparée…",
+    "o": [
+     "en série, à l'avance, par l'industrie",
+     "extemporanément, à l'officine, sous la surveillance du pharmacien",
+     "uniquement à l'hôpital",
+     "toujours sans prescription"
+    ],
+    "a": 1,
+    "ex": "Définition : extemporanément, à l'officine, sous la surveillance du pharmacien, le plus souvent sur prescription médicale."
+   },
+   {
+    "c": "magistrale",
+    "q": "Lequel n'est PAS un intérêt de la préparation magistrale cité au cours ?",
+    "o": [
+     "Individualiser la posologie selon l'âge",
+     "Associer des principes actifs",
+     "Remplacer une spécialité non disponible",
+     "Allonger la date de péremption"
+    ],
+    "a": 3,
+    "ex": "Les 4 intérêts : posologie individualisée, association de PA, spécialité non disponible, intérêt économique."
+   },
+   {
+    "c": "magistrale",
+    "t": "tf",
+    "q": "Vrai ou faux : la préparation magistrale est toujours réalisée sur prescription médicale.",
+    "a": 1,
+    "ex": "Faux : « le plus souvent » sur prescription médicale."
+   },
+   {
+    "c": "magistrale",
+    "q": "Pour un enfant qui a besoin de 5 mg alors que la spécialité n'existe qu'à 20 mg, la préparation magistrale répond à quel intérêt ?",
+    "o": [
+     "Intérêt économique",
+     "Individualisation de la posologie",
+     "Association de principes actifs",
+     "Aucun"
+    ],
+    "a": 1,
+    "ex": "Adapter la posologie à l'âge du patient."
+   },
+   {
+    "id": "p6",
+    "c": "abrev",
+    "q": "« Qs » signifie",
+    "o": [
+     "Jusqu'à",
+     "Autant qu'il en faut",
+     "Donnez",
+     "Prenez"
+    ],
+    "a": 1,
+    "ex": "Qs = quantum satis = autant qu'il en faut. « Ad » = jusqu'à."
+   },
+   {
+    "c": "abrev",
+    "q": "« Dt 30 » signifie",
+    "o": [
+     "30 mg par dose",
+     "Donnez 30 doses unitaires",
+     "30 jours de traitement",
+     "Diluez 30 fois"
+    ],
+    "a": 1,
+    "ex": "Dt = donnez (nombre de doses unitaires à délivrer)."
+   },
+   {
+    "c": "abrev",
+    "q": "« S\\ » sur une ordonnance signifie",
+    "o": [
+     "Solution",
+     "Indiquez sur l'étiquette",
+     "Sirop",
+     "Stérile"
+    ],
+    "a": 1,
+    "ex": "S\\ = indiquez sur l'étiquette (la posologie)."
+   },
+   {
+    "c": "abrev",
+    "q": "« Pf 1 gél » signifie",
+    "o": [
+     "Prendre 1 gélule",
+     "Pour faire une gélule",
+     "Poids final 1 g",
+     "Par flacon"
+    ],
+    "a": 1,
+    "ex": "Pf = pour faire une pièce de."
+   },
+   {
+    "c": "abrev",
+    "q": "« aqua q.s. ad 200 mL » signifie",
+    "o": [
+     "Ajouter 200 mL d'eau",
+     "Ajouter de l'eau jusqu'à un volume final de 200 mL",
+     "Ajouter de l'eau à volonté",
+     "200 mL d'eau par dose"
+    ],
+    "a": 1,
+    "ex": "Le volume final de la préparation est 200 mL."
+   },
+   {
+    "id": "p7",
+    "c": "rp",
+    "q": "Rp prednisolone 5 mg pf 1 gél dt 20. Quantité de prednisolone à peser ?",
+    "o": [
+     "5 mg",
+     "50 mg",
+     "100 mg",
+     "1 g"
+    ],
+    "a": 2,
+    "ex": "5 mg × 20 = 100 mg."
+   },
+   {
+    "c": "rp",
+    "q": "Il faut 1800 mg d'un PA ; on dispose de gélules à 50 mg. Combien de gélules ?",
+    "o": [
+     "30",
+     "36",
+     "40",
+     "18"
+    ],
+    "a": 1,
+    "ex": "1800 ÷ 50 = 36."
+   },
+   {
+    "c": "rp",
+    "q": "Le calcul donne 12,8 comprimés à broyer. On en prend…",
+    "o": [
+     "12, et on complète avec de l'excipient",
+     "13, puis on retire l'excès de poudre",
+     "12,8 en coupant un comprimé",
+     "14 par sécurité"
+    ],
+    "a": 1,
+    "ex": "On arrondit au supérieur puis on retire la poudre en excès au prorata."
+   },
+   {
+    "c": "rp",
+    "q": "13 comprimés à 250 mg broyés pèsent 13 g ; il faut 3200 mg de PA. Poudre à enlever ?",
+    "o": [
+     "0,05 g",
+     "0,2 g",
+     "0,5 g",
+     "2 g"
+    ],
+    "a": 1,
+    "ex": "Excès 50 mg = 0,2 comprimé ; 1 comprimé = 1 g → 0,2 g."
+   },
+   {
+    "id": "p8",
+    "c": "pct",
+    "q": "% (m/V) signifie",
+    "o": [
+     "g pour 100 g",
+     "g pour 100 mL",
+     "mL pour 100 mL",
+     "mg pour 100 mL"
+    ],
+    "a": 1,
+    "ex": "m/V = masse (g) pour 100 mL."
+   },
+   {
+    "c": "pct",
+    "q": "Minoxidil 3 % (m/V), … , aqua q.s. ad 200 mL. Masse de minoxidil ?",
+    "o": [
+     "3 g",
+     "4,5 g",
+     "6 g",
+     "600 mg"
+    ],
+    "a": 2,
+    "ex": "3 g/100 mL × 200 mL = 6 g (volume final)."
+   },
+   {
+    "c": "pct",
+    "q": "1 % (m/V) correspond à",
+    "o": [
+     "1 mg/mL",
+     "10 mg/mL",
+     "100 mg/mL",
+     "0,1 mg/mL"
+    ],
+    "a": 1,
+    "ex": "1 g/100 mL = 1000 mg/100 mL = 10 mg/mL."
+   },
+   {
+    "c": "pct",
+    "q": "0,25 g de codéine dans 250 mL : % (m/V) ?",
+    "o": [
+     "0,25 %",
+     "0,10 %",
+     "1 %",
+     "0,04 %"
+    ],
+    "a": 1,
+    "ex": "0,25 ÷ 250 × 100 = 0,10 %."
+   },
+   {
+    "c": "pct",
+    "q": "Sirop à 0,04 % (m/V) : quantité dans une C à c ?",
+    "o": [
+     "0,2 mg",
+     "2 mg",
+     "20 mg",
+     "0,02 mg"
+    ],
+    "a": 1,
+    "ex": "0,04 % = 0,4 mg/mL × 5 mL = 2 mg."
+   },
+   {
+    "c": "pct",
+    "q": "Une solution à 1 % (m/m) de nitroglycérine : 2 mg de nitroglycérine sont contenus dans",
+    "o": [
+     "20 mg de solution",
+     "200 mg de solution",
+     "2 g de solution",
+     "2 mg de solution"
+    ],
+    "a": 1,
+    "ex": "1 g pour 100 g → 2 mg pour 200 mg."
+   },
+   {
+    "c": "pct",
+    "t": "tf",
+    "q": "Vrai ou faux : pour un liquide de densité ≠ 1, 5 % (m/m) et 5 % (m/V) donnent la même masse de PA.",
+    "a": 1,
+    "ex": "Faux : 100 g et 100 mL ne correspondent pas à la même quantité de liquide si d ≠ 1."
+   },
+   {
+    "c": "densite",
+    "q": "L'eau a une densité",
+    "o": [
+     "inférieure à 1",
+     "supérieure à 1",
+     "égale à 1",
+     "inconnue"
+    ],
+    "a": 2,
+    "ex": "Référence : 1 mL d'eau = 1 g."
+   },
+   {
+    "c": "densite",
+    "q": "Quel solvant a une densité supérieure à 1 ?",
+    "o": [
+     "Éthanol",
+     "Huile de paraffine",
+     "Propylène glycol",
+     "Acétone"
+    ],
+    "a": 2,
+    "ex": "Propylène glycol : 1,04."
+   },
+   {
+    "c": "densite",
+    "q": "Quel est le plus léger (plus faible densité) ?",
+    "o": [
+     "Éther",
+     "Méthanol",
+     "Isopropanol",
+     "Huile de paraffine"
+    ],
+    "a": 0,
+    "ex": "Éther 0,71."
+   },
+   {
+    "c": "densite",
+    "q": "Pour convertir une masse en volume, on…",
+    "o": [
+     "multiplie par la densité",
+     "divise par la densité",
+     "ajoute la densité",
+     "multiplie par 100"
+    ],
+    "a": 1,
+    "ex": "V = m ÷ d."
+   },
+   {
+    "id": "p9",
+    "c": "densite",
+    "q": "27 g de teinture de densité 0,9 occupent",
+    "o": [
+     "24,3 mL",
+     "27 mL",
+     "30 mL",
+     "3 mL"
+    ],
+    "a": 2,
+    "ex": "27 ÷ 0,9 = 30 mL."
+   },
+   {
+    "c": "densite",
+    "q": "100 mL d'éthanol pèsent",
+    "o": [
+     "100 g",
+     "79 g",
+     "126,6 g",
+     "7,9 g"
+    ],
+    "a": 1,
+    "ex": "100 × 0,79 = 79 g."
+   },
+   {
+    "c": "densite",
+    "q": "Pourquoi utilise-t-on la densité à l'officine ?",
+    "o": [
+     "Pour diluer les alcools",
+     "Pour peser un liquide qu'on ne peut pas mesurer précisément au volume (visqueux)",
+     "Pour calculer un pourcentage V/V",
+     "Pour stériliser"
+    ],
+    "a": 1,
+    "ex": "Liquides très visqueux : on convertit le volume voulu en masse à peser."
+   }
+  ],
+  "gens": {
+   "masse": {
+    "c": "masse",
+    "method": "Conversion d'unités"
+   },
+   "volume": {
+    "c": "volume",
+    "method": "Volumes et cuillères"
+   },
+   "dose": {
+    "c": "rp",
+    "method": "Dose × nombre d'unités"
+   },
+   "spec": {
+    "c": "rp",
+    "method": "Nombre d'unités d'une spécialité"
+   },
+   "pctmv": {
+    "c": "pct",
+    "method": "% → masse à peser"
+   },
+   "pctdose": {
+    "c": "pct",
+    "method": "% → quantité par prise"
+   },
+   "conc": {
+    "c": "pct",
+    "method": "Masse → %"
+   },
+   "densV": {
+    "c": "densite",
+    "method": "Densité : masse ↔ volume"
+   }
+  },
+  "worked": [
+   {
+    "id": "w1",
+    "t": "Dose totale à peser (Rp … pf … dt)",
+    "gen": "dose"
+   },
+   {
+    "id": "w2",
+    "t": "Spécialité à broyer + excès de poudre"
+   },
+   {
+    "id": "w3",
+    "t": "% (m/V) avec « ad »",
+    "gen": "pctmv"
+   },
+   {
+    "id": "w4",
+    "t": "Quantité de PA par cuillère",
+    "gen": "pctdose"
+   },
+   {
+    "id": "w5",
+    "t": "% (m/m) puis densité",
+    "gen": "densV"
+   }
+  ],
+  "sprints": [
+   {
+    "id": "sm",
+    "t": "Conversions de masse"
+   },
+   {
+    "id": "sv",
+    "t": "Volumes et cuillères"
+   },
+   {
+    "id": "sa",
+    "t": "Abréviations des ordonnances"
+   },
+   {
+    "id": "sd",
+    "t": "Densités du tableau"
+   },
+   {
+    "id": "sp",
+    "t": "% → grammes et mg/mL"
+   }
+  ]
+ },
+ "th2": {
+  "concepts": [
+   {
+    "id": "trit",
+    "t": "La trituration : le principe",
+    "talk": {
+     "prompt": "Explique à un camarade ce qu'est une trituration et pourquoi on en a besoin.",
+     "check": [
+      "Quantité de PA trop petite pour une pesée précise",
+      "Excès de PA mélangé à un diluant",
+      "On prélève la quantité de mélange qui contient la dose",
+      "Plus dilué = masse pesée plus grande = plus précis"
+     ]
+    },
+    "traps": [
+     "Confondre ‰ (pour mille) et % (pour cent) : facteur 10 d'écart.",
+     "Croire que la trituration change la dose reçue : elle ne change que la masse pesée."
+    ],
+    "why": [
+     [
+      "Pourquoi ne pas peser directement 0,4 mg de PA ?",
+      "Une si petite masse se pèse avec une erreur relative énorme sur une balance d'officine. En pesant 400 mg d'une trituration à 1 ‰, la même erreur absolue devient négligeable."
+     ],
+     [
+      "Pourquoi parle-t-on d'« excès » de PA ?",
+      "On prépare plus de trituration (donc plus de PA) que nécessaire, puis on n'en prélève qu'une partie : le reste est conservé ou jeté."
+     ]
+    ]
+   },
+   {
+    "id": "tritcalc",
+    "t": "Calculer une trituration",
+    "talk": {
+     "prompt": "Explique comment trouver la masse de trituration à 2 ‰ pour 10 gélules à 50 µg d'éthinylœstradiol.",
+     "check": [
+      "50 µg × 10 = 500 µg = 0,5 mg de PA",
+      "2 ‰ = 2 mg pour 1000 mg",
+      "0,5 mg × 500 = 250 mg de trituration"
+     ]
+    },
+    "traps": [
+     "Répondre la quantité de PA (0,1 g) au lieu de la quantité de trituration (1 g).",
+     "Oublier de convertir les µg en mg avant d'appliquer le facteur.",
+     "Multiplier par 100 pour une trituration à 1 ‰ (c'est × 1000)."
+    ],
+    "why": [
+     [
+      "Pourquoi 2 ‰ correspond-il à « × 500 » ?",
+      "2 mg de PA pour 1000 mg de trituration : pour 1 mg de PA il faut 500 mg de trituration."
+     ],
+     [
+      "Pourquoi commencer par la quantité totale de PA ?",
+      "La trituration se pèse une seule fois pour toute la préparation : c'est la quantité totale de PA (dose × nombre d'unités) qu'il faut couvrir."
+     ]
+    ]
+   },
+   {
+    "id": "lecture",
+    "t": "Lire le Rp : µg et chiffres romains",
+    "talk": {
+     "prompt": "Lis à voix haute : « dt VI », « dt XIV », « dt XL », « dt XC ».",
+     "check": [
+      "VI = 6",
+      "XIV = 14",
+      "XL = 40",
+      "XC = 90"
+     ]
+    },
+    "traps": [
+     "Lire IV comme 6.",
+     "Oublier la conversion µg → mg (facteur 1000)."
+    ],
+    "why": [
+     [
+      "Pourquoi « dt X » et « dt XX » sont-ils des pièges ?",
+      "Une lecture rapide confond facilement 10 et 20 : toute la préparation serait alors faite en double ou en moitié."
+     ]
+    ]
+   },
+   {
+    "id": "gelmix",
+    "t": "Gélules complexes et spécialités",
+    "talk": {
+     "prompt": "Explique la différence de calcul entre « Cipramil® 10 mg (comprimés à 20 mg) » et « métoclopramide 5 mg (trituration à 10 %) » pour 120 gélules.",
+     "check": [
+      "Cipramil : 1200 mg ÷ 20 = 60 comprimés",
+      "Métoclopramide : 600 mg de PA",
+      "Trituration 10 % → × 10 = 6 g à peser"
+     ]
+    },
+    "traps": [
+     "Multiplier par 120 quand la question demande « par gélule ».",
+     "Oublier que 10 ctg = 100 mg."
+    ],
+    "why": [
+     [
+      "Pourquoi un comprimé de spécialité contient-il plus que le PA ?",
+      "Il contient aussi des excipients : on compte en nombre de comprimés (dosage en PA), pas en masse de comprimé."
+     ]
+    ]
+   },
+   {
+    "id": "coulee",
+    "t": "Suppositoires : préparation par coulée",
+    "talk": {
+     "prompt": "Compare la fusion claire et la fusion crémeuse, puis cite les 4 étapes du calcul.",
+     "check": [
+      "Claire : 2-3 °C au-dessus de la T° de fusion, PA avant coulée, risque de sédimentation",
+      "Crémeuse : 2/3 fondu + 1/3 froid, coulée semi-solide",
+      "Avantages : moins de sédimentation, durcissement plus rapide",
+      "Étapes : étalonner (E), 10 % de PA (M, S), calculer f, masse d'excipient avec 1 suppo en plus"
+     ]
+    },
+    "traps": [
+     "Inverser 2/3 fondu et 1/3 froid.",
+     "Oublier le suppositoire supplémentaire."
+    ],
+    "why": [
+     [
+      "Pourquoi la fusion crémeuse limite-t-elle la sédimentation ?",
+      "La masse coulée est semi-solide, donc plus visqueuse : les particules de PA ont moins le temps de tomber au fond de l'alvéole."
+     ],
+     [
+      "Pourquoi prévoir un suppositoire de plus ?",
+      "Une partie de la masse reste dans le récipient et les ustensiles : sans marge, le dernier suppositoire serait incomplet."
+     ]
+    ]
+   },
+   {
+    "id": "facteur",
+    "t": "Le facteur de déplacement (f)",
+    "talk": {
+     "prompt": "Explique d'où viennent E, M et S et calcule f avec l'exemple 20,50 g / 7 et 26,89 g / 9.",
+     "check": [
+      "E = masse d'un suppositoire pur = 20,50 ÷ 7 = 2,93 g",
+      "1 suppo à 10 % = 26,89 ÷ 9 = 2,99 g",
+      "M = 2,99 × 0,9 = 2,689 g ; S = 2,99 × 0,1 = 0,299 g",
+      "f = (2,93 − 2,689) ÷ 0,299 ≈ 0,81"
+     ]
+    },
+    "traps": [
+     "Diviser par le nombre total de suppositoires au lieu de travailler sur 1 suppositoire.",
+     "Prendre S = 10 % de E au lieu de 10 % du suppositoire avec PA.",
+     "Écrire f = (M − E) ÷ S (signe inversé)."
+    ],
+    "why": [
+     [
+      "Pourquoi M = 90 % et S = 10 % du suppositoire de la 2e coulée ?",
+      "On a coulé un mélange contenant 10 % de PA : chaque suppositoire contient donc 10 % de PA (S) et 90 % de masse (M)."
+     ],
+     [
+      "Que signifie f = 0,61 ?",
+      "1 g d'oxytétracycline prend la place de 0,61 g d'excipient : il faut retirer 0,61 g d'excipient par g de PA ajouté."
+     ]
+    ]
+   },
+   {
+    "id": "base",
+    "t": "La masse d'excipient en pratique",
+    "talk": {
+     "prompt": "Explique comment calculer la base pour « phénobarbital 40 mg (f 0,82), aminophylline 200 mg (f 0,88), dt X » avec 8 suppos purs = 15,76 g.",
+     "check": [
+      "E = 15,76 ÷ 8 = 1,97 g",
+      "Σ f·S = 0,82 × 0,04 + 0,88 × 0,2 = 0,2088 g",
+      "M = 1,97 − 0,2088 = 1,7612 g",
+      "× 11 (dt X + 1) = 19,37 g"
+     ]
+    },
+    "traps": [
+     "Oublier de convertir les mg de PA en g dans f × S.",
+     "Multiplier par n au lieu de n + 1.",
+     "Oublier un des PA dans la somme."
+    ],
+    "why": [
+     [
+      "Pourquoi soustraire f × S et pas S ?",
+      "1 g de PA ne remplace pas forcément 1 g d'excipient : il en remplace f g (selon sa densité relative à la base)."
+     ],
+     [
+      "Pourquoi le piège « n » est-il si fréquent dans les QCM ?",
+      "La réponse calculée pour n suppositoires est souvent proposée : elle est juste mathématiquement mais fausse « en pratique »."
+     ]
+    ]
+   }
+  ],
+  "cards": [
+   {
+    "c": "trit",
+    "front": "Qu'est-ce qu'une trituration ?",
+    "back": "Un excès de PA mélangé à un diluant ; on prélève la quantité de mélange contenant la dose"
+   },
+   {
+    "c": "trit",
+    "front": "Pourquoi faire une trituration ?",
+    "back": "La quantité de PA est trop petite pour être pesée avec précision"
+   },
+   {
+    "c": "trit",
+    "front": "Trituration à 1 ‰ = ?",
+    "back": "1 mg de PA pour 1000 mg de trituration"
+   },
+   {
+    "c": "trit",
+    "front": "Trituration à 1 % = ?",
+    "back": "1 g de PA pour 100 g (10 mg pour 1000 mg)"
+   },
+   {
+    "c": "trit",
+    "front": "Trituration à 10 % = ?",
+    "back": "10 g de PA pour 100 g (100 mg pour 1000 mg)"
+   },
+   {
+    "c": "tritcalc",
+    "front": "Trituration 1 ‰ : facteur à appliquer à la masse de PA ?",
+    "back": "× 1000"
+   },
+   {
+    "c": "tritcalc",
+    "front": "Trituration 2 ‰ : facteur ?",
+    "back": "× 500"
+   },
+   {
+    "c": "tritcalc",
+    "front": "Trituration 1 % : facteur ?",
+    "back": "× 100"
+   },
+   {
+    "c": "tritcalc",
+    "front": "Trituration 10 % : facteur ?",
+    "back": "× 10"
+   },
+   {
+    "c": "tritcalc",
+    "front": "Les 2 étapes du calcul d'une trituration ?",
+    "back": "1) Quantité totale de PA (dose × nombre) · 2) Quantité de trituration qui contient ce PA"
+   },
+   {
+    "c": "tritcalc",
+    "front": "0,4 mg de PA, trituration 1 ‰ → ?",
+    "back": "400 mg de trituration"
+   },
+   {
+    "c": "tritcalc",
+    "front": "500 mg de trituration à 1 % pour 50 pilules : dose par pilule ?",
+    "back": "0,1 mg"
+   },
+   {
+    "c": "lecture",
+    "front": "1 mg = ? µg",
+    "back": "1000 µg"
+   },
+   {
+    "c": "lecture",
+    "front": "dt VI",
+    "back": "6"
+   },
+   {
+    "c": "lecture",
+    "front": "dt XX",
+    "back": "20"
+   },
+   {
+    "c": "lecture",
+    "front": "dt XL",
+    "back": "40"
+   },
+   {
+    "c": "lecture",
+    "front": "dt XC",
+    "back": "90"
+   },
+   {
+    "c": "lecture",
+    "front": "L et C en chiffres romains ?",
+    "back": "L = 50 · C = 100"
+   },
+   {
+    "c": "gelmix",
+    "front": "« Cipramil® 10 mg (comprimés à 20 mg) dt 120 » : nb de comprimés ?",
+    "back": "60"
+   },
+   {
+    "c": "gelmix",
+    "front": "« 5 mg (trituration à 10 %) dt 120 » : masse de trituration ?",
+    "back": "6 g"
+   },
+   {
+    "c": "gelmix",
+    "front": "Question « par gélule » : multiplie-t-on par dt ?",
+    "back": "Non"
+   },
+   {
+    "c": "coulee",
+    "front": "Fusion claire : principe ?",
+    "back": "Chauffer 2-3 °C au-dessus de la T° de fusion, incorporer le PA avant la coulée (attention sédimentation)"
+   },
+   {
+    "c": "coulee",
+    "front": "Fusion crémeuse : principe ?",
+    "back": "Fondre 2/3 de la masse, ajouter 1/3 froid, puis le PA ; coulée semi-solide"
+   },
+   {
+    "c": "coulee",
+    "front": "Avantages de la fusion crémeuse ?",
+    "back": "Moins de sédimentation, durcissement plus rapide"
+   },
+   {
+    "c": "coulee",
+    "front": "Les 4 étapes de calcul des suppositoires ?",
+    "back": "Étalonner le moule (E) · couler à 10 % de PA (M, S) · calculer f · masse d'excipient avec 1 suppo en plus"
+   },
+   {
+    "c": "coulee",
+    "front": "% de PA arbitraire de la 2e coulée ?",
+    "back": "10 %"
+   },
+   {
+    "c": "facteur",
+    "front": "Formule du facteur de déplacement ?",
+    "back": "f = (E − M) ÷ S"
+   },
+   {
+    "c": "facteur",
+    "front": "E = ?",
+    "back": "g d'excipient dans 1 suppositoire sans PA (1re coulée)"
+   },
+   {
+    "c": "facteur",
+    "front": "M = ?",
+    "back": "g de masse dans 1 suppositoire avec PA (2e coulée)"
+   },
+   {
+    "c": "facteur",
+    "front": "S = ?",
+    "back": "g de PA dans 1 suppositoire"
+   },
+   {
+    "c": "facteur",
+    "front": "Signification de f ?",
+    "back": "Masse d'excipient déplacée par 1 g de PA"
+   },
+   {
+    "c": "facteur",
+    "front": "Suppo à 10 % de PA pesant 3,048 g : M et S ?",
+    "back": "M = 2,7432 g · S = 0,3048 g"
+   },
+   {
+    "c": "base",
+    "front": "Formule de la masse d'excipient par suppositoire ?",
+    "back": "M = E − Σ (fi × Si)"
+   },
+   {
+    "c": "base",
+    "front": "En pratique, on prépare combien de suppositoires ?",
+    "back": "n + 1"
+   },
+   {
+    "c": "base",
+    "front": "Unité de S dans f × S ?",
+    "back": "Grammes (convertir les mg)"
+   },
+   {
+    "c": "base",
+    "front": "8 suppos de 1 g à 100 mg d'aspirine (f 0,67) : base en pratique ?",
+    "back": "0,933 × 9 = 8,397 g"
+   }
+  ],
+  "quiz": [
+   {
+    "id": "p1",
+    "c": "trit",
+    "q": "On réalise une trituration lorsque",
+    "o": [
+     "le PA est instable",
+     "la quantité de PA est trop petite pour être pesée avec précision",
+     "le PA est liquide",
+     "on veut masquer le goût"
+    ],
+    "a": 1,
+    "ex": "Une masse trop faible ne se pèse pas précisément : on la dilue dans un diluant."
+   },
+   {
+    "c": "trit",
+    "q": "Une trituration à 1 ‰ contient",
+    "o": [
+     "1 g de PA pour 100 g",
+     "1 mg de PA pour 1000 mg",
+     "1 mg de PA pour 100 mg",
+     "10 mg de PA pour 1000 mg"
+    ],
+    "a": 1,
+    "ex": "‰ = pour mille."
+   },
+   {
+    "c": "trit",
+    "q": "Une trituration à 1 % contient pour 1000 mg",
+    "o": [
+     "1 mg de PA",
+     "10 mg de PA",
+     "100 mg de PA",
+     "0,1 mg de PA"
+    ],
+    "a": 1,
+    "ex": "1 g/100 g = 10 mg/1000 mg."
+   },
+   {
+    "c": "trit",
+    "t": "tf",
+    "q": "Vrai ou faux : plus la trituration est diluée, plus la masse à peser est grande.",
+    "a": 0,
+    "ex": "Vrai : c'est tout l'intérêt, une masse plus grande se pèse plus précisément."
+   },
+   {
+    "c": "trit",
+    "t": "tf",
+    "q": "Vrai ou faux : la trituration modifie la dose de PA que reçoit le patient.",
+    "a": 1,
+    "ex": "Faux : seule la masse pesée change ; la dose de PA reste celle de la prescription."
+   },
+   {
+    "id": "p2",
+    "c": "tritcalc",
+    "q": "Éthinylœstradiol 50 µg dt X, trituration à 2 ‰ : masse de trituration ?",
+    "o": [
+     "25 mg",
+     "250 mg",
+     "2,5 mg",
+     "2,5 g"
+    ],
+    "a": 1,
+    "ex": "50 µg × 10 = 0,5 mg ; 2 ‰ → × 500 = 250 mg."
+   },
+   {
+    "c": "tritcalc",
+    "q": "30 pilules à 30 µg, trituration à 1 ‰ : masse de trituration ?",
+    "o": [
+     "9 mg",
+     "90 mg",
+     "900 mg",
+     "9 g"
+    ],
+    "a": 2,
+    "ex": "900 µg = 0,9 mg × 1000 = 900 mg."
+   },
+   {
+    "c": "tritcalc",
+    "q": "50 pilules préparées avec 500 mg de trituration à 1 % : dose par pilule ?",
+    "o": [
+     "0,01 mg",
+     "0,1 mg",
+     "1 mg",
+     "10 mg"
+    ],
+    "a": 1,
+    "ex": "500 × 1 % = 5 mg ÷ 50 = 0,1 mg."
+   },
+   {
+    "c": "tritcalc",
+    "q": "Dexaméthasone 0,25 mg dt 30, trituration à 1 % : masse à peser ?",
+    "o": [
+     "7,5 mg",
+     "75 mg",
+     "750 mg",
+     "7,5 g"
+    ],
+    "a": 2,
+    "ex": "7,5 mg de PA × 100 = 750 mg."
+   },
+   {
+    "c": "tritcalc",
+    "q": "Bétaméthasone 0,05 % (m/m) ad 200 g, trituration à 10 % : masse de trituration ?",
+    "o": [
+     "0,1 g",
+     "0,5 g",
+     "1 g",
+     "10 g"
+    ],
+    "a": 2,
+    "ex": "0,1 g de PA × 10 = 1 g. 0,1 g est le piège (quantité de PA)."
+   },
+   {
+    "c": "tritcalc",
+    "q": "Pour une trituration à 2 ‰, la masse de trituration vaut",
+    "o": [
+     "PA × 200",
+     "PA × 500",
+     "PA × 1000",
+     "PA × 50"
+    ],
+    "a": 1,
+    "ex": "2 mg pour 1000 mg → 1 mg pour 500 mg."
+   },
+   {
+    "id": "p3",
+    "c": "lecture",
+    "q": "« dt XX » signifie",
+    "o": [
+     "10",
+     "20",
+     "11",
+     "22"
+    ],
+    "a": 1,
+    "ex": "X = 10 → XX = 20."
+   },
+   {
+    "c": "lecture",
+    "q": "« dt XIV » signifie",
+    "o": [
+     "16",
+     "14",
+     "9",
+     "41"
+    ],
+    "a": 1,
+    "ex": "X + IV = 10 + 4."
+   },
+   {
+    "c": "lecture",
+    "q": "20 µg égale",
+    "o": [
+     "0,2 mg",
+     "0,02 mg",
+     "2 mg",
+     "0,002 mg"
+    ],
+    "a": 1,
+    "ex": "÷ 1000."
+   },
+   {
+    "c": "lecture",
+    "q": "« dt XL » signifie",
+    "o": [
+     "60",
+     "40",
+     "90",
+     "110"
+    ],
+    "a": 1,
+    "ex": "X avant L : 50 − 10 = 40."
+   },
+   {
+    "id": "p4",
+    "c": "gelmix",
+    "q": "Cipramil® 10 mg (utiliser comprimés à 20 mg) pf 1 gél dt 120. Nombre de comprimés ?",
+    "o": [
+     "30",
+     "60",
+     "120",
+     "240"
+    ],
+    "a": 1,
+    "ex": "1200 mg ÷ 20 = 60."
+   },
+   {
+    "c": "gelmix",
+    "q": "Métoclopramide 5 mg (trituration à 10 %) dt 120 : masse de trituration ?",
+    "o": [
+     "0,6 g",
+     "6 g",
+     "60 g",
+     "60 mg"
+    ],
+    "a": 1,
+    "ex": "600 mg de PA × 10 = 6000 mg = 6 g."
+   },
+   {
+    "c": "gelmix",
+    "q": "Extrait sec de fucus 10 ctg + extrait sec de cascara 80 mg : extrait sec par gélule ?",
+    "o": [
+     "0,09 g",
+     "0,18 g",
+     "0,9 g",
+     "18 g"
+    ],
+    "a": 1,
+    "ex": "100 + 80 = 180 mg par gélule (pas × dt)."
+   },
+   {
+    "c": "gelmix",
+    "q": "Metformine 400 mg dt 120 : masse à peser ?",
+    "o": [
+     "400 mg",
+     "4,8 g",
+     "48 g",
+     "480 mg"
+    ],
+    "a": 2,
+    "ex": "400 × 120 = 48 000 mg."
+   },
+   {
+    "id": "p5",
+    "c": "coulee",
+    "q": "La fusion crémeuse consiste à",
+    "o": [
+     "chauffer toute la masse 10 °C au-dessus de sa T° de fusion",
+     "fondre 2/3 de la masse et ajouter 1/3 froid avant le PA",
+     "fondre 1/3 et ajouter 2/3 froids",
+     "couler à froid"
+    ],
+    "a": 1,
+    "ex": "2/3 fondu + 1/3 froid, puis le PA ; coulée semi-solide."
+   },
+   {
+    "c": "coulee",
+    "q": "Dans la fusion claire, on chauffe la masse",
+    "o": [
+     "juste à sa T° de fusion",
+     "2 à 3 °C au-dessus de sa T° de fusion",
+     "à 100 °C",
+     "10 °C en dessous"
+    ],
+    "a": 1,
+    "ex": "2-3 °C au-dessus de la T° de fusion."
+   },
+   {
+    "c": "coulee",
+    "q": "Le principal risque de la fusion claire est",
+    "o": [
+     "la sédimentation du PA",
+     "le durcissement trop rapide",
+     "l'évaporation de la base",
+     "l'oxydation"
+    ],
+    "a": 0,
+    "ex": "La masse très fluide laisse le PA tomber au fond."
+   },
+   {
+    "c": "coulee",
+    "q": "La 2e coulée se fait avec un pourcentage arbitraire de PA de",
+    "o": [
+     "1 %",
+     "5 %",
+     "10 %",
+     "50 %"
+    ],
+    "a": 2,
+    "ex": "10 % de PA."
+   },
+   {
+    "c": "coulee",
+    "q": "Pourquoi prépare-t-on un suppositoire de plus ?",
+    "o": [
+     "Pour en garder un comme échantillon légal",
+     "Pour compenser les pertes de masse lors de la coulée",
+     "Pour tester le goût",
+     "Parce que le moule a toujours une alvéole de plus"
+    ],
+    "a": 1,
+    "ex": "Une partie de la masse reste dans les ustensiles."
+   },
+   {
+    "id": "p6",
+    "c": "facteur",
+    "q": "Le facteur de déplacement se calcule par",
+    "o": [
+     "f = (M − E) ÷ S",
+     "f = (E − M) ÷ S",
+     "f = S ÷ (E − M)",
+     "f = E ÷ M"
+    ],
+    "a": 1,
+    "ex": "f = (E − M) ÷ S."
+   },
+   {
+    "c": "facteur",
+    "q": "E représente",
+    "o": [
+     "la masse de PA par suppositoire",
+     "la masse d'excipient dans 1 suppositoire sans PA",
+     "la masse totale du moule",
+     "le nombre de suppositoires"
+    ],
+    "a": 1,
+    "ex": "1re coulée, sans PA."
+   },
+   {
+    "c": "facteur",
+    "q": "Un suppositoire de la 2e coulée (10 % de PA) pèse 3,048 g. S vaut",
+    "o": [
+     "0,293 g",
+     "0,3048 g",
+     "2,7432 g",
+     "0,1 g"
+    ],
+    "a": 1,
+    "ex": "10 % de 3,048 g."
+   },
+   {
+    "c": "facteur",
+    "q": "f = 0,61 signifie que 1 g de PA",
+    "o": [
+     "pèse 0,61 g",
+     "déplace 0,61 g d'excipient",
+     "représente 61 % du suppositoire",
+     "doit être multiplié par 0,61"
+    ],
+    "a": 1,
+    "ex": "Masse d'excipient déplacée par 1 g de PA."
+   },
+   {
+    "c": "facteur",
+    "q": "7 suppositoires purs pèsent 20,50 g ; 9 suppositoires à 10 % pèsent 26,89 g. f ≈",
+    "o": [
+     "0,61",
+     "0,81",
+     "1,2",
+     "0,29"
+    ],
+    "a": 1,
+    "ex": "E = 2,93 ; 1 suppo = 2,99 ; M = 2,689 ; S = 0,299 → f ≈ 0,81."
+   },
+   {
+    "id": "p7",
+    "c": "base",
+    "q": "La masse d'excipient pour 1 suppositoire vaut",
+    "o": [
+     "M = E + Σ f·S",
+     "M = E − Σ f·S",
+     "M = E − Σ S",
+     "M = Σ f·S − E"
+    ],
+    "a": 1,
+    "ex": "M = E − Σ (fi × Si)."
+   },
+   {
+    "c": "base",
+    "q": "Rp … p.f. 1 suppositoire dt X. Combien de suppositoires calcule-t-on « en pratique » ?",
+    "o": [
+     "9",
+     "10",
+     "11",
+     "12"
+    ],
+    "a": 2,
+    "ex": "n + 1 = 11."
+   },
+   {
+    "c": "base",
+    "q": "8 suppositoires de 1 g à 100 mg d'aspirine (f = 0,67). Base en pratique ?",
+    "o": [
+     "7,464 g",
+     "8,397 g",
+     "7,33 g",
+     "9,77 g"
+    ],
+    "a": 1,
+    "ex": "M = 1 − 0,067 = 0,933 g × 9 = 8,397 g. 7,464 g = piège (8 suppos)."
+   },
+   {
+    "c": "base",
+    "q": "Bismuth sous-gallate 200 mg, pf 1 suppo dt 6. Quantité de bismuth en pratique ?",
+    "o": [
+     "1,2 g",
+     "1,4 g",
+     "1,397 g",
+     "1,19 g"
+    ],
+    "a": 1,
+    "ex": "200 mg × 7 = 1,4 g."
+   },
+   {
+    "c": "base",
+    "t": "tf",
+    "q": "Vrai ou faux : dans f × S, S peut rester en mg si E est en g.",
+    "a": 1,
+    "ex": "Faux : toutes les masses doivent être dans la même unité (g)."
+   }
+  ],
+  "gens": {
+   "trit": {
+    "c": "tritcalc",
+    "method": "Trituration : PA → masse de mélange"
+   },
+   "tritinv": {
+    "c": "tritcalc",
+    "method": "Trituration : retrouver la dose"
+   },
+   "romain": {
+    "c": "lecture",
+    "method": "Lecture du Rp (µg, chiffres romains)"
+   },
+   "spec": {
+    "c": "gelmix",
+    "method": "Spécialité ou trituration dans une gélule"
+   },
+   "facteur": {
+    "c": "facteur",
+    "method": "Facteur de déplacement f = (E − M) ÷ S"
+   },
+   "base": {
+    "c": "base",
+    "method": "Masse d'excipient M = E − Σ f·S (n + 1)"
+   },
+   "paprat": {
+    "c": "base",
+    "method": "Quantité de PA en pratique (n + 1)"
+   }
+  },
+  "worked": [
+   {
+    "id": "w1",
+    "t": "Trituration (µg → mg → trituration)",
+    "gen": "trit"
+   },
+   {
+    "id": "w2",
+    "t": "Facteur de déplacement f",
+    "gen": "facteur"
+   },
+   {
+    "id": "w3",
+    "t": "Masse de base, 1 PA (suppo de poids donné)",
+    "gen": "base"
+   },
+   {
+    "id": "w4",
+    "t": "Masse de base, plusieurs PA (moule étalonné)",
+    "gen": "base"
+   }
+  ],
+  "sprints": [
+   {
+    "id": "st",
+    "t": "Facteurs de trituration"
+   },
+   {
+    "id": "sr",
+    "t": "Chiffres romains (dt)"
+   },
+   {
+    "id": "su",
+    "t": "µg ↔ mg ↔ g"
+   },
+   {
+    "id": "ss",
+    "t": "Suppositoires : réflexes"
+   }
+  ]
+ }
+}
