@@ -740,6 +740,10 @@ var ATL_ICONS={
  annuler:'<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/>',
  refaire:'<path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/>',
  vider:'<path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/>',
+ benzene:'<path d="M12 3 20 7.5v9L12 21l-8-4.5v-9z"/><path d="M12 6.6 16.8 9.3M16.8 14.7 12 17.4M7.2 14.7V9.3"/>',
+ double:'<path d="M4 16 14 6M9 19 19 9"/>',
+ triple:'<path d="M3 14 12 5M6.5 17.5 15.5 8.5M10 21l9-9"/>',
+ recadrer:'<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3M8 11h6"/>',
  plein:'<path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/>'
 };
 function aic(n){return '<svg class="ic" viewBox="0 0 24 24">'+ATL_ICONS[n]+'</svg>'}
@@ -747,7 +751,7 @@ var ATL_COULEURS=[['#1b2233','noir'],['#e11d48','rouge (O)'],['#2563eb','bleu (N
 var ATL_ATOMES=['O','N','S','H','Cl','F','OH','NH₂','NH','COOH','CH₃','R','+','−','δ+','δ−'];
 var ATL={outil:'stylo',couleur:'#1b2233',taille:1,stylet:false};
 function atelierHTML(x){
- var t=[['stylo','Stylo'],['ligne','Liaison'],['cycle6','Hexagone'],['cycle5','Pentagone'],['texte','Atome'],['gomme','Gomme'],['lasso','Déplacer']];
+ var t=[['stylo','Stylo'],['ligne','Liaison'],['double','Double'],['triple','Triple'],['benzene','Benzène'],['cycle6','Hexagone'],['cycle5','Pentagone'],['texte','Atome'],['gomme','Gomme'],['lasso','Déplacer']];
  return '<div class="atl" id="atl"><div class="atl-barre">'+t.map(function(o){return '<button class="atl-o'+(ATL.outil===o[0]?' on':'')+'" data-o="'+o[0]+'" title="'+o[1]+'">'+aic(o[0])+'<span>'+o[1]+'</span></button>'}).join('')+'</div>'+
  '<div class="atl-barre atl-b2"><div class="atl-coul">'+ATL_COULEURS.map(function(c){return '<button class="atl-c'+(ATL.couleur===c[0]?' on':'')+'" data-c="'+c[0]+'" style="background:'+c[0]+'" aria-label="'+c[1]+'"></button>'}).join('')+'</div>'+
  '<div class="atl-taille">'+[0,1,2].map(function(k){return '<button class="atl-t'+(ATL.taille===k?' on':'')+'" data-t="'+k+'"><i style="width:'+(4+k*4)+'px;height:'+(4+k*4)+'px"></i></button>'}).join('')+'</div></div>'+
@@ -755,36 +759,41 @@ function atelierHTML(x){
  '<div class="atl-zone"><canvas id="cv"></canvas><img class="atl-calque" id="atl-calque" src="'+x.img+'" alt=""><div class="atl-aide" id="atl-aide"></div>'+
  '<div class="atl-feuille" id="atl-f"><div class="atl-f-tete"><b>Correction</b><button id="atl-sup">Superposer</button><button id="atl-cache">Masquer</button></div><div class="atl-f-corps"><img src="'+x.img+'" alt="Structure correcte"><p>'+esc(x.grand)+(x.expl?' · '+esc(x.expl):'')+'</p></div>'+
  '<div class="atl-ajust" id="atl-ajust"><button data-z="-1" aria-label="Rapetisser">−</button><button data-z="1" aria-label="Agrandir">+</button><label>Transparence <input type="range" id="atl-op" min="15" max="90" value="40"></label><button data-z="0">Recentrer</button></div><div class="atl-note" id="atl-note"><button class="a1" data-v="0">Raté</button><button class="a2" data-v="1">Presque</button><button class="a3" data-v="2">Juste</button></div><button class="atl-suite" id="atl-suite">Continuer</button></div></div>'+
- '<div class="atl-barre atl-b3"><button data-x="annuler">'+aic('annuler')+'</button><button data-x="refaire">'+aic('refaire')+'</button><button data-x="vider">'+aic('vider')+'</button><button data-x="plein">'+aic('plein')+'<span>Plein écran</span></button><button id="voir" class="atl-voir">Corriger</button></div></div>';
+ '<div class="atl-barre atl-b3"><button data-x="annuler">'+aic('annuler')+'</button><button data-x="refaire">'+aic('refaire')+'</button><button data-x="vider">'+aic('vider')+'</button><button data-x="recadrer" aria-label="Papier à taille normale">'+aic('recadrer')+'</button><button data-x="plein">'+aic('plein')+'<span>Plein écran</span></button><button id="voir" class="atl-voir">Corriger</button></div></div>';
 }
 function atelier(x){
  var root=$('#atl'),cv=$('#cv'),c=cv.getContext('2d'),W=0,H=0,dpr=Math.min(window.devicePixelRatio||1,3);
- var S=[],hist=[[]],hi=0,cur=null,sel=[],selDrag=null,atome='O',pointeurs={},panDrag=null,off={x:0,y:0},raf=0;
+ var S=[],hist=[[]],hi=0,cur=null,sel=[],selDrag=null,atome='O',pointeurs={},panDrag=null,off={x:0,y:0},zm=1,raf=0;
  var TW=[2.2,3.4,5.5]; // épaisseurs
  function taille(){var r=cv.getBoundingClientRect();W=r.width;H=r.height;cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);c.setTransform(dpr,0,0,dpr,0,0);dessiner()}
  function clone(a){return JSON.parse(JSON.stringify(a))}
  function commit(){hist=hist.slice(0,hi+1);hist.push(clone(S));if(hist.length>60)hist.shift();hi=hist.length-1}
- function aide(t){$('#atl-aide').textContent=t||''}
- var AIDES={stylo:'Dessine librement. Au doigt, le trait est lissé.',ligne:'Glisse pour tracer une liaison : angles aimantés à 30°, extrémités collées aux atomes proches. Double tap sur une liaison = double liaison.',cycle6:'Touche pour poser un cycle à 6, glisse pour l\'agrandir et le tourner.',cycle5:'Touche pour poser un cycle à 5, glisse pour l\'agrandir et le tourner.',texte:'Choisis un atome puis touche l\'endroit où le poser.',gomme:'Frotte pour effacer.',lasso:'Entoure une partie du dessin, puis fais-la glisser. Touche ailleurs pour désélectionner.',main:'Glisse pour déplacer tout le dessin.'};
+ function aide(t){$('#atl-aide').textContent=t?(t+(t===AIDES[ATL.outil]&&ATL.outil!=='lasso'?AIDE2:'')):''}
+ var AIDES={stylo:'Dessine librement. Au doigt, le trait est lissé.',ligne:'Glisse pour tracer une liaison : angles aimantés à 30°, extrémités collées aux atomes proches. Double tap sur une liaison = double liaison.',cycle6:'Touche pour poser un cycle à 6, glisse pour l\'agrandir et le tourner.',cycle5:'Touche pour poser un cycle à 5, glisse pour l\'agrandir et le tourner.',texte:'Choisis un atome puis touche l\'endroit où le poser.',gomme:'Frotte pour effacer.',lasso:'Entoure une partie, puis fais-la glisser. Pince à deux doigts dessus pour l\'agrandir ou la rétrécir. Touche ailleurs pour désélectionner.',double:'Glisse pour tracer une double liaison (angles aimantés à 30°).',triple:'Glisse pour tracer une triple liaison (angles aimantés à 30°).',benzene:'Touche pour poser un benzène avec ses 3 doubles liaisons, glisse pour l\'agrandir et le tourner.',main:'Glisse pour déplacer tout le dessin.'};
+ var AIDE2=' Deux doigts : déplacer le papier, pincer pour zoomer.';
  /* ---- rendu ---- */
  function chemin(p){if(p.length<2){c.beginPath();c.arc(p[0][0],p[0][1],c.lineWidth/2,0,7);c.fill();return}
   c.beginPath();c.moveTo(p[0][0],p[0][1]);for(var i=1;i<p.length-1;i++){var mx=(p[i][0]+p[i+1][0])/2,my=(p[i][1]+p[i+1][1])/2;c.quadraticCurveTo(p[i][0],p[i][1],mx,my)}c.lineTo(p[p.length-1][0],p[p.length-1][1]);c.stroke()}
  function trait(s){c.strokeStyle=c.fillStyle=s.c;c.lineCap='round';c.lineJoin='round';
-  if(s.k==='txt'){c.font='600 '+(s.w*5+17)+'px -apple-system,system-ui,sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText(s.t,s.x+off.x,s.y+off.y);return}
-  var p=s.p.map(function(q){return [q[0]+off.x,q[1]+off.y]});
+  if(s.k==='txt'){c.font='600 '+((s.w*5+17)*(s.z||1)).toFixed(1)+'px -apple-system,system-ui,sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText(s.t,s.x,s.y);return}
+  var p=s.p;
+  if(s.mult&&p.length>1){c.lineWidth=s.w;paralleles(p[0],p[p.length-1],s.mult).forEach(chemin)}
+  if(s.benz&&s.som){c.lineWidth=s.w;interieurBenzene(s.som).forEach(chemin)}
   if(s.pr&&p.length>1){for(var i=1;i<p.length;i++){c.lineWidth=s.w*(0.45+1.1*(s.pr[i]||.5));c.beginPath();c.moveTo(p[i-1][0],p[i-1][1]);c.lineTo(p[i][0],p[i][1]);c.stroke()}return}
   c.lineWidth=s.w;chemin(p)}
- function bbox(list){var x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;list.forEach(function(s){(s.k==='txt'?[[s.x-10,s.y-10],[s.x+10,s.y+10]]:s.p).forEach(function(q){x0=Math.min(x0,q[0]);y0=Math.min(y0,q[1]);x1=Math.max(x1,q[0]);y1=Math.max(y1,q[1])})});return [x0-8,y0-8,x1+8,y1+8]}
- function dessiner(){c.clearRect(0,0,W,H);
-  // grille légère
-  c.fillStyle='#e9ebf2';for(var gx=(off.x%24+24)%24;gx<W;gx+=24)for(var gy=(off.y%24+24)%24;gy<H;gy+=24){c.fillRect(gx,gy,1.4,1.4)}
+ function bbox(list){var x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;list.forEach(function(s){(s.k==='txt'?[[s.x-10*(s.z||1),s.y-10*(s.z||1)],[s.x+10*(s.z||1),s.y+10*(s.z||1)]]:s.p).forEach(function(q){x0=Math.min(x0,q[0]);y0=Math.min(y0,q[1]);x1=Math.max(x1,q[0]);y1=Math.max(y1,q[1])})});return [x0-8,y0-8,x1+8,y1+8]}
+ function dessiner(){c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,W,H);
+  // grille légère (suit le zoom du papier)
+  var g=24*zm;while(g<12)g*=2;c.fillStyle='#e9ebf2';for(var gx=(off.x%g+g)%g;gx<W;gx+=g)for(var gy=(off.y%g+g)%g;gy<H;gy+=g){c.fillRect(gx,gy,1.4,1.4)}
+  c.setTransform(dpr*zm,0,0,dpr*zm,dpr*off.x,dpr*off.y);
   S.forEach(trait); if(cur)trait(cur);
-  if(sel.length){var b=bbox(sel.map(function(i){return S[i]}));c.save();c.setLineDash([6,5]);c.lineWidth=1.5;c.strokeStyle='#3b5ff0';c.strokeRect(b[0]+off.x,b[1]+off.y,b[2]-b[0],b[3]-b[1]);c.restore()}
-  if(lasso){c.save();c.setLineDash([5,5]);c.lineWidth=1.5;c.strokeStyle='#3b5ff0';c.beginPath();lasso.forEach(function(q,i){i?c.lineTo(q[0],q[1]):c.moveTo(q[0],q[1])});c.stroke();c.restore()}
+  if(sel.length){var b=bbox(sel.map(function(i){return S[i]}));c.save();c.setLineDash([6/zm,5/zm]);c.lineWidth=1.5/zm;c.strokeStyle='#3b5ff0';c.strokeRect(b[0],b[1],b[2]-b[0],b[3]-b[1]);c.restore()}
+  if(lasso){c.save();c.setLineDash([5/zm,5/zm]);c.lineWidth=1.5/zm;c.strokeStyle='#3b5ff0';c.beginPath();lasso.forEach(function(q,i){i?c.lineTo(q[0],q[1]):c.moveTo(q[0],q[1])});c.stroke();c.restore()}
+  c.setTransform(dpr,0,0,dpr,0,0);
  }
  function demander(){if(!raf)raf=requestAnimationFrame(function(){raf=0;dessiner()})}
  /* ---- géométrie ---- */
- function pos(e){var b=cv.getBoundingClientRect();return [e.clientX-b.left-off.x,e.clientY-b.top-off.y]}
+ function pos(e){var b=cv.getBoundingClientRect();return [(e.clientX-b.left-off.x)/zm,(e.clientY-b.top-off.y)/zm]}
  function d2(a,b){var x=a[0]-b[0],y=a[1]-b[1];return x*x+y*y}
  function densifier(a,b,pas){var n=Math.max(1,Math.ceil(Math.sqrt(d2(a,b))/pas)),o=[];for(var i=0;i<=n;i++)o.push([a[0]+(b[0]-a[0])*i/n,a[1]+(b[1]-a[1])*i/n]);return o}
  function poly(cx,cy,r,n,rot){var o=[];for(var i=0;i<=n;i++){var t=rot+i*2*Math.PI/n;var q=[cx+r*Math.cos(t),cy+r*Math.sin(t)];if(i){var prev=o[o.length-1];o=o.concat(densifier(prev,q,4).slice(1))}else o.push(q)}return o}
@@ -798,9 +807,13 @@ function atelier(x){
   if(morceaux.length===1&&morceaux[0].length===s.p.length){out.push(s);return}
   morceaux.forEach(function(m){if(m.length<2)return;var n={k:'trait',c:s.c,w:s.w,p:m.map(function(i){return s.p[i]})};if(s.pr)n.pr=m.map(function(i){return s.pr[i]});out.push(n)})
  });if(chg){S=out}return chg}
+ function paralleles(a,b,mult){var dx=b[0]-a[0],dy=b[1]-a[1],L=Math.sqrt(dx*dx+dy*dy)||1,nx=-dy/L*6,ny=dx/L*6,o=[],cotes=mult===3?[1,-1]:[1];
+  cotes.forEach(function(k){o.push(densifier([a[0]+k*nx+dx*.1,a[1]+k*ny+dy*.1],[b[0]+k*nx-dx*.1,b[1]+k*ny-dy*.1],4))});return o}
+ function interieurBenzene(som){var cx=0,cy=0;som.forEach(function(q){cx+=q[0]/som.length;cy+=q[1]/som.length});var o=[];
+  [0,2,4].forEach(function(i){var a=som[i],b=som[(i+1)%6],f=function(q){return [cx+(q[0]-cx)*.74,cy+(q[1]-cy)*.74]},a2=f(a),b2=f(b),dx=b2[0]-a2[0],dy=b2[1]-a2[1];o.push(densifier([a2[0]+dx*.12,a2[1]+dy*.12],[b2[0]-dx*.12,b2[1]-dy*.12],4))});return o}
  /* ---- doubles liaisons : double tap sur une liaison ---- */
  var dernierTap=0;
- function procheLiaison(p){var best=-1,bd=18*18;S.forEach(function(s,i){if(s.k!=='lig')return;s.p.forEach(function(q){var d=d2(q,p);if(d<bd){bd=d;best=i}})});return best}
+ function procheLiaison(p){var best=-1,bd=Math.pow(18/zm,2);S.forEach(function(s,i){if(s.k!=='lig')return;s.p.forEach(function(q){var d=d2(q,p);if(d<bd){bd=d;best=i}})});return best}
  function doubler(i){var s=S[i],a=s.p[0],b=s.p[s.p.length-1],dx=b[0]-a[0],dy=b[1]-a[1],L=Math.sqrt(dx*dx+dy*dy)||1,nx=-dy/L*5,ny=dx/L*5;
   var a2=[a[0]+nx+dx*.12,a[1]+ny+dy*.12],b2=[b[0]+nx-dx*.12,b[1]+ny-dy*.12];S.push({k:'lig2',c:s.c,w:s.w,p:densifier(a2,b2,4)})}
  /* ---- pointeurs ---- */
@@ -808,31 +821,31 @@ function atelier(x){
  cv.addEventListener('pointerdown',function(e){
   if(e.pointerType==='pen')ATL.stylet=true;
   if(e.pointerType==='touch'&&ATL.stylet&&ATL.outil!=='main'){return} // rejet de la paume quand le stylet est utilisé
-  pointeurs[e.pointerId]=1; if(Object.keys(pointeurs).length>1){cur=null;lasso=null;return}
+  pointeurs[e.pointerId]=1; if(Object.keys(pointeurs).length>1){cur=null;lasso=null;selDrag=null;demander();return}
   cv.setPointerCapture(e.pointerId); e.preventDefault();
   var p=pos(e),w=TW[ATL.taille]; depart=p; lisse=p.slice();
   var o=ATL.outil;
   if(o==='stylo'){cur={k:'trait',c:ATL.couleur,w:w,p:[p]};if(e.pointerType==='pen'){cur.pr=[e.pressure||.5]}}
-  else if(o==='ligne'){var now=Date.now(),li=procheLiaison(p);if(now-dernierTap<330&&li>=0){doubler(li);commit();dernierTap=0;demander();return}dernierTap=now;var a=aimant(p,16);cur={k:'lig',c:ATL.couleur,w:w,p:[a,a],a:a}}
-  else if(o==='cycle6'||o==='cycle5'){var n=o==='cycle6'?6:5;cur={k:'cyc',n:n,c:ATL.couleur,w:w,cx:p[0],cy:p[1],r:34,rot:-Math.PI/2};majCycle()}
+  else if(o==='ligne'||o==='double'||o==='triple'){var now=Date.now(),li=procheLiaison(p);if(o==='ligne'&&now-dernierTap<330&&li>=0){doubler(li);commit();dernierTap=0;demander();return}dernierTap=now;var a=aimant(p,16/zm);cur={k:'lig',c:ATL.couleur,w:w,p:[a,a],a:a};if(o!=='ligne')cur.mult=o==='double'?2:3}
+  else if(o==='cycle6'||o==='cycle5'||o==='benzene'){var n=o==='cycle5'?5:6;cur={k:'cyc',n:n,c:ATL.couleur,w:w,cx:p[0],cy:p[1],r:34,rot:-Math.PI/2,benz:o==='benzene'};majCycle()}
   else if(o==='texte'){S.push({k:'txt',t:atome,c:ATL.couleur,w:ATL.taille,x:p[0],y:p[1]});commit();demander()}
-  else if(o==='gomme'){if(gommer(p,10+ATL.taille*6))demander()}
-  else if(o==='lasso'){if(sel.length){var b=bbox(sel.map(function(i){return S[i]}));if(p[0]>=b[0]&&p[0]<=b[2]&&p[1]>=b[1]&&p[1]<=b[3]){selDrag=p;return}}sel=[];lasso=[[p[0]+off.x,p[1]+off.y]]}
+  else if(o==='gomme'){if(gommer(p,(10+ATL.taille*6)/zm))demander()}
+  else if(o==='lasso'){if(sel.length){var b=bbox(sel.map(function(i){return S[i]}));if(p[0]>=b[0]&&p[0]<=b[2]&&p[1]>=b[1]&&p[1]<=b[3]){selDrag=p;return}}sel=[];lasso=[p]}
   else if(o==='main'){panDrag=[e.clientX-off.x,e.clientY-off.y]}
   demander();
  },{passive:false});
  cv.addEventListener('pointermove',function(e){
-  if(!pointeurs[e.pointerId])return; e.preventDefault();
+  if(!pointeurs[e.pointerId])return; e.preventDefault(); if(Object.keys(pointeurs).length>1||deux)return;
   var evs=e.getCoalescedEvents?e.getCoalescedEvents():[e]; if(!evs.length)evs=[e];
   var o=ATL.outil;
   evs.forEach(function(ev){var p=pos(ev);
    if(o==='stylo'&&cur){
     if(ev.pointerType==='touch'||ev.pointerType==='mouse'){lisse[0]+= (p[0]-lisse[0])*.45;lisse[1]+=(p[1]-lisse[1])*.45;p=[lisse[0],lisse[1]]} // stabilisateur au doigt
-    var last=cur.p[cur.p.length-1];if(d2(last,p)<(ev.pointerType==='pen'?.8:2.5))return;cur.p.push(p);if(cur.pr)cur.pr.push(ev.pressure||.5)}
-   else if(o==='ligne'&&cur){var b=snapAngle(cur.a,p);var m=aimant(b,14);cur.p=densifier(cur.a,m,4)}
-   else if((o==='cycle6'||o==='cycle5')&&cur){var dx=p[0]-cur.cx,dy=p[1]-cur.cy,L=Math.sqrt(dx*dx+dy*dy);if(L>8){cur.r=Math.max(18,L);var st=Math.PI/6;cur.rot=Math.round(Math.atan2(dy,dx)/st)*st}majCycle()}
-   else if(o==='gomme'){gommer(p,10+ATL.taille*6)}
-   else if(o==='lasso'){if(selDrag){var dx2=p[0]-selDrag[0],dy2=p[1]-selDrag[1];selDrag=p;sel.forEach(function(i){var s=S[i];if(s.k==='txt'){s.x+=dx2;s.y+=dy2}else{s.p.forEach(function(q){q[0]+=dx2;q[1]+=dy2});if(s.som)s.som.forEach(function(q){q[0]+=dx2;q[1]+=dy2})}})}else if(lasso)lasso.push([p[0]+off.x,p[1]+off.y])}
+    var last=cur.p[cur.p.length-1];if(d2(last,p)<(ev.pointerType==='pen'?.8:2.5)/(zm*zm))return;cur.p.push(p);if(cur.pr)cur.pr.push(ev.pressure||.5)}
+   else if((o==='ligne'||o==='double'||o==='triple')&&cur){var b=snapAngle(cur.a,p);var m=aimant(b,14/zm);cur.p=densifier(cur.a,m,4)}
+   else if((o==='cycle6'||o==='cycle5'||o==='benzene')&&cur){var dx=p[0]-cur.cx,dy=p[1]-cur.cy,L=Math.sqrt(dx*dx+dy*dy);if(L>8){cur.r=Math.max(18,L);var st=Math.PI/6;cur.rot=Math.round(Math.atan2(dy,dx)/st)*st}majCycle()}
+   else if(o==='gomme'){gommer(p,(10+ATL.taille*6)/zm)}
+   else if(o==='lasso'){if(selDrag){var dx2=p[0]-selDrag[0],dy2=p[1]-selDrag[1];selDrag=p;sel.forEach(function(i){var s=S[i];if(s.k==='txt'){s.x+=dx2;s.y+=dy2}else{s.p.forEach(function(q){q[0]+=dx2;q[1]+=dy2});if(s.som)s.som.forEach(function(q){q[0]+=dx2;q[1]+=dy2})}})}else if(lasso)lasso.push(p)}
    else if(o==='main'&&panDrag){off.x=ev.clientX-panDrag[0];off.y=ev.clientY-panDrag[1]}
   });
   demander();
@@ -840,9 +853,9 @@ function atelier(x){
  function fin(e){
   if(!pointeurs[e.pointerId])return; delete pointeurs[e.pointerId];
   var o=ATL.outil;
-  if(cur){ if(cur.k==='cyc'){S.push({k:'cyc',c:cur.c,w:cur.w,p:cur.p,som:cur.som})} else if(cur.k==='lig'){if(d2(cur.p[0],cur.p[cur.p.length-1])>36)S.push({k:'lig',c:cur.c,w:cur.w,p:cur.p})} else S.push(cur); cur=null; commit()}
+  if(cur){ if(cur.k==='cyc'){S.push({k:'cyc',c:cur.c,w:cur.w,p:cur.p,som:cur.som});if(cur.benz)interieurBenzene(cur.som).forEach(function(q){S.push({k:'trait',c:cur.c,w:cur.w,p:q})})} else if(cur.k==='lig'){if(d2(cur.p[0],cur.p[cur.p.length-1])>36){var a=cur.p[0],b=cur.p[cur.p.length-1];S.push({k:'lig',c:cur.c,w:cur.w,p:cur.p});if(cur.mult)paralleles(a,b,cur.mult).forEach(function(q){S.push({k:'trait',c:cur.c,w:cur.w,p:q})})}} else S.push(cur); cur=null; commit()}
   else if(o==='gomme') commit();
-  else if(o==='lasso'){ if(selDrag){selDrag=null;commit()} else if(lasso&&lasso.length>4){var pl=lasso.map(function(q){return [q[0]-off.x,q[1]-off.y]});sel=[];S.forEach(function(s,i){var pts=s.k==='txt'?[[s.x,s.y]]:s.p;var n=pts.filter(function(q){return dansPoly(q,pl)}).length;if(n>=pts.length*.6)sel.push(i)})} lasso=null }
+  else if(o==='lasso'){ if(selDrag){selDrag=null;commit()} else if(lasso&&lasso.length>4){var pl=lasso;sel=[];S.forEach(function(s,i){var pts=s.k==='txt'?[[s.x,s.y]]:s.p;var n=pts.filter(function(q){return dansPoly(q,pl)}).length;if(n>=pts.length*.6)sel.push(i)})} lasso=null }
   panDrag=null; demander();
  }
  cv.addEventListener('pointerup',fin);cv.addEventListener('pointercancel',fin);
@@ -856,7 +869,8 @@ function atelier(x){
  $$('.atl-b3 button[data-x]',root).forEach(function(b){b.onclick=function(){var x=b.dataset.x;
   if(x==='annuler'&&hi>0){hi--;S=clone(hist[hi]);sel=[]}
   if(x==='refaire'&&hi<hist.length-1){hi++;S=clone(hist[hi]);sel=[]}
-  if(x==='vider'&&S.length){S=[];sel=[];off={x:0,y:0};commit()}
+  if(x==='vider'&&S.length){S=[];sel=[];off={x:0,y:0};zm=1;commit()}
+  if(x==='recadrer'){zm=1;off={x:0,y:0}}
   if(x==='plein'){root.classList.toggle('plein');document.body.classList.toggle('sans-scroll',root.classList.contains('plein'));setTimeout(taille,30)}
   demander()}});
  // le bouton Comparer quitte le plein écran
@@ -880,11 +894,21 @@ function atelier(x){
  appl();
  $$('#atl-note button').forEach(function(b){b.onclick=function(){if(note)return;note=true;auto(x,+b.dataset.v);$$('#atl-note button').forEach(function(z){z.style.opacity=z===b?1:.35});$('#atl-suite').classList.add('on')}});
  $('#atl-suite').onclick=function(){root.classList.remove('plein');document.body.classList.remove('sans-scroll');window.removeEventListener('resize',taille);if(G&&G.coeurs<=0){terminer();return}G.i++;montrer()};
- // deux doigts sur le canevas = déplacer tout le dessin
+ // deux doigts : sur une sélection (outil Déplacer) -> déplacer et agrandir la sélection ; sinon -> déplacer le papier et zoomer
  var deux=null;
- cv.addEventListener('touchstart',function(e){if(e.touches.length===2){var a=e.touches[0],b=e.touches[1];deux=[(a.clientX+b.clientX)/2-off.x,(a.clientY+b.clientY)/2-off.y];cur=null;lasso=null}},{passive:true});
- cv.addEventListener('touchmove',function(e){if(deux&&e.touches.length===2){var a=e.touches[0],b=e.touches[1];off.x=(a.clientX+b.clientX)/2-deux[0];off.y=(a.clientY+b.clientY)/2-deux[1];demander()}},{passive:true});
- cv.addEventListener('touchend',function(e){if(e.touches.length<2)deux=null},{passive:true});
+ function tinfo(e){var r=cv.getBoundingClientRect(),a=e.touches[0],b=e.touches[1];return {m:[(a.clientX+b.clientX)/2-r.left,(a.clientY+b.clientY)/2-r.top],d:Math.max(10,Math.sqrt(Math.pow(a.clientX-b.clientX,2)+Math.pow(a.clientY-b.clientY,2)))}}
+ cv.addEventListener('touchstart',function(e){if(e.touches.length!==2)return;e.preventDefault();var t=tinfo(e);cur=null;lasso=null;selDrag=null;
+  if(ATL.outil==='lasso'&&sel.length)deux={mode:'sel',m0:t.m,d0:t.d,c0:[(t.m[0]-off.x)/zm,(t.m[1]-off.y)/zm],orig:clone(sel.map(function(i){return S[i]}))};
+  else deux={mode:'vue',d0:t.d,z0:zm,w0:[(t.m[0]-off.x)/zm,(t.m[1]-off.y)/zm]};demander()},{passive:false});
+ cv.addEventListener('touchmove',function(e){if(!deux||e.touches.length!==2)return;e.preventDefault();var t=tinfo(e),k=t.d/deux.d0;
+  if(deux.mode==='vue'){zm=Math.max(.4,Math.min(4,deux.z0*k));off.x=t.m[0]-deux.w0[0]*zm;off.y=t.m[1]-deux.w0[1]*zm}
+  else{k=Math.max(.2,Math.min(6,k));var c0=deux.c0,dx=(t.m[0]-deux.m0[0])/zm,dy=(t.m[1]-deux.m0[1])/zm,tr=function(q){return [c0[0]+(q[0]-c0[0])*k+dx,c0[1]+(q[1]-c0[1])*k+dy]};
+   sel.forEach(function(i,j){var o=deux.orig[j],s2=S[i];if(o.k==='txt'){var q=tr([o.x,o.y]);s2.x=q[0];s2.y=q[1];s2.z=(o.z||1)*k}else{s2.p=o.p.map(tr);if(o.som)s2.som=o.som.map(tr);s2.w=o.w*Math.sqrt(k)}})}
+  demander()},{passive:false});
+ cv.addEventListener('touchend',function(e){if(deux&&e.touches.length<2){if(deux.mode==='sel')commit();deux=null;Object.keys(pointeurs).forEach(function(k){delete pointeurs[k]})}},{passive:true});
+ cv.addEventListener('touchcancel',function(){deux=null},{passive:true});
+ // ordinateur : ctrl + molette (pincement du pavé tactile) = zoom du papier
+ cv.addEventListener('wheel',function(e){if(!e.ctrlKey)return;e.preventDefault();var r=cv.getBoundingClientRect(),m=[e.clientX-r.left,e.clientY-r.top],w0=[(m[0]-off.x)/zm,(m[1]-off.y)/zm];zm=Math.max(.4,Math.min(4,zm*Math.exp(-e.deltaY*.01)));off.x=m[0]-w0[0]*zm;off.y=m[1]-w0[1]*zm;demander()},{passive:false});
  window.addEventListener('resize',taille);
  choisir(ATL.outil);
 }
