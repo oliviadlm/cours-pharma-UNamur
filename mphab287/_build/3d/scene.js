@@ -18,7 +18,7 @@ document.body.appendChild(renderer.domElement);
 const scene = new THREE.Scene();
 const pmrem = new THREE.PMREMGenerator(renderer);
 scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-scene.environmentIntensity = 0.55;
+scene.environmentIntensity = 0.4;
 
 const camera = new THREE.PerspectiveCamera(44, W / H, 0.05, 50);
 camera.position.set(0, 1.78, 3.3); camera.lookAt(0, 1.43, 0);
@@ -100,11 +100,15 @@ function aPlat(w, h, tex, x, y, z, couche, rot = 0) {   // feuille posée à pla
 }
 
 // ================= PIÈCE =================
-const murFond = new THREE.Mesh(new THREE.PlaneGeometry(9, 3.2), M.mur); murFond.position.set(0, 1.6, 0); poser(murFond, L_BACK);
+function percé(w, h, cx, cy, trou) { const sh = new THREE.Shape(); sh.moveTo(-w / 2, -h / 2); sh.lineTo(w / 2, -h / 2); sh.lineTo(w / 2, h / 2); sh.lineTo(-w / 2, h / 2); sh.lineTo(-w / 2, -h / 2);
+  const [x0, y0, x1, y1] = trou.map((v, i) => v - (i % 2 ? cy : cx)); const ho = new THREE.Path(); ho.moveTo(x0, y0); ho.lineTo(x0, y1); ho.lineTo(x1, y1); ho.lineTo(x1, y0); ho.lineTo(x0, y0); sh.holes.push(ho);
+  const g = new THREE.ShapeGeometry(sh); const uv = g.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setXY(i, (uv.getX(i) + w / 2) / w, (uv.getY(i) + h / 2) / h); return g; }
+const TROU = [-.37, 1.56, .67, 2.64];
+const murFond = new THREE.Mesh(percé(9, 3.2, 0, 1.6, TROU), M.mur); murFond.position.set(0, 1.6, 0); poser(murFond, L_BACK);
 const sol = new THREE.Mesh(new THREE.PlaneGeometry(9, 4), new THREE.MeshStandardMaterial({ color: '#6b5446', roughness: .8 })); sol.rotation.x = -Math.PI / 2; sol.position.set(0, 0, 2); poser(sol, L_BACK);
 const plafond = boite(9, .12, .3, new THREE.MeshStandardMaterial({ color: '#d7b38d', roughness: .8 }), 0, 3.05, .15, L_BACK);
 // crédence carrelée au centre
-const cred = new THREE.Mesh(new THREE.PlaneGeometry(2.1, 1.25), M.carreau); cred.material.map.repeat.set(2.1 / .9, 1.25 / .9); cred.position.set(.1, 1.55, .005); poser(cred, L_BACK, false);
+const cred = new THREE.Mesh(percé(2.1, 1.25, .1, 1.55, [TROU[0], TROU[1], TROU[2], 2.1749]), M.carreau); cred.material.map.repeat.set(2.1 / .9, 1.25 / .9); cred.position.set(.1, 1.55, .005); poser(cred, L_BACK, false);
 
 // fenêtre (ciel + toits) au-dessus de la paillasse
 const ciel = canvasTex(1024, 1024, (g, w, h) => {
@@ -113,7 +117,7 @@ const ciel = canvasTex(1024, 1024, (g, w, h) => {
   toits.forEach(([x, hh, c]) => { g.fillStyle = c; g.fillRect(x, h - hh, 150, hh); g.fillStyle = '#7f5450'; g.beginPath(); g.moveTo(x - 10, h - hh); g.lineTo(x + 75, h - hh - 80); g.lineTo(x + 160, h - hh); g.fill(); g.fillStyle = '#f3dfae'; for (let k = 0; k < 3; k++) for (let r = 0; r < 3; r++) if (Math.random() < .7) g.fillRect(x + 22 + k * 40, h - hh + 50 + r * 90, 24, 40); });
 });
 const vitre = new THREE.Mesh(new THREE.PlaneGeometry(1.0, 1.05), new THREE.MeshBasicMaterial({ map: ciel, toneMapped: false }));
-vitre.position.set(.15, 2.1, .008); vitre.layers.set(L_BACK); groupes[L_BACK].add(vitre);
+vitre.position.set(.15, 2.1, .008); vitre.visible = false;
 const cadreMat = new THREE.MeshStandardMaterial({ color: '#f4ede2', roughness: .5 });
 [[.15, 2.65, 1.12, .07], [.15, 1.55, 1.18, .09], [.15, 2.1, 1.0, .04]].forEach(([x, y, w, h]) => boite(w, h, .09, cadreMat, x, y, .03, L_BACK));
 [[-.38, .07], [.68, .07], [.15, .04]].forEach(([x, w]) => boite(w, 1.12, .09, cadreMat, x, 2.1, .03, L_BACK));
@@ -225,7 +229,7 @@ const tige = new THREE.Mesh(new THREE.CylinderGeometry(.008, .008, .42, 16), M.r
 const abat = tour([[.03, 0], [.07, 0], [.15, -.15], [.14, -.155], [.02, -.01]], new THREE.MeshStandardMaterial({ color: '#d14b33', roughness: .4, side: THREE.DoubleSide })); abat.position.y = .55; abat.rotation.z = .2; lampe.add(abat);
 const ampoule = new THREE.Mesh(new THREE.SphereGeometry(.03, 16, 12), new THREE.MeshStandardMaterial({ color: '#fff3c8', emissive: '#ffe6a0', emissiveIntensity: 4 })); ampoule.position.set(.02, .46, 0); lampe.add(ampoule);
 lampe.position.set(-1.12, Y, .3); poser(lampe, L_MID);
-const spot = new THREE.SpotLight('#ffd9a0', 9, 2.2, .75, .6, 1.4); spot.position.set(-1.1, Y + .47, .3); spot.target.position.set(-1.2, Y, .55); spot.castShadow = true; spot.shadow.mapSize.set(2048, 2048); spot.shadow.radius = 6; scene.add(spot, spot.target);
+const spot = new THREE.SpotLight('#ffcf8a', 16, 2.4, .8, .55, 1.3); spot.position.set(-1.1, Y + .47, .3); spot.target.position.set(-1.2, Y, .55); spot.castShadow = true; spot.shadow.mapSize.set(2048, 2048); spot.shadow.radius = 6; scene.add(spot, spot.target);
 // calculatrice
 const calc = new THREE.Group(); const cb = new THREE.Mesh(arrondie(.16, .025, .2, .008), M.beige); calc.add(cb);
 const affC = new THREE.Mesh(new THREE.PlaneGeometry(.12, .035), new THREE.MeshStandardMaterial({ map: canvasTex(256, 80, g => { g.fillStyle = '#a9c2a0'; g.fillRect(0, 0, 256, 80); g.fillStyle = '#253325'; g.font = '700 54px Courier New'; g.textAlign = 'right'; g.fillText('0,79', 240, 60); }), roughness: .3 })); affC.rotation.x = -Math.PI / 2; affC.position.set(0, .0135, -.06); calc.add(affC);
@@ -306,13 +310,14 @@ thermo.position.set(1.95, Y + .007, .82); thermo.rotation.y = .5; poser(thermo, 
 const gants = boite(.24, .1, .12, new THREE.MeshStandardMaterial({ color: '#7fc6c1', roughness: .6 }), 2.2, Y + .05, .38, L_MID, .01);
 
 // ---------- lumières
-scene.add(new THREE.HemisphereLight('#fff3e6', '#7a5a46', .4));
-const soleil = new THREE.DirectionalLight('#ffe2b8', 3.2); soleil.position.set(-2.6, 3.6, 2.6); soleil.target.position.set(0, .9, .3);
+scene.add(new THREE.HemisphereLight('#ffe9d2', '#5a4034', .28));
+[[-1.6, .3], [.15, .25], [1.8, .3]].forEach(([x, z]) => { const p = new THREE.SpotLight('#ffd6a0', 14, 4.5, .95, .7, 1.2); p.position.set(x, 3.0, z + 1.2); p.target.position.set(x, .9, z); p.castShadow = true; p.shadow.mapSize.set(2048, 2048); p.shadow.radius = 8; p.shadow.camera.layers.enableAll(); scene.add(p, p.target); });
+const soleil = new THREE.DirectionalLight('#ffd7a8', 1.7); soleil.position.set(-2.6, 3.6, 2.6); soleil.target.position.set(0, .9, .3);
 soleil.castShadow = true; soleil.shadow.mapSize.set(4096, 4096); Object.assign(soleil.shadow.camera, { left: -4, right: 4, top: 3.5, bottom: -2.5, near: .5, far: 10 }); soleil.shadow.radius = 4; soleil.shadow.bias = -.0004;
 scene.add(soleil, soleil.target);
-const face2 = new THREE.DirectionalLight('#e8f0ff', .55); face2.position.set(2, 2.4, 4); scene.add(face2);
+const face2 = new THREE.DirectionalLight('#ffe6cc', .35); face2.position.set(2, 2.4, 4); scene.add(face2);
 const fenetre = new THREE.RectAreaLight ? null : null;
-const lumFen = new THREE.PointLight('#fff4dc', 3.0, 3.4, 1.4); lumFen.position.set(.15, 2.05, .45); scene.add(lumFen);
+const lumFen = new THREE.PointLight('#ffb070', 1.2, 2.2, 1.6); lumFen.position.set(.15, 2.05, .45); scene.add(lumFen);
 [soleil.shadow.camera, spot.shadow.camera].forEach(c => c.layers.enableAll());
 camera.layers.enableAll();
 
@@ -324,7 +329,7 @@ composer.addPass(new OutputPass());
 
 function rendre(couches) {
   camera.layers.disableAll(); couches.forEach(l => camera.layers.enable(l));
-  scene.background = couches.includes(L_BACK) ? new THREE.Color('#2a1f1b') : null;
+  scene.background = null;
   renderer.setClearColor(0x000000, 0);
   if (couches.includes(L_BACK) && couches.length === 3) composer.render(); else if (couches.includes(L_BACK)) composer.render(); else renderer.render(scene, camera);
   return renderer.domElement.toDataURL('image/png');
@@ -332,7 +337,7 @@ function rendre(couches) {
 function proj(x, y, z) { const v = new THREE.Vector3(x, y, z).project(camera); return [+(((v.x + 1) / 2) * 100).toFixed(2), +(((1 - v.y) / 2) * 100).toFixed(2)]; }
 window.__rendre = (k) => rendre(k === 'tout' ? [L_BACK, L_MID, L_FRONT] : k === 'fond' ? [L_BACK] : k === 'milieu' ? [L_MID] : [L_FRONT]);
 window.__ancres = () => ({
-  fenetre: [proj(-.35, 2.62, -.02), proj(.65, 2.62, -.02), proj(.65, 1.58, -.02), proj(-.35, 1.58, -.02)],
+  fenetre: [proj(TROU[0], TROU[3], 0), proj(TROU[2], TROU[3], 0), proj(TROU[2], TROU[1], 0), proj(TROU[0], TROU[1], 0)],
   horloge: [proj(.95, 2.62, .05), proj(.95, 2.75, .05)],
   ballon: [proj(.74, Y + .19, .3), proj(.74 + .09, Y + .19, .3)], plaque: proj(.74, Y + .1, .3), col: proj(.74, Y + .41, .3),
   bainmarie: proj(1.45, Y + .17, .32), led: proj(-2.32 - .12 * Math.cos(.3), Y + .102, .38 + .08), ecran: proj(-1.72, Y + .34, .53),

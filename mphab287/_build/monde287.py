@@ -1,10 +1,9 @@
 # Monde « L'officine » : décor 4K vectoriel animé, ordonnances à préparer, balance, thème chaud.
 import re
-V = '5'
+V = '7'
 
-ANIM_BACK = r'''<svg class="anim" viewBox="0 0 4608 2160" preserveAspectRatio="none" aria-hidden="true"><defs><clipPath id="cFen"><polygon points="2013,94 2845,94 2827,958 2022,958"/></clipPath></defs>
-<g clip-path="url(#cFen)"><g class="a-nuages"><ellipse cx="2133" cy="184" rx="120" ry="34" fill="#fff" opacity=".8"/><ellipse cx="2203" cy="166" rx="80" ry="30" fill="#fff" opacity=".8"/><ellipse cx="2489" cy="284" rx="150" ry="38" fill="#fff" opacity=".7"/><ellipse cx="2725" cy="214" rx="110" ry="30" fill="#fff" opacity=".75"/></g>
-<path class="a-oiseau" d="M2033 254 q14 -12 28 0 q14 -12 28 0" stroke="#5b4a52" stroke-width="5" fill="none"/></g>
+ANIM_BACK = r'''<svg class="anim" viewBox="0 0 4608 2160" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="gReflet" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".10"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset=".6" stop-color="#fff" stop-opacity=".05"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>
+<polygon points="1994,72 2865,72 2846,975 2005,975" fill="url(#gReflet)"/>
 <line class="a-trotteuse" style="transform-origin:3112px 78px" x1="3112" y1="95" x2="3112" y2="-11" stroke="#d9573f" stroke-width="5" stroke-linecap="round"/><circle cx="3112" cy="78" r="9" fill="#d9573f"/></svg>'''
 ANIM_MID = r'''<svg class="anim" viewBox="0 0 4608 2160" preserveAspectRatio="none" aria-hidden="true"><defs><clipPath id="cBal"><circle cx="2952" cy="1365" r="73"/></clipPath>
 <radialGradient id="gChauf"><stop offset="0" stop-color="#ff8a4a" stop-opacity=".9"/><stop offset="1" stop-color="#ff8a4a" stop-opacity="0"/></radialGradient></defs>
@@ -26,6 +25,7 @@ CSS = r'''
 .a-trotteuse{transform-origin:2430px 330px;animation:tourne 60s steps(60) infinite}
 @keyframes tourne{to{transform:rotate(360deg)}}
 .a-chauffe{animation:lampe 2.2s ease-in-out infinite;mix-blend-mode:screen}
+.piece video.ville{inset:auto!important;position:absolute;object-fit:cover;filter:brightness(1.05) saturate(1.05)}
 .couche{position:absolute;inset:0;pointer-events:none;will-change:transform}.couche img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;user-select:none;-webkit-user-select:none}
 .a-bulle{animation:bulle 2.6s ease-in infinite}.a-bulle.b2{animation-delay:-.6s}.a-bulle.b3{animation-delay:-1.3s;animation-duration:3.1s}.a-bulle.b4{animation-delay:-1.9s}.a-bulle.b5{animation-delay:-2.3s;animation-duration:2.2s}
 @keyframes bulle{0%{transform:translateY(0);opacity:0}15%{opacity:.8}100%{transform:translateY(-110px);opacity:0}}
@@ -92,7 +92,7 @@ def patch_head(head):
 def patch_engine(e, rep):
     # images au lieu de vidéos (décor vectoriel rendu en 4K)
     e = re.sub(r'<video class="hero-v"[^>]*><source[^>]*></video>', lambda m: '<img class="hero-v" src="decor/officine-1920.jpg?v=' + V + '" alt="" style="object-position:\'+heroX()+\'% 62%">', e)
-    e = re.sub(r'<div class="piece" id="piece"><video[^>]*><source[^>]*></video>', lambda m: '<div class="piece" id="piece"><img class="decor" src="decor/officine-fond.jpg?v=' + V + '" alt="">' + ANIM_BACK.replace("'", "\\'").replace('\n', '') + '<div class="couche" data-k="1.7"><img src="decor/officine-milieu.webp?v=' + V + '" alt="">' + ANIM_MID.replace("'", "\\'").replace('\n', '') + '</div><div class="couche" data-k="2.8"><img src="decor/officine-devant.webp?v=' + V + '" alt=""></div>' , e)
+    e = re.sub(r'<div class="piece" id="piece"><video[^>]*><source[^>]*></video>', lambda m: '<div class="piece" id="piece"><video class=\"ville\" autoplay muted loop playsinline preload=\"auto\" poster=\"decor/ville-nuit.jpg?v=7\" style=\"left:43.27%;top:3.33%;width:18.91%;height:41.83%\"><source src=\"decor/ville-nuit.mp4?v=7\" type=\"video/mp4\"></video><img class="decor" src="decor/officine-fond.webp?v=' + V + '" alt="">' + ANIM_BACK.replace("'", "\\'").replace('\n', '') + '<div class="couche" data-k="1.7"><img src="decor/officine-milieu.webp?v=' + V + '" alt="">' + ANIM_MID.replace("'", "\\'").replace('\n', '') + '</div><div class="couche" data-k="2.8"><img src="decor/officine-devant.webp?v=' + V + '" alt=""></div>' , e)
     e = re.sub(r'<video class="fete-bg"[^>]*><source[^>]*></video>', lambda m: '<img class="fete-bg" src="decor/officine-1920.jpg?v=' + V + '" alt="">', e)
     assert 'monde.mp4' not in e, 'vidéo restante'
     e = rep(e, "function entete(mini){", "function heroX(){var s=SPOTS[VUE==='chap'?CI:chapActuel()]||[50];return Math.round(s[0])}\nfunction entete(mini){")
@@ -104,6 +104,7 @@ def patch_engine(e, rep):
     e = rep(e, "var IW=2048, IH=1080,", "var IW=4608, IH=2160,")
     # parallaxe : chaque plan glisse selon sa profondeur (gyroscope, dérive et panoramique)
     e = rep(e, "  tilt.style.transform='translate3d('+cx.toFixed(2)+'px,'+cy.toFixed(2)+'px,0)';", "  tilt.style.transform='translate3d('+cx.toFixed(2)+'px,'+cy.toFixed(2)+'px,0)';\n  var uu=(camX+PW*Z/2-vw/2)/(PW*Z),vv=(camY+PH*Z/2-vh/2)/(PH*Z);for(var q=0;q<COUCHES.length;q++){var kk=+COUCHES[q].dataset.k-1;COUCHES[q].style.transform='translate3d('+(cx*kk+uu*70*kk).toFixed(2)+'px,'+(cy*kk+vv*30*kk).toFixed(2)+'px,0)';if(q===0){LIEUX.style.transform=COUCHES[q].style.transform}}")
+    e = rep(e, "var tx=gyroOn?gx:Math.sin((t-t0)/2600)*7, ty=gyroOn?gy:Math.cos((t-t0)/3400)*4;", "var tx=gyroOn?gx:0, ty=gyroOn?gy:0;")   # pas de flottement : la pièce reste immobile
     e = rep(e, " var t0=performance.now();", " var t0=performance.now(), COUCHES=[].slice.call(piece.querySelectorAll('.couche')), LIEUX=$('#lieux');")
     e = e.replace("Glisse dans tous les sens, pince pour voir toute la pièce", "Glisse dans tous les sens, pince pour voir toute l\\'officine")
     # étagère de flacons au lieu de la guirlande
