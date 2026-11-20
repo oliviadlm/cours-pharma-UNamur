@@ -1,0 +1,23 @@
+{
+ "name": "Rappel des différentes voies métaboliques — Biochimie humaine",
+ "short_name": "Bioch ch1",
+ "start_url": "ch1-voies-metaboliques.html",
+ "scope": "./",
+ "display": "standalone",
+ "background_color": "#f3efe6",
+ "theme_color": "#0e7490",
+ "lang": "fr",
+ "icons": [
+  {
+   "src": "icons/ch1-voies-metaboliques-192.png",
+   "sizes": "192x192",
+   "type": "image/png"
+  },
+  {
+   "src": "icons/ch1-voies-metaboliques-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any"
+  }
+ ]
+}
