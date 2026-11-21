@@ -1,0 +1,23 @@
+{
+ "name": "Biochimie humaine",
+ "short_name": "Biochimie",
+ "start_url": "index.html",
+ "scope": "./",
+ "display": "standalone",
+ "background_color": "#f3efe6",
+ "theme_color": "#0e7490",
+ "lang": "fr",
+ "icons": [
+  {
+   "src": "icons/index-192.png",
+   "sizes": "192x192",
+   "type": "image/png"
+  },
+  {
+   "src": "icons/index-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any"
+  }
+ ]
+}

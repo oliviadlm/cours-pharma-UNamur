@@ -1,0 +1,23 @@
+{
+ "name": "Questions du prof — Biochimie humaine",
+ "short_name": "Questions",
+ "start_url": "questions.html",
+ "scope": "./",
+ "display": "standalone",
+ "background_color": "#f3efe6",
+ "theme_color": "#0e7490",
+ "lang": "fr",
+ "icons": [
+  {
+   "src": "icons/questions-192.png",
+   "sizes": "192x192",
+   "type": "image/png"
+  },
+  {
+   "src": "icons/questions-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any"
+  }
+ ]
+}
