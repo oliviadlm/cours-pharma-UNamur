@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>Voyage dans le corps — Biochimie humaine</title>
+<link rel="manifest" href="jeu.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Corps humain">
+<meta name="theme-color" content="#07121c">
+<style>
+:root{--fond:#07121c;--panneau:rgba(10,22,34,.92);--trait:rgba(140,200,230,.22);--texte:#e8f1f6;--doux:#9bb3c2;--cyan:#5fd4e6;--or:#f5c451;--rouge:#e0414b;--vert:#5fd38d;--sat:env(safe-area-inset-top);--sab:env(safe-area-inset-bottom)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--fond);color:var(--texte);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;overscroll-behavior:none}
+button{font:inherit;color:inherit;cursor:pointer}
+.ic{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-4px}
+.bande{position:fixed;left:0;right:0;top:0;height:var(--sat);background:var(--fond);z-index:60}
+.ecran{position:fixed;inset:0;display:none}.ecran.on{display:block}
+/* ---------- carte ---------- */
+#carte{overflow-y:auto;padding:calc(var(--sat) + 12px) 14px calc(var(--sab) + 30px);background:radial-gradient(ellipse at 50% 35%,#0f2a3c 0%,#07121c 70%)}
+.titre{display:flex;align-items:center;gap:10px;margin:0 0 4px}.titre h1{font:700 24px/1.15 Georgia,serif;margin:0}
+.sous{color:var(--doux);margin:0 0 10px;font-size:14px}
+.carte-zone{position:relative;max-width:520px;margin:0 auto}
+#corps{width:100%;height:auto;display:block;touch-action:manipulation}
+#corps .org{cursor:pointer;transition:filter .2s,opacity .2s}#corps .org:hover,#corps .org.sel{filter:brightness(1.5) drop-shadow(0 0 6px #fff)}
+#corps .org.vu{}
+.lieu{cursor:pointer}.lieu circle.halo{animation:pulse 2.2s infinite}
+@keyframes pulse{0%{r:14;opacity:.7}70%{r:26;opacity:0}100%{opacity:0}}
+.info-org{position:sticky;bottom:0;margin:10px auto 0;max-width:520px;background:var(--panneau);border:1px solid var(--trait);border-radius:16px;padding:12px 14px;min-height:64px}
+.info-org h3{margin:0 0 4px;font-size:16px;color:var(--cyan)}.info-org p{margin:0;font-size:14px}
+.info-org .btn{margin-top:8px}
+.btn{display:inline-flex;align-items:center;gap:8px;background:var(--cyan);color:#04222b;border:0;border-radius:12px;padding:10px 14px;font-weight:700}
+.btn.sec{background:rgba(255,255,255,.08);color:var(--texte);border:1px solid var(--trait)}
+.stats{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.stats span{background:rgba(255,255,255,.06);border:1px solid var(--trait);border-radius:20px;padding:4px 10px;font-size:13px}
+/* ---------- monde ---------- */
+#monde canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;display:block}
+.hud{position:absolute;left:0;right:0;top:0;padding:calc(var(--sat) + 8px) 10px 0;display:flex;gap:8px;align-items:flex-start;pointer-events:none;z-index:5}
+.hud>*{pointer-events:auto}
+.rond{width:44px;height:44px;border-radius:50%;border:1px solid var(--trait);background:var(--panneau);display:flex;align-items:center;justify-content:center;flex:none}
+.lieu-t{flex:1;min-width:0;background:var(--panneau);border:1px solid var(--trait);border-radius:14px;padding:6px 10px}
+.lieu-t b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lieu-t small{color:var(--doux);font-size:12px}
+.mini{width:44px;height:74px;border-radius:12px;background:var(--panneau);border:1px solid var(--trait);padding:3px;flex:none}
+.bas{position:absolute;left:0;right:0;bottom:0;padding:0 10px calc(var(--sab) + 10px);z-index:5;pointer-events:none}
+.bas>*{pointer-events:auto}
+.aide{font-size:12.5px;color:var(--doux);text-align:center;margin-bottom:6px;text-shadow:0 1px 3px #000;pointer-events:none}
+.piste{position:relative;height:30px;background:var(--panneau);border:1px solid var(--trait);border-radius:15px;margin:0 52px}
+.piste .moi{position:absolute;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:#fff;box-shadow:0 0 8px #fff}
+.piste .pt{position:absolute;top:50%;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;background:#24465a;border:1px solid var(--cyan);color:#fff}
+.piste .pt.ok{background:var(--vert);color:#04220f}.piste .pt.boss{background:var(--rouge)}
+.dep{position:absolute;bottom:calc(var(--sab) + 56px);display:flex;flex-direction:column;gap:6px}
+.dep.g{left:10px}.dep.d{right:10px}
+.dep button{width:40px;height:40px;border-radius:50%;background:var(--panneau);border:1px solid var(--trait)}
+#labels{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:3}
+.poi{position:absolute;transform:translate(-50%,-100%);pointer-events:auto;display:flex;flex-direction:column;align-items:center;gap:3px;border:0;background:none;padding:0}
+.poi .pas{background:var(--panneau);border:1.5px solid var(--cyan);border-radius:14px;padding:5px 10px 5px 6px;display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;white-space:nowrap;box-shadow:0 0 14px rgba(95,212,230,.45)}
+.poi .num{width:22px;height:22px;border-radius:50%;background:var(--cyan);color:#04222b;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800}
+.poi .et{color:var(--or);font-size:11px;letter-spacing:1px}
+.poi .tige{width:2px;height:16px;background:linear-gradient(var(--cyan),transparent)}
+.poi.ok .pas{border-color:var(--vert)}.poi.ok .num{background:var(--vert)}
+.poi.boss .pas{border-color:var(--rouge);box-shadow:0 0 18px rgba(224,65,75,.6)}.poi.boss .num{background:var(--rouge);color:#fff}
+.poi.ferme{opacity:.55}
+.lab{position:absolute;transform:translate(-50%,-50%);font-size:12px;font-weight:600;color:#fff;background:rgba(0,0,0,.45);padding:2px 7px;border-radius:8px;white-space:nowrap;text-shadow:0 1px 2px #000}
+.etapes{display:flex;gap:6px;overflow-x:auto;padding:2px 0 8px;scrollbar-width:none}
+.etapes button{flex:none;background:var(--panneau);border:1px solid var(--trait);border-radius:20px;padding:7px 12px;font-size:13px}
+.etapes button.on{background:var(--cyan);color:#04222b;border-color:var(--cyan);font-weight:700}
+.legende3d{background:var(--panneau);border:1px solid var(--trait);border-radius:14px;padding:9px 12px;font-size:13.5px;margin-bottom:8px;max-height:24vh;overflow:auto}
+.legende3d b{color:var(--cyan)}
+.carte-niv{display:flex;align-items:center;gap:10px;background:var(--panneau);border:1px solid var(--cyan);border-radius:16px;padding:9px 10px;margin-bottom:8px}
+.carte-niv .t{flex:1;min-width:0}.carte-niv .t b{display:block;font-size:14px}.carte-niv .t small{color:var(--or);letter-spacing:1px}
+/* ---------- feuille ---------- */
+.feuille{position:fixed;left:0;right:0;bottom:0;max-height:88vh;background:#0c1b28;border-top:1px solid var(--trait);border-radius:20px 20px 0 0;z-index:30;transform:translateY(105%);transition:transform .3s;display:flex;flex-direction:column;padding-bottom:var(--sab)}
+.feuille.on{transform:none}
+.f-tete{display:flex;align-items:center;gap:10px;padding:12px 14px 8px}.f-tete h2{margin:0;font:700 18px Georgia,serif;flex:1}
+.onglets{display:flex;gap:6px;padding:0 14px 8px;overflow-x:auto}
+.onglets button{background:none;border:1px solid var(--trait);border-radius:20px;padding:6px 12px;font-size:13.5px;flex:none}
+.onglets button.on{background:var(--cyan);color:#04222b;border-color:var(--cyan);font-weight:700}
+.f-corps{overflow-y:auto;padding:4px 16px 20px;-webkit-overflow-scrolling:touch}
+.f-corps h4{margin:14px 0 4px;color:var(--cyan)}.f-corps p{margin:0 0 6px}.f-corps .cle{background:rgba(245,196,81,.1);border-left:3px solid var(--or);padding:6px 10px;border-radius:8px}
+.f-corps .why{background:rgba(95,212,230,.08);border-radius:8px;padding:6px 10px}
+.f-corps ol.frise{padding-left:20px}.f-corps ol.frise b{display:block;color:var(--or)}
+.f-corps img{max-width:100%;border-radius:10px;background:#fff}.f-corps figure{margin:10px 0}.f-corps figcaption{font-size:12px;color:var(--doux)}
+.qcm .q{font-weight:700;font-size:16px;margin:6px 0 10px}.qcm button.ch{display:block;width:100%;text-align:left;background:rgba(255,255,255,.05);border:1px solid var(--trait);border-radius:12px;padding:11px 12px;margin-bottom:8px}
+.qcm button.ch.bon{background:rgba(95,211,141,.22);border-color:var(--vert)}.qcm button.ch.faux{background:rgba(224,65,75,.22);border-color:var(--rouge)}
+.qcm .x{font-size:14px;color:var(--doux);margin:6px 0 10px}.prog{height:6px;background:rgba(255,255,255,.08);border-radius:3px;margin:6px 0 10px}.prog i{display:block;height:100%;background:var(--cyan);border-radius:3px}
+.carteq{background:rgba(255,255,255,.04);border:1px solid var(--trait);border-radius:14px;padding:12px;margin:10px 0}
+.carteq details summary{color:var(--cyan);margin-top:6px;cursor:pointer}
+.res{text-align:center;padding:16px 0}.res .etoiles{font-size:34px;color:var(--or);letter-spacing:6px}
+.ency{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.ency div{background:rgba(255,255,255,.04);border:1px solid var(--trait);border-radius:12px;padding:8px 10px;font-size:13px}.ency div.non{opacity:.4}
+.ency b{display:block;color:var(--cyan);font-size:13.5px}
+.toast{position:fixed;left:50%;top:calc(var(--sat) + 64px);transform:translate(-50%,-30px);opacity:0;visibility:hidden;background:var(--panneau);border:1px solid var(--cyan);border-radius:14px;padding:9px 14px;z-index:50;transition:.3s;max-width:90vw;font-size:14px;text-align:center}
+.toast.on{transform:translate(-50%,0);opacity:1;visibility:visible}
+.voile{position:fixed;inset:0;background:#2a0306;opacity:0;pointer-events:none;z-index:20;transition:opacity .35s}.voile.on{opacity:1}
+.fete{position:fixed;inset:0;z-index:70;background:rgba(4,10,16,.88);display:none;align-items:center;justify-content:center;text-align:center;padding:30px}
+.fete.on{display:flex}.fete h2{font:700 26px Georgia,serif;margin:10px 0}.fete .etoiles{font-size:40px;color:var(--or);letter-spacing:8px}
+#charge{position:fixed;inset:0;z-index:80;background:var(--fond);display:flex;align-items:center;justify-content:center;color:var(--doux)}
+</style></head>
+<body>
+<div class="bande"></div>
+<div id="charge">Chargement du corps humain…</div>
+
+<!-- ================= CARTE DU CORPS ================= -->
+<section class="ecran on" id="carte">
+ <div class="titre"><svg class="ic" viewBox="0 0 24 24" style="width:28px;height:28px;color:var(--cyan)"><circle cx="12" cy="5" r="3"/><path d="M12 8v7M8 11h8M12 15l-3 6M12 15l3 6"/></svg><h1>Voyage dans le corps</h1></div>
+ <p class="sous">Biochimie humaine. Touche un organe pour savoir ce qui s'y passe, ou un lieu numéroté pour y entrer.</p>
+ <div class="stats" id="stats"></div>
+ <div class="carte-zone">
+  <svg id="corps" viewBox="0 0 360 770" aria-label="Carte du corps humain">
+   <defs>
+    <radialGradient id="peau" cx="50%" cy="40%" r="70%"><stop offset="0" stop-color="#1d4a63" stop-opacity=".85"/><stop offset="1" stop-color="#0d2635" stop-opacity=".9"/></radialGradient>
+    <linearGradient id="gFoie" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a5453a"/><stop offset="1" stop-color="#6b231d"/></linearGradient>
+    <filter id="lueur"><feGaussianBlur stdDeviation="2.2"/></filter>
+   </defs>
+   <!-- silhouette -->
+   <g fill="url(#peau)" stroke="#5fd4e6" stroke-opacity=".55" stroke-width="1.4">
+    <ellipse cx="180" cy="70" rx="40" ry="50"/>
+    <path d="M164 112h32v30h-32z"/>
+    <path d="M118 150Q180 134 242 150L262 172Q270 262 254 332Q246 382 252 424Q244 474 230 486L130 486Q116 474 108 424Q114 382 106 332Q90 262 98 172Z"/>
+    <path d="M118 158Q92 170 86 232L70 332Q62 382 58 442Q56 458 67 460Q78 458 78 442L94 342Q106 282 114 242Z"/>
+    <path d="M242 158Q268 170 274 232L290 332Q298 382 302 442Q304 458 293 460Q282 458 282 442L266 342Q254 282 246 242Z"/>
+    <path d="M132 482Q124 566 134 646L138 734Q140 752 158 752L168 752Q174 744 172 734L176 646Q186 566 184 484Z"/>
+    <path d="M228 482Q236 566 226 646L222 734Q220 752 202 752L192 752Q186 744 188 734L184 646Q174 566 176 484Z"/>
+   </g>
+   <!-- vaisseaux -->
+   <g fill="none" stroke-linecap="round" opacity=".85">
+    <path d="M190 262L188 470Q170 500 156 600L152 730M188 470Q198 500 206 600L210 730M190 250Q230 170 262 210L280 330L296 440M182 250Q132 170 98 210L80 330L64 440" stroke="#d0303b" stroke-width="3"/>
+    <path d="M174 262L174 470Q160 500 148 600L146 730M174 470Q186 500 198 600L204 730M174 250Q130 180 102 214L86 330L70 440M178 140V230" stroke="#4a7fd6" stroke-width="2.4"/>
+   </g>
+   <!-- organes -->
+   <g id="orgs">
+    <ellipse class="org" data-o="cerveau" cx="180" cy="62" rx="32" ry="31" fill="#d98aa8"/>
+    <circle class="org" data-o="hypophyse" cx="180" cy="92" r="5" fill="#f5c451"/>
+    <path class="org" data-o="thyroide" d="M168 124q6-6 12 0q6-6 12 0q-2 10-12 8q-10 2-12-8z" fill="#c76b8f"/>
+    <path class="org" data-o="poumons" d="M150 178q-26 10-28 60q2 40 26 40q12-4 14-30v-62q-4-10-12-8zM210 178q26 10 28 60q-2 40-26 40q-12-4-14-30v-62q4-10 12-8z" fill="#6aa3c4" fill-opacity=".75"/>
+    <path class="org" data-o="coeur" d="M184 236q14-16 30 0q10 18-12 40l-12 12q-14-10-18-24q-6-24 12-28z" fill="#c23a47"/>
+    <path class="org" data-o="foie" d="M114 292Q150 270 208 286Q206 316 176 328Q132 336 116 314Z" fill="url(#gFoie)"/>
+    <path class="org" data-o="estomac" d="M200 300Q236 288 240 320Q238 352 210 354Q194 346 204 330Z" fill="#d69a7c"/>
+    <ellipse class="org" data-o="rate" cx="246" cy="300" rx="9" ry="17" fill="#8c2f4f"/>
+    <path class="org" data-o="pancreas" d="M162 346Q200 334 236 340Q218 354 166 358Z" fill="#e3b66a"/>
+    <g class="org" data-o="surrenales" fill="#f0a640"><path d="M140 346l8-8 8 8z"/><path d="M204 346l8-8 8 8z"/></g>
+    <g class="org" data-o="reins" fill="#9c4a4a"><ellipse cx="148" cy="368" rx="12" ry="20"/><ellipse cx="212" cy="368" rx="12" ry="20"/></g>
+    <path class="org" data-o="intestin" d="M138 392h84q8 0 8 10v62q0 10-10 10h-80q-10 0-10-10v-62q0-10 8-10z" fill="#c98e7a" fill-opacity=".85"/>
+    <path d="M150 404q10 10 20 0t20 0t20 0M150 424q10 10 20 0t20 0t20 0M150 444q10 10 20 0t20 0t20 0M150 462q10 6 20 0t20 0t20 0" stroke="#7a4e40" stroke-width="2" fill="none" pointer-events="none"/>
+    <path class="org" data-o="muscle" d="M140 520Q132 580 142 630L172 630Q178 580 176 520Z" fill="#b8505a" fill-opacity=".6"/>
+    <path class="org" data-o="moelle" d="M200 512l8 130M196 512l-0 0" stroke="#efe4c8" stroke-width="7" stroke-linecap="round"/>
+    <path class="org" data-o="adipeux" d="M126 300q-10 30-6 60l10 2q-4-30 4-58z" fill="#f3d88a" fill-opacity=".7"/>
+   </g>
+   <!-- lieux des chapitres -->
+   <g id="lieux"></g>
+  </svg>
+ </div>
+ <div class="info-org" id="infoOrg"><h3>Ton corps, ta carte</h3><p>Chaque chapitre du cours est un monde placé à l'endroit du corps où il se passe. Les lieux en couleur sont ouverts.</p></div>
+ <div style="max-width:520px;margin:12px auto 0;display:flex;gap:8px;flex-wrap:wrap">
+  <button class="btn sec" id="bEncy"><svg class="ic" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg> Encyclopédie</button>
+  <a class="btn sec" href="../index.html" style="text-decoration:none"><svg class="ic" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg> Pages de cours</a>
+ </div>
+</section>
+
+<!-- ================= MONDE 3D ================= -->
+<section class="ecran" id="monde">
+ <canvas id="c3d"></canvas>
+ <div id="labels"></div>
+ <div class="hud">
+  <button class="rond" id="bRetour" aria-label="Dézoomer"><svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3M8 11h6"/></svg></button>
+  <div class="lieu-t"><b id="tLieu">Une veinule</b><small id="tEchelle">échelle</small></div>
+  <button class="rond" id="bNiv" aria-label="Niveaux"><svg class="ic" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
+  <svg class="mini" id="mini" viewBox="0 0 60 110"><g fill="#173b4f" stroke="#5fd4e6" stroke-opacity=".6"><circle cx="30" cy="11" r="8"/><path d="M20 22h20l4 34h-28zM16 58h28l-2 22h-24zM18 80h10l-1 28h-8zM32 80h10l-1 28h-8zM20 23l-8 30M40 23l8 30"/></g><circle id="miniPt" cx="12" cy="45" r="4" fill="#fff"><animate attributeName="r" values="3;6;3" dur="1.4s" repeatCount="indefinite"/></circle></svg>
+ </div>
+ <div class="bas" id="bas"></div>
+ <div class="dep g" id="depG"><button id="bAv" aria-label="Avancer"><svg class="ic" viewBox="0 0 24 24"><path d="m6 15 6-6 6 6"/></svg></button><button id="bRe" aria-label="Reculer"><svg class="ic" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button></div>
+</section>
+
+<div class="voile" id="voile"></div>
+<div class="feuille" id="feuille"><div class="f-tete"><h2 id="fT"></h2><button class="rond" id="fX" aria-label="Fermer"><svg class="ic" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div><div class="onglets" id="fO"></div><div class="f-corps" id="fC"></div></div>
+<div class="toast" id="toast"></div>
+<div class="fete" id="fete"><div><svg class="ic" viewBox="0 0 24 24" style="width:60px;height:60px;color:var(--or)"><path d="M12 2l3 7h7l-5.5 4.5L18.5 21 12 16.5 5.5 21l2-7.5L2 9h7z"/></svg><h2 id="feteT"></h2><p id="feteP"></p><button class="btn" id="feteB">Continuer</button></div></div>
+<script type="module" src="jeu.js?v=202611210133"></script>
+</body></html>
