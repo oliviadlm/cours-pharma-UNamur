@@ -43,6 +43,10 @@ function lireCours(sec) {
 const ENCY = {
   hepatocyte: ['Hépatocyte', "Cellule du foie : stocke le glycogène, fabrique du glucose (néoglucogenèse), les AG, le cholestérol, les corps cétoniques et l'urée."],
   noyau: ['Noyau', "Contient l'ADN. Les hormones modifient aussi la synthèse des enzymes (régulation lente)."],
+  mitoInterne: ['Membrane interne', "Repliée en crêtes : porte la chaîne respiratoire et l'ATP synthase. Entre les deux membranes : l'espace intermembranaire."],
+  crete: ['Crête mitochondriale', "Repli de la membrane interne : plus de surface pour la chaîne respiratoire et les ATP synthases."],
+  ribosome: ['Ribosome mitochondrial', "La mitochondrie fabrique une partie de ses propres protéines."],
+  adnmt: ['ADN mitochondrial', "Petit ADN circulaire, transmis par la mère."],
   mito: ['Mitochondrie', "Cycle de Krebs, β-oxydation, début du cycle de l'urée et chaîne respiratoire (ATP). Absente du globule rouge."],
   re: ['Réticulum endoplasmique', "Synthèse des lipides (TG, cholestérol) et de la glucose-6-phosphatase du foie."],
   glycogene: ['Glycogène', "Polymère ramifié de glucose (α-1→4, branches α-1→6 tous les ~15 résidus). Foie ~150 g, muscles ~300 g."],
@@ -99,6 +103,23 @@ const ENCY = {
   intestin: ['Intestin', "Absorbe glucose, AA (vers le foie par la veine porte) et graisses (chylomicrons, par la lymphe)."],
   gr: ['Globule rouge', "Pas de mitochondries : glycolyse anaérobie seulement, 2 ATP par glucose, lactate en sortie."],
   rein: ['Rein', "Élimine l'urée ; fait ~10 % de la néoglucogenèse."],
+  aorte: ['Artère (aorte et branches)', "Sang oxygéné qui part du cœur vers les organes : aorte, carotides, artères hépatique, rénales, iliaques, fémorales."],
+  veineCave: ['Veine (veine cave et branches)', "Ramène le sang des organes au cœur : veines hépatiques, rénales, iliaques, jugulaires → veines caves."],
+  veinePorte: ['Veine porte', "Collecte le sang de l'intestin, de l'estomac, du pancréas et de la rate (veines mésentériques, splénique) et l'amène au foie : système porte. Le foie trie tout ce qui est absorbé, et reçoit l'insuline en premier."],
+  arteHep: ['Artère hépatique', "Apporte au foie le sang oxygéné (environ 25 % du débit hépatique ; la veine porte en apporte 75 %)."],
+  voieBiliaire: ['Canal cholédoque', "Voie biliaire principale : amène la bile (vésicule + canal hépatique) au duodénum."],
+  vesicule: ['Vésicule biliaire', "Sous le lobe droit du foie : stocke et concentre la bile entre les repas."],
+  falciforme: ['Ligament falciforme', "Sépare le lobe droit et le lobe gauche du foie sur sa face antérieure."],
+  canalThoracique: ['Canal thoracique', "Grand vaisseau lymphatique : remonte les chylomicrons de l'intestin et se jette dans la veine sous-clavière gauche."],
+  coeur: ['Cœur', "Pompe : tout le sang des organes repasse par lui (et par les poumons) avant de repartir dans l'aorte."],
+  estomac: ['Estomac', "Son sang veineux rejoint la veine porte."],
+  rate: ['Rate', "Détruit les globules rouges âgés ; la veine splénique rejoint la veine porte."],
+  surrenale: ['Glande surrénale', "Coiffe le rein : médullosurrénale (adrénaline), corticosurrénale (cortisol, aldostérone)."],
+  uretere: ['Uretère', "Conduit l'urine du rein à la vessie."],
+  vessie: ['Vessie', "Réservoir de l'urine (urée, créatinine...)."],
+  grele: ['Intestin grêle', "Duodénum, jéjunum, iléon : absorption du glucose, des AA (vers la veine porte) et des graisses (vers la lymphe)."],
+  colon: ['Côlon', "Côlon ascendant, transverse, descendant, sigmoïde : bosselures (haustrations) et bandelettes musculaires."],
+  tendon: ['Tendon', "Attache le muscle à l'os : tissu conjonctif dense, blanc nacré."],
   chylo: ['Chylomicron', "Grosse lipoprotéine des graisses du repas : plasma « laiteux » après un repas gras."],
 };
 
@@ -306,7 +327,8 @@ function cadrer(sc, v, direct) {
   if (!v) return; const cam = sc.camera;
   const haut = $('.hud').getBoundingClientRect().bottom, bas = $('#bas').getBoundingClientRect().top;
   const frac = Math.max(.35, (bas - haut) / H), vf = Math.atan(Math.tan(THREE.MathUtils.degToRad(cam.fov) / 2) * frac), hf = Math.atan(Math.tan(THREE.MathUtils.degToRad(cam.fov) / 2) * cam.aspect);
-  const d = Math.min(sc.controls.maxDistance, Math.max(sc.controls.minDistance, v[3] * 1.22 / Math.sin(Math.min(vf, hf))));
+  const d0 = v[4] ? Math.max(v[4] / Math.tan(vf), v[3] / Math.tan(hf)) * 1.08 : v[3] * 1.22 / Math.sin(Math.min(vf, hf));
+  const d = Math.min(sc.controls.maxDistance, Math.max(sc.controls.minDistance, d0));
   const c = V3(v[0], v[1], v[2]);
   if (direct) { const dir = cam.position.clone().sub(sc.controls.target).normalize(); sc.controls.target.copy(c); cam.position.copy(c).addScaledVector(dir, d); sc.tgt = null; sc.zd = 0; }
   else { sc.tgt = c; sc.zd = d; }
@@ -353,18 +375,42 @@ function enzyme(nom, col, r = 1.4, seed = 1) {
   if (nom) { const tx = txt3d(nom, '#' + new THREE.Color(col).getHexString(), .9); tx.position.y = r + .9; g.add(tx); }
   g.userData.corps = m; return g;
 }
-// mitochondrie coupée : enveloppe externe transparente + crêtes
-function mitochondrie(L = 30, R = 9, coupe = true) {
-  const g = tag(new THREE.Group(), 'mito');
-  const ext = new THREE.Mesh(new THREE.CapsuleGeometry(R, L, 12, 32), new THREE.MeshPhysicalMaterial({ color: 0xe08a4a, roughness: .45, transparent: true, opacity: .22, depthWrite: false, side: THREE.DoubleSide, sheen: .8, sheenColor: new THREE.Color(0xffc090) }));
-  ext.rotation.z = Math.PI / 2; g.add(ext);
-  const int = new THREE.Mesh(new THREE.CapsuleGeometry(R * .86, L * .97, 10, 28), new THREE.MeshPhysicalMaterial({ color: 0xc8643a, roughness: .5, transparent: true, opacity: .18, depthWrite: false, side: THREE.DoubleSide }));
-  int.rotation.z = Math.PI / 2; g.add(int);
-  const mC = mat(0xd9783f, { roughness: .55, transparent: true, opacity: .75 });
-  for (let i = 0; i < 9; i++) { const x = -L / 2 + 2 + i * (L - 4) / 8, h = R * 1.35 * (i % 2 ? 1 : .8);
-    const cr = new THREE.Mesh(new THREE.CapsuleGeometry(.5, h, 4, 10), mC); cr.position.set(x, (i % 2 ? 1 : -1) * (R * .86 - h / 2 - .4) * .55, 0); cr.scale.z = 4.5; g.add(cr); }
+// mitochondrie réaliste, ouverte face à la caméra (+z local) : membrane externe, espace intermembranaire,
+// membrane interne repliée en crêtes, ATP synthases (grains), ribosomes et ADN mitochondrial dans la matrice
+R.localClippingEnabled = true;
+function mitochondrie(L = 30, Rm = 9, o = {}) {
+  const g = tag(new THREE.Group(), 'mito'), prof = o.prof || .8;
+  const plan0 = new THREE.Plane(V3(0, 0, -1), Rm * .06), plan = plan0.clone(), clip = [plan];
+  const Lx = L / 2 + Rm, Ri = .86;
+  const ell = (sc, col, rough, k) => { const geo = new THREE.SphereGeometry(1, 72, 44); geo.scale(Lx * sc, Rm * sc, Rm * sc * .92);
+    const m = new THREE.Mesh(geo, new THREE.MeshPhysicalMaterial({ color: col, roughness: rough, side: THREE.DoubleSide, clippingPlanes: clip, sheen: .7, sheenColor: new THREE.Color(0xffc8a0), clearcoat: .25 })); if (k) tag(m, k); return m; };
+  const ext = ell(1, 0xa8481f, .7); ext.onBeforeRender = () => { plan.copy(plan0).applyMatrix4(g.matrixWorld); }; g.add(ext);
+  g.add(ell(Ri, 0xe39a62, .45, 'mitoInterne'));
+  // bord de coupe : anneaux pour lire les deux membranes
+  for (const [sc, col] of [[1, 0x7a3014], [Ri, 0xf0b07a]]) { const c = new THREE.Mesh(new THREE.TorusGeometry(1, .035 / sc * 1.4, 6, 120), mat(col, { roughness: .5 })); c.scale.set(Lx * sc, Rm * sc, 1); c.position.z = Rm * .06; g.add(c); }
+  const mC = new THREE.MeshPhysicalMaterial({ color: 0xeaa070, roughness: .42, side: THREE.DoubleSide, clippingPlanes: clip, clearcoat: .35, sheen: .5, sheenColor: new THREE.Color(0xffd8b0) });
+  const n = Math.max(6, Math.round(L / 1.8)), billes = [];
+  for (let k = 0; k < n; k++) {
+    const x = -Lx * .8 + k * (1.6 * Lx / (n - 1)), e = Math.sqrt(Math.max(0, 1 - Math.pow(x / (Lx * Ri), 2))); if (e < .35) continue;
+    const sd = k % 2 ? 1 : -1, ry = Rm * Ri * e, h = ry * prof * (.75 + .25 * Math.sin(k * 2.3)), dz = Rm * Ri * .92 * e * 1.95;
+    const geo = new THREE.BoxGeometry(1.3, h, dz, 2, 12, 20), p = geo.attributes.position;
+    for (let v = 0; v < p.count; v++) { const yy = p.getY(v), zz = p.getZ(v), tip = sstepM(h * .2, h / 2, yy * -sd + 0) ; let xx = p.getX(v);
+      xx = xx * (1 - .5 * tip) + 1.1 * Math.sin(zz * .42 + k) + .5 * Math.sin(yy * .6 + k * 1.7); p.setX(v, xx); }
+    geo.computeVertexNormals(); const cr = new THREE.Mesh(geo, mC); tag(cr, 'crete'); cr.position.set(x, sd * (ry - h / 2), 0); g.add(cr);
+    for (let b = 0; b < 26; b++) billes.push(V3(x + (b % 2 ? .45 : -.45) + .7 * Math.sin(0), sd * (ry - rnd(.1, .95) * h), rnd(-dz / 2, 0)));
+  }
+  const bi = new THREE.InstancedMesh(new THREE.SphereGeometry(.17, 6, 5), new THREE.MeshStandardMaterial({ color: 0x8a2a1a, roughness: .4, clippingPlanes: clip }), billes.length); const dm = new THREE.Object3D();
+  billes.forEach((b, i) => { dm.position.copy(b); dm.updateMatrix(); bi.setMatrixAt(i, dm.matrix); }); bi.userData.kAt = () => 'atpsynthase'; g.add(bi);
+  // matrice : ribosomes et ADN mitochondrial circulaire
+  for (let i = 0; i < 26; i++) { const r = new THREE.Mesh(new THREE.SphereGeometry(rnd(.18, .3), 8, 6), mat(0xb070c0, { emissive: 0x301040 })); r.position.set(rnd(-Lx * .6, Lx * .6), rnd(-Rm * .25, Rm * .25), rnd(-Rm * .5, -.5)); tag(r, 'ribosome'); g.add(r); }
+  if (Rm > 6) { const adn = tag(new THREE.Group(), 'adnmt'); const rr = Math.min(2.4, Rm * .18);
+    for (const [ph, col] of [[0, 0xd83a3a], [Math.PI, 0x3a6ad8]]) { const pts = []; for (let i = 0; i <= 80; i++) { const a = i / 80 * 6.283; pts.push(V3(Math.cos(a) * (rr + .18 * Math.cos(a * 10 + ph)), Math.sin(a) * (rr + .18 * Math.cos(a * 10 + ph)), .25 * Math.sin(a * 10 + ph))); }
+      adn.add(new THREE.Mesh(new THREE.TubeGeometry(courbe(pts, true), 160, .07, 5, true), mat(col, { emissive: col, emissiveIntensity: .3 }))); }
+    adn.position.set(Lx * .35, -Rm * .05, -Rm * .25); g.add(adn); }
+  g.rotation.x = o.incl === undefined ? .5 : o.incl;
   return g;
 }
+const sstepM = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 // patch de bicouche lipidique (InstancedMesh), centré en 0, normale +y
 function bicouche(n = 26, sp = 1.25, cTete = 0x6fa8e0, cQueue = 0xe8d070) {
   const g = new THREE.Group(), nL = n * n * 2;
@@ -396,11 +442,139 @@ function panneau3d(parent, pos, h = 1.3) {
 
 
 /* =========================================================
+   ORGANES RÉALISTES (procéduraux) : formes anatomiques, sillons, haustrations,
+   couleurs conventionnelles (artères rouges, veines bleues, veine porte violette,
+   voies biliaires vertes, lymphe blanc-jaune).
+   ========================================================= */
+const PERM = (() => { const p = [...Array(256).keys()]; let s = 1234567; for (let i = 255; i > 0; i--) { s = (s * 16807) % 2147483647; const j = s % (i + 1); [p[i], p[j]] = [p[j], p[i]]; } return p.concat(p); })();
+const fadeN = (t) => t * t * t * (t * (t * 6 - 15) + 10), lrp = (a, b, t) => a + t * (b - a);
+function gradN(h, x, y, z) { h &= 15; const u = h < 8 ? x : y, v = h < 4 ? y : (h === 12 || h === 14) ? x : z; return ((h & 1) ? -u : u) + ((h & 2) ? -v : v); }
+function bruit(x, y, z) {
+  const X = Math.floor(x) & 255, Y = Math.floor(y) & 255, Z = Math.floor(z) & 255; x -= Math.floor(x); y -= Math.floor(y); z -= Math.floor(z);
+  const u = fadeN(x), v = fadeN(y), w = fadeN(z), A = PERM[X] + Y, AA = PERM[A] + Z, AB = PERM[A + 1] + Z, B2 = PERM[X + 1] + Y, BA = PERM[B2] + Z, BB = PERM[B2 + 1] + Z;
+  return lrp(lrp(lrp(gradN(PERM[AA], x, y, z), gradN(PERM[BA], x - 1, y, z), u), lrp(gradN(PERM[AB], x, y - 1, z), gradN(PERM[BB], x - 1, y - 1, z), u), v),
+    lrp(lrp(gradN(PERM[AA + 1], x, y, z - 1), gradN(PERM[BA + 1], x - 1, y, z - 1), u), lrp(gradN(PERM[AB + 1], x, y - 1, z - 1), gradN(PERM[BB + 1], x - 1, y - 1, z - 1), u), v), w);
+}
+const fbm = (x, y, z, o = 3) => { let a = 0, f = 1, s = .5; for (let i = 0; i < o; i++) { a += s * bruit(x * f, y * f, z * f); f *= 2.03; s *= .5; } return a; };
+const sstep = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+// déforme une géométrie ; fn(p) renvoie [x, y, z, ombre 0..1]
+function sculpte(geo, fn, base) {
+  geo.deleteAttribute('normal'); geo.deleteAttribute('uv'); geo = mergeVertices(geo);
+  const p = geo.attributes.position, col = new Float32Array(p.count * 3), c = new THREE.Color(base), v = new THREE.Vector3();
+  for (let i = 0; i < p.count; i++) { v.fromBufferAttribute(p, i); const r = fn(v.clone()); p.setXYZ(i, r[0], r[1], r[2]); const o = r[3] || 0; col[i * 3] = c.r * (1 - o); col[i * 3 + 1] = c.g * (1 - o); col[i * 3 + 2] = c.b * (1 - o * .9); }
+  geo.setAttribute('color', new THREE.BufferAttribute(col, 3)); geo.computeVertexNormals(); return geo;
+}
+const matOrg = (o = {}) => new THREE.MeshPhysicalMaterial(Object.assign({ color: 0xffffff, vertexColors: true, roughness: .42, clearcoat: .55, clearcoatRoughness: .35, sheen: .4, sheenColor: new THREE.Color(0xffe0e0) }, o));
+// tube dont le rayon varie : rf(u, angle) multiplie le rayon
+function tubeVar(c, segs, r, rf, radial = 14) {
+  const g = new THREE.TubeGeometry(c, segs, r, radial, false), p = g.attributes.position, P = new THREE.Vector3(), v = new THREE.Vector3();
+  for (let i = 0; i <= segs; i++) { c.getPointAt(i / segs, P); for (let j = 0; j <= radial; j++) { const k = i * (radial + 1) + j; v.fromBufferAttribute(p, k).sub(P).multiplyScalar(rf(i / segs, j / radial)); p.setXYZ(k, P.x + v.x, P.y + v.y, P.z + v.z); } }
+  g.computeVertexNormals(); return g;
+}
+const vaisseau = (pts, r, col, k, op = 1) => tag(new THREE.Mesh(new THREE.TubeGeometry(courbe(pts), Math.max(40, pts.length * 14), r, 10, false), new THREE.MeshPhysicalMaterial({ color: col, roughness: .35, clearcoat: .6, transparent: op < 1, opacity: op })), k);
+
+/* ---------- cerveau : 2 hémisphères à circonvolutions, cervelet à lamelles, tronc cérébral ---------- */
+function cerveau(R = 7) {
+  const g = tag(new THREE.Group(), 'cerveau');
+  for (const sg of [-1, 1]) {
+    const geo = sculpte(new THREE.SphereGeometry(1, 150, 110), (p) => {
+      let x = p.x * .5, y = p.y * .62, z = p.z * .85; if (x * sg < 0) x *= .3;                 // hémisphère allongé d'avant en arrière
+      if (y < -.1) y = -.1 + (y + .1) * .7;                            // base aplatie
+      if (z > .3) y *= 1 - (z - .3) * .25;                              // lobe frontal plus bas
+      const n = fbm(p.x * 4.2 + sg * 7, p.y * 4.2, p.z * 4.2, 2), sul = sstep(.075, 0, Math.abs(n));   // sillons = lignes fines
+      const syl = Math.exp(-Math.pow((y + .05 - z * .35) / .05, 2)) * sstep(-.2, .2, z) * (p.x * sg > 0 ? 1 : 0);  // scissure latérale
+      const d = 1 - .055 * sul - .12 * syl + .012 * (1 - sul); return [(x + sg * .515) * d * R, y * d * R, z * d * R, .55 * sul + .5 * syl];
+    }, 0xe9a3a6);
+    g.add(new THREE.Mesh(geo, matOrg({ sheenColor: new THREE.Color(0xffd0d0) })));
+  }
+  const cb = sculpte(new THREE.SphereGeometry(1, 100, 70), (p) => { const f = Math.abs(Math.sin(p.y * 34 + bruit(p.x * 3, p.y * 3, p.z * 3) * 2)); const d = 1 - .05 * sstep(.25, 0, f);
+    return [p.x * .62 * d * R, (p.y * .3 - .5) * d * R, (p.z * .4 - .62) * d * R, .5 * sstep(.25, 0, f)]; }, 0xb86a62);
+  g.add(new THREE.Mesh(cb, matOrg()));
+  const tronc = new THREE.Mesh(new THREE.CylinderGeometry(.14 * R, .1 * R, .7 * R, 20), matOrg({ vertexColors: false, color: 0xc88a78 })); tronc.position.set(0, -.68 * R, -.35 * R); tronc.rotation.x = .25; g.add(tronc);
+  g.userData.cervelet = new THREE.Vector3(0, -.5 * R, -.62 * R); g.userData.tronc = tronc.position.clone();
+  return g;
+}
+/* ---------- foie : lobe droit volumineux, lobe gauche effilé, face inférieure plane, ligament falciforme, vésicule ---------- */
+function foieMod(S = 8) {
+  const g = tag(new THREE.Group(), 'foie');
+  const geo = sculpte(new THREE.SphereGeometry(1, 120, 90), (p) => {
+    let { x, y, z } = p; const t = sstep(-.6, 1, x);                    // x > 0 : lobe gauche du patient (à droite à l'écran)
+    y *= .62 * (1 - .62 * t); z *= .6 * (1 - .5 * t);
+    if (y < -.12) y = -.12 + (y + .12) * .35;                          // face inférieure presque plane
+    y += .18 * (1 - x * x) * (y > 0 ? 1 : 0) - .1 * t;
+    const b = fbm(p.x * 5, p.y * 5, p.z * 5, 2) * .015;
+    return [x * 1.25 * S, y * S + b * S, z * S + b * S, Math.max(0, -y * 1.2) * .35];
+  }, 0x8e2c24);
+  g.add(new THREE.Mesh(geo, matOrg({ clearcoat: .8, sheenColor: new THREE.Color(0xff9a8a) })));
+  const fal = new THREE.Mesh(new THREE.TubeGeometry(courbe([[.12 * S, .62 * S, .1 * S], [.16 * S, .5 * S, .42 * S], [.2 * S, .1 * S, .58 * S], [.22 * S, -.12 * S, .55 * S]]), 40, .045 * S, 8), new THREE.MeshPhysicalMaterial({ color: 0xf0c8c8, roughness: .5, transparent: true, opacity: .85 }));
+  tag(fal, 'falciforme'); g.add(fal);
+  const ves = new THREE.Mesh(new THREE.LatheGeometry([...Array(16)].map((_, i) => { const u = i / 15; return new THREE.Vector2(Math.sin(u * Math.PI) * (.17 + .1 * u) * S + .001, (u - .5) * .55 * S); }), 28), new THREE.MeshPhysicalMaterial({ color: 0x8a9a3a, roughness: .35, clearcoat: .8 }));
+  ves.position.set(-.45 * S, -.2 * S, .3 * S); ves.rotation.z = -1.2; tag(ves, 'vesicule'); g.add(ves);
+  g.userData.vesicule = ves.position.clone(); g.userData.hile = new THREE.Vector3(-.15 * S, -.15 * S, .05 * S);
+  return g;
+}
+/* ---------- rein : forme de haricot, hile médial, surrénale ---------- */
+function reinMod(cote = 1, S = 3.2) {
+  const g = tag(new THREE.Group(), 'rein');
+  const geo = sculpte(new THREE.SphereGeometry(1, 80, 60), (p) => { let x = p.x * .58, y = p.y, z = p.z * .42;
+    const med = x * cote < 0 ? 1 : 0, hile = med * Math.exp(-y * y / .08) * .28; x += cote * hile;
+    const sp = bruit(p.x * 18, p.y * 18, p.z * 18); return [x * S, y * S, z * S, .12 * sstep(.3, .6, sp) + hile * .6]; }, 0x7c2420);
+  g.add(new THREE.Mesh(geo, matOrg({ clearcoat: .7 })));
+  const sur = new THREE.Mesh(sculpte(new THREE.ConeGeometry(.55, .75, 24, 6), (p) => [p.x * S * (1 + .1 * bruit(p.x * 6, p.y * 6, 0)), p.y * S, p.z * .5 * S, 0], 0xe2b04a), matOrg({ clearcoat: .3 }));
+  sur.position.set(cote * .12 * S, 1.15 * S, 0); tag(sur, 'surrenale'); g.add(sur);
+  g.userData.hile = new THREE.Vector3(-cote * .4 * S, 0, 0); return g;
+}
+/* ---------- muscle strié squelettique fusiforme avec tendons ---------- */
+function muscleMod(L = 18, R = 3.2) {
+  const g = tag(new THREE.Group(), 'muscle');
+  const prof = [...Array(30)].map((_, i) => { const u = i / 29; return new THREE.Vector2(.01 + R * Math.pow(Math.sin(u * Math.PI), 1.3) * (1 - .15 * u), (u - .5) * L); });
+  const tex = canvasTex(512, 512, (x, w, h) => { const gr = x.createLinearGradient(0, 0, w, 0); gr.addColorStop(0, '#9a2026'); gr.addColorStop(.5, '#c8363a'); gr.addColorStop(1, '#9a2026'); x.fillStyle = gr; x.fillRect(0, 0, w, h);
+    for (let i = 0; i < 260; i++) { x.strokeStyle = `rgba(${i % 3 ? 255 : 90},${i % 3 ? 140 : 20},${i % 3 ? 140 : 30},${.08 + Math.random() * .18})`; x.lineWidth = 1 + Math.random() * 3; const xx = Math.random() * w; x.beginPath(); x.moveTo(xx, 0); x.bezierCurveTo(xx + rnd(-20, 20), h * .3, xx + rnd(-20, 20), h * .7, xx + rnd(-10, 10), h); x.stroke(); } });
+  tex.wrapS = THREE.RepeatWrapping; tex.repeat.set(2, 1);
+  g.add(new THREE.Mesh(new THREE.LatheGeometry(prof, 48), new THREE.MeshPhysicalMaterial({ map: tex, roughness: .5, clearcoat: .5, sheen: .5, sheenColor: new THREE.Color(0xff9090) })));
+  const mT = new THREE.MeshPhysicalMaterial({ color: 0xe8ecf0, roughness: .25, clearcoat: 1, sheen: 1, sheenColor: new THREE.Color(0xffffff) });
+  for (const sg of [-1, 1]) { const t = new THREE.Mesh(new THREE.CylinderGeometry(.35, R * .35, L * .22, 16), mT); t.position.y = sg * L * .58; if (sg < 0) t.rotation.z = Math.PI; tag(t, 'tendon'); g.add(t); }
+  return g;
+}
+/* ---------- intestin grêle (anses) + côlon cadre (haustrations, bandelette) + appendice ---------- */
+function intestinMod() {
+  const g = tag(new THREE.Group(), 'intestin');
+  const pts = []; let x = -5, y = -11, dir = 1; for (let r = 0; r < 6; r++) { for (let i = 0; i < 6; i++) { pts.push([x + rnd(-.6, .6), y + Math.sin(i * 1.7 + r) * 1.1, Math.sin(i * 1.3 + r * 2) * 1.5 + 1.5]); x += dir * 2; } y -= 2.2; dir *= -1; x += dir * 1; }
+  const cG = courbe(pts); const gr = new THREE.Mesh(tubeVar(cG, 600, .95, (u) => 1 + .05 * Math.sin(u * 300)), new THREE.MeshPhysicalMaterial({ color: 0xe8a48a, roughness: .38, clearcoat: .8, sheen: .6, sheenColor: new THREE.Color(0xffd0c0) }));
+  tag(gr, 'grele'); g.add(gr);
+  const cC = courbe([[-10.5, -27, 1], [-11, -20, 1], [-11, -12, 1], [-10, -8.5, 1.5], [-4, -9.5, 3], [2, -10.5, 3], [8, -8.5, 1.5], [10.5, -10, 1], [11, -18, 1], [10.5, -25, 1.5], [7, -28, 3], [3, -27, 3], [1, -29, 2], [.5, -33, 1]]);
+  const col = new THREE.Mesh(tubeVar(cC, 700, 1.75, (u, a) => { const hs = Math.pow(Math.abs(Math.sin(u * 95)), .6); return u > .93 ? .85 : .82 + .26 * hs; }, 18), new THREE.MeshPhysicalMaterial({ color: 0xc46a48, roughness: .42, clearcoat: .7, sheen: .5, sheenColor: new THREE.Color(0xffb090) }));
+  tag(col, 'colon'); g.add(col);
+  const band = new THREE.Mesh(new THREE.TubeGeometry(courbe(cC.getPoints(60).slice(2, 54).map((p) => p.clone().add(V3(0, 0, 1.95)))), 300, .16, 6), mat(0xe0a088, { roughness: .4 })); g.add(band);
+  const app = new THREE.Mesh(new THREE.TubeGeometry(courbe([[-10.5, -27.5, 1], [-9.5, -30, 1.5], [-8.6, -31.5, 2.5]]), 20, .3, 8), mat(0xc87a58)); g.add(app);
+  g.userData.jejunum = V3(-5, -11, 1.5); return g;
+}
+function estomacMod() {
+  const c = courbe([[1.5, 8.5, -1], [4, 9, 0], [7, 7, 1], [7.5, 3.5, 2], [5.5, .5, 2.5], [2.5, -.5, 2.5], [.5, .3, 2]]);
+  return tag(new THREE.Mesh(tubeVar(c, 120, 2.2, (u) => .45 + 1.1 * Math.sin(Math.min(1, u * 1.25) * Math.PI) * (1 - .4 * u)), new THREE.MeshPhysicalMaterial({ color: 0xd8907a, roughness: .45, clearcoat: .6 })), 'estomac');
+}
+function pancreasMod() {
+  const c = courbe([[-3.5, -3.5, 0], [0, -2.5, -.5], [4, -1.5, -1.2], [8, -.3, -2], [11, .5, -2.5]]);
+  const geo = tubeVar(c, 120, 1.25, (u, a) => (1.15 - .55 * u) * (1 + .12 * bruit(u * 40, a * 6, 0)), 14);
+  return tag(new THREE.Mesh(geo, new THREE.MeshPhysicalMaterial({ color: 0xe7b07a, roughness: .6, clearcoat: .2 })), 'pancreas');
+}
+function coeurMod(S = 3.6) {
+  const geo = sculpte(new THREE.SphereGeometry(1, 70, 50), (p) => { let { x, y, z } = p; const apex = sstep(.1, -1, y); x *= 1 - .45 * apex; z *= .8 * (1 - .35 * apex); y *= 1.15;
+    const sill = Math.exp(-Math.pow((x - y * .4 - .1) / .07, 2)) * .5; return [x * S, y * S, z * S, sill]; }, 0x8e2424);
+  const m = tag(new THREE.Mesh(geo, matOrg({ clearcoat: .8 })), 'coeur'); m.rotation.z = .55; return m;
+}
+function vessieMod() { const m = new THREE.Mesh(new THREE.SphereGeometry(2.6, 40, 30), new THREE.MeshPhysicalMaterial({ color: 0xe0b080, roughness: .35, clearcoat: .7, transparent: true, opacity: .92 })); m.scale.set(1.1, .85, .9); return tag(m, 'vessie'); }
+function rateMod() { const m = new THREE.Mesh(sculpte(new THREE.SphereGeometry(1, 50, 36), (p) => [p.x * 1.6, p.y * 3, p.z * 1, 0], 0x6a2a50), matOrg()); return tag(m, 'rate'); }
+function adipeuxMod() { const g = tag(new THREE.Group(), 'adipeux'); const m = new THREE.MeshPhysicalMaterial({ color: 0xf2cf62, roughness: .22, clearcoat: 1, transmission: .1 });
+  for (let i = 0; i < 46; i++) { const b = new THREE.Mesh(new THREE.SphereGeometry(rnd(.9, 1.5), 16, 12), m); b.position.set(rnd(-4, 4), rnd(-3, 3), rnd(-2, 2)); b.scale.set(1, rnd(.8, 1.1), 1); g.add(b); } return g; }
+
+
+/* =========================================================
    HUB : un hépatocyte en coupe
    ========================================================= */
 function sceneCellule() {
   const s = micro({ id: 'cellule', hub: true, titre: 'Dans le foie : un hépatocyte', echelle: 'Cellule ≈ 25 µm · coupe ouverte', bg: 0x1a0d08, fog: .006, cam: V3(10, 26, 92), min: 20, max: 220, auto: true, sky: 0xffeedd, ground: 0x301008,
-    vue: [0, 0, 0, 46], legende: "L'<b>hépatocyte</b> est la cellule du foie, le centre du métabolisme. Touche un repère numéroté pour entrer : chaque repère est une partie du cours. Le glucose et les AA du repas arrivent par la <b>veine porte</b> ; le foie stocke, transforme et redistribue." });
+    vue: [0, 0, 0, 34], legende: "L'<b>hépatocyte</b> est la cellule du foie, le centre du métabolisme. Touche un repère numéroté pour entrer : chaque repère est une partie du cours. Le glucose et les AA du repas arrivent par la <b>veine porte</b> ; le foie stocke, transforme et redistribue." });
   s.retourIcone = IC.map; const S3 = s.scene;
   // membrane (sphère déformée, ouverte vers la caméra)
   const gM = blob(1, .06, 5, 3, 1.1); gM.scale(36, 28, 30);
@@ -413,7 +587,7 @@ function sceneCellule() {
   const re = tag(new THREE.Group(), 're'); for (let i = 0; i < 7; i++) { const r0 = 11 + i * 1.6; const c = courbe([...Array(9)].map((_, j) => { const a = -1.2 + j * .32; return [-4 + Math.cos(a) * r0, 4 + Math.sin(a) * r0 * .8, -6 + Math.sin(j * 1.3 + i) * 2]; }));
     re.add(new THREE.Mesh(new THREE.TubeGeometry(c, 50, .55, 6), mat(0x8aa8d8, { roughness: .45 }))); } S3.add(re);
   // mitochondries
-  const mitos = []; for (const [x, y, z, r] of [[18, -8, 4, .3], [-20, -12, 8, -.4], [14, 14, -10, .9], [-22, 10, 6, 1.4], [4, -18, -6, .1]]) { const m = mitochondrie(12, 3.6); m.position.set(x, y, z); m.rotation.set(r, r * 1.7, r * .6); S3.add(m); mitos.push(m); }
+  const mitos = []; for (const [x, y, z, r] of [[18, -8, 4, .3], [-20, -12, 8, -.4], [14, 14, -10, .9], [-22, 10, 6, 1.4], [4, -18, -6, .1]]) { const m = mitochondrie(12, 3.6, { prof: .7 }); m.position.set(x, y, z + 6); m.rotation.set(.5 + r * .1, r * .3, r * 1.6); S3.add(m); mitos.push(m); }
   // glycogène (rosettes) et gouttelettes lipidiques
   const gly = tag(new THREE.Group(), 'glycogene'); for (let i = 0; i < 60; i++) { const b = new THREE.Mesh(new THREE.SphereGeometry(rnd(.5, .9), 8, 6), mat(0xf2e6b0, { roughness: .6 })); const a = rnd(0, 6.28), r = rnd(0, 5); b.position.set(-14 + Math.cos(a) * r, -2 + Math.sin(a) * r * .6, 14 + rnd(-2, 2)); gly.add(b); } S3.add(gly);
   const gout = []; for (const [x, y, z, r] of [[10, -4, 16, 3.2], [22, 6, 8, 2.4], [6, -20, 8, 2]]) { const g = tag(new THREE.Mesh(new THREE.SphereGeometry(r, 24, 18), new THREE.MeshPhysicalMaterial({ color: 0xf2c84a, roughness: .2, clearcoat: 1 })), 'gouttelette'); g.position.set(x, y, z); S3.add(g); gout.push(g); }
@@ -430,66 +604,114 @@ function sceneCellule() {
   const pois = [['L1', V3(0, 30, 0)], ['L2', glutP.clone().add(V3(-1, 6, 0))], ['L3', V3(-2, -6, 20)], ['L3b', gly.position.clone().add(V3(-14, 4, 14))], ['L3c', mitos[0].position.clone().add(V3(0, 5, 0))], ['L4', gout[0].position.clone().add(V3(0, 4, 0))], ['L5', mitos[4].position.clone().add(V3(0, 4, 0))], ['L6', mitos[2].position.clone().add(V3(0, 5, 0))]];
   for (const [id, p] of pois) { const o = new THREE.Object3D(); o.position.copy(p); S3.add(o); const L = lvl(id);
     s.labels.push({ o, poi: () => allerNiveau(id), html: () => `<span class="pas"><span class="num">${NUM[id]}</span><span>${L.t}</span></span><span class="tige"></span>`, cls: () => '' }); }
-  s.update = function (dt, t) { s.controls.update(); fl.maj(t); fl.js.forEach((o) => o.rotation.x += dt); noyau.rotation.y += dt * .05; mitos.forEach((m, i) => m.rotation.y += dt * .04 * (i % 2 ? 1 : -1)); };
+  s.update = function (dt, t) { s.controls.update(); fl.maj(t); fl.js.forEach((o) => o.rotation.x += dt); noyau.rotation.y += dt * .05; mitos.forEach((m, i) => m.rotation.y = Math.sin(t * .3 + i) * .15); };
   return s;
 }
 
 /* =========================================================
-   1. LE SCHÉMA : REPAS ET JEÛNE (les organes et les flux)
+   1. LE SCHÉMA : REPAS ET JEÛNE — les organes, à leur place, et les vrais vaisseaux
    ========================================================= */
 function sceneBilan() {
-  const s = micro({ id: 'bilan', niv: 'L1', titre: 'Repas et jeûne : les organes', echelle: "Vue d'ensemble du corps · flux dans le sang", bg: 0x0b1620, fog: .004, cam: V3(0, 8, 92), min: 20, max: 220, target: V3(0, 6, 0), vue: [-1, 5, 0, 27], sky: 0xe0f0ff, ground: 0x102030,
+  const s = micro({ id: 'bilan', niv: 'L1', titre: 'Repas et jeûne : les organes', echelle: 'Vue de face · artères rouges, veines bleues, veine porte violette, lymphe blanche', bg: 0x0b1620, fog: .003, cam: V3(0, -2, 120), min: 8, max: 260, target: V3(0, -4, 0), vue: [0, -3, 0, 21, 54], sky: 0xf0f4ff, ground: 0x203040,
+    vues: [null, null, null, null, null, null],
     steps: [
-      ['Repas', "Après un repas : <b>insuline ↑</b> (cellules β). Le glucose arrive au <b>foie</b> par la veine porte. On stocke : <b>glycogène</b> (foie ~150 g, muscles ~300 g), puis l'excès devient <b>AG → TG</b>, exportés en <b>VLDL</b> vers le tissu adipeux. Les graisses du repas arrivent en <b>chylomicrons</b>. Les AA en trop : NH₃ → <b>urée</b>."],
-      ['Jeûne court', "<b>Glucagon ↑</b>, insuline ↓. Le <b>glycogène du foie</b> est dégradé et le glucose est <b>relâché dans le sang</b> (glucose-6-phosphatase : seul le foie peut) pour le <b>cerveau</b> et les <b>globules rouges</b>. Le glycogène musculaire ne sert qu'au muscle."],
-      ['Graisses', "Après ~20-35 min d'effort ou quelques heures de jeûne : <b>lipolyse</b> du tissu adipeux → <b>AG</b> vers le muscle et le foie (β-oxydation). Le foie fabrique des <b>corps cétoniques</b> pour les muscles, le cœur, puis le cerveau. Voie la plus rentable mais la plus lente."],
-      ['Protéines', "Jeûne prolongé (24-48 h) : <b>protéolyse musculaire</b> → <b>alanine</b> vers le foie → <b>néoglucogenèse</b> (glucose). L'azote devient de l'<b>urée</b> éliminée par le rein."],
+      ['Anatomie', "Le sang de l'<b>intestin</b>, du <b>pancréas</b>, de l'<b>estomac</b> et de la <b>rate</b> passe d'abord par le <b>foie</b> par la <b>veine porte</b> (violet) : tout ce qui est absorbé est trié par le foie. Le foie reçoit aussi l'<b>artère hépatique</b> (O₂) et se vide par les <b>veines hépatiques</b> dans la <b>veine cave inférieure</b>. Les <b>graisses</b> du repas, elles, passent par la <b>lymphe</b> (canal thoracique). Zoome et touche les organes pour les noms."],
+      ['Repas', "Après un repas : <b>insuline ↑</b> (cellules β ; elle arrive d'abord au foie par la veine porte). Le glucose arrive au <b>foie</b> par la veine porte. On stocke : <b>glycogène</b> (foie ~150 g, muscles ~300 g), puis l'excès devient <b>AG → TG</b>, exportés en <b>VLDL</b> vers le tissu adipeux. Les graisses arrivent en <b>chylomicrons</b> par la lymphe. Les AA en trop : NH₃ → <b>urée</b> → rein."],
+      ['Jeûne court', "<b>Glucagon ↑</b>, insuline ↓. Le <b>glycogène du foie</b> est dégradé et le glucose est <b>relâché dans le sang</b> (glucose-6-phosphatase : seul le foie peut) : veines hépatiques → veine cave → cœur → aorte → <b>cerveau</b> et <b>globules rouges</b>. Le glycogène musculaire ne sert qu'au muscle."],
+      ['Graisses', "Après ~20-35 min d'effort ou quelques heures de jeûne : <b>lipolyse</b> du tissu adipeux → <b>AG</b> (liés à l'albumine) vers le muscle et le foie (β-oxydation). Le foie fabrique des <b>corps cétoniques</b> pour les muscles, le cœur, puis le cerveau. Voie la plus rentable mais la plus lente."],
+      ['Protéines', "Jeûne prolongé (24-48 h) : <b>protéolyse musculaire</b> → <b>alanine</b> vers le foie → <b>néoglucogenèse</b> (glucose). L'azote devient de l'<b>urée</b>, filtrée par le <b>rein</b> et stockée dans la <b>vessie</b>."],
       ['Cycle de Cori', "Effort intense : le muscle (et les GR) font du <b>lactate</b> (anaérobie). Il part au foie, redevient pyruvate puis <b>glucose</b> (néoglucogenèse), qui repart au muscle."],
     ] });
-  const S3 = s.scene, org = {};
-  const place = (k, nom, obj, p) => { obj.position.copy(p); tag(obj, k); S3.add(obj); org[k] = p; lab(s, obj, nom, -7.5); return obj; };
-  // organes stylisés, disposés comme sur un corps
-  place('cerveau', 'Cerveau', new THREE.Mesh(blob(6, .18, 4, 2, 2.6), mat(0xe8b0b8, { roughness: .6 })), V3(0, 30, 0)).scale.set(1.2, .9, 1);
-  const foie = place('foie', 'Foie', new THREE.Mesh(blob(7, .1, 4, 4, 1.2), mat(0x8a3020, { roughness: .45 })), V3(-14, 6, 0)); foie.scale.set(1.5, .9, 1);
-  place('pancreas', 'Pancréas', new THREE.Mesh(new THREE.CapsuleGeometry(1.6, 9, 6, 12), mat(0xe8a060, { roughness: .6 })), V3(6, 2, 4)).rotation.z = Math.PI / 2 - .2;
-  const intest = new THREE.Group(); { const pts = []; for (let i = 0; i < 60; i++) { const a = i * .55; pts.push([Math.cos(a) * (3 + (i % 7) * .3), -i * .14, Math.sin(a) * (3 + (i % 5) * .3)]); } intest.add(new THREE.Mesh(new THREE.TubeGeometry(courbe(pts), 200, 1.1, 8), mat(0xe0a890, { roughness: .6 }))); }
-  place('intestin', 'Intestin', intest, V3(-2, -10, 0));
-  const musc = new THREE.Group(); for (let i = 0; i < 7; i++) { const f = new THREE.Mesh(new THREE.CapsuleGeometry(1.1, 14, 4, 10), mat(0xa02a2a, { roughness: .5 })); f.position.set((i % 4) * 2.1 - 3, 0, Math.floor(i / 4) * 2 - 1); musc.add(f); }
-  place('muscle', 'Muscle', musc, V3(22, -14, 0));
-  const adip = new THREE.Group(); for (let i = 0; i < 22; i++) { const b = new THREE.Mesh(new THREE.SphereGeometry(rnd(1.3, 2), 14, 10), mat(0xf2d070, { roughness: .3 })); b.position.set(rnd(-4, 4), rnd(-3, 3), rnd(-3, 3)); adip.add(b); }
-  place('adipeux', 'Tissu adipeux', adip, V3(-22, -18, 0));
-  place('rein', 'Rein', new THREE.Mesh(blob(3.2, .1, 3, 8), mat(0x9a3a3a)), V3(20, 8, -4)).scale.set(.8, 1.3, .8);
-  const grs = new THREE.Group(); for (let i = 0; i < 5; i++) { const g = new THREE.Mesh(geoGR(), matGR()); g.scale.setScalar(.45); g.position.set(i * 1.8 - 3.6, Math.sin(i) * 1.2, 0); g.rotation.x = 1.2; grs.add(g); }
-  place('gr', 'Globules rouges', grs, V3(18, 22, 0));
-  // glycogène du foie et du muscle (taille = réserve)
-  const gF = new THREE.Mesh(new THREE.SphereGeometry(2.4, 16, 12), mat(0xf2e6b0, { emissive: 0x403a20 })); gF.position.copy(org.foie).add(V3(4, 3, 7)); tag(gF, 'glycogene'); S3.add(gF);
-  const gM = gF.clone(); gM.position.copy(org.muscle).add(V3(0, 4, 5)); S3.add(gM);
-  const hor = panneau3d(S3, V3(0, 44, 0), 2.2);
-  // flux : [de, vers, couleur, nom, étapes actives, rayon de la courbe]
+  const S3 = s.scene;
+  const poser = (o, p, nom, dy, det) => { o.position.copy(p); S3.add(o); if (nom) s.labels.push({ o, t: nom, dy, max: det ? 70 : undefined }); return o; };
+  // organes à leur place (vue de face : le foie est à gauche de l'écran = à droite du patient)
+  const cer = poser(cerveau(7.5), V3(0, 41, -1), 'Cerveau', 9); cer.rotation.y = -.85;
+  poser(new THREE.Object3D(), V3(0, 41 - 3.2, -5), 'Cervelet', -1.5, 1); poser(new THREE.Object3D(), V3(0, 41 - 4.4, -3), 'Tronc cérébral', -3, 1);
+  const coeur = poser(coeurMod(3.4), V3(1.5, 15, 1), 'Cœur', -4.6);
+  const foie = poser(foieMod(8.5), V3(-5, 5, 1), 'Foie', 7.5);
+  poser(new THREE.Object3D(), V3(-5 - .45 * 8.5, 5 - .2 * 8.5, 1 + .3 * 8.5), 'Vésicule biliaire', -2.2, 1);
+  poser(new THREE.Object3D(), V3(-5 + .2 * 8.5, 5 + .35 * 8.5, 1 + .55 * 8.5), 'Ligament falciforme', 1, 1);
+  const est = poser(estomacMod(), V3(1, 0, -1), null); poser(new THREE.Object3D(), V3(7.5, 6, 2), 'Estomac', 0, 1);
+  const rate = poser(rateMod(), V3(13, 3, -4), 'Rate', -4, 1);
+  const pan = poser(pancreasMod(), V3(0, 0, -1), null); poser(new THREE.Object3D(), V3(5, -1.5, 0), 'Pancréas', -2, 0);
+  const rG = poser(reinMod(1), V3(-7.5, -6, -6), 'Rein', -4.4), rD = poser(reinMod(-1), V3(7.5, -5, -6), null);
+  poser(new THREE.Object3D(), V3(7.5 - .4, -5 + 3.7, -6), 'Glande surrénale', 1.2, 1);
+  const intest = poser(intestinMod(), V3(0, 0, 0), null);
+  poser(new THREE.Object3D(), V3(0, -17, 3.5), 'Intestin grêle', 0); poser(new THREE.Object3D(), V3(10.8, -16, 2.6), 'Côlon', 0, 1); poser(new THREE.Object3D(), V3(-9, -31.5, 2.5), 'Appendice', -1, 1);
+  const vessie = poser(vessieMod(), V3(0, -36, 2), 'Vessie', -3.2);
+  const musc = poser(muscleMod(17, 3), V3(11, -47, 1), 'Muscle squelettique (cuisse)', 0); musc.rotation.z = .12;
+  poser(new THREE.Object3D(), V3(11.6, -37, 1), 'Tendon', 1, 1);
+  const adip = poser(adipeuxMod(), V3(-18, -20, 1), 'Tissu adipeux', -5);
+  const grs = new THREE.Group(); for (let i = 0; i < 6; i++) { const g2 = new THREE.Mesh(geoGR(), matGR()); g2.scale.setScalar(.38); g2.position.set(i * 1.3 - 3, Math.sin(i * 2) * .9, Math.cos(i) * .6); g2.rotation.set(1 + i, i, 0); grs.add(g2); } tag(grs, 'gr');
+  poser(grs, V3(8.5, 19, 2), 'Globules rouges', 2.2);
+  // vaisseaux (couleurs conventionnelles)
+  const ROUGE = 0xc0282c, BLEU = 0x2c5ab8, VIOLET = 0x7a4ab0, VERT = 0x5fa84a, LYMPHE = 0xf0ecd0;
+  const V = (pts, r, c, k, nom, iN, det = 1) => { const m = vaisseau(pts, r, c, k); S3.add(m); if (nom) { const o = new THREE.Object3D(); o.position.copy(V3(...pts[iN])); S3.add(o); s.labels.push({ o, t: nom, dy: 1.2, max: det ? 70 : 110, show: () => step === 0 }); } return m; };
+  V([[1.8, 17.5, 0], [2.5, 21, -.5], [4.5, 22, -2.5], [4, 19, -4.5], [2, 14, -5], [1.5, 6, -5], [1.5, -10, -5], [1.5, -26, -5]], .75, ROUGE, 'aorte', 'Aorte', 5, 0);
+  V([[-1.5, -26, -5.3], [-1.5, -10, -5.3], [-1.5, 6, -5.3], [-1.2, 11, -3], [0, 14, -.5]], .85, BLEU, 'veineCave', 'Veine cave inférieure', 2, 0);
+  V([[0, -13, 1.5], [-.5, -7, 0], [-2, -2.5, .5], [-4, .5, 1], [-5.5, 2.5, 1.2]], .55, VIOLET, 'veinePorte', 'Veine porte', 2, 0);
+  V([[12, 2, -3.5], [8, -1.2, -2.6], [3, -3.6, -1.5], [-.6, -5.5, .2]], .35, VIOLET, 'veinePorte', 'Veine splénique', 1);
+  V([[1.5, -1, -5], [-1.5, -.5, -2], [-4, .6, .4], [-5.2, 2.2, .8]], .3, ROUGE, 'arteHep', 'Artère hépatique', 1);
+  V([[-5, 9, -1], [-3, 9.5, -3.5], [-1.4, 9, -5.2]], .45, BLEU, 'veineCave', 'Veines hépatiques', 1);
+  V([[-8.8, .8, 4.2], [-6.5, -1, 2.5], [-4.5, -3.5, 1.5], [-2.5, -6, 1.5]], .28, VERT, 'voieBiliaire', 'Canal cholédoque', 2);
+  V([[2.5, 21, -.5], [2, 28, 0], [1.4, 34, -.5]], .4, ROUGE, 'aorte', 'Carotide', 1); V([[-1.6, 34, -.5], [-2, 28, 0], [-.5, 18, -.5]], .45, BLEU, 'veineCave', 'Jugulaire', 1);
+  V([[1.5, -6, -5], [4, -5.5, -6], [6.2, -5, -6]], .32, ROUGE, 'aorte', 'Artère rénale', 1); V([[-1.5, -6.5, -5.3], [-4, -6.3, -6], [-6.3, -6, -6]], .38, BLEU, 'veineCave', 'Veine rénale', 0);
+  V([[-6.3, -7, -5], [-5, -16, -4], [-2.5, -30, -1], [-1.2, -34.5, 1]], .2, 0xe8d09a, 'uretere', 'Uretère', 1); V([[6.3, -6, -5], [5, -16, -4], [2.5, -30, -1], [1.2, -34.5, 1]], .2, 0xe8d09a, 'uretere');
+  V([[1.5, -26, -5], [5, -30, -3], [9, -35, -.5], [10.5, -39, .5]], .55, ROUGE, 'aorte', 'Artère iliaque → fémorale', 1); V([[10, -39, 1.6], [8, -35, 1], [4, -30, -3.6], [-1.5, -26, -5.3]], .6, BLEU, 'veineCave', 'Veine fémorale → iliaque', 1);
+  V([[1.5, -14, -5], [-6, -17, -2], [-14, -19.5, .5]], .3, ROUGE, 'aorte'); V([[-14, -21, .8], [-6, -18.5, -2.6], [-1.5, -15, -5.3]], .35, BLEU, 'veineCave');
+  V([[0, -12, -.5], [0, -9, -6.5], [.4, 0, -6.4], [.8, 12, -6], [3, 19.5, -3.5], [5.5, 21, -1]], .22, LYMPHE, 'canalThoracique', 'Canal thoracique (lymphe)', 2);
+  // réserves de glycogène (taille = stock)
+  const granules = (n) => { const g2 = tag(new THREE.Group(), 'glycogene'); for (let i = 0; i < n; i++) { const b = new THREE.Mesh(new THREE.SphereGeometry(rnd(.25, .45), 8, 6), mat(0xfff0b0, { emissive: 0x806020, emissiveIntensity: .6 })); b.position.set(rnd(-1.6, 1.6), rnd(-1, 1), rnd(-1, 1)); g2.add(b); } return g2; };
+  const gF = granules(40); gF.position.set(-9, 7, 7); S3.add(gF); s.labels.push({ o: gF, t: 'Glycogène du foie', dy: 2.4, max: 110, show: () => step > 0 });
+  const gM = granules(30); gM.position.set(14.5, -46, 3); S3.add(gM); s.labels.push({ o: gM, t: 'Glycogène musculaire', dy: 2.4, max: 110, show: () => step > 0 });
+  const hor = panneau3d(S3, V3(0, 54, 0), 1.7);
+  // routes du sang (elles passent par les vrais vaisseaux et par le cœur)
+  const P = {
+    porte: [[0, -14, 2.5], [-.5, -7, 1], [-2, -2.5, 1.5], [-4, .5, 2], [-5.5, 3, 2.2]],
+    foieCoeur: [[-6, 7, 0], [-3, 9.6, -3.4], [-1.4, 9.4, -4.4], [-1.2, 11.5, -2.4], [.4, 14.5, .4]],
+    coeurAorte: [[1.8, 17.5, 1], [2.5, 21, .5], [4.5, 22, -1.5], [4, 19, -3.6], [2, 14, -4]],
+    aorteBas: [[1.5, 6, -4], [1.5, -10, -4], [1.5, -26, -4]],
+    versMuscle: [[5, -30, -2], [9, -35, .5], [11, -42, 2.5]],
+    versCerveau: [[2.5, 21, .5], [2, 28, 1], [1.4, 35, .5], [.5, 38, 2]],
+    versGR: [[1.8, 17.5, 1], [4.5, 18.5, 2.5], [7.5, 18, 3]],
+    versAdip: [[1.5, -13, -4], [-6, -16.5, -1], [-14, -19.5, 1.6]],
+    adipCoeur: [[-14, -21, 2], [-6, -18.5, -1.6], [-1.5, -15, -4.3], [-1.5, 6, -4.3], [-1.2, 11, -2], [.4, 14.5, .4]],
+    museCoeur: [[10, -40, 2.6], [8, -35, 2], [4, -30, -2.6], [-1.5, -26, -4.3], [-1.5, 6, -4.3], [-1.2, 11, -2], [.4, 14.5, .4]],
+    versFoieArt: [[1.5, 6, -4], [1.5, -1, -4], [-1.5, -.5, -1], [-4, .6, 1.4], [-5.5, 2.5, 2]],
+    versRein: [[1.5, 6, -4], [1.5, -6, -4], [4, -5.5, -5], [6.2, -5, -5]],
+    reinVessie: [[6.6, -7, -4], [5, -16, -3], [2.5, -30, 0], [1, -35, 2.5]],
+    lymphe: [[0, -12, .5], [0, -9, -5.5], [.4, 0, -5.4], [.8, 12, -5], [3, 19.5, -2.5], [5.5, 21, 0], [3, 18, 1], [.4, 14.5, .4]],
+    pancFoie: [[6, -1, 0], [3, -3, -.5], [-.6, -5, 1.2], [-2, -2.5, 1.5], [-4, .5, 2], [-5.5, 3, 2.2]],
+    grFoie: [[7.5, 18, 3], [4.5, 22, -1.5], [4, 19, -3.6], [2, 14, -4]],
+  };
+  const R = (...noms) => noms.flatMap((n) => P[n]);
   const F = [
-    ['intestin', 'foie', 0xffffff, 'glucose', [0], 'glucose'], ['foie', 'muscle', 0xffffff, 'glucose', [0, 4], 'glucose'], ['foie', 'adipeux', 0xf0a040, 'VLDL', [0], 'vldl'],
-    ['intestin', 'adipeux', 0xfff0d0, 'chylomicrons', [0], 'chylo'], ['pancreas', 'foie', 0x5fa8ff, 'insuline', [0], 'insuline'],
-    ['pancreas', 'foie', 0xff5fd0, 'glucagon', [1, 2, 3], 'glucagon'], ['foie', 'cerveau', 0xffffff, 'glucose', [1, 3], 'glucose'], ['foie', 'gr', 0xffffff, 'glucose', [1, 3], 'glucose'],
-    ['adipeux', 'muscle', 0xf5d020, 'acides gras', [2, 3], 'ag'], ['adipeux', 'foie', 0xf5d020, 'acides gras', [2, 3], 'ag'], ['foie', 'cerveau', 0xb070ff, 'corps cétoniques', [2, 3], 'cetone'], ['foie', 'muscle', 0xb070ff, 'corps cétoniques', [2], 'cetone'],
-    ['muscle', 'foie', 0x5fd38d, 'alanine', [3], 'alanine'], ['foie', 'rein', 0xc0c0c0, 'urée', [0, 3], 'uree'],
-    ['muscle', 'foie', 0xff7aa0, 'lactate', [4], 'lactate'], ['gr', 'foie', 0xff7aa0, 'lactate', [4], 'lactate'],
+    [R('porte'), 0xffffff, 'glucose', [1], 'glucose'], [R('foieCoeur', 'coeurAorte', 'aorteBas', 'versMuscle'), 0xffffff, 'glucose', [1, 5], 'glucose'],
+    [R('foieCoeur', 'coeurAorte', 'aorteBas', 'versAdip'), 0xf0a040, 'VLDL', [1], 'vldl'], [R('lymphe', 'coeurAorte', 'aorteBas', 'versAdip'), 0xfff4d8, 'chylomicrons', [1], 'chylo'],
+    [R('pancFoie'), 0x5fa8ff, 'insuline', [1], 'insuline'], [R('pancFoie'), 0xff5fd0, 'glucagon', [2, 3, 4], 'glucagon'],
+    [R('foieCoeur', 'versCerveau'), 0xffffff, 'glucose', [2, 4], 'glucose'], [R('foieCoeur', 'versGR'), 0xffffff, 'glucose', [2, 4], 'glucose'],
+    [R('adipCoeur', 'coeurAorte', 'aorteBas', 'versMuscle'), 0xf5d020, 'acides gras', [3, 4], 'ag'], [R('adipCoeur', 'coeurAorte', 'versFoieArt'), 0xf5d020, 'acides gras', [3, 4], 'ag'],
+    [R('foieCoeur', 'versCerveau'), 0xb070ff, 'corps cétoniques', [3, 4], 'cetone'], [R('foieCoeur', 'coeurAorte', 'aorteBas', 'versMuscle'), 0xb070ff, 'corps cétoniques', [3], 'cetone'],
+    [R('museCoeur', 'coeurAorte', 'versFoieArt'), 0x5fd38d, 'alanine', [4], 'alanine'], [R('foieCoeur', 'coeurAorte', 'versRein', 'reinVessie'), 0xd8d8d8, 'urée', [1, 4], 'uree'],
+    [R('museCoeur', 'coeurAorte', 'versFoieArt'), 0xff7aa0, 'lactate', [5], 'lactate'], [R('grFoie', 'versFoieArt'), 0xff7aa0, 'lactate', [5], 'lactate'],
   ];
-  const fx = F.map(([a, b, col, nom, st, k], i) => {
-    const pa = org[a], pb = org[b], mid = pa.clone().add(pb).multiplyScalar(.5); const n = V3(-(pb.y - pa.y), pb.x - pa.x, 0).normalize().multiplyScalar(4 + (i % 3) * 1.5); mid.add(n); mid.z += 6 + (i % 4) * 1.5;
-    const c = courbe([pa, mid, pb]); const tb = tube(c, .18, col, .35); S3.add(tb);
-    const f = flux(S3, c, 6, () => { const m = k === 'glucose' ? glucoseM() : boule(col, k === 'vldl' || k === 'chylo' ? .9 : .5, k); return m; }, .14);
-    const etq = txt3d(nom, '#' + new THREE.Color(col).getHexString(), 1.5); etq.position.copy(c.getPointAt(.5)).add(V3(0, 1.4, 0)); S3.add(etq);
-    return { f, tb, etq, st };
+  const fx = F.map(([pts, col, nom, st, k], i) => {
+    const c = courbe(pts), L = c.getLength(), n = Math.max(5, Math.round(L / 6));
+    const f = flux(S3, c, n, () => k === 'glucose' ? glucoseM() : boule(col, k === 'vldl' || k === 'chylo' ? .75 : .5, k), 4 / L);
+    const etq = txt3d(nom, '#' + new THREE.Color(col).getHexString(), 1.2); etq.position.copy(c.getPointAt(.18 + (i % 3) * .06)).add(V3(0, 1.6, 2)); S3.add(etq);
+    return { f, etq, st };
   });
   let step = 0; s.onStep = (i) => { step = i; };
+  const un = V3(1, 1, 1);
   s.update = function (dt, t) {
     s.controls.update();
-    fx.forEach((o) => { const on = o.st.includes(step); o.f.on = on; o.f.maj(t); o.tb.visible = on; o.etq.visible = on; });
-    const cible = [[1.2, 1.2], [.45, 1], [.3, .8], [.15, .6], [.3, .4]][step];
-    gF.scale.lerp(V3(1, 1, 1).multiplyScalar(cible[0]), dt * 2); gM.scale.lerp(V3(1, 1, 1).multiplyScalar(cible[1]), dt * 2);
-    adip.scale.lerp(V3(1, 1, 1).multiplyScalar(step === 0 ? 1.1 : step >= 2 ? .85 : 1), dt);
-    musc.scale.lerp(V3(1, 1, 1).multiplyScalar(step === 3 ? .8 : 1), dt);
-    hor.set(['Insuline ↑ : on stocke', 'Glucagon ↑ : le foie relâche du glucose', 'Lipolyse : AG et corps cétoniques', 'Protéolyse : alanine → glucose', 'Cycle de Cori : lactate → glucose'][step], ['#7fb8ff', '#ff8fe0', '#f5d020', '#5fd38d', '#ff9ab8'][step]);
+    fx.forEach((o) => { const on = o.st.includes(step); o.f.on = on; o.f.maj(t); o.etq.visible = on; });
+    const cible = [[1, 1], [1.3, 1.2], [.45, 1], [.3, .8], [.15, .55], [.3, .4]][step];
+    gF.scale.lerp(un.clone().multiplyScalar(cible[0]), dt * 2); gM.scale.lerp(un.clone().multiplyScalar(cible[1]), dt * 2);
+    adip.scale.lerp(un.clone().multiplyScalar(step === 1 ? 1.08 : step >= 3 ? .85 : 1), dt);
+    musc.scale.lerp(un.clone().multiplyScalar(step === 4 ? .85 : 1), dt);
+    coeur.scale.setScalar(1 + .04 * Math.max(0, Math.sin(t * 7)));
+    hor.set(['Les organes et leurs vaisseaux', 'Insuline ↑ : on stocke', 'Glucagon ↑ : le foie relâche du glucose', 'Lipolyse : AG et corps cétoniques', 'Protéolyse : alanine → glucose', 'Cycle de Cori : lactate → glucose'][step], ['#ffffff', '#7fb8ff', '#ff8fe0', '#f5d020', '#5fd38d', '#ff9ab8'][step]);
   };
   return s;
 }
@@ -680,7 +902,7 @@ function sceneKrebs() {
       ['Carrefour acétyl-CoA', "L'<b>acétyl-CoA</b> est le carrefour : il vient du <b>glucose</b>, des <b>acides gras</b> (β-oxydation) et des <b>acides aminés</b>. Il part dans <b>Krebs</b>, ou sert à fabriquer les <b>AG</b>, le <b>cholestérol</b> et les <b>corps cétoniques</b>. Le réflexe du prof : question de molécule → pense acétyl-CoA."],
     ] });
   const S3 = s.scene;
-  const mi = mitochondrie(56, 22); mi.position.set(0, -2, -14); S3.add(mi);
+  const mi = mitochondrie(56, 22, { prof: .32 }); mi.position.set(0, -2, -3); S3.add(mi);
   const noms = ['Citrate', 'Isocitrate', 'α-Cétoglutarate', 'Succinyl-CoA', 'Succinate', 'Fumarate', 'Malate', 'Oxaloacétate'];
   const R0 = 11, cen = V3(0, -4, 0); const P = noms.map((_, i) => { const a = Math.PI / 2 - i / 8 * 6.283 - .39; return cen.clone().add(V3(Math.cos(a) * R0, Math.sin(a) * R0, 0)); });
   const cyc = courbe(P, true); S3.add(tube(cyc, .35, 0xffb060, .5));
@@ -801,7 +1023,7 @@ function sceneUree() {
       ['Amines biogènes', "La <b>décarboxylation</b> d'AA donne des amines actives, dégradées par les <b>MAO</b> : <b>GABA</b> (glutamate), <b>histamine</b> (histidine), <b>dopamine</b> (L-DOPA) → noradrénaline → adrénaline, <b>sérotonine</b> (5-hydroxytryptophane) → mélatonine."],
     ] });
   const S3 = s.scene;
-  const mi = mitochondrie(18, 9); mi.position.set(-22, -2, -8); mi.rotation.z = Math.PI / 2; S3.add(mi); const tM = txt3d('Mitochondrie', '#ffb080', 1.2); tM.position.set(-18, 24, 0); S3.add(tM);
+  const mi = mitochondrie(18, 9); mi.position.set(-22, -2, -8); mi.rotation.set(.45, 0, Math.PI / 2, 'ZXY'); S3.add(mi); const tM = txt3d('Mitochondrie', '#ffb080', 1.2); tM.position.set(-18, 24, 0); S3.add(tM);
   const tCy = txt3d('Cytosol', '#d0ffd0', 1.2); tCy.position.set(18, 24, 0); S3.add(tCy);
   // transamination
   const aa = tag(boule(0xe0e0e0, 1), 'aa'), akg = tag(boule(0xffb060, 1), 'akg'), nh2 = boule(0x4f8fd6, .5); S3.add(aa, akg, nh2);
