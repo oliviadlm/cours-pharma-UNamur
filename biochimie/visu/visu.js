@@ -40,9 +40,10 @@ function lireCours(sec) {
   if (window.parent !== window) window.parent.postMessage({ visu: 'section', sec }, '*');
   else location.href = '../ch4-le-sang.html#cours-' + sec;
 }
-function toast(t, ms = 2600) {
-  const el = $('#toast'); el.innerHTML = t; el.classList.add('on');
-  clearTimeout(toast.h); toast.h = setTimeout(() => el.classList.remove('on'), ms);
+function toast(t, ms = 0) {
+  const el = $('#toast'); el.innerHTML = t + '<button class="toast-x" aria-label="Fermer"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>'; el.classList.add('on');
+  el.querySelector('.toast-x').onclick = (e) => { e.stopPropagation(); el.classList.remove('on'); };
+  clearTimeout(toast.h); if (ms > 0) toast.h = setTimeout(() => el.classList.remove('on'), ms);
 }
 let AC;
 function bip(f, d) {
@@ -107,7 +108,7 @@ const ENCY = {
 function decouvre(k) {
   const e = ENCY[k]; if (!e) return;
   const neuf = !S.ency[k]; S.ency[k] = 1; save();
-  toast(`<b style="color:var(--cyan)">${e[0]}</b><br>${e[1]}${neuf ? '<br><small style="color:var(--or)">Nouvelle découverte</small>' : ''}`, 4200);
+  toast(`<b style="color:var(--cyan)">${e[0]}</b><br>${e[1]}${neuf ? '<br><small style="color:var(--or)">Nouvelle découverte</small>' : ''}`);
   if (neuf) bip(990, .12);
 }
 
@@ -933,7 +934,7 @@ function activer(sc) {
   $('#tLieu').textContent = sc.titre; $('#tEchelle').textContent = sc.echelle;
   $('#bRetour').innerHTML = sc.retourIcone; $('#bRetour').setAttribute('aria-label', sc.micro ? 'Dézoomer' : 'Revenir au corps');
   majDep(sc);
-  if (sc.micro && !S.aideM) { S.aideM = 1; save(); setTimeout(() => toast("Glisse pour tourner, pince ou utilise + et − pour zoomer, touche une molécule pour l'identifier. Le bouton <b>Explication</b> ouvre le texte du cours.", 6500), 500); }
+  if (sc.micro && !S.aideM) { S.aideM = 1; save(); setTimeout(() => toast("Glisse pour tourner, pince ou utilise + et − pour zoomer, touche une molécule pour l'identifier. Le bouton <b>Explication</b> ouvre le texte du cours."), 500); }
   if (sc.micro) etapesUI(sc); else { sc.camera.clearViewOffset(); sc.piste(); }
 }
 function transition(fn) { const v = $('#voile'); v.classList.add('on'); setTimeout(() => { fn(); setTimeout(() => v.classList.remove('on'), 60); }, 330); bip(420, .15); }
@@ -974,7 +975,7 @@ function ouvrirMonde() {
   $('#carte').classList.remove('on'); $('#monde').classList.add('on');
   if (!vesselCache) vesselCache = construireVeinule();
   activer(vesselCache); actif = true;
-  if (!S.vu) { S.vu = 1; save(); setTimeout(() => toast("Tu es dans une veinule du bras, le sang coule vers le cœur. Avance avec les flèches ou en pinçant ; touche une cellule pour l'identifier, un repère numéroté pour zoomer.", 7000), 700); }
+  if (!S.vu) { S.vu = 1; save(); setTimeout(() => toast("Tu es dans une veinule du bras, le sang coule vers le cœur. Avance avec les flèches ou en pinçant ; touche une cellule pour l'identifier, un repère numéroté pour zoomer."), 700); }
 }
 $('#bEntrer').onclick = () => { $('#zoomCorps').classList.add('entre'); bip(330, .3); setTimeout(ouvrirMonde, 900); };
 $('#bSommaire').onclick = menuNiveaux;

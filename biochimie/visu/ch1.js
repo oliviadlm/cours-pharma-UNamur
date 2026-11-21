@@ -1,6 +1,7 @@
 import * as THREE from './three.module.min.js';
 import { OrbitControls } from './OrbitControls.js';
 import { mergeVertices } from './BufferGeometryUtils.js';
+import { MarchingCubes } from './MarchingCubes.js';
 
 const $ = (s) => document.querySelector(s);
 const IC = {
@@ -128,9 +129,10 @@ const ENCY = {
   chylo: ['Chylomicron', "Grosse lipoprotéine des graisses du repas : plasma « laiteux » après un repas gras."],
 };
 
-function toast(t, ms = 2600) {
-  const el = $('#toast'); el.innerHTML = t; el.classList.add('on');
-  clearTimeout(toast.h); toast.h = setTimeout(() => el.classList.remove('on'), ms);
+function toast(t, ms = 0) {
+  const el = $('#toast'); el.innerHTML = t + '<button class="toast-x" aria-label="Fermer"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>'; el.classList.add('on');
+  el.querySelector('.toast-x').onclick = (e) => { e.stopPropagation(); el.classList.remove('on'); };
+  clearTimeout(toast.h); if (ms > 0) toast.h = setTimeout(() => el.classList.remove('on'), ms);
 }
 let AC;
 function bip(f, d) {
@@ -150,7 +152,7 @@ $('#bNiv').onclick = menuNiveaux;
 function decouvre(k) {
   const e = ENCY[k]; if (!e) return;
   const neuf = !S.ency[k]; S.ency[k] = 1; save();
-  toast(`<b style="color:var(--cyan)">${e[0]}</b><br>${e[1]}${neuf ? '<br><small style="color:var(--or)">Nouvelle découverte</small>' : ''}`, 4200);
+  toast(`<b style="color:var(--cyan)">${e[0]}</b><br>${e[1]}${neuf ? '<br><small style="color:var(--or)">Nouvelle découverte</small>' : ''}`);
   if (neuf) bip(990, .12);
 }
 
@@ -614,38 +616,59 @@ function pancreasMod() {
   g.userData.tete = V3(-3.8, -4.8, 1.5); g.userData.queue = V3(11.5, .8, -2); g.userData.col = V3(-1, -2.3, 0);
   return g;
 }
-// forme des ventricules (direction unitaire → point de surface) : base en haut, pointe en bas
-function formeV(d) { const apex = sstep(.2, -1, d.y); return V3(d.x * (1 - .5 * apex) * 1.05, d.y * 1.25 - .15, d.z * .8 * (1 - .32 * apex)); }
+// outils de surfaces implicites (fusion douce de volumes) → maillage par marching cubes
+const hSmin = (a, b, k) => { const h = Math.max(0, Math.min(1, .5 + .5 * (b - a) / k)); return b * (1 - h) + a * h - k * h * (1 - h); };
+function hEll(x, y, z, r) { const a = x / r[0], b = y / r[1], c = z / r[2], k0 = Math.sqrt(a * a + b * b + c * c), k1 = Math.sqrt(a * a / (r[0] * r[0]) + b * b / (r[1] * r[1]) + c * c / (r[2] * r[2])); return k0 * (k0 - 1) / (k1 || 1e-6); }
+function hCap(px, py, pz, a, b, r1, r2) { const bx = b[0] - a[0], by = b[1] - a[1], bz = b[2] - a[2], ax = px - a[0], ay = py - a[1], az = pz - a[2], t = Math.max(0, Math.min(1, (ax * bx + ay * by + az * bz) / (bx * bx + by * by + bz * bz))); const dx = ax - bx * t, dy = ay - by * t, dz = az - bz * t; return Math.sqrt(dx * dx + dy * dy + dz * dz) - (r1 + (r2 - r1) * t); }
+function maillerSDF(f, c, h, N, couleur) {
+  const mc = new MarchingCubes(N, new THREE.MeshBasicMaterial(), false, false, 260000); mc.isolation = 0; const F = mc.field;
+  for (let k = 0; k < N; k++) { const z = ((k - N / 2) / (N / 2)) * h[2] + c[2]; for (let j = 0; j < N; j++) { const y = ((j - N / 2) / (N / 2)) * h[1] + c[1]; for (let i = 0; i < N; i++) F[i + j * N + k * N * N] = -f(((i - N / 2) / (N / 2)) * h[0] + c[0], y, z); } }
+  mc.update(); const n = mc.count, geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(mc.positionArray.slice(0, n * 3), 3)); geo.scale(h[0], h[1], h[2]); geo.translate(c[0], c[1], c[2]);
+  let g2 = mergeVertices(geo, 1e-4); g2.computeVertexNormals();
+  if (couleur) { const p = g2.attributes.position, col = new Float32Array(p.count * 3); for (let i = 0; i < p.count; i++) { const cc = couleur(p.getX(i), p.getY(i), p.getZ(i)); col[i * 3] = cc[0]; col[i * 3 + 1] = cc[1]; col[i * 3 + 2] = cc[2]; } g2.setAttribute('color', new THREE.BufferAttribute(col, 3)); }
+  mc.geometry.dispose(); return g2;
+}
+/* ---------- cœur : une seule pièce lisse (ventricules, oreillettes, auricules), sillons graisseux, coronaires ---------- */
 function coeurMod(S = 2.6) {
   const g = tag(new THREE.Group(), 'coeur');
-  const ven = new THREE.Group(); ven.rotation.z = .5; ven.rotation.y = -.25; g.add(ven);
-  const geo = sculpte(new THREE.SphereGeometry(1, 80, 60), (p) => { const q = formeV(p.clone().normalize()); const th = Math.atan2(p.x, p.z);
-      const sil = Math.exp(-Math.pow((th + .15) / .07, 2)) * (p.y < .55 ? 1 : 0) + Math.exp(-Math.pow((p.y - .55) / .06, 2)) * .8;   // sillons interventriculaire et coronaire
-      const k = 1 - .03 * sil + .01 * bruit(p.x * 6, p.y * 6, p.z * 6); return [q.x * k * S, q.y * k * S, q.z * k * S, .25 * sil]; }, 0x9a2424);
-  ven.add(new THREE.Mesh(geo, matOrg({ clearcoat: .85, sheenColor: new THREE.Color(0xff8080) })));
-  const surf = (th, y, dz = 1.025) => { const r = Math.sqrt(Math.max(0, 1 - y * y)); return formeV(V3(Math.sin(th) * r, y, Math.cos(th) * r)).multiplyScalar(S * dz); };
-  const vx = (pts, r, col) => new THREE.Mesh(new THREE.TubeGeometry(courbe(pts), 60, r * S, 6), new THREE.MeshPhysicalMaterial({ color: col, roughness: .35, clearcoat: .7 }));
-  // coronaires (artères rouges, veines bleues) et graisse épicardique dans les sillons
-  const yy = (a, b, n) => [...Array(n)].map((_, i) => a + (b - a) * i / (n - 1));
-  ven.add(vx(yy(.58, -.95, 12).map((y) => surf(-.15, y)), .028, 0xd02a2a)); ven.add(vx(yy(.55, -.8, 10).map((y) => surf(-.02, y)), .022, 0x3a5ad0));
-  ven.add(vx(yy(-.2, -2.6, 12).map((t) => surf(t, .56)), .03, 0xd02a2a)); ven.add(vx(yy(.2, 1.8, 10).map((t) => surf(t, .58)), .026, 0xd02a2a));
-  for (let i = 0; i < 9; i++) { const t = -.15, y = .5 - i * .06; ven.add(vx([surf(t, y), surf(t + rnd(-.6, .6), y - rnd(.1, .25))], .012, i % 2 ? 0xd02a2a : 0x3a5ad0)); }
-  const gras = new THREE.MeshPhysicalMaterial({ color: 0xe8c25a, roughness: .35, clearcoat: .8 });
-  for (let i = 0; i < 60; i++) { const t = -2.6 + i * .075, b = new THREE.Mesh(new THREE.SphereGeometry(rnd(.035, .06) * S, 8, 6), gras); b.scale.set(1, .55, 1); b.position.copy(surf(t + rnd(-.03, .03), .56 + rnd(-.03, .03), 1)); ven.add(b); }
-  for (let i = 0; i < 26; i++) { const b = new THREE.Mesh(new THREE.SphereGeometry(rnd(.03, .05) * S, 8, 6), gras); b.scale.set(1, .6, 1); b.position.copy(surf(-.15 + rnd(-.05, .05), .55 - i * .045, 1)); ven.add(b); }
-  // oreillettes
-  const mO = matOrg({ vertexColors: false, color: 0xb03838, clearcoat: .7 });
-  const od = new THREE.Mesh(sculpte(new THREE.SphereGeometry(1, 40, 30), (p) => [p.x * .55 * S, p.y * .5 * S, p.z * .5 * S, 0], 0xb03838), mO); od.position.set(-.85 * S, .75 * S, .15 * S); tag(od, 'oreillette'); g.add(od);
-  const aur = new THREE.Mesh(sculpte(new THREE.SphereGeometry(1, 30, 20), (p) => { const r = 1 + .15 * Math.sin(p.x * 14); return [p.x * .38 * r * S, p.y * .22 * r * S, p.z * .25 * S, 0]; }, 0xb03838), mO); aur.position.set(.75 * S, .95 * S, .3 * S); aur.rotation.z = -.4; tag(aur, 'oreillette'); g.add(aur);
-  // gros vaisseaux (moignons) : aorte et ses 3 branches, tronc pulmonaire, veines caves, veines pulmonaires
-  const R = 0xc8282c, B = 0x2c5ab8, P = (x, y, z) => V3(x * S, y * S, z * S);
-  const add = (pts, r, col, k) => { const m = vx(pts.map((p) => P(...p)), r, col); tag(m, k); g.add(m); return m; };
-  add([[.05, .7, .05], [.1, 1.3, .1], [.3, 1.75, 0], [.65, 1.72, -.35], [.75, 1.2, -.6], [.75, .6, -.6]], .2, R, 'aorte');
-  add([[.22, 1.72, 0], [.12, 2.25, 0]], .09, R, 'aorte'); add([[.42, 1.8, -.12], [.45, 2.3, -.1]], .07, R, 'aorte'); add([[.62, 1.74, -.3], [.9, 2.2, -.3]], .075, R, 'aorte');
-  add([[.35, .65, .5], [.4, 1.2, .5], [.5, 1.38, .25]], .18, B, 'pulmonaire'); add([[.5, 1.38, .25], [1.1, 1.45, .05], [1.35, 1.4, -.1]], .12, B, 'pulmonaire'); add([[.5, 1.38, .25], [-.2, 1.42, -.3], [-.9, 1.4, -.35]], .12, B, 'pulmonaire');
-  add([[-.85, 2.1, 0], [-.85, 1.2, .05]], .16, B, 'veineCave'); add([[-.7, .1, -.1], [-.7, -.7, -.15]], .16, B, 'veineCave');
-  for (const [x, y] of [[.9, .85], [.95, .6], [-.3, .85], [-.25, .6]]) add([[x * .4, y, -.55], [x * 1.2, y + .05, -.6]], .07, R, 'vPulm');
-  return g;
+  const rz = (x, y, a) => [x * Math.cos(a) + y * Math.sin(a), -x * Math.sin(a) + y * Math.cos(a)];
+  const el = (x, y, z, c, r, a = 0) => { const [u, v] = rz(x - c[0], y - c[1], a); return hEll(u, v, z - c[2], r); };
+  const sillonAV = (x, y) => y - .25 * x - .4, lIV = (x, y) => { const ax = .95 - .05, ay = -1.5 - .35, L = Math.hypot(ax, ay); return ((x - .05) * ay - (y - .35) * ax) / L; };
+  const f = (x, y, z) => {
+    let d = el(x, y, z, [.12, -.32, .05], [.95, 1.28, .84], .55);
+    d = hSmin(d, hCap(x, y, z, [.25, -.45, .12], [.98, -1.58, .36], .62, .1), .35);
+    d = hSmin(d, el(x, y, z, [-.28, -.18, .38], [.82, .95, .6], .4), .3);
+    d = hSmin(d, el(x, y, z, [-.95, .68, .12], [.55, .7, .58]), .32);
+    d = hSmin(d, el(x, y, z, [.36, .72, -.5], [.76, .42, .5]), .3);
+    d = hSmin(d, el(x, y, z, [-.58, 1.04, .55], [.42, .22, .19], -.6) + .022 * Math.sin(x * 30 + y * 18), .14);
+    d = hSmin(d, el(x, y, z, [.9, .8, .5], [.44, .2, .19], .5) + .022 * Math.sin(x * 26 - y * 20), .14);
+    d += .045 * Math.exp(-Math.pow(sillonAV(x, y) / .07, 2)) + (z > 0 ? .035 * Math.exp(-Math.pow(lIV(x, y) / .06, 2)) * (y < .45 ? 1 : 0) : 0);
+    return d + .006 * bruit(x * 7, y * 7, z * 7);
+  };
+  const cM = new THREE.Color(0x9a2020), cO = new THREE.Color(0xa83232), cG = new THREE.Color(0xdcb45a);
+  const geo = maillerSDF(f, [0, -.15, 0], [1.75, 1.85, 1.35], 74, (x, y, z) => {
+    const av = sillonAV(x, y), oreil = sstep(-.05, .15, av), grs = Math.min(1, Math.exp(-Math.pow(av / .16, 2)) * (.75 + .5 * bruit(x * 5, y * 5, z * 5)) + (z > 0 ? Math.exp(-Math.pow(lIV(x, y) / .12, 2)) * sstep(-.6, .3, y) * .8 : 0));
+    const c = cM.clone().lerp(cO, oreil).lerp(cG, Math.max(0, grs)); const v = 1 + .08 * bruit(x * 9, y * 9, z * 9); return [c.r * v, c.g * v, c.b * v]; });
+  g.add(new THREE.Mesh(geo, new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: .36, clearcoat: .9, clearcoatRoughness: .25, sheen: .5, sheenColor: new THREE.Color(0xff9090) })));
+  // projeter un point sur la surface (descente de gradient sur f)
+  const surf = (p, off = .03) => { const q = p.clone(), e = .01; for (let i = 0; i < 12; i++) { const d = f(q.x, q.y, q.z), gx = (f(q.x + e, q.y, q.z) - f(q.x - e, q.y, q.z)) / (2 * e), gy = (f(q.x, q.y + e, q.z) - f(q.x, q.y - e, q.z)) / (2 * e), gz = (f(q.x, q.y, q.z + e) - f(q.x, q.y, q.z - e)) / (2 * e), l = Math.hypot(gx, gy, gz) || 1; q.x -= gx / l * d; q.y -= gy / l * d; q.z -= gz / l * d; if (i === 11) q.add(V3(gx / l, gy / l, gz / l).multiplyScalar(off)); } return q; };
+  const tubeS = (pts, r, col) => new THREE.Mesh(new THREE.TubeGeometry(courbe(pts.map((p) => surf(V3(...p)))), 80, r, 6), new THREE.MeshPhysicalMaterial({ color: col, roughness: .3, clearcoat: .8 }));
+  const RC = 0xd8302c, BC = 0x3a62c8, ligne = (a, b, n, zz) => [...Array(n)].map((_, i) => [a[0] + (b[0] - a[0]) * i / (n - 1), a[1] + (b[1] - a[1]) * i / (n - 1), zz]);
+  g.add(tubeS(ligne([.08, .32], [.95, -1.5], 14, 1.2), .028, RC));                                                     // interventriculaire antérieure
+  g.add(tubeS(ligne([.16, .3], [1.02, -1.4], 12, 1.2), .024, BC));                                                     // grande veine du cœur
+  g.add(tubeS([...Array(12)].map((_, i) => { const a = -.2 - i * .23; return [Math.sin(a) * 1.4 - .1, .36 + .25 * (Math.sin(a) * 1.4) , Math.cos(a) * 1.4]; }), .03, RC));   // coronaire droite
+  g.add(tubeS([...Array(10)].map((_, i) => { const a = .15 + i * .22; return [Math.sin(a) * 1.4, .45 + .25 * Math.sin(a) * 1.4, Math.cos(a) * 1.4]; }), .026, RC));            // circonflexe
+  for (const [a, b] of [[[.3, -.1], [.95, -.55]], [[.5, -.55], [1.05, -.95]], [[-.1, -.2], [-.55, -.9]]]) g.add(tubeS(ligne(a, b, 6, 1.2), .016, RC));
+  // gros vaisseaux
+  const vx = (pts, r, col, k) => { const m = new THREE.Mesh(new THREE.TubeGeometry(courbe(pts), 70, r, 18), new THREE.MeshPhysicalMaterial({ color: col, roughness: .32, clearcoat: .8, sheen: .4, sheenColor: new THREE.Color(0xffffff) })); tag(m, k); g.add(m); return m; };
+  const AO = 0xb8221f, VB = 0x2f5cba;
+  vx([[.02, .45, .1], [.05, 1.0, .15], [.12, 1.45, .12], [.32, 1.76, 0], [.66, 1.72, -.36], [.78, 1.2, -.62], [.75, .6, -.6]], .27, AO, 'aorte');
+  vx([[.2, 1.68, .02], [.16, 2.2, 0]], .1, AO, 'aorte'); vx([[.43, 1.78, -.12], [.47, 2.28, -.1]], .075, AO, 'aorte'); vx([[.62, 1.74, -.3], [.92, 2.18, -.32]], .085, AO, 'aorte');
+  vx([[.32, .45, .66], [.36, .95, .62], [.42, 1.28, .42]], .25, VB, 'pulmonaire'); vx([[.42, 1.28, .42], [.85, 1.36, .2], [1.35, 1.34, -.05]], .15, VB, 'pulmonaire'); vx([[.42, 1.28, .42], [-.1, 1.32, -.25], [-.95, 1.3, -.32]], .15, VB, 'pulmonaire');
+  vx([[-.88, 2.12, 0], [-.9, 1.6, .03], [-.92, 1.15, .08]], .22, VB, 'veineCave'); vx([[-.78, .05, -.05], [-.75, -.4, -.12], [-.7, -.75, -.15]], .23, VB, 'veineCave');
+  for (const [x, y] of [[.95, .85], [1, .6], [-.25, .88], [-.2, .62]]) vx([[x * .45, y, -.7], [x * 1.25, y + .04, -.75]], .085, 0xc0302c, 'vPulm');
+  g.scale.setScalar(S); return g;
 }
 function vessieMod() { const m = new THREE.Mesh(new THREE.SphereGeometry(2.6, 40, 30), new THREE.MeshPhysicalMaterial({ color: 0xe0b080, roughness: .35, clearcoat: .7, transparent: true, opacity: .92 })); m.scale.set(1.1, .85, .9); return tag(m, 'vessie'); }
 function rateMod() { const m = new THREE.Mesh(sculpte(new THREE.SphereGeometry(1, 50, 36), (p) => [p.x * 1.6, p.y * 3, p.z * 1, 0], 0x6a2a50), matOrg()); return tag(m, 'rate'); }
@@ -1274,7 +1297,7 @@ function activer(sc) {
   $('#tLieu').textContent = sc.titre; $('#tEchelle').textContent = sc.echelle;
   $('#bRetour').innerHTML = sc.retourIcone; $('#bRetour').setAttribute('aria-label', sc.hub ? 'Revenir au corps' : 'Dézoomer');
   majDep(sc);
-  if (sc.micro && !S.aideM) { S.aideM = 1; save(); setTimeout(() => toast("Glisse pour tourner, pince ou utilise + et − pour zoomer, touche une molécule pour l'identifier. Le bouton <b>Explication</b> ouvre le texte du cours.", 6500), 500); }
+  if (sc.micro && !S.aideM) { S.aideM = 1; save(); setTimeout(() => toast("Glisse pour tourner, pince ou utilise + et − pour zoomer, touche une molécule pour l'identifier. Le bouton <b>Explication</b> ouvre le texte du cours."), 500); }
   if (sc.micro) etapesUI(sc); else { sc.camera.clearViewOffset(); sc.piste(); }
 }
 function transition(fn) { const v = $('#voile'); v.classList.add('on'); setTimeout(() => { fn(); setTimeout(() => v.classList.remove('on'), 60); }, 330); bip(420, .15); }
@@ -1313,7 +1336,7 @@ let actif = false;
 function ouvrirMonde() {
   $('#carte').classList.remove('on'); $('#monde').classList.add('on');
   pile = []; activer(SCENES[HUB]()); actif = true;
-  if (!S.vu) { S.vu = 1; save(); setTimeout(() => toast(PREMIERE, 7000), 700); }
+  if (!S.vu) { S.vu = 1; save(); setTimeout(() => toast(PREMIERE), 700); }
 }
 $('#bEntrer').onclick = () => { $('#zoomCorps').classList.add('entre'); bip(330, .3); setTimeout(ouvrirMonde, 900); };
 $('#bSommaire').onclick = menuNiveaux;
