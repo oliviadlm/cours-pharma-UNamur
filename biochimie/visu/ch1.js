@@ -120,6 +120,11 @@ const ENCY = {
   grele: ['Intestin grêle', "Duodénum, jéjunum, iléon : absorption du glucose, des AA (vers la veine porte) et des graisses (vers la lymphe)."],
   colon: ['Côlon', "Côlon ascendant, transverse, descendant, sigmoïde : bosselures (haustrations) et bandelettes musculaires."],
   tendon: ['Tendon', "Attache le muscle à l'os : tissu conjonctif dense, blanc nacré."],
+  wirsung: ['Canal de Wirsung', "Canal pancréatique principal : amène le suc pancréatique (lipases, amylase, protéases) au duodénum avec le cholédoque (ampoule de Vater)."],
+  duodenum: ['Duodénum', "Premier segment de l'intestin grêle, en C autour de la tête du pancréas : y arrivent la bile et le suc pancréatique."],
+  oreillette: ['Oreillette', "Oreillette droite (reçoit les veines caves) et gauche (reçoit les veines pulmonaires)."],
+  pulmonaire: ['Tronc pulmonaire', "Part du ventricule droit vers les poumons : sang pauvre en O₂ (bleu par convention)."],
+  vPulm: ['Veines pulmonaires', "Ramènent au cœur gauche le sang oxygéné des poumons (rouge par convention)."],
   chylo: ['Chylomicron', "Grosse lipoprotéine des graisses du repas : plasma « laiteux » après un repas gras."],
 };
 
@@ -460,6 +465,18 @@ function bruit(x, y, z) {
     lrp(lrp(gradN(PERM[AA + 1], x, y, z - 1), gradN(PERM[BA + 1], x - 1, y, z - 1), u), lrp(gradN(PERM[AB + 1], x, y - 1, z - 1), gradN(PERM[BB + 1], x - 1, y - 1, z - 1), u), v), w);
 }
 const fbm = (x, y, z, o = 3) => { let a = 0, f = 1, s = .5; for (let i = 0; i < o; i++) { a += s * bruit(x * f, y * f, z * f); f *= 2.03; s *= .5; } return a; };
+
+// bruit cellulaire (Worley) : renvoie [f1, f2] — sert aux lobules du pancréas, de la graisse
+function hash3(i, j, k) { let h = (i * 374761393 + j * 668265263 + k * 2147483647) | 0; h = (h ^ (h >> 13)) * 1274126177 | 0; return [((h & 1023) / 1023), (((h >> 10) & 1023) / 1023), (((h >> 20) & 1023) / 1023)]; }
+function worley(x, y, z) { const xi = Math.floor(x), yi = Math.floor(y), zi = Math.floor(z); let f1 = 9, f2 = 9;
+  for (let a = -1; a <= 1; a++) for (let b = -1; b <= 1; b++) for (let c = -1; c <= 1; c++) { const h = hash3(xi + a, yi + b, zi + c), dx = xi + a + h[0] - x, dy = yi + b + h[1] - y, dz = zi + c + h[2] - z, d = Math.sqrt(dx * dx + dy * dy + dz * dz); if (d < f1) { f2 = f1; f1 = d; } else if (d < f2) f2 = d; }
+  return [f1, f2]; }
+// creuse des sillons entre lobules le long des normales et assombrit les sillons
+function lobuler(geo, freq, prof, base, bosse = .5) {
+  geo = mergeVertices(geo); geo.computeVertexNormals(); const p = geo.attributes.position, n = geo.attributes.normal, col = new Float32Array(p.count * 3), c = new THREE.Color(base), v = new THREE.Vector3(), nn = new THREE.Vector3();
+  for (let i = 0; i < p.count; i++) { v.fromBufferAttribute(p, i); nn.fromBufferAttribute(n, i); const [f1, f2] = worley(v.x * freq, v.y * freq, v.z * freq), e = sstep(0, .16, f2 - f1), dome = 1 - f1 * bosse;
+    v.addScaledVector(nn, prof * (e * dome - 1)); p.setXYZ(i, v.x, v.y, v.z); const o = (1 - e) * .45; col[i * 3] = c.r * (1 - o * .6); col[i * 3 + 1] = c.g * (1 - o); col[i * 3 + 2] = c.b * (1 - o); }
+  geo.setAttribute('color', new THREE.BufferAttribute(col, 3)); geo.computeVertexNormals(); return geo; }
 const sstep = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 // déforme une géométrie ; fn(p) renvoie [x, y, z, ombre 0..1]
 function sculpte(geo, fn, base) {
@@ -558,14 +575,56 @@ function estomacMod() {
   return tag(new THREE.Mesh(tubeVar(c, 120, 2.2, (u) => .45 + 1.1 * Math.sin(Math.min(1, u * 1.25) * Math.PI) * (1 - .4 * u)), new THREE.MeshPhysicalMaterial({ color: 0xd8907a, roughness: .45, clearcoat: .6 })), 'estomac');
 }
 function pancreasMod() {
-  const c = courbe([[-3.5, -3.5, 0], [0, -2.5, -.5], [4, -1.5, -1.2], [8, -.3, -2], [11, .5, -2.5]]);
-  const geo = tubeVar(c, 120, 1.25, (u, a) => (1.15 - .55 * u) * (1 + .12 * bruit(u * 40, a * 6, 0)), 14);
-  return tag(new THREE.Mesh(geo, new THREE.MeshPhysicalMaterial({ color: 0xe7b07a, roughness: .6, clearcoat: .2 })), 'pancreas');
+  const g = tag(new THREE.Group(), 'pancreas');
+  // tête (dans le cadre duodénal) → col → corps → queue (vers la rate)
+  const c = courbe([[-4.2, -5.2, .6], [-3.4, -3.2, .4], [-1, -2.3, 0], [2.5, -1.6, -.8], [6.5, -.8, -1.6], [10.5, .4, -2.4], [12, 1, -2.8]]);
+  const prof = (u) => u < .18 ? 1.75 : u < .3 ? 1.75 - (u - .18) * 6 : 1.05 - (u - .3) * .55;
+  let geo = tubeVar(c, 160, 1, (u, a) => prof(u) * (1 + .1 * Math.sin(a * 6.28 * 2 + u * 9)) * (1 - .25 * Math.max(0, Math.cos(a * 6.28))), 28);
+  geo.deleteAttribute('uv'); geo = lobuler(geo, 1.9, .14, 0xf0c060, .4);
+  g.add(new THREE.Mesh(geo, new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: .55, clearcoat: .35, sheen: .4, sheenColor: new THREE.Color(0xfff0c0) })));
+  // canal de Wirsung (sur la face antérieure, comme sur les planches coupées)
+  const wir = courbe(c.getPoints(30).slice(2, 27).map((p, k) => p.clone().add(V3(0, -.1, prof(k / 29) * .92 + .05))));
+  const cw = new THREE.Mesh(new THREE.TubeGeometry(wir, 80, .12, 6), mat(0xd8c050, { emissive: 0x302000 })); tag(cw, 'wirsung'); g.add(cw);
+  for (let k = 3; k < 24; k += 2) { const p = wir.getPointAt(k / 26); const br = new THREE.Mesh(new THREE.TubeGeometry(courbe([p, p.clone().add(V3(rnd(-.6, .6), (k % 4 ? 1 : -1) * .7, 0))]), 4, .05, 4), cw.material); g.add(br); }
+  // duodénum en C autour de la tête
+  const du = courbe([[.6, .3, 2], [-2.5, .2, 2.4], [-5.8, -1.2, 2], [-7, -4.5, 1.6], [-6, -8, 1.2], [-2.5, -8.6, 1], [1.5, -7.6, .8], [3.2, -6, .6]]);
+  const dm = new THREE.Mesh(tubeVar(du, 140, 1.15, (u) => 1 + .06 * Math.sin(u * 120)), new THREE.MeshPhysicalMaterial({ color: 0xeea8a0, roughness: .4, clearcoat: .7, sheen: .5, sheenColor: new THREE.Color(0xffd0d0) }));
+  tag(dm, 'duodenum'); g.add(dm);
+  g.userData.tete = V3(-3.8, -4.8, 1.5); g.userData.queue = V3(11.5, .8, -2); g.userData.col = V3(-1, -2.3, 0);
+  return g;
 }
-function coeurMod(S = 3.6) {
-  const geo = sculpte(new THREE.SphereGeometry(1, 70, 50), (p) => { let { x, y, z } = p; const apex = sstep(.1, -1, y); x *= 1 - .45 * apex; z *= .8 * (1 - .35 * apex); y *= 1.15;
-    const sill = Math.exp(-Math.pow((x - y * .4 - .1) / .07, 2)) * .5; return [x * S, y * S, z * S, sill]; }, 0x8e2424);
-  const m = tag(new THREE.Mesh(geo, matOrg({ clearcoat: .8 })), 'coeur'); m.rotation.z = .55; return m;
+// forme des ventricules (direction unitaire → point de surface) : base en haut, pointe en bas
+function formeV(d) { const apex = sstep(.2, -1, d.y); return V3(d.x * (1 - .5 * apex) * 1.05, d.y * 1.25 - .15, d.z * .8 * (1 - .32 * apex)); }
+function coeurMod(S = 2.6) {
+  const g = tag(new THREE.Group(), 'coeur');
+  const ven = new THREE.Group(); ven.rotation.z = .5; ven.rotation.y = -.25; g.add(ven);
+  const geo = sculpte(new THREE.SphereGeometry(1, 80, 60), (p) => { const q = formeV(p.clone().normalize()); const th = Math.atan2(p.x, p.z);
+      const sil = Math.exp(-Math.pow((th + .15) / .07, 2)) * (p.y < .55 ? 1 : 0) + Math.exp(-Math.pow((p.y - .55) / .06, 2)) * .8;   // sillons interventriculaire et coronaire
+      const k = 1 - .03 * sil + .01 * bruit(p.x * 6, p.y * 6, p.z * 6); return [q.x * k * S, q.y * k * S, q.z * k * S, .25 * sil]; }, 0x9a2424);
+  ven.add(new THREE.Mesh(geo, matOrg({ clearcoat: .85, sheenColor: new THREE.Color(0xff8080) })));
+  const surf = (th, y, dz = 1.025) => { const r = Math.sqrt(Math.max(0, 1 - y * y)); return formeV(V3(Math.sin(th) * r, y, Math.cos(th) * r)).multiplyScalar(S * dz); };
+  const vx = (pts, r, col) => new THREE.Mesh(new THREE.TubeGeometry(courbe(pts), 60, r * S, 6), new THREE.MeshPhysicalMaterial({ color: col, roughness: .35, clearcoat: .7 }));
+  // coronaires (artères rouges, veines bleues) et graisse épicardique dans les sillons
+  const yy = (a, b, n) => [...Array(n)].map((_, i) => a + (b - a) * i / (n - 1));
+  ven.add(vx(yy(.58, -.95, 12).map((y) => surf(-.15, y)), .028, 0xd02a2a)); ven.add(vx(yy(.55, -.8, 10).map((y) => surf(-.02, y)), .022, 0x3a5ad0));
+  ven.add(vx(yy(-.2, -2.6, 12).map((t) => surf(t, .56)), .03, 0xd02a2a)); ven.add(vx(yy(.2, 1.8, 10).map((t) => surf(t, .58)), .026, 0xd02a2a));
+  for (let i = 0; i < 9; i++) { const t = -.15, y = .5 - i * .06; ven.add(vx([surf(t, y), surf(t + rnd(-.6, .6), y - rnd(.1, .25))], .012, i % 2 ? 0xd02a2a : 0x3a5ad0)); }
+  const gras = new THREE.MeshPhysicalMaterial({ color: 0xe8c25a, roughness: .35, clearcoat: .8 });
+  for (let i = 0; i < 60; i++) { const t = -2.6 + i * .075, b = new THREE.Mesh(new THREE.SphereGeometry(rnd(.035, .06) * S, 8, 6), gras); b.scale.set(1, .55, 1); b.position.copy(surf(t + rnd(-.03, .03), .56 + rnd(-.03, .03), 1)); ven.add(b); }
+  for (let i = 0; i < 26; i++) { const b = new THREE.Mesh(new THREE.SphereGeometry(rnd(.03, .05) * S, 8, 6), gras); b.scale.set(1, .6, 1); b.position.copy(surf(-.15 + rnd(-.05, .05), .55 - i * .045, 1)); ven.add(b); }
+  // oreillettes
+  const mO = matOrg({ vertexColors: false, color: 0xb03838, clearcoat: .7 });
+  const od = new THREE.Mesh(sculpte(new THREE.SphereGeometry(1, 40, 30), (p) => [p.x * .55 * S, p.y * .5 * S, p.z * .5 * S, 0], 0xb03838), mO); od.position.set(-.85 * S, .75 * S, .15 * S); tag(od, 'oreillette'); g.add(od);
+  const aur = new THREE.Mesh(sculpte(new THREE.SphereGeometry(1, 30, 20), (p) => { const r = 1 + .15 * Math.sin(p.x * 14); return [p.x * .38 * r * S, p.y * .22 * r * S, p.z * .25 * S, 0]; }, 0xb03838), mO); aur.position.set(.75 * S, .95 * S, .3 * S); aur.rotation.z = -.4; tag(aur, 'oreillette'); g.add(aur);
+  // gros vaisseaux (moignons) : aorte et ses 3 branches, tronc pulmonaire, veines caves, veines pulmonaires
+  const R = 0xc8282c, B = 0x2c5ab8, P = (x, y, z) => V3(x * S, y * S, z * S);
+  const add = (pts, r, col, k) => { const m = vx(pts.map((p) => P(...p)), r, col); tag(m, k); g.add(m); return m; };
+  add([[.05, .7, .05], [.1, 1.3, .1], [.3, 1.75, 0], [.65, 1.72, -.35], [.75, 1.2, -.6], [.75, .6, -.6]], .2, R, 'aorte');
+  add([[.22, 1.72, 0], [.12, 2.25, 0]], .09, R, 'aorte'); add([[.42, 1.8, -.12], [.45, 2.3, -.1]], .07, R, 'aorte'); add([[.62, 1.74, -.3], [.9, 2.2, -.3]], .075, R, 'aorte');
+  add([[.35, .65, .5], [.4, 1.2, .5], [.5, 1.38, .25]], .18, B, 'pulmonaire'); add([[.5, 1.38, .25], [1.1, 1.45, .05], [1.35, 1.4, -.1]], .12, B, 'pulmonaire'); add([[.5, 1.38, .25], [-.2, 1.42, -.3], [-.9, 1.4, -.35]], .12, B, 'pulmonaire');
+  add([[-.85, 2.1, 0], [-.85, 1.2, .05]], .16, B, 'veineCave'); add([[-.7, .1, -.1], [-.7, -.7, -.15]], .16, B, 'veineCave');
+  for (const [x, y] of [[.9, .85], [.95, .6], [-.3, .85], [-.25, .6]]) add([[x * .4, y, -.55], [x * 1.2, y + .05, -.6]], .07, R, 'vPulm');
+  return g;
 }
 function vessieMod() { const m = new THREE.Mesh(new THREE.SphereGeometry(2.6, 40, 30), new THREE.MeshPhysicalMaterial({ color: 0xe0b080, roughness: .35, clearcoat: .7, transparent: true, opacity: .92 })); m.scale.set(1.1, .85, .9); return tag(m, 'vessie'); }
 function rateMod() { const m = new THREE.Mesh(sculpte(new THREE.SphereGeometry(1, 50, 36), (p) => [p.x * 1.6, p.y * 3, p.z * 1, 0], 0x6a2a50), matOrg()); return tag(m, 'rate'); }
@@ -633,13 +692,13 @@ function sceneBilan() {
   // organes à leur place (vue de face : le foie est à gauche de l'écran = à droite du patient)
   const cer = poser(cerveau(7.5), V3(0, 41, -1), 'Cerveau', 9); cer.rotation.y = -.85;
   poser(new THREE.Object3D(), V3(0, 41 - 3.2, -5), 'Cervelet', -1.5, 1); poser(new THREE.Object3D(), V3(0, 41 - 4.4, -3), 'Tronc cérébral', -3, 1);
-  const coeur = poser(coeurMod(3.4), V3(1.5, 15, 1), 'Cœur', -4.6);
+  const coeur = poser(coeurMod(2.5), V3(1.3, 14, 1), 'Cœur', -4.6);
   const foie = poser(foieMod(8.5), V3(-5, 5, 1), 'Foie', 7.5);
   poser(new THREE.Object3D(), V3(-5 - .45 * 8.5, 5 - .2 * 8.5, 1 + .3 * 8.5), 'Vésicule biliaire', -2.2, 1);
   poser(new THREE.Object3D(), V3(-5 + .2 * 8.5, 5 + .35 * 8.5, 1 + .55 * 8.5), 'Ligament falciforme', 1, 1);
   const est = poser(estomacMod(), V3(1, 0, -1), null); poser(new THREE.Object3D(), V3(7.5, 6, 2), 'Estomac', 0, 1);
   const rate = poser(rateMod(), V3(13, 3, -4), 'Rate', -4, 1);
-  const pan = poser(pancreasMod(), V3(0, 0, -1), null); poser(new THREE.Object3D(), V3(5, -1.5, 0), 'Pancréas', -2, 0);
+  const pan = poser(pancreasMod(), V3(0, 0, -1), null); poser(new THREE.Object3D(), V3(5, -1.5, 0), 'Pancréas', -2, 0); poser(new THREE.Object3D(), V3(-6.5, -7, 3), 'Duodénum', -1, 1); poser(new THREE.Object3D(), V3(4, -1.6, 1), 'Canal de Wirsung', -1.2, 1);
   const rG = poser(reinMod(1), V3(-7.5, -6, -6), 'Rein', -4.4), rD = poser(reinMod(-1), V3(7.5, -5, -6), null);
   poser(new THREE.Object3D(), V3(7.5 - .4, -5 + 3.7, -6), 'Glande surrénale', 1.2, 1);
   const intest = poser(intestinMod(), V3(0, 0, 0), null);
@@ -653,14 +712,15 @@ function sceneBilan() {
   // vaisseaux (couleurs conventionnelles)
   const ROUGE = 0xc0282c, BLEU = 0x2c5ab8, VIOLET = 0x7a4ab0, VERT = 0x5fa84a, LYMPHE = 0xf0ecd0;
   const V = (pts, r, c, k, nom, iN, det = 1) => { const m = vaisseau(pts, r, c, k); S3.add(m); if (nom) { const o = new THREE.Object3D(); o.position.copy(V3(...pts[iN])); S3.add(o); s.labels.push({ o, t: nom, dy: 1.2, max: det ? 70 : 110, show: () => step === 0 }); } return m; };
-  V([[1.8, 17.5, 0], [2.5, 21, -.5], [4.5, 22, -2.5], [4, 19, -4.5], [2, 14, -5], [1.5, 6, -5], [1.5, -10, -5], [1.5, -26, -5]], .75, ROUGE, 'aorte', 'Aorte', 5, 0);
-  V([[-1.5, -26, -5.3], [-1.5, -10, -5.3], [-1.5, 6, -5.3], [-1.2, 11, -3], [0, 14, -.5]], .85, BLEU, 'veineCave', 'Veine cave inférieure', 2, 0);
+  V([[3.18, 15.5, -.5], [2.6, 11, -3.5], [1.5, 6, -5], [1.5, -10, -5], [1.5, -26, -5]], .5, ROUGE, 'aorte', 'Aorte', 2, 0); poser(new THREE.Object3D(), V3(2.4, 18.6, 1.2), 'Crosse de l\'aorte', 1, 1); poser(new THREE.Object3D(), V3(2.4, 17, 2.4), 'Tronc pulmonaire', -1, 1);
+  V([[-1.5, -26, -5.3], [-1.5, -10, -5.3], [-1.5, 6, -5.3], [-1.2, 10.5, -2.5], [-.45, 12.2, .5]], .5, BLEU, 'veineCave', 'Veine cave inférieure', 2, 0);
   V([[0, -13, 1.5], [-.5, -7, 0], [-2, -2.5, .5], [-4, .5, 1], [-5.5, 2.5, 1.2]], .55, VIOLET, 'veinePorte', 'Veine porte', 2, 0);
   V([[12, 2, -3.5], [8, -1.2, -2.6], [3, -3.6, -1.5], [-.6, -5.5, .2]], .35, VIOLET, 'veinePorte', 'Veine splénique', 1);
   V([[1.5, -1, -5], [-1.5, -.5, -2], [-4, .6, .4], [-5.2, 2.2, .8]], .3, ROUGE, 'arteHep', 'Artère hépatique', 1);
+  V([...Array(14)].map((_, k) => [1.5 + k * .8, -1 + k * .2 + Math.sin(k * 1.6) * .6, -5 + k * .1 + Math.cos(k * 1.3) * .5]), .22, ROUGE, 'aorte', 'Artère splénique', 8);
   V([[-5, 9, -1], [-3, 9.5, -3.5], [-1.4, 9, -5.2]], .45, BLEU, 'veineCave', 'Veines hépatiques', 1);
   V([[-8.8, .8, 4.2], [-6.5, -1, 2.5], [-4.5, -3.5, 1.5], [-2.5, -6, 1.5]], .28, VERT, 'voieBiliaire', 'Canal cholédoque', 2);
-  V([[2.5, 21, -.5], [2, 28, 0], [1.4, 34, -.5]], .4, ROUGE, 'aorte', 'Carotide', 1); V([[-1.6, 34, -.5], [-2, 28, 0], [-.5, 18, -.5]], .45, BLEU, 'veineCave', 'Jugulaire', 1);
+  V([[2.4, 19.6, .75], [2, 28, 0], [1.4, 34, -.5]], .22, ROUGE, 'aorte', 'Carotide', 1); V([[-1.6, 34, -.5], [-2, 28, 0], [-.8, 19.2, 1]], .28, BLEU, 'veineCave', 'Jugulaire → veine cave supérieure', 1);
   V([[1.5, -6, -5], [4, -5.5, -6], [6.2, -5, -6]], .32, ROUGE, 'aorte', 'Artère rénale', 1); V([[-1.5, -6.5, -5.3], [-4, -6.3, -6], [-6.3, -6, -6]], .38, BLEU, 'veineCave', 'Veine rénale', 0);
   V([[-6.3, -7, -5], [-5, -16, -4], [-2.5, -30, -1], [-1.2, -34.5, 1]], .2, 0xe8d09a, 'uretere', 'Uretère', 1); V([[6.3, -6, -5], [5, -16, -4], [2.5, -30, -1], [1.2, -34.5, 1]], .2, 0xe8d09a, 'uretere');
   V([[1.5, -26, -5], [5, -30, -3], [9, -35, -.5], [10.5, -39, .5]], .55, ROUGE, 'aorte', 'Artère iliaque → fémorale', 1); V([[10, -39, 1.6], [8, -35, 1], [4, -30, -3.6], [-1.5, -26, -5.3]], .6, BLEU, 'veineCave', 'Veine fémorale → iliaque', 1);
@@ -675,11 +735,11 @@ function sceneBilan() {
   const P = {
     porte: [[0, -14, 2.5], [-.5, -7, 1], [-2, -2.5, 1.5], [-4, .5, 2], [-5.5, 3, 2.2]],
     foieCoeur: [[-6, 7, 0], [-3, 9.6, -3.4], [-1.4, 9.4, -4.4], [-1.2, 11.5, -2.4], [.4, 14.5, .4]],
-    coeurAorte: [[1.8, 17.5, 1], [2.5, 21, .5], [4.5, 22, -1.5], [4, 19, -3.6], [2, 14, -4]],
+    coeurAorte: [[1.43, 15.75, 1.8], [1.55, 17.25, 1.9], [2.05, 18.4, 1.7], [2.93, 18.3, .9], [3.18, 17, .3], [3.3, 15.5, .2], [2.6, 11, -2.8]],
     aorteBas: [[1.5, 6, -4], [1.5, -10, -4], [1.5, -26, -4]],
     versMuscle: [[5, -30, -2], [9, -35, .5], [11, -42, 2.5]],
-    versCerveau: [[2.5, 21, .5], [2, 28, 1], [1.4, 35, .5], [.5, 38, 2]],
-    versGR: [[1.8, 17.5, 1], [4.5, 18.5, 2.5], [7.5, 18, 3]],
+    versCerveau: [[2.05, 18.4, 1.7], [2.4, 19.7, 1.5], [2, 28, 1], [1.4, 35, .5], [.5, 38, 2]],
+    versGR: [[1.55, 17.25, 1.9], [4.5, 18.5, 2.5], [7.5, 18, 3]],
     versAdip: [[1.5, -13, -4], [-6, -16.5, -1], [-14, -19.5, 1.6]],
     adipCoeur: [[-14, -21, 2], [-6, -18.5, -1.6], [-1.5, -15, -4.3], [-1.5, 6, -4.3], [-1.2, 11, -2], [.4, 14.5, .4]],
     museCoeur: [[10, -40, 2.6], [8, -35, 2], [4, -30, -2.6], [-1.5, -26, -4.3], [-1.5, 6, -4.3], [-1.2, 11, -2], [.4, 14.5, .4]],
@@ -688,7 +748,7 @@ function sceneBilan() {
     reinVessie: [[6.6, -7, -4], [5, -16, -3], [2.5, -30, 0], [1, -35, 2.5]],
     lymphe: [[0, -12, .5], [0, -9, -5.5], [.4, 0, -5.4], [.8, 12, -5], [3, 19.5, -2.5], [5.5, 21, 0], [3, 18, 1], [.4, 14.5, .4]],
     pancFoie: [[6, -1, 0], [3, -3, -.5], [-.6, -5, 1.2], [-2, -2.5, 1.5], [-4, .5, 2], [-5.5, 3, 2.2]],
-    grFoie: [[7.5, 18, 3], [4.5, 22, -1.5], [4, 19, -3.6], [2, 14, -4]],
+    grFoie: [[7.5, 18, 3], [4, 17, 1], [3.3, 15.5, .2], [2.6, 11, -2.8]],
   };
   const R = (...noms) => noms.flatMap((n) => P[n]);
   const F = [
