@@ -1,0 +1,23 @@
+{
+ "name": "Le sang — Biochimie humaine",
+ "short_name": "Bioch ch4",
+ "start_url": "ch4-le-sang.html",
+ "scope": "./",
+ "display": "standalone",
+ "background_color": "#f3efe6",
+ "theme_color": "#0e7490",
+ "lang": "fr",
+ "icons": [
+  {
+   "src": "icons/ch4-le-sang-192.png",
+   "sizes": "192x192",
+   "type": "image/png"
+  },
+  {
+   "src": "icons/ch4-le-sang-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any"
+  }
+ ]
+}
