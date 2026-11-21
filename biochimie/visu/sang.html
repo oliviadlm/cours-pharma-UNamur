@@ -37,6 +37,8 @@ button{font:inherit;color:inherit;cursor:pointer}
 .hud>*{pointer-events:auto}
 .rond{width:44px;height:44px;border-radius:50%;border:1px solid var(--trait);background:var(--panneau);display:flex;align-items:center;justify-content:center;flex:none}
 .lieu-t{flex:1;min-width:0;background:var(--panneau);border:1px solid var(--trait);border-radius:14px;padding:6px 10px}
+.lieu-t{cursor:pointer;position:relative;padding-right:26px}.lieu-t::after{content:'';position:absolute;right:10px;top:12px;width:7px;height:7px;border-right:2px solid var(--doux);border-bottom:2px solid var(--doux);transform:rotate(-135deg) translate(-3px,-3px);transition:transform .2s}
+.lieu-t.petit::after{transform:rotate(45deg) translate(0,0)}.lieu-t.petit small{display:none}.lieu-t.petit{padding-top:9px;padding-bottom:9px}
 .lieu-t b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lieu-t small{color:var(--doux);font-size:12px}
 .mini{width:44px;height:74px;border-radius:12px;background:var(--panneau);border:1px solid var(--trait);padding:3px;flex:none}
 .bas{position:absolute;left:0;right:0;bottom:0;padding:0 10px calc(var(--sab) + 10px);z-index:5;pointer-events:none}
@@ -138,7 +140,7 @@ button{font:inherit;color:inherit;cursor:pointer}
  <div id="labels"></div>
  <div class="hud">
   <button class="rond" id="bRetour" aria-label="Dézoomer"><svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3M8 11h6"/></svg></button>
-  <div class="lieu-t"><b id="tLieu">Une veinule</b><small id="tEchelle">échelle</small></div>
+  <div class="lieu-t petit" id="lieuT" role="button" aria-label="Afficher ou masquer les détails"><b id="tLieu">Une veinule</b><small id="tEchelle">échelle</small></div>
   <button class="rond" id="bNiv" aria-label="Niveaux"><svg class="ic" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
   <svg class="mini" id="mini" viewBox="0 0 60 110"><g fill="#173b4f" stroke="#5fd4e6" stroke-opacity=".6"><circle cx="30" cy="11" r="8"/><path d="M20 22h20l4 34h-28zM16 58h28l-2 22h-24zM18 80h10l-1 28h-8zM32 80h10l-1 28h-8zM20 23l-8 30M40 23l8 30"/></g><circle id="miniPt" cx="12" cy="45" r="4" fill="#fff"><animate attributeName="r" values="3;6;3" dur="1.4s" repeatCount="indefinite"/></circle></svg>
  </div>
@@ -151,5 +153,5 @@ button{font:inherit;color:inherit;cursor:pointer}
 <div class="feuille" id="feuille"><div class="f-tete"><h2 id="fT"></h2><button class="rond" id="fX" aria-label="Fermer"><svg class="ic" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div><div class="f-corps" id="fC"></div></div>
 <div class="toast" id="toast"></div>
 
-<script type="module" src="visu.js?v=3"></script>
+<script type="module" src="visu.js?v=4"></script>
 </body></html>

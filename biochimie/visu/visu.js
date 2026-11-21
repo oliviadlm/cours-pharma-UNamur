@@ -382,7 +382,7 @@ function micro(o) {
   if (o.fog) scene.fog = new THREE.FogExp2(o.bg || 0x1a0306, o.fog);
   const camera = new THREE.PerspectiveCamera(50, W / H, .05, 800); camera.position.copy(o.cam || V3(0, 0, 30));
   { const tg = o.target || V3(0, 0, 0), f = W < H ? Math.min(1.9, .62 * H / W) : 1; camera.position.sub(tg).multiplyScalar(f).add(tg); o.max = (o.max || 80) * f; }
-  const controls = new OrbitControls(camera, cv); controls.enableDamping = true; controls.dampingFactor = .08; controls.enablePan = false;
+  const controls = new OrbitControls(camera, cv); controls.enableDamping = true; controls.dampingFactor = .08; controls.enablePan = true; controls.screenSpacePanning = true;
   controls.minDistance = o.min || 5; controls.maxDistance = o.max || 80; controls.autoRotate = !!o.auto; controls.autoRotateSpeed = .5;
   if (o.target) controls.target.copy(o.target);
   scene.add(new THREE.HemisphereLight(o.sky || 0xffeeee, o.ground || 0x402020, 1.2));
@@ -390,6 +390,7 @@ function micro(o) {
   const d2 = new THREE.DirectionalLight(o.rim || 0x88ccff, .7); d2.position.set(-25, -10, -20); scene.add(d2);
   const self = Object.assign({ scene, camera, controls, labels: [], micro: true, retourIcone: IC.out, mini: [12, 45] }, o);
   self.d0 = camera.position.distanceTo(controls.target);
+  self.monter = (sg) => { const d = camera.position.distanceTo(controls.target) * .12, up = V3(0, 1, 0).applyQuaternion(camera.quaternion); self.tgt = (self.tgt || controls.target).clone().addScaledVector(up, sg * d); };
   self.zoom = (f) => { const d = camera.position.distanceTo(controls.target); self.zd = Math.max(controls.minDistance, Math.min(controls.maxDistance, f === 0 ? self.d0 : d * f)); };
   const upd = o.update;
   self.update = (dt, t) => { controls.update(); upd && upd.call(self, dt, t); };
@@ -957,7 +958,7 @@ const ICD = {
   tout: '<svg class="ic" viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>',
 };
 function majDep(sc) {
-  const b = sc.micro ? [['plus', 'Zoomer', () => cur.zoom(.62)], ['moins', 'Dézoomer', () => cur.zoom(1.6)], ['tout', "Vue d'ensemble", () => cur.zoom(0)]]
+  const b = sc.micro ? [['plus', 'Zoomer', () => cur.zoom(.62)], ['moins', 'Dézoomer', () => cur.zoom(1.6)], ['tout', "Vue d'ensemble", () => cur.zoom(0)], ['haut', 'Monter', () => cur.monter(1)], ['bas', 'Descendre', () => cur.monter(-1)]]
     : [['haut', 'Avancer', () => cur.avance(1)], ['bas', 'Reculer', () => cur.avance(-1)]];
   for (const id of ['#depG', '#depD']) { const el = $(id); el.innerHTML = b.map(([ic, t], i) => `<button data-i="${i}" aria-label="${t}" title="${t}">${ICD[ic]}</button>`).join('');
     el.querySelectorAll('button').forEach((x) => x.onclick = () => cur && b[+x.dataset.i][2]()); }
@@ -966,6 +967,8 @@ function majDep(sc) {
 ['gesturestart', 'gesturechange', 'gestureend'].forEach((ev) => document.addEventListener(ev, (e) => e.preventDefault(), { passive: false }));
 document.addEventListener('touchmove', (e) => { if (e.touches.length > 1 && $('#monde').classList.contains('on')) e.preventDefault(); }, { passive: false });
 let dernierTap = 0; document.addEventListener('touchend', (e) => { const n = Date.now(); if (n - dernierTap < 300 && $('#monde').classList.contains('on')) e.preventDefault(); dernierTap = n; }, { passive: false });
+$('#lieuT').onclick = () => { S.hudOuvert = !S.hudOuvert; save(); $('#lieuT').classList.toggle('petit', !S.hudOuvert); requestAnimationFrame(cadreLibre); };
+if (S.hudOuvert) $('#lieuT').classList.remove('petit');
 let actif = false;
 function ouvrirMonde() {
   $('#carte').classList.remove('on'); $('#monde').classList.add('on');
@@ -982,6 +985,7 @@ function boucle() {
   if (!actif || !cur || !visible) { clock.getDelta(); return; }
   const dt = Math.min(.05, clock.getDelta()), t = clock.elapsedTime;
   cur.update(dt, t);
+  if (cur.tgt) { const c = cur.controls, dl = cur.tgt.clone().sub(c.target).multiplyScalar(Math.min(1, dt * 4)); c.target.add(dl); cur.camera.position.add(dl); if (cur.tgt.distanceTo(c.target) < .05) cur.tgt = null; }
   if (cur.zd) { const c = cur.controls, v = cur.camera.position.clone().sub(c.target), d = v.length(), nd = d + (cur.zd - d) * Math.min(1, dt * 6);
     cur.camera.position.copy(c.target).addScaledVector(v.normalize(), nd); if (Math.abs(cur.zd - nd) < .05) cur.zd = 0; } R.render(cur.scene, cur.camera); majLabels();
 }
