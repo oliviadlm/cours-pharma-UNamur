@@ -11,6 +11,8 @@ const IC = {
   play: '<svg class="ic" viewBox="0 0 24 24"><path d="M6 4l14 8-14 8z"/></svg>',
   map: '<svg class="ic" viewBox="0 0 24 24"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg>',
   out: '<svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3M8 11h6"/></svg>',
+  info: '<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-5M12 8h.01"/></svg>',
+  go: '<svg class="ic" viewBox="0 0 24 24" style="width:16px;height:16px"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
   book: '<svg class="ic" viewBox="0 0 24 24"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5z"/></svg>',
 };
 let S = { ency: {} };
@@ -24,10 +26,12 @@ const LV = [
   { id: 'L4', t: "L'hémoglobine", scene: 'hb', sec: 3, sub: "4 globines, 4 hèmes, O₂, effet Bohr, CO, méthémoglobine." },
   { id: 'L4b', t: 'Le fer', scene: 'fer', sec: 3, sub: "Absorption dans l'intestin, ferritine, transferrine, hepcidine." },
   { id: 'L5', t: "Dégradation de l'hémoglobine", scene: 'macro', sec: 4, sub: "Rate, biliverdine, bilirubine, foie, intestin." },
+  { id: 'L5b', t: 'Le foie : conjugaison', scene: 'foie', sec: 4, sub: "Sinusoïde, hépatocyte, glucuronyltransférase, canalicule biliaire, ictères." },
+  { id: 'L5c', t: "L'intestin : stercobiline", scene: 'intestin', sec: 4, sub: "Bactéries, urobilinogène, selles brunes, cycle entéro-hépatique." },
   { id: 'L6', t: 'Les groupes sanguins', scene: 'membrane', sec: 5, sub: "Antigènes A, B, H et Rhésus sur la membrane." },
   { id: 'L7', t: 'Plaquettes et hémostase', scene: 'breche', sec: 6, sub: "Clou plaquettaire, coagulation, fibrinolyse." },
 ];
-const NUM = { L1: '1', L2: '2', L3: '3', L4: '4', L4b: '4', L5: '5', L6: '6', L7: '7' };
+const NUM = { L1: '1', L2: '2', L3: '3', L4: '4', L4b: '4', L5: '5', L5b: '5', L5c: '5', L6: '6', L7: '7' };
 const lvl = (id) => LV.find((l) => l.id === id);
 const stars = () => 0, etoiles = () => '', bossOpen = () => false;
 function ouvrirBoss() {}
@@ -115,7 +119,7 @@ const R = new THREE.WebGLRenderer({ canvas: cv, antialias: true, powerPreference
 R.setPixelRatio(Math.min(devicePixelRatio, 2));
 R.toneMapping = THREE.ACESFilmicToneMapping; R.toneMappingExposure = 1.15;
 let W = 1, H = 1;
-function taille() { W = innerWidth; H = innerHeight; R.setSize(W, H, false); if (cur) { cur.camera.aspect = W / H; cur.camera.updateProjectionMatrix(); } }
+function taille() { W = innerWidth; H = innerHeight; R.setSize(W, H, false); if (cur) { cur.camera.aspect = W / H; cur.camera.updateProjectionMatrix(); if (cur.micro) requestAnimationFrame(cadreLibre); } }
 addEventListener('resize', taille);
 
 let cur = null, pile = [], vesselCache = null;
@@ -191,7 +195,8 @@ function majLabels() {
     if (l.dy) tmpV.y += l.dy;
     const d = tmpV.distanceTo(cur.camera.position);
     tmpV.project(cur.camera);
-    const vis = tmpV.z < 1 && tmpV.z > -1 && Math.abs(tmpV.x) < 1.2 && Math.abs(tmpV.y) < 1.2 && d < (l.max || 1e9) && (l.show ? l.show() : true) && (l.poi || !!l.t);
+    let cache = false; for (let q = l.o; q; q = q.parent) if (!q.visible) { cache = true; break; }
+    const vis = !cache && tmpV.z < 1 && tmpV.z > -1 && Math.abs(tmpV.x) < 1.2 && Math.abs(tmpV.y) < 1.2 && d < (l.max || 1e9) && (l.show ? l.show() : true) && (l.poi || !!l.t);
     l.el.style.display = vis ? '' : 'none';
     if (vis) { l.el.style.left = ((tmpV.x + 1) / 2 * W) + 'px'; l.el.style.top = ((1 - tmpV.y) / 2 * H) + 'px'; l.el.style.opacity = l.max ? Math.min(1, (l.max - d) / (l.max * .35)) : 1; }
   }
@@ -384,6 +389,8 @@ function micro(o) {
   const d = new THREE.DirectionalLight(0xffffff, 1.6); d.position.set(20, 30, 25); scene.add(d);
   const d2 = new THREE.DirectionalLight(o.rim || 0x88ccff, .7); d2.position.set(-25, -10, -20); scene.add(d2);
   const self = Object.assign({ scene, camera, controls, labels: [], micro: true, retourIcone: IC.out, mini: [12, 45] }, o);
+  self.d0 = camera.position.distanceTo(controls.target);
+  self.zoom = (f) => { const d = camera.position.distanceTo(controls.target); self.zd = Math.max(controls.minDistance, Math.min(controls.maxDistance, f === 0 ? self.d0 : d * f)); };
   const upd = o.update;
   self.update = (dt, t) => { controls.update(); upd && upd.call(self, dt, t); };
   self.dispose = () => { controls.dispose(); scene.traverse((x) => { x.geometry && x.geometry.dispose(); if (x.material) [].concat(x.material).forEach((m) => { m.map && m.map.dispose(); m.dispose(); }); }); };
@@ -391,12 +398,27 @@ function micro(o) {
 }
 const lab = (self, o, t, dy = 0) => self.labels.push({ o, t, dy });
 function etapesUI(self) {
-  const L = self.niv ? lvl(self.niv) : null;
-  const carteNiv = L ? `<div class="carte-niv"><div class="t"><b>Partie ${NUM[L.id]} du cours · ${L.t}</b><small style="color:var(--doux);letter-spacing:0">Les dias et les explications sont dans l'onglet Cours</small></div><button class="btn" id="bFiche">${IC.book} Lire</button></div>` : '';
-  const et = self.steps ? `<div class="etapes">${self.steps.map((s, i) => `<button data-i="${i}" class="${i === (self.si || 0) ? 'on' : ''}">${s[0]}</button>`).join('')}</div>` : '';
-  $('#bas').innerHTML = `${et}<div class="legende3d" id="leg">${self.steps ? self.steps[self.si || 0][1] : self.legende || ''}</div>${carteNiv}<div class="aide">Glisse pour tourner · pince pour zoomer · touche une molécule pour l'identifier</div>`;
+  const L = self.niv ? lvl(self.niv) : null, si = self.si || 0;
+  const txt = self.steps ? self.steps[si][1] : self.legende || '';
+  const et = self.steps ? `<div class="etapes">${self.steps.map((s, i) => `<button data-i="${i}" class="${s[2] ? 'aller' : i === si ? 'on' : ''}">${s[0]}${s[2] ? ' ' + IC.go : ''}</button>`).join('')}</div>` : '';
+  $('#bas').innerHTML = `${et}<div class="bulle${S.info ? ' on' : ''}" id="leg">${txt}</div>
+    <div class="barre"><button class="b-info${S.info ? ' on' : ''}" id="bInfo" aria-label="Explication">${IC.info}<span>${S.info ? 'Masquer' : 'Explication'}</span></button>
+    ${L ? `<span class="b-part">Partie ${NUM[L.id]} · ${L.t}</span><button class="b-lire" id="bFiche">${IC.book} Lire</button>` : ''}</div>`;
   if (L) $('#bFiche').onclick = () => ouvrirNiveau(L.id);
-  $('#bas').querySelectorAll('.etapes button').forEach((b) => b.onclick = () => { self.si = +b.dataset.i; self.onStep && self.onStep(self.si); etapesUI(self); });
+  $('#bInfo').onclick = () => { S.info = !S.info; save(); etapesUI(self); };
+  $('#leg').onclick = () => { S.info = 0; save(); etapesUI(self); };
+  $('#bas').querySelectorAll('.etapes button').forEach((b) => b.onclick = () => { const st = self.steps[+b.dataset.i]; if (st[2]) { entrerScene(st[2]); return; } self.si = +b.dataset.i; self.onStep && self.onStep(self.si); etapesUI(self);
+    if (!S.info) { const bi = $('#bInfo'); bi.classList.remove('pulse'); void bi.offsetWidth; bi.classList.add('pulse'); } });
+  const on = $('#bas').querySelector('.etapes .on'); if (on) on.scrollIntoView({ inline: 'center', block: 'nearest' });
+  requestAnimationFrame(cadreLibre);
+}
+// centre la 3D dans la zone libre entre le bandeau du haut et les commandes du bas
+function cadreLibre() {
+  if (!cur) return;
+  const haut = $('.hud').getBoundingClientRect().bottom, bas = $('#bas').getBoundingClientRect().top;
+  const cy = (haut + bas) / 2, dec = H / 2 - cy;
+  cur.camera.setViewOffset(W, H, 0, dec, W, H);
+  for (const id of ['#depG', '#depD']) $(id).style.top = cy + 'px';
 }
 
 /* ---------- 1. Le plasma ---------- */
@@ -449,17 +471,26 @@ function sceneErythro() {
   lab(s, regle, '7,8 µm', -1);
   // érythropoïèse
   const lignee = new THREE.Group(); lignee.visible = false; S3.add(lignee);
-  const stades = [['proerythro', 7, 4.8, 0x5a6fc0, 'Proérythroblaste'], ['erythroblaste', 6, 3.8, 0x7a6ab0, 'Érythroblaste basophile'], ['erythroblaste', 5, 2.6, 0xa0607a, 'Érythroblaste polychromatophile'], ['erythroblaste', 4.2, 1.6, 0xb84050, 'Érythroblaste acidophile'], ['reticulo', 0, 0, 0, 'Réticulocyte'], ['erythro', 0, 0, 0, 'Érythrocyte']];
+  const stades = [['proerythro', 7, 4.8, 0x5a6fc0, 'Proérythroblaste'], ['erythroblaste', 6, 3.8, 0x7a6ab0, 'Érythroblaste\nbasophile'], ['erythroblaste', 5, 2.6, 0xa0607a, 'Érythroblaste\npolychromatophile'], ['erythroblaste', 4.2, 1.6, 0xb84050, 'Érythroblaste\nacidophile'], ['reticulo', 0, 0, 0, 'Réticulocyte'], ['erythro', 0, 0, 0, 'Érythrocyte']];
+  const cellsL = [];
   stades.forEach(([k, r, rn, c, nom], i) => {
     let m;
     if (r) { m = tag(new THREE.Mesh(new THREE.SphereGeometry(r, 32, 24), new THREE.MeshPhysicalMaterial({ color: c, transparent: true, opacity: .55, roughness: .5 })), k);
       const nu = new THREE.Mesh(new THREE.SphereGeometry(rn, 24, 18), mat(0x2a2f8a, { roughness: .7 })); m.add(nu); }
     else { m = tag(new THREE.Mesh(geoGR(), matGR()), k); m.scale.setScalar(1.4); }
-    m.position.set(-34 + i * 13.5, -18, 0); lignee.add(m); lab(s, m, nom, -8);
+    // portrait : 2 colonnes × 3 lignes en serpentin ; paysage : une ligne
+    const port = W < H, col = port ? (Math.floor(i / 2) % 2 ? 1 - i % 2 : i % 2) : i, row = port ? Math.floor(i / 2) : 0;
+    m.position.set(port ? -8 + col * 16 : -34 + i * 13.5, port ? -4 - row * 15 : -18, 0); lignee.add(m); lab(s, m, nom, port ? -7.5 : -8);
+    cellsL.push(m); if (i) { const p0 = cellsL[i - 1].position, p1 = m.position, d = p1.clone().sub(p0), L = d.length();
+      const fl = new THREE.Mesh(new THREE.ConeGeometry(.7, 1.8, 10), mat(0x5fd4e6, { emissive: 0x1a5060 })); fl.position.copy(p0).addScaledVector(d, .5); fl.quaternion.setFromUnitVectors(V3(0, 1, 0), d.clone().normalize()); lignee.add(fl);
+      const tr = new THREE.Mesh(new THREE.CylinderGeometry(.15, .15, L * .35, 6), fl.material); tr.position.copy(fl.position).addScaledVector(d, -.12); tr.quaternion.copy(fl.quaternion); lignee.add(tr); }
   });
-  s.onStep = (i) => { gr.visible = i !== 1; coupe.visible = i === 1; reti.visible = i === 2; lignee.visible = i === 3;
-    if (i === 3) { s.controls.target.set(0, -14, 0); s.camera.position.set(0, -4, 62); s.controls.maxDistance = 90; } else { s.controls.target.set(0, 0, 0); } };
-  s.update = function (dt) { s.controls.update(); gr.rotation.y += dt * .3; reti.rotation.y += dt * .3; lignee.children.forEach((m) => m.rotation.y += dt * .3); };
+  const centreL = W < H ? V3(0, -19, 0) : V3(0, -18, 0), rayL = W < H ? 22 : 42;
+  s.onStep = (i) => { gr.visible = i !== 1; coupe.visible = i === 1; reti.visible = i === 2; lignee.visible = i === 3; regle.visible = i === 0;
+    if (i === 3) { const vf = THREE.MathUtils.degToRad(s.camera.fov) / 2, hf = Math.atan(Math.tan(vf) * s.camera.aspect), d = rayL / Math.sin(Math.min(vf, hf));
+      s.controls.target.copy(centreL); s.camera.position.copy(centreL).add(V3(0, 4, d)); s.controls.maxDistance = d * 1.4; s.d0 = d; }
+    else { s.controls.target.set(0, 0, 0); s.camera.position.set(0, 6, 26).multiplyScalar(W < H ? Math.min(1.9, .62 * H / W) : 1); s.d0 = s.camera.position.length(); } };
+  s.update = function (dt) { s.controls.update(); gr.rotation.y += dt * .3; reti.rotation.y += dt * .3; lignee.children.forEach((m) => { if (m.userData.k) m.rotation.y += dt * .3; }); };
   return s;
 }
 
@@ -559,9 +590,9 @@ function sceneMacro() {
     steps: [
       ['Phagocytose', "Après <b>120 jours</b>, le GR vieilli (pâle, déformé) est capté par un <b>macrophage</b> de la rate (aussi foie, moelle)."],
       ['Hème → biliverdine', "La globine est recyclée en acides aminés. L'<b>hème oxygénase</b> ouvre l'hème : <b>biliverdine</b> (verte) + <b>Fe</b> (recyclé par la transferrine) + <b>CO</b>."],
-      ['Bilirubine', "La biliverdine réductase (NADPH) donne la <b>bilirubine</b> (jaune), peu soluble : elle part dans le sang liée à l'<b>albumine</b> = bilirubine <b>libre / non conjuguée / indirecte</b>."],
-      ['Foie', "Dans le foie : <b>glucuroconjugaison</b> (UDP-glucuronyltransférase) → bilirubine <b>conjuguée / directe</b>, soluble, sécrétée dans la bile."],
-      ['Intestin', "Les bactéries la transforment en urobilinogène → <b>stercobiline</b> (selles brunes) ; une partie est réabsorbée et éliminée dans l'urine (<b>urobiline</b>). Hémolyse : non conjuguée ↑ ; obstruction : conjuguée ↑."],
+      ['Bilirubine', "La biliverdine réductase (NADPH) donne la <b>bilirubine</b> (jaune), peu soluble : elle part dans le sang liée à l'<b>albumine</b> = bilirubine <b>libre / non conjuguée / indirecte</b>. Suite : touche <b>Entrer dans le foie</b>."],
+      ['Entrer dans le foie', '', 'foie'],
+      ["Entrer dans l'intestin", '', 'intestin'],
     ] });
   const S3 = s.scene;
   const mac = tag(new THREE.Mesh(blob(10, .09, 5, 5, 1.5), new THREE.MeshPhysicalMaterial({ color: 0xe8d6c0, roughness: .6, transparent: true, opacity: .42, sheen: .7, sheenColor: new THREE.Color(0xffffff), depthWrite: false })), 'macro');
@@ -746,7 +777,150 @@ Object.assign(ENCY, {
   vitc: ['Vitamine C', "Réduit le Fe³⁺ en Fe²⁺ : elle aide l'absorption du fer."],
   hepcidine: ['Hepcidine', "Hormone du foie qui dégrade la ferroportine : elle freine l'absorption et la libération du fer."],
 });
-const SCENES = { plasma: scenePlasma, erythro: sceneErythro, gr: sceneGR, hb: sceneHb, fer: sceneFer, macro: sceneMacro, membrane: sceneMembrane, breche: sceneBreche };
+
+/* ---------- 5b. Le foie : conjugaison de la bilirubine ---------- */
+function sceneFoie() {
+  const s = micro({ id: 'foie', niv: 'L5b', titre: 'Dans le foie : deux hépatocytes', echelle: 'Hépatocyte ≈ 25 µm · molécules agrandies', bg: 0x1a0a06, fog: .008, cam: V3(6, 12, 74), min: 16, max: 110, target: V3(0, -4, 0), sky: 0xffe8d8, ground: 0x2a0e06,
+    steps: [
+      ['Arrivée', "Le sang de la rate arrive au foie par la <b>veine porte</b> et coule dans les <b>sinusoïdes</b> (capillaires à trous, en bas). La bilirubine y voyage collée à l'<b>albumine</b> (bleu) : c'est la bilirubine <b>indirecte</b> (non conjuguée), peu soluble."],
+      ['Captation', "Dans le sinusoïde, le complexe <b>albumine-bilirubine se dissocie</b>. La bilirubine (jaune) traverse l'espace de Disse et entre dans l'<b>hépatocyte</b> ; l'albumine reste dans le sang."],
+      ['Conjugaison', "Sur le <b>réticulum endoplasmique</b>, la <b>glucuronyltransférase</b> (UDP-glucuronyltransférase, violet) accroche <b>deux acides glucuroniques</b> (blanc) : <b>bilirubine diglucuronide</b> = bilirubine <b>conjuguée / directe</b>, hydrosoluble."],
+      ['Bile', "La bilirubine conjuguée sort de l'hépatocyte par un <b>transport actif</b> (ATP) dans le <b>canalicule biliaire</b> (vert, entre deux hépatocytes) : elle part dans la <b>bile</b>, puis la vésicule et le duodénum."],
+      ['Ictères', "Bilirubine > 1 mg/dL : jaunisse. <b>1. Hémolyse</b> (pré-hépatique) : trop de bilirubine arrive, non conjuguée ↑. <b>2. Foie malade</b> (hépatite, cirrhose, Gilbert) : conjugaison ou excrétion lente. <b>3. Bile bloquée</b> (calcul, tumeur) : la conjuguée reflue dans le sang, conjuguée ↑, selles décolorées."],
+      ["Vers l'intestin", '', 'intestin'],
+    ] });
+  const S3 = s.scene;
+  // deux hépatocytes côte à côte (plaque hépatocytaire)
+  const mHep = new THREE.MeshPhysicalMaterial({ color: 0xd99a7a, roughness: .55, transparent: true, opacity: .3, depthWrite: false, sheen: .6, sheenColor: new THREE.Color(0xffd0b0) });
+  const heps = [-1, 1].map((sg) => { const g = blob(1, .05, 4, sg + 3, 1.2); g.scale(12, 13, 13); const m = tag(new THREE.Mesh(g, mHep), 'hepatocyte'); m.position.set(sg * 12.6, 2, 0); S3.add(m);
+    const nu = new THREE.Mesh(blob(3.2, .1, 4, sg + 7), mat(0x6a5aa0, { roughness: .7 })); nu.position.set(sg * 15, 6, -4); S3.add(nu);
+    for (let i = 0; i < 5; i++) { const mi = new THREE.Mesh(new THREE.CapsuleGeometry(.7, 2.4, 4, 8), mat(0xd8783a, { roughness: .6 })); mi.position.set(sg * rnd(8, 19), rnd(-6, 10), rnd(-7, 7)); mi.rotation.set(rnd(0, 3), rnd(0, 3), 0); S3.add(mi); }
+    return m; });
+  lab(s, heps[1], 'Hépatocyte', 12);
+  // réticulum endoplasmique (citernes ondulées) dans l'hépatocyte de droite
+  const re = new THREE.Group(); for (let i = 0; i < 4; i++) { const c = new THREE.CatmullRomCurve3([...Array(6)].map((_, j) => V3(6 + j * 2.6, -2 + i * 1.5 + Math.sin(j * 1.7 + i) * .7, 3 - i * .8)));
+    re.add(new THREE.Mesh(new THREE.TubeGeometry(c, 40, .38, 6), mat(0x8aa8d8, { roughness: .4, transparent: true, opacity: .8 }))); } tag(re, 'reticulum'); S3.add(re); lab(s, re.children[3], 'Réticulum endoplasmique', 3);
+  const ugt = []; for (let i = 0; i < 3; i++) { const e = tag(new THREE.Mesh(blob(1.1, .3, 3, i + 11), mat(0x9b59d0, { emissive: 0x2a1040 })), 'ugt'); e.position.set(9 + i * 3.6, 1 + (i % 2) * 1.6, 2.4); S3.add(e); ugt.push(e); }
+  lab(s, ugt[1], 'Glucuronyltransférase', 2.2);
+  // canalicule biliaire entre les deux hépatocytes (le long de z)
+  const cana = tag(new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.5, 34, 24, 1, true), new THREE.MeshPhysicalMaterial({ color: 0x4caf6a, roughness: .35, transparent: true, opacity: .55, side: THREE.DoubleSide, depthWrite: false })), 'canalicule');
+  cana.rotation.x = Math.PI / 2; cana.position.set(0, 6, 0); S3.add(cana); lab(s, cana, 'Canalicule biliaire', 3);
+  // pompe d'export (côté canalicule)
+  const pompe = tag(new THREE.Mesh(new THREE.TorusGeometry(.9, .35, 8, 16), mat(0x2fbf8f, { emissive: 0x0a3020 })), 'pompeBile'); pompe.position.set(1.6, 6, 3); pompe.rotation.y = Math.PI / 2; S3.add(pompe);
+  // sinusoïde en bas (le long de x), endothélium fenêtré
+  const sinu = tag(new THREE.Mesh(new THREE.CylinderGeometry(6, 6, 64, 36, 6, true), new THREE.MeshPhysicalMaterial({ color: 0xa82030, roughness: .5, transparent: true, opacity: .3, side: THREE.DoubleSide, depthWrite: false })), 'sinusoide');
+  sinu.rotation.z = Math.PI / 2; sinu.position.set(0, -18, 0); S3.add(sinu); lab(s, sinu, 'Sinusoïde (sang)', -7.5);
+  for (let i = 0; i < 26; i++) { const tr = new THREE.Mesh(new THREE.CircleGeometry(.7, 10), mat(0x1a0a06, { side: THREE.DoubleSide })); const a = rnd(0, 6.28), x = rnd(-28, 28); tr.position.set(x, -18 + Math.cos(a) * 6.02, Math.sin(a) * 6.02); tr.lookAt(x, -18, 0); S3.add(tr); }
+  const grs = []; for (let i = 0; i < 4; i++) { const g = tag(new THREE.Mesh(geoGR(), matGR()), 'erythro'); g.scale.setScalar(.9); S3.add(g); grs.push({ g, ph: i / 4 }); }
+  // molécules
+  const albs = [], bils = [];
+  for (let i = 0; i < 10; i++) { const a = tag(new THREE.Mesh(blob(1.3, .25, 3, i + 20), mat(0x4f8fd6)), 'albumine'); S3.add(a); albs.push(a);
+    const b = tag(new THREE.Group(), 'bilirubine'); b.add(new THREE.Mesh(new THREE.SphereGeometry(.6, 14, 10), mat(0xf5c020, { emissive: 0x6a4a00 })));
+    for (const sg of [-1, 1]) { const gl = new THREE.Mesh(new THREE.CylinderGeometry(.42, .42, .2, 6), mat(0xffffff, { emissive: 0x404040 })); gl.position.set(sg * .85, .3, 0); gl.rotation.x = Math.PI / 2; gl.visible = false; b.add(gl); }
+    S3.add(b); bils.push({ b, ph: i / 10 }); }
+  lab(s, albs[0], 'Albumine + bilirubine', 2);
+  const cas = { o: new THREE.Object3D(), t: '', dy: 0 }; cas.o.position.set(0, 22, 0); S3.add(cas.o); s.labels.push(cas);
+  const bouchon = tag(new THREE.Mesh(blob(2.2, .25, 3, 9), mat(0x6b6a3a, { roughness: .9 })), 'calcul'); bouchon.position.set(0, 6, 15); bouchon.visible = false; S3.add(bouchon);
+  let step = 0, k = 0; s.onStep = (i) => { step = i; k = 0; };
+  const lerp = (a, b, u) => a.clone().lerp(b, Math.max(0, Math.min(1, u)));
+  s.update = function (dt, t) {
+    s.controls.update(); k = Math.min(1, k + dt * .3);
+    grs.forEach((o, i) => { const u = (t * .04 + o.ph) % 1; o.g.position.set(-30 + u * 60, -18 + Math.sin(i * 2) * 2.5, Math.cos(i * 2) * 2.5); o.g.rotation.y += dt; });
+    const ph = Math.floor(t / 4) % 3; cas.t = step === 4 ? ['1. Hémolyse : afflux de bilirubine', '2. Foie malade : conjugaison lente', '3. Bile bloquée : reflux dans le sang'][ph] : '';
+    bouchon.visible = step === 4 && ph === 2;
+    bils.forEach((o, i) => {
+      const u = (t * .09 + o.ph) % 1, a = albs[i], b = o.b, glu = b.children.slice(1);
+      const pSin = V3(-28 + u * 56, -18 + Math.sin(i) * 2, Math.cos(i) * 2);
+      const pDisse = V3(4 + (i % 5) * 2.6, -11, -3 + (i % 3) * 3), pRE = ugt[i % 3].position.clone().add(V3(0, 1.6, 0)), pCan = V3(0, 6, -14 + u * 28);
+      a.visible = step < 4 || ph === 0; b.visible = true; a.rotation.y += dt;
+      let pos, conj = false;
+      if (step === 0) { pos = pSin; a.position.copy(pos).add(V3(1.2, 0, 0)); }
+      else if (step === 1) { const v = (u * 1.4) % 1; a.position.copy(pSin).add(V3(1.2, 0, 0)); pos = v < .35 ? pSin.clone() : lerp(pDisse, pRE, (v - .35) / .65); if (v < .35) pos.x += 1.2 - v * 3; }
+      else if (step === 2) { a.position.copy(pSin).add(V3(1.2, 0, 0)); pos = pRE.clone().add(V3(Math.sin(t * 2 + i) * .4, Math.cos(t * 2 + i) * .4, 0)); conj = ((t * .5 + i * .3) % 2) > 1; }
+      else if (step === 3) { a.position.copy(pSin).add(V3(1.2, 0, 0)); const v = (u * 1.3) % 1; conj = true; pos = v < .5 ? lerp(pRE, pompe.position, v * 2) : pCan; }
+      else { // ictères
+        a.position.copy(pSin).add(V3(1.2, 0, 0));
+        if (ph === 0) { pos = pSin; } else if (ph === 1) { pos = lerp(pDisse, pRE, .3).add(V3(Math.sin(t + i) * 2, Math.cos(t * .7 + i) * 2, 0)); }
+        else { conj = true; const v = (u * 1.3) % 1; pos = lerp(V3(2, 6, 0), V3(-6 - i % 4, -12, (i % 3) * 3 - 3), v); }
+      }
+      b.position.copy(pos); glu.forEach((g) => g.visible = conj); b.rotation.y += dt * 2;
+      if (step === 4 && ph === 0) { const extra = (i % 2) ? 1 : 0; b.scale.setScalar(1 + extra * .3); } else b.scale.setScalar(1);
+    });
+    ugt.forEach((e, i) => { e.scale.setScalar(step === 2 ? 1 + .15 * Math.sin(t * 6 + i) : 1); e.visible = step >= 2; });
+    pompe.rotation.x += dt * (step === 3 ? 3 : .5);
+    heps.forEach((m) => m.material.opacity = step >= 2 ? .24 : .3);
+  };
+  return s;
+}
+
+/* ---------- 5c. L'intestin : bactéries, stercobiline, cycle entéro-hépatique ---------- */
+function sceneIntestin() {
+  const s = micro({ id: 'intestin', niv: 'L5c', titre: "Dans l'intestin : le côlon", echelle: 'Lumière intestinale · bactéries ≈ 2 µm, molécules agrandies', bg: 0x170c05, fog: .009, cam: V3(0, 10, 60), min: 16, max: 100, target: V3(0, 0, 0), sky: 0xffe6c8, ground: 0x281004,
+    steps: [
+      ['Bile', "La bile coule dans le <b>duodénum</b> et apporte la <b>bilirubine conjuguée</b> (jaune + 2 acides glucuroniques blancs) dans la lumière de l'intestin."],
+      ['Bactéries', "Dans l'intestin (surtout le côlon), les <b>bactéries</b> ont une <b>β-glucuronidase</b> : elle coupe les acides glucuroniques, la bilirubine redevient <b>libre</b>."],
+      ['Urobilinogène', "Les bactéries <b>réduisent</b> la bilirubine en <b>urobilinogène</b> et <b>stercobilinogène</b>, peu colorés (pâles)."],
+      ['Stercobiline', "Au contact de l'O₂, ils sont <b>oxydés</b> en <b>stercobiline</b> et <b>urobiline</b>, brunâtres : c'est la couleur des <b>selles</b>. Bile bloquée (ictère post-hépatique) : selles décolorées."],
+      ['Cycle entéro-hépatique', "La plus grande partie est éliminée dans les selles. Une <b>petite partie</b> d'urobilinogène est <b>réabsorbée</b> dans le sang (en bas) : elle retourne au <b>foie</b> par la veine porte (<b>cycle entéro-hépatique</b>), et un peu passe dans les <b>urines</b> (urobiline, couleur jaune)."],
+    ] });
+  const S3 = s.scene;
+  // paroi avec villosités (en bas), capillaire sous la paroi
+  const paroi = tag(new THREE.Mesh(new THREE.BoxGeometry(70, 3, 34, 20, 1, 10), mat(0xc47a68, { roughness: .7 })), 'muqueuse'); paroi.position.y = -9; S3.add(paroi);
+  const gVil = new THREE.CapsuleGeometry(1.2, 6, 6, 10), mVil = new THREE.MeshPhysicalMaterial({ color: 0xe09a84, roughness: .5, sheen: .6, sheenColor: new THREE.Color(0xffd0c0) });
+  const vil = new THREE.InstancedMesh(gVil, mVil, 60); const dm = new THREE.Object3D(); let n = 0;
+  for (let i = 0; i < 12; i++) for (let j = 0; j < 5; j++) { dm.position.set(-30 + i * 5.4 + (j % 2) * 2.7, -4.5, -12 + j * 6); dm.rotation.set(rnd(-.1, .1), 0, rnd(-.1, .1)); dm.updateMatrix(); vil.setMatrixAt(n++, dm.matrix); }
+  tag(vil, 'muqueuse'); S3.add(vil);
+  const cap = tag(new THREE.Mesh(new THREE.CylinderGeometry(3.5, 3.5, 70, 28, 1, true), new THREE.MeshPhysicalMaterial({ color: 0xa82030, roughness: .5, transparent: true, opacity: .4, side: THREE.DoubleSide, depthWrite: false })), 'veinePorte');
+  cap.rotation.z = Math.PI / 2; cap.position.set(0, -16, 0); S3.add(cap); lab(s, cap, 'Sang → veine porte → foie', -5);
+  // bactéries
+  const bact = []; const mB = [0x7aa860, 0x9a7ac8, 0x5aa0a8];
+  for (let i = 0; i < 22; i++) { const b = tag(new THREE.Mesh(new THREE.CapsuleGeometry(.6, 2.2, 4, 8), mat(mB[i % 3], { roughness: .45 })), 'bacterie'); b.position.set(rnd(-28, 28), rnd(2, 16), rnd(-12, 12)); b.rotation.set(rnd(0, 3), rnd(0, 3), rnd(0, 3)); S3.add(b); bact.push({ b, v: V3(rnd(-1, 1), rnd(-.5, .5), rnd(-1, 1)) }); }
+  lab(s, bact[0].b, 'Bactérie (β-glucuronidase)', 2);
+  // molécules : bilirubine (sphère colorée) + 2 acides glucuroniques
+  const mols = [];
+  for (let i = 0; i < 30; i++) { const g = tag(new THREE.Group(), 'bilirubine'); const c = new THREE.Mesh(new THREE.SphereGeometry(.65, 14, 10), mat(0xf5c020, { emissive: 0x5a3a00 })); g.add(c);
+    const glu = [-1, 1].map((sg) => { const m = new THREE.Mesh(new THREE.CylinderGeometry(.45, .45, .2, 6), mat(0xffffff, { emissive: 0x404040 })); m.position.set(sg * .9, .3, 0); m.rotation.x = Math.PI / 2; g.add(m); return m; });
+    S3.add(g); mols.push({ g, c, glu, ph: i / 30, seed: rnd(0, 6) }); }
+  lab(s, mols[0].g, 'Bilirubine conjuguée', 1.6);
+  // selles
+  const selles = []; for (let i = 0; i < 5; i++) { const m = tag(new THREE.Mesh(blob(3, .3, 3, i + 30), mat(0x6b4020, { roughness: .9 })), 'selles'); S3.add(m); selles.push({ m, ph: i / 5 }); }
+  // rein / urine (repère)
+  const urine = new THREE.Object3D(); urine.position.set(30, -16, 0); S3.add(urine); const lU = { o: urine, t: '', dy: -5 }; s.labels.push(lU);
+  const cIn = new THREE.Color(0xf5c020), cPale = new THREE.Color(0xf2ead0), cBrun = new THREE.Color(0x8a4a1a);
+  let step = 0, k = 0; s.onStep = (i) => { step = i; k = 0; };
+  s.update = function (dt, t) {
+    s.controls.update(); k = Math.min(1, k + dt * .3);
+    bact.forEach((o) => { o.b.position.addScaledVector(o.v, dt * 1.5); o.b.rotation.x += dt * .5; for (const ax of ['x', 'y', 'z']) { const lim = ax === 'y' ? [1.5, 17] : ax === 'x' ? [-30, 30] : [-13, 13]; if (o.b.position[ax] < lim[0] || o.b.position[ax] > lim[1]) o.v[ax] *= -1; } o.b.visible = step >= 1; });
+    lU.t = step === 4 ? 'Vers le rein : urobiline (urine)' : '';
+    mols.forEach((o, i) => {
+      const u = (t * .05 + o.ph) % 1; let col = cIn, conj = false;
+      const base = V3(-32 + u * 64, 6 + Math.sin(o.seed + t * .6) * 6, Math.cos(o.seed * 2 + t * .4) * 10);
+      if (step === 0) { conj = true; base.y = 18 - u * 10; base.x = -20 + (i % 10) * 4; base.z = -8 + (i % 4) * 5; }
+      else if (step === 1) { conj = u < .45; }
+      else if (step === 2) { col = cIn.clone().lerp(cPale, Math.min(1, u * 2)); }
+      else if (step === 3) { col = cPale.clone().lerp(cBrun, Math.min(1, u * 2)); if (u > .5) { const sm = selles[i % 5].m; base.copy(sm.position).add(V3(Math.sin(i) * 2.4, Math.cos(i * 1.3) * 2, Math.sin(i * 2) * 2.4)); } }
+      else { if (i % 5 === 0) { col = cPale; const v = u; base.set(-20 + (i % 10) * 4, v < .5 ? 2 - v * 18 : -16, (i % 4) * 3 - 5); if (v >= .5) base.x += (v - .5) * 40; } else { col = cBrun; const sm = selles[i % 5].m; base.copy(sm.position).add(V3(Math.sin(i) * 2.4, Math.cos(i * 1.3) * 2, Math.sin(i * 2) * 2.4)); } }
+      o.g.position.copy(base); o.glu.forEach((g) => g.visible = conj); o.c.material.color.copy(col); o.g.rotation.y += dt * 2;
+    });
+    selles.forEach((o, i) => { const u = (t * .03 + o.ph) % 1; o.m.position.set(-34 + u * 68, 7 + Math.sin(i * 2) * 3, -6 + (i % 3) * 6); o.m.visible = step >= 3; o.m.rotation.y += dt * .2; });
+  };
+  return s;
+}
+
+Object.assign(ENCY, {
+  hepatocyte: ['Hépatocyte', "Cellule du foie : capte la bilirubine, la conjugue et la sécrète dans la bile."],
+  reticulum: ['Réticulum endoplasmique', "Réseau de membranes de l'hépatocyte où se trouve la glucuronyltransférase."],
+  ugt: ['Glucuronyltransférase', "UDP-glucuronyltransférase : ajoute 2 acides glucuroniques à la bilirubine (glucuroconjugaison). Immature chez le nouveau-né, déficitaire dans la maladie de Gilbert."],
+  canalicule: ['Canalicule biliaire', "Petit canal entre deux hépatocytes qui collecte la bile."],
+  pompeBile: ["Transporteur d'export", "Fait sortir la bilirubine conjuguée de l'hépatocyte vers la bile, par transport actif (ATP)."],
+  sinusoide: ['Sinusoïde hépatique', "Capillaire du foie à paroi percée : le sang (veine porte + artère hépatique) y est au contact des hépatocytes."],
+  calcul: ['Calcul biliaire', "Bloque l'écoulement de la bile : ictère post-hépatique, bilirubine conjuguée ↑, selles décolorées, urines foncées."],
+  muqueuse: ['Muqueuse intestinale', "Paroi de l'intestin avec ses villosités ; laisse repasser une petite partie de l'urobilinogène dans le sang."],
+  veinePorte: ['Veine porte', "Ramène le sang de l'intestin vers le foie : support du cycle entéro-hépatique."],
+  bacterie: ['Bactérie intestinale', "Sa β-glucuronidase déconjugue la bilirubine, puis elle la réduit en urobilinogène et stercobilinogène."],
+  selles: ['Selles', "Leur couleur brune vient de la stercobiline (et de l'urobiline)."],
+});
+const SCENES = { foie: sceneFoie, intestin: sceneIntestin, plasma: scenePlasma, erythro: sceneErythro, gr: sceneGR, hb: sceneHb, fer: sceneFer, macro: sceneMacro, membrane: sceneMembrane, breche: sceneBreche };
 
 /* =========================================================
    NAVIGATION
@@ -757,8 +931,9 @@ function activer(sc) {
   cur = sc; taille();
   $('#tLieu').textContent = sc.titre; $('#tEchelle').textContent = sc.echelle;
   $('#bRetour').innerHTML = sc.retourIcone; $('#bRetour').setAttribute('aria-label', sc.micro ? 'Dézoomer' : 'Revenir au corps');
-  $('#depG').style.display = sc.micro ? 'none' : '';
-  if (sc.micro) etapesUI(sc); else sc.piste();
+  majDep(sc);
+  if (sc.micro && !S.aideM) { S.aideM = 1; save(); setTimeout(() => toast("Glisse pour tourner, pince ou utilise + et − pour zoomer, touche une molécule pour l'identifier. Le bouton <b>Explication</b> ouvre le texte du cours.", 6500), 500); }
+  if (sc.micro) etapesUI(sc); else { sc.camera.clearViewOffset(); sc.piste(); }
 }
 function transition(fn) { const v = $('#voile'); v.classList.add('on'); setTimeout(() => { fn(); setTimeout(() => v.classList.remove('on'), 60); }, 330); bip(420, .15); }
 function entrerScene(nom) { transition(() => { const sc = SCENES[nom](); if (cur && !cur.micro) pile = ['vessel']; else if (cur) pile.push(cur.id); activer(sc); }); }
@@ -775,8 +950,22 @@ $('#bRetour').onclick = () => {
   const prev = pile.pop();
   transition(() => { if (!prev || prev === 'vessel') activer(vesselCache); else activer(SCENES[prev]()); });
 };
-$('#bAv').onclick = () => cur && cur.avance && cur.avance(1);
-$('#bRe').onclick = () => cur && cur.avance && cur.avance(-1);
+const ICD = {
+  haut: '<svg class="ic" viewBox="0 0 24 24"><path d="m6 15 6-6 6 6"/></svg>', bas: '<svg class="ic" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>',
+  plus: '<svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3M11 8v6M8 11h6"/></svg>',
+  moins: '<svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3M8 11h6"/></svg>',
+  tout: '<svg class="ic" viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>',
+};
+function majDep(sc) {
+  const b = sc.micro ? [['plus', 'Zoomer', () => cur.zoom(.62)], ['moins', 'Dézoomer', () => cur.zoom(1.6)], ['tout', "Vue d'ensemble", () => cur.zoom(0)]]
+    : [['haut', 'Avancer', () => cur.avance(1)], ['bas', 'Reculer', () => cur.avance(-1)]];
+  for (const id of ['#depG', '#depD']) { const el = $(id); el.innerHTML = b.map(([ic, t], i) => `<button data-i="${i}" aria-label="${t}" title="${t}">${ICD[ic]}</button>`).join('');
+    el.querySelectorAll('button').forEach((x) => x.onclick = () => cur && b[+x.dataset.i][2]()); }
+}
+// Safari : empêcher le zoom de la page et la vue des onglets quand on pince la 3D
+['gesturestart', 'gesturechange', 'gestureend'].forEach((ev) => document.addEventListener(ev, (e) => e.preventDefault(), { passive: false }));
+document.addEventListener('touchmove', (e) => { if (e.touches.length > 1 && $('#monde').classList.contains('on')) e.preventDefault(); }, { passive: false });
+let dernierTap = 0; document.addEventListener('touchend', (e) => { const n = Date.now(); if (n - dernierTap < 300 && $('#monde').classList.contains('on')) e.preventDefault(); dernierTap = n; }, { passive: false });
 let actif = false;
 function ouvrirMonde() {
   $('#carte').classList.remove('on'); $('#monde').classList.add('on');
@@ -792,7 +981,9 @@ function boucle() {
   requestAnimationFrame(boucle);
   if (!actif || !cur || !visible) { clock.getDelta(); return; }
   const dt = Math.min(.05, clock.getDelta()), t = clock.elapsedTime;
-  cur.update(dt, t); R.render(cur.scene, cur.camera); majLabels();
+  cur.update(dt, t);
+  if (cur.zd) { const c = cur.controls, v = cur.camera.position.clone().sub(c.target), d = v.length(), nd = d + (cur.zd - d) * Math.min(1, dt * 6);
+    cur.camera.position.copy(c.target).addScaledVector(v.normalize(), nd); if (Math.abs(cur.zd - nd) < .05) cur.zd = 0; } R.render(cur.scene, cur.camera); majLabels();
 }
 boucle();
 $('#charge').remove();

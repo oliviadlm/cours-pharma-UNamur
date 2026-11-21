@@ -31,6 +31,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .btn.sec{background:rgba(255,255,255,.08);color:var(--texte);border:1px solid var(--trait)}
 .stats{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.stats span{background:rgba(255,255,255,.06);border:1px solid var(--trait);border-radius:20px;padding:4px 10px;font-size:13px}
 /* ---------- monde ---------- */
+#monde{touch-action:none}#monde .etapes,#monde .feuille{touch-action:pan-x pan-y}
 #monde canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;display:block}
 .hud{position:absolute;left:0;right:0;top:0;padding:calc(var(--sat) + 8px) 10px 0;display:flex;gap:8px;align-items:flex-start;pointer-events:none;z-index:5}
 .hud>*{pointer-events:auto}
@@ -45,9 +46,9 @@ button{font:inherit;color:inherit;cursor:pointer}
 .piste .moi{position:absolute;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:#fff;box-shadow:0 0 8px #fff}
 .piste .pt{position:absolute;top:50%;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;background:#24465a;border:1px solid var(--cyan);color:#fff}
 .piste .pt.ok{background:var(--vert);color:#04220f}.piste .pt.boss{background:var(--rouge)}
-.dep{position:absolute;bottom:calc(var(--sab) + 56px);display:flex;flex-direction:column;gap:6px}
+.dep{position:absolute;top:46%;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px;z-index:6}
 .dep.g{left:10px}.dep.d{right:10px}
-.dep button{width:40px;height:40px;border-radius:50%;background:var(--panneau);border:1px solid var(--trait)}
+.dep button{width:44px;height:44px;border-radius:50%;background:var(--panneau);border:1px solid var(--trait);display:flex;align-items:center;justify-content:center}.dep button:active{background:#1d4a5e}
 #labels{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:3}
 .poi{position:absolute;transform:translate(-50%,-100%);pointer-events:auto;display:flex;flex-direction:column;align-items:center;gap:3px;border:0;background:none;padding:0}
 .poi .pas{background:var(--panneau);border:1.5px solid var(--cyan);border-radius:14px;padding:5px 10px 5px 6px;display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;white-space:nowrap;box-shadow:0 0 14px rgba(95,212,230,.45)}
@@ -57,10 +58,20 @@ button{font:inherit;color:inherit;cursor:pointer}
 .poi.ok .pas{border-color:var(--vert)}.poi.ok .num{background:var(--vert)}
 .poi.boss .pas{border-color:var(--rouge);box-shadow:0 0 18px rgba(224,65,75,.6)}.poi.boss .num{background:var(--rouge);color:#fff}
 .poi.ferme{opacity:.55}
-.lab{position:absolute;transform:translate(-50%,-50%);font-size:12px;font-weight:600;color:#fff;background:rgba(0,0,0,.45);padding:2px 7px;border-radius:8px;white-space:nowrap;text-shadow:0 1px 2px #000}
+.lab{position:absolute;transform:translate(-50%,-50%);white-space:pre-line!important;text-align:center;line-height:1.2;font-size:12px;font-weight:600;color:#fff;background:rgba(0,0,0,.45);padding:2px 7px;border-radius:8px;white-space:nowrap;text-shadow:0 1px 2px #000}
 .etapes{display:flex;gap:6px;overflow-x:auto;padding:2px 0 8px;scrollbar-width:none}
 .etapes button{flex:none;background:var(--panneau);border:1px solid var(--trait);border-radius:20px;padding:7px 12px;font-size:13px}
 .etapes button.on{background:var(--cyan);color:#04222b;border-color:var(--cyan);font-weight:700}
+.etapes button.aller{background:#16404f;border-color:var(--cyan);color:#fff;font-weight:700}
+.bulle{display:none;position:relative;background:rgba(10,22,34,.94);border:1px solid var(--cyan);border-radius:14px;padding:10px 12px;font-size:13.5px;margin-bottom:8px;max-height:30vh;overflow:auto;box-shadow:0 6px 20px rgba(0,0,0,.5)}
+.bulle.on{display:block}.bulle b{color:var(--cyan)}
+.bulle::after{content:"";position:absolute;left:28px;bottom:-7px;width:12px;height:12px;background:inherit;border-right:1px solid var(--cyan);border-bottom:1px solid var(--cyan);transform:rotate(45deg)}
+.barre{display:flex;align-items:center;gap:8px}
+.barre button{display:flex;align-items:center;gap:6px;border-radius:20px;padding:7px 12px;font-size:13px;font-weight:700;flex:none}
+.b-info{background:var(--panneau);border:1px solid var(--cyan);color:var(--cyan)}.b-info.on{background:var(--cyan);color:#04222b}
+.b-info.pulse{animation:pulse 1.2s 2}@keyframes pulse{50%{box-shadow:0 0 0 6px rgba(95,212,230,.35)}}
+.b-part{flex:1;min-width:0;font-size:12.5px;color:var(--doux);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 3px #000}
+.b-lire{background:var(--cyan);border:0;color:#04222b}
 .legende3d{background:var(--panneau);border:1px solid var(--trait);border-radius:14px;padding:9px 12px;font-size:13.5px;margin-bottom:8px;max-height:24vh;overflow:auto}
 .legende3d b{color:var(--cyan)}
 .carte-niv{display:flex;align-items:center;gap:10px;background:var(--panneau);border:1px solid var(--cyan);border-radius:16px;padding:9px 10px;margin-bottom:8px}
@@ -130,12 +141,13 @@ button{font:inherit;color:inherit;cursor:pointer}
   <svg class="mini" id="mini" viewBox="0 0 60 110"><g fill="#173b4f" stroke="#5fd4e6" stroke-opacity=".6"><circle cx="30" cy="11" r="8"/><path d="M20 22h20l4 34h-28zM16 58h28l-2 22h-24zM18 80h10l-1 28h-8zM32 80h10l-1 28h-8zM20 23l-8 30M40 23l8 30"/></g><circle id="miniPt" cx="12" cy="45" r="4" fill="#fff"><animate attributeName="r" values="3;6;3" dur="1.4s" repeatCount="indefinite"/></circle></svg>
  </div>
  <div class="bas" id="bas"></div>
- <div class="dep g" id="depG"><button id="bAv" aria-label="Avancer"><svg class="ic" viewBox="0 0 24 24"><path d="m6 15 6-6 6 6"/></svg></button><button id="bRe" aria-label="Reculer"><svg class="ic" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button></div>
+ <div class="dep g" id="depG"></div>
+ <div class="dep d" id="depD"></div>
 </section>
 
 <div class="voile" id="voile"></div>
 <div class="feuille" id="feuille"><div class="f-tete"><h2 id="fT"></h2><button class="rond" id="fX" aria-label="Fermer"><svg class="ic" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div><div class="f-corps" id="fC"></div></div>
 <div class="toast" id="toast"></div>
 
-<script type="module" src="visu.js?v=1"></script>
+<script type="module" src="visu.js?v=3"></script>
 </body></html>
