@@ -1,0 +1,76 @@
+<style>
+#qa-btn{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));z-index:9998;display:none;align-items:center;gap:8px;border:0;border-radius:999px;padding:12px 16px 12px 13px;background:#2f6f6a;color:#fff;font:700 15px/1 -apple-system,system-ui,Helvetica,Arial,sans-serif;box-shadow:0 8px 24px rgba(20,40,40,.3);cursor:pointer}
+#qa-btn svg{width:22px;height:22px}
+#qa{position:fixed;right:max(12px,env(safe-area-inset-right));bottom:max(12px,env(safe-area-inset-bottom));z-index:9999;width:min(420px,calc(100vw - 24px));height:min(620px,calc(100dvh - 24px));display:none;flex-direction:column;background:#fffdf8;border-radius:18px;box-shadow:0 18px 50px rgba(0,0,0,.28);overflow:hidden;font:15px/1.45 -apple-system,system-ui,Helvetica,Arial,sans-serif;color:#22262b}
+#qa.on{display:flex}
+#qa header{display:flex;align-items:center;gap:10px;padding:12px 12px 12px 16px;background:#2f6f6a;color:#fff}
+#qa header b{display:block;font-size:15px}#qa header small{display:block;opacity:.85;font-size:12px}
+#qa header .sp{flex:1}
+#qa header button{background:rgba(255,255,255,.16);border:0;color:#fff;width:34px;height:34px;border-radius:50%;cursor:pointer;display:grid;place-items:center}
+#qa header button svg{width:18px;height:18px}
+#qa-fil{flex:1;overflow-y:auto;padding:14px 14px 6px;-webkit-overflow-scrolling:touch}
+.qa-m{max-width:88%;margin:0 0 10px;padding:9px 12px;border-radius:14px;white-space:normal;overflow-wrap:anywhere}
+.qa-m.u{margin-left:auto;background:#2f6f6a;color:#fff;border-bottom-right-radius:4px}
+.qa-m.a{background:#f1ece2;border-bottom-left-radius:4px}
+.qa-m.a p{margin:0 0 6px}.qa-m.a p:last-child{margin:0}.qa-m.a ul,.qa-m.a ol{margin:2px 0 6px;padding-left:20px}
+.qa-m.a code{background:#e6dfd2;border-radius:4px;padding:0 4px;font-size:.92em}
+.qa-m.err{background:#fde8e8;color:#8a1c1c}
+.qa-ctx{font-size:12px;color:#6b6460;margin:0 0 8px}
+.qa-sug{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px}
+.qa-sug button{border:1px solid #cfc4b2;background:#fff;border-radius:999px;padding:6px 10px;font:600 13px/1.2 inherit;color:#3d3a36;cursor:pointer;text-align:left}
+#qa form{display:flex;gap:8px;padding:10px;border-top:1px solid #ece4d6;background:#fff}
+#qa textarea{flex:1;resize:none;border:1px solid #d7cdbd;border-radius:12px;padding:9px 11px;font:16px/1.35 inherit;max-height:120px;min-height:42px;outline-color:#2f6f6a}
+#qa form button{border:0;border-radius:12px;background:#2f6f6a;color:#fff;width:46px;cursor:pointer;display:grid;place-items:center}
+#qa form button:disabled{opacity:.45}
+#qa form button svg{width:20px;height:20px}
+</style>
+<button id="qa-btn" type="button" aria-label="Poser une question sur le cours"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.2 2.4c-.5.2-.7.6-.7 1.1v.5"/><path d="M12 16.5h.01"/></svg>Une question ?</button>
+<div id="qa" role="dialog" aria-label="Assistant du cours">
+ <header><div><b>Assistant du cours</b><small>MPHAB287 · __SEANCE__ · répond à partir de ton cours</small></div><span class="sp"></span>
+  <button type="button" id="qa-new" aria-label="Nouvelle conversation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button>
+  <button type="button" id="qa-x" aria-label="Fermer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></header>
+ <div id="qa-fil"></div>
+ <form id="qa-f"><textarea id="qa-t" rows="1" placeholder="Pose ta question sur le cours…"></textarea><button id="qa-go" aria-label="Envoyer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></form>
+</div>
+<script>
+(function(){
+var COURS=__COURS__, SEANCE=__SEANCE_JSON__;
+var CONSIGNES="Tu es l'assistant d'étude du cours MPHAB287 « Méthodes de calculs appliquées aux sciences pharmaceutiques » (UNamur, bachelier en pharmacie). L'étudiante révise actuellement la "+SEANCE+".\n"+
+"Règles :\n- Réponds en français, clairement et simplement, comme un bon assistant de TP.\n- Appuie-toi d'abord sur le COURS ci-dessous : reprends ses définitions, ses règles et ses notations (Rp, pf, dt, qs, ad, facteur de trituration, facteur de déplacement…).\n- Pour un calcul : pose les données, puis les étapes numérotées avec les unités à chaque ligne, puis le résultat encadré en gras, et un contrôle de vraisemblance.\n- Si la question dépasse le cours, dis-le en une phrase, puis réponds brièvement en précisant que ce n'est pas dans le cours.\n- N'invente jamais une règle, une valeur ou un facteur qui n'est pas dans le cours ; si une donnée manque, demande-la.\n- Sois concise : 150 mots maximum sauf pour un calcul détaillé. Pas d'emojis. Mise en forme simple : **gras**, listes avec « - » ou « 1. ».\n\nCOURS :\n<<<\n"+COURS+"\n>>>";
+var hist=[], ctrl=null, sample=null;
+var $=function(s){return document.querySelector(s)}, fil=$('#qa-fil'), ta=$('#qa-t'), go=$('#qa-go');
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function md(t){var L=esc(t).split('\n'),h='',lst=null;
+ function fin(){if(lst){h+='</'+lst+'>';lst=null}}
+ L.forEach(function(l){var m;l=l.replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/`([^`]+)`/g,'<code>$1</code>').replace(/^#{1,4}\s*(.*)$/,'<b>$1</b>');
+  if(m=l.match(/^\s*[-•*]\s+(.*)/)){if(lst!=='ul'){fin();h+='<ul>';lst='ul'}h+='<li>'+m[1]+'</li>'}
+  else if(m=l.match(/^\s*\d+[.)]\s+(.*)/)){if(lst!=='ol'){fin();h+='<ol>';lst='ol'}h+='<li>'+m[1]+'</li>'}
+  else if(l.trim()===''){fin()}else{fin();h+='<p>'+l+'</p>'}});fin();return h}
+function bulle(cls,html){var d=document.createElement('div');d.className='qa-m '+cls;d.innerHTML=html;fil.appendChild(d);fil.scrollTop=fil.scrollHeight;return d}
+function section(){var best='',hs=document.querySelectorAll('main h1,main h2,main h3,h2,h3');for(var i=0;i<hs.length;i++){var r=hs[i].getBoundingClientRect();if(r.height&&r.top<innerHeight*.45&&r.bottom>-400)best=hs[i].textContent.trim()}return best.slice(0,90)}
+function accueil(){fil.innerHTML='';hist=[];
+ bulle('a',md("Bonjour Olivia. Pose-moi n'importe quelle question sur la "+SEANCE+" : une notion, une abréviation, ou un calcul que tu ne comprends pas. Je réponds à partir de ton cours."));
+ var s=document.createElement('div');s.className='qa-sug';
+ (SEANCE.indexOf('2')>=0?["Explique-moi le facteur de déplacement avec un exemple","Pourquoi fait-on une trituration ?","Comment calculer la masse d'excipient pour 10 suppositoires ?"]:["Que veulent dire Rp, pf, dt et ad ?","Comment passer des % à des grammes ?","Combien de cuillères à café dans un flacon de 150 mL ?"])
+ .forEach(function(q){var b=document.createElement('button');b.type='button';b.textContent=q;b.onclick=function(){envoyer(q)};s.appendChild(b)});fil.appendChild(s)}
+async function envoyer(q){q=(q||'').trim();if(!q||ctrl)return;ta.value='';ajuste();
+ var sug=fil.querySelector('.qa-sug');if(sug)sug.remove();
+ var sec=section();bulle('u',esc(q));
+ var msgs=hist.slice(-8),premier=CONSIGNES+"\n\n"+(sec?"(Partie de la page affichée en ce moment : « "+sec+" ».)\n":"")+"Question : "+q;
+ var input=msgs.length?[{role:'user',content:CONSIGNES+"\n\nQuestion : "+msgs[0].content}].concat(msgs.slice(1)).concat([{role:'user',content:(sec?"(Partie affichée : « "+sec+" ».) ":"")+q}]):[{role:'user',content:premier}];
+ var rep=bulle('a','<p style="opacity:.6">Je réfléchis…</p>');ctrl=new AbortController();go.disabled=true;
+ try{var r=await sample(input,{cache:false,signal:ctrl.signal,onText:function(e){if(e&&e.text){rep.innerHTML=md(e.text);fil.scrollTop=fil.scrollHeight}}});
+  rep.innerHTML=md(r.text||'');hist.push({role:'user',content:q},{role:'assistant',content:r.text||''})}
+ catch(e){rep.className='qa-m a err';var c=e&&e.code;
+  rep.innerHTML=c==='not_granted'?"L'assistant n'a pas l'autorisation de répondre. Rouvre la bulle et accepte la demande d'accès à Claude.":c==='rate_limited'?"Trop de questions d'un coup : attends une minute puis réessaie.":"Je n'ai pas pu répondre ("+esc((e&&e.message)||'erreur')+"). Réessaie.";if(e&&e.text)rep.innerHTML=md(e.text)+'<p><i>(réponse interrompue)</i></p>'}
+ finally{ctrl=null;go.disabled=false}}
+function ajuste(){ta.style.height='auto';ta.style.height=Math.min(120,ta.scrollHeight)+'px'}
+ta.addEventListener('input',ajuste);
+ta.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing&&matchMedia('(hover:hover)').matches){e.preventDefault();envoyer(ta.value)}});
+$('#qa-f').addEventListener('submit',function(e){e.preventDefault();envoyer(ta.value)});
+$('#qa-btn').onclick=function(){$('#qa').classList.add('on');$('#qa-btn').style.display='none';if(!fil.children.length)accueil();setTimeout(function(){ta.focus()},50)};
+$('#qa-x').onclick=function(){$('#qa').classList.remove('on');$('#qa-btn').style.display='flex'};
+$('#qa-new').onclick=function(){if(ctrl)ctrl.abort();accueil()};
+if(window.claude&&claude.use)claude.use('sample').then(function(s){if(s){sample=s;$('#qa-btn').style.display='flex'}}).catch(function(){});
+})();
+</script>

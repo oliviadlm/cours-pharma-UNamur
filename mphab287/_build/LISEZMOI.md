@@ -12,3 +12,7 @@ puis une entrée dans CH, MC, CARTES et TABLES de build_data.py, et un lieu dans
 - 3d/pots.js + 3d/specs_pots.py : une vignette 3D par excipient (état réel : liquide, poudre, cristaux, pâte, gaz) et par niveau de maîtrise (0 à 3).
 - Rendu : python3 3d/rendre_pots.py ../decor/pots all (serveur http sur le dossier 3d, port 8390) -> decor/pots/xN-{0..3}.webp (276x354).
 - Le mur (#efe2cf), le dessus de planche (#c58a58) et le bord (dégradé) sont repris en CSS pour que les vignettes se raccordent.
+
+## Assistant du cours (artifacts Claude)
+- _build/assistant/bulle.html : bulle de questions (capacité sample), injectée avant </body> des pages théorie ; cours.txt = contenu des séances donné à l assistant.
+- Séance 1 : https://claude.ai/artifact/5ygjTeEvp7bYMN7tqoDESD · Séance 2 : https://claude.ai/artifact/5W98SKAKXxhdtxUWSThsv5

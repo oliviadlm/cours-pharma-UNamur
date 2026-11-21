@@ -1,0 +1,421 @@
+=== SÉANCE 1 · Séance 1 · Théorie : jongler avec les unités à l'officine ===
+Unités de masse et de volume · préparation magistrale · prescription · % · densités
+
+## Les unités de masse (pesée)
+À l'officine, on pèse en grammes et en sous-multiples. Chaque cran vaut ×10 :
+ g → dg → cg → mg
+ Unité | Équivalence | 
+ 1 g | 10 dg = 100 cg = 1000 mg | 
+ 1 cg (écrit aussi ctg) | 10 mg = 0,01 g | 
+ 1 mg | 0,1 cg = 0,001 g = 1000 µg | 
+ 1 µg (microgramme) | 0,001 mg | 
+ Règle de déplacement de la virgule : vers une unité plus petite, on multiplie (le nombre grandit) ; vers une unité plus grande, on divise. g → mg : virgule de 3 rangs vers la droite.
+ Contrôle de vraisemblance : un résultat en g doit être un plus petit nombre que le même résultat en mg.
+
+## Les unités de volume et les cuillères
+Unité | Équivalence | 
+ 1 L | 10 dL = 100 cL = 1000 mL | 
+ 1 mL | 1 cm³ | 
+ Les cuillères sur les ordonnances :
+ Abréviation | Volume | 
+ C à s : cuillère à soupe | 15 mL | 
+ C à d : cuillère à dessert | 10 mL | 
+ C à c : cuillère à café | 5 mL | 
+ Nombre de prises dans un flacon = volume du flacon ÷ volume d'une prise. Ex. 300 mL ÷ 5 mL = 60 cuillères à café.
+ Volume nécessaire pour un traitement = volume par prise × prises par jour × nombre de jours.
+
+## La préparation magistrale
+Définition : médicament préparé extemporanément à l'officine, sous la surveillance du pharmacien, et le plus souvent sur prescription médicale.
+ Elle garde une place importante dans l'arsenal thérapeutique, notamment pour :
+ - Personnaliser le médicament : adapter la posologie à l'âge du patient et à l'évolution de la maladie ;
+ - Associer plusieurs principes actifs dans une même forme ;
+ - Remplacer une spécialité non disponible ;
+ - Un intérêt économique pour certaines catégories de patients.
+ La prescription : le format papier a pratiquement disparu au profit de la prescription électronique.
+
+## Lire une prescription : les abréviations
+Abréviation | Signification | 
+ R\ = Rp | Prenez (début de la formule) | 
+ S\ | Indiquez sur l'étiquette (la posologie) | 
+ Pf | Pour faire une pièce de (1 gélule, 1 suppositoire…) | 
+ Dt (n°) | Donnez : nombre de doses unitaires à délivrer | 
+ Qs | Autant qu'il en faut (quantum satis) | 
+ Ad | Jusqu'à (on complète jusqu'à la quantité finale) | 
+ Lecture type : « Rp hydrocortisone 5 mg pf 1 gél dt 60 » = 5 mg par gélule, 60 gélules → à peser : 5 × 60 = 300 mg.
+ « aqua q.s. ad 200 mL » = on ajoute de l'eau jusqu'à un volume final de 200 mL.
+
+## Du Rp à la quantité à peser
+1. Quantité totale de principe actif (PA) = dose par unité × nombre d'unités (dt).
+ 2. Si on part d'une spécialité (comprimés, gélules du commerce) :
+ nombre d'unités = quantité totale ÷ dosage d'une unité
+ Ex. 30 mg × 60 gélules = 1800 mg ; avec des gélules à 50 mg : 1800 ÷ 50 = 36 gélules.
+ 3. Si le résultat n'est pas entier : on prend le nombre entier supérieur, on broie, puis on retire l'excès de poudre au prorata :
+ poudre à enlever = (PA en excès ÷ PA par comprimé) × masse d'un comprimé
+ Ex. besoin 3200 mg, comprimés à 250 mg → 12,8 → 13 comprimés (3250 mg). Excès 50 mg = 0,2 comprimé ; si 1 comprimé pèse 1 g → enlever 0,2 g.
+
+## Les concentrations en %
+Notation | Signifie | 
+ % (m/m) | g de substance pour 100 g de préparation | 
+ % (m/V) | g de substance pour 100 mL de préparation | 
+ % (V/V) | mL de substance pour 100 mL de préparation | 
+ masse (g) = % × quantité finale ÷ 100
+ Ex. minoxidil 3 % (m/V) ad 200 mL → 3 × 200 ÷ 100 = 6 g.
+ Retrouver un % : % = masse (g) ÷ volume (mL) × 100. Ex. 10 ctg (0,10 g) dans 250 mL → 0,04 %.
+ Quantité par prise : un % (m/V) donne une concentration : 0,04 % = 0,04 g/100 mL = 0,4 mg/mL → par C à c (5 mL) : 2 mg.
+ Astuce : 1 % (m/V) = 10 mg/mL.
+
+## Les densités
+On mesure en général le volume d'un liquide. Mais pour un liquide très visqueux (ou quand la formule est en masse), on doit peser : la densité permet de passer du volume à la masse.
+ La densité compare la masse d'un volume de liquide à celle du même volume d'eau : celle de l'eau vaut 1 (1 mL d'eau pèse 1 g).
+ m = V × d · V = m ÷ d
+ Solvant (20 °C) | Densité | 
+ Éthanol | 0,79 | 
+Méthanol | 0,80 | 
+ Propylène glycol | 1,04 | 
+Isopropanol | 0,79 | 
+ Éther | 0,71 | 
+Acétone | 0,79 | 
+ Huile de paraffine | 0,86 | 
+ Moyen mnémotechnique : les alcools et l'acétone ≈ 0,79–0,80 ; seul le propylène glycol dépasse 1 ; l'éther est le plus léger (0,71).
+ Contrôle : si d < 1, le volume (mL) est plus grand que la masse (g) ; si d > 1, il est plus petit.
+
+## Fiches de révision (question → réponse)
+- 1 g = ? mg → 1000 mg
+- 1 g = ? cg → 100 cg
+- 1 cg = ? mg → 10 mg
+- 1 mg = ? g → 0,001 g
+- 1 mg = ? µg → 1000 µg
+- Que signifie « ctg » ? → Centigramme (cg) = 10 mg
+- 25 cg = ? mg → 250 mg
+- 12,5 mg = ? g → 0,0125 g
+- 58 cg = ? g → 0,58 g
+- Vers une unité plus petite (g → mg), on… ? → Multiplie (le nombre grandit)
+- C à s = ? mL → 15 mL (cuillère à soupe)
+- C à d = ? mL → 10 mL (cuillère à dessert)
+- C à c = ? mL → 5 mL (cuillère à café)
+- 1 L = ? mL → 1000 mL
+- 1 dL = ? mL → 100 mL
+- Combien de C à c dans 300 mL ? → 60
+- Définition de la préparation magistrale ? → Médicament préparé extemporanément à l'officine, sous la surveillance du pharmacien, le plus souvent sur prescription médicale
+- Les 4 intérêts de la préparation magistrale ? → Personnaliser la posologie (âge, évolution) · associer des PA · spécialité non disponible · intérêt économique
+- « Extemporanément » signifie… ? → Préparé au moment du besoin, pour un patient donné
+- Quel format de prescription a remplacé le papier ? → La prescription électronique
+- R\ ou Rp → Prenez
+- S\ → Indiquez sur l'étiquette (posologie)
+- Pf → Pour faire une pièce de
+- Dt (n°) → Donnez (nombre de doses unitaires à délivrer)
+- Qs → Autant qu'il en faut (quantum satis)
+- Ad → Jusqu'à
+- Quantité totale de PA à peser = ? → Dose par unité × nombre d'unités (dt)
+- Nombre de comprimés d'une spécialité à utiliser = ? → Quantité totale de PA ÷ dosage d'un comprimé (arrondi au supérieur)
+- Résultat non entier (12,8 comprimés) : que fait-on ? → On prend 13 comprimés, on broie, puis on retire l'excès de poudre au prorata
+- Poudre à enlever = ? → (PA en excès ÷ PA par comprimé) × masse d'un comprimé
+- % (m/m) = ? → g de substance pour 100 g de préparation
+- % (m/V) = ? → g de substance pour 100 mL de préparation
+- % (V/V) = ? → mL de substance pour 100 mL de préparation
+- 1 % (m/V) = ? mg/mL → 10 mg/mL
+- 3 % (m/V) ad 200 mL : masse de PA ? → 6 g
+- Avec « ad 250 mL », sur quoi calcule-t-on le % ? → Sur le volume final : 250 mL
+- Formule de la masse à partir du volume ? → m = V × d
+- Formule du volume à partir de la masse ? → V = m ÷ d
+- Densité de l'eau ? → 1
+- Densité de l'éthanol ? → 0,79
+- Densité du méthanol ? → 0,80
+- Densité du propylène glycol ? → 1,04
+- Densité de l'isopropanol ? → 0,79
+- Densité de l'éther ? → 0,71
+- Densité de l'acétone ? → 0,79
+- Densité de l'huile de paraffine ? → 0,86
+- Pourquoi pèse-t-on certains liquides au lieu de les mesurer ? → Liquides très visqueux : la mesure du volume serait imprécise
+
+## Questions de quiz (bonne réponse et explication)
+- 25 cg est égal à → 250 mg. 1 cg = 10 mg → 25 × 10 = 250 mg.
+- 1 g est égal à → 100 cg. 1 g = 100 cg = 1000 mg.
+- 12,5 mg est égal à → 0,0125 g. 12,5 ÷ 1000 = 0,0125 g.
+- 20 µg est égal à → 0,02 mg. 1 µg = 0,001 mg → 20 µg = 0,02 mg.
+- Quelle masse est la plus grande ? → 0,5 g. En mg : 500 / 450 / 480 / 490. La plus grande est 0,5 g.
+- Une cuillère à dessert (C à d) correspond à → 10 mL. C à c 5 mL · C à d 10 mL · C à s 15 mL.
+- Un flacon de 250 mL contient combien de cuillères à café ? → 50. 250 ÷ 5 = 50.
+- Traitement : 2 C à s par jour pendant 10 jours. Volume nécessaire ? → 300 mL. 2 × 15 mL × 10 j = 300 mL.
+- Une préparation magistrale est préparée… → extemporanément, à l'officine, sous la surveillance du pharmacien. Définition : extemporanément, à l'officine, sous la surveillance du pharmacien, le plus souvent sur prescription médicale.
+- Lequel n'est PAS un intérêt de la préparation magistrale cité au cours ? → Allonger la date de péremption. Les 4 intérêts : posologie individualisée, association de PA, spécialité non disponible, intérêt économique.
+- Pour un enfant qui a besoin de 5 mg alors que la spécialité n'existe qu'à 20 mg, la préparation magistrale répond à quel intérêt ? → Individualisation de la posologie. Adapter la posologie à l'âge du patient.
+- « Qs » signifie → Autant qu'il en faut. Qs = quantum satis = autant qu'il en faut. « Ad » = jusqu'à.
+- « Dt 30 » signifie → Donnez 30 doses unitaires. Dt = donnez (nombre de doses unitaires à délivrer).
+- « S\ » sur une ordonnance signifie → Indiquez sur l'étiquette. S\ = indiquez sur l'étiquette (la posologie).
+- « Pf 1 gél » signifie → Pour faire une gélule. Pf = pour faire une pièce de.
+- « aqua q.s. ad 200 mL » signifie → Ajouter de l'eau jusqu'à un volume final de 200 mL. Le volume final de la préparation est 200 mL.
+- Rp prednisolone 5 mg pf 1 gél dt 20. Quantité de prednisolone à peser ? → 100 mg. 5 mg × 20 = 100 mg.
+- Il faut 1800 mg d'un PA ; on dispose de gélules à 50 mg. Combien de gélules ? → 36. 1800 ÷ 50 = 36.
+- Le calcul donne 12,8 comprimés à broyer. On en prend… → 13, puis on retire l'excès de poudre. On arrondit au supérieur puis on retire la poudre en excès au prorata.
+- 13 comprimés à 250 mg broyés pèsent 13 g ; il faut 3200 mg de PA. Poudre à enlever ? → 0,2 g. Excès 50 mg = 0,2 comprimé ; 1 comprimé = 1 g → 0,2 g.
+- % (m/V) signifie → g pour 100 mL. m/V = masse (g) pour 100 mL.
+- Minoxidil 3 % (m/V), … , aqua q.s. ad 200 mL. Masse de minoxidil ? → 6 g. 3 g/100 mL × 200 mL = 6 g (volume final).
+- 1 % (m/V) correspond à → 10 mg/mL. 1 g/100 mL = 1000 mg/100 mL = 10 mg/mL.
+- 0,25 g de codéine dans 250 mL : % (m/V) ? → 0,10 %. 0,25 ÷ 250 × 100 = 0,10 %.
+- Sirop à 0,04 % (m/V) : quantité dans une C à c ? → 2 mg. 0,04 % = 0,4 mg/mL × 5 mL = 2 mg.
+- Une solution à 1 % (m/m) de nitroglycérine : 2 mg de nitroglycérine sont contenus dans → 200 mg de solution. 1 g pour 100 g → 2 mg pour 200 mg.
+- L'eau a une densité → égale à 1. Référence : 1 mL d'eau = 1 g.
+- Quel solvant a une densité supérieure à 1 ? → Propylène glycol. Propylène glycol : 1,04.
+- Quel est le plus léger (plus faible densité) ? → Éther. Éther 0,71.
+- Pour convertir une masse en volume, on… → divise par la densité. V = m ÷ d.
+- 27 g de teinture de densité 0,9 occupent → 30 mL. 27 ÷ 0,9 = 30 mL.
+- 100 mL d'éthanol pèsent → 79 g. 100 × 0,79 = 79 g.
+- Pourquoi utilise-t-on la densité à l'officine ? → Pour peser un liquide qu'on ne peut pas mesurer précisément au volume (visqueux). Liquides très visqueux : on convertit le volume voulu en masse à peser.
+
+=== SÉANCE 2 · Séance 2 · Théorie : triturations et suppositoires ===
+Trituration · µg et chiffres romains · gélules complexes · coulée des suppositoires · facteur de déplacement · masse d'excipient
+
+## La trituration : le principe
+Parfois, la quantité de principe actif (PA) à peser est trop petite pour être mesurée avec précision avec l'équipement de l'officine.
+ On mélange alors un excès de PA à un diluant : c'est la trituration. On prélève ensuite la quantité de mélange qui contient la dose de PA nécessaire.
+ Notation : une trituration est caractérisée par sa teneur en PA :
+ Trituration | PA contenu | 
+ 1 ‰ (1 pour mille, écrit « 1/00 » ou « 10/00 ») | 1 mg de PA pour 1000 mg de trituration | 
+ 1 % | 1 g de PA pour 100 g (10 mg pour 1000 mg) | 
+ 10 % | 10 g de PA pour 100 g (100 mg pour 1000 mg) | 
+ Idée clé : plus la trituration est diluée, plus la masse à peser est grande, donc plus la pesée est précise.
+
+## Calculer une trituration
+Marche à suivre (exemple du cours : éthinylœstradiol 20 µg, dt XX, trituration à 1 ‰) :
+ - Quantité de PA nécessaire : 20 µg × 20 = 400 µg = 0,4 mg.
+ - Quantité de trituration : 1 ‰ = 1 mg de PA pour 1000 mg → 0,4 mg de PA dans 400 mg de trituration.
+ trituration = PA ÷ (teneur) · 1 ‰ → ×1000 · 2 ‰ → ×500 · 1 % → ×100 · 10 % → ×10
+ Calcul inverse (retrouver la dose) : PA = masse de trituration × teneur. Ex. 500 mg de trituration à 1 % pour 50 pilules → 5 mg de PA → 0,1 mg par pilule.
+ Trituration d'une crème : bétaméthasone 0,05 % (m/m) ad 200 g → 0,1 g de PA → trituration à 10 % : 1 g.
+
+## Lire le Rp : µg et chiffres romains
+Microgramme : 1 mg = 1000 µg ; 1 µg = 0,001 mg.
+ Chiffres romains (souvent dans « dt ») :
+ Symbole | Valeur | 
+I | 1 | 
+V | 5 | 
+X | 10 | 
+L | 50 | 
+C | 100 | 
+ Un symbole plus petit placé avant un plus grand se soustrait : IV = 4, IX = 9, XL = 40, XC = 90. Placé après, il s'ajoute : VI = 6, XX = 20, LX = 60.
+ Ex. « pf 1 suppositoire dt VI » = 6 suppositoires ; « dt XX » = 20.
+
+## Gélules complexes et spécialités
+Une même formule peut combiner plusieurs sources de PA. Pour chaque ligne, se demander : sous quelle forme je l'apporte ?
+ Ligne du Rp | Calcul | 
+ PA pur (ex. metformine 400 mg dt 120) | 400 × 120 = 48 000 mg = 48 g | 
+ « utiliser comprimés à 20 mg » (Cipramil® 10 mg dt 120) | 10 × 120 ÷ 20 = 60 comprimés | 
+ « utiliser gélules à 10 mg » (5 mg dt 120) | 5 × 120 ÷ 10 = 60 gélules (on vide les gélules) | 
+ « utiliser trituration à 10 % » (5 mg dt 120) | 5 × 120 × 10 = 6000 mg = 6 g | 
+ Lire la question : « par gélule » → ne pas multiplier par dt ; « à peser » → multiplier par dt.
+ Ex. extraits secs fucus 10 ctg + cascara 80 mg = 180 mg par gélule.
+
+## Suppositoires : préparation par coulée
+Deux méthodes de préparation par coulée :
+ Méthode | Principe | 
+ Fusion claire | Chauffer la masse 2 à 3 °C au-dessus de sa température de fusion ; incorporer le PA avant la coulée. Attention à la sédimentation du PA. | 
+ Fusion crémeuse | Faire fondre 2/3 de la masse, ajouter le 1/3 restant froid avant d'incorporer le PA. Coulée à l'état semi-solide : diminue la sédimentation et accélère le durcissement. | 
+ Les 4 étapes de calcul (3 coulées) :
+ - Étalonner le moule avec la masse pure (sans PA) → E
+ - Couler avec arbitrairement 10 % de PA → M et S
+ - Calculer f
+ - Calculer la masse d'excipient pour la préparation, en prévoyant 1 suppositoire supplémentaire
+
+## Le facteur de déplacement (f)
+En incorporant du PA, on déplace une certaine quantité de masse (excipient) dans l'alvéole du moule. Le facteur de déplacement f exprime la masse d'excipient déplacée par 1 g de PA.
+ f = (E − M) ÷ S
+ Lettre | Signification | 
+ E | g d'excipient dans 1 suppositoire sans PA (1re coulée) | 
+ M | g de masse (excipient) dans 1 suppositoire avec PA (2e coulée) | 
+ S | g de PA dans 1 suppositoire | 
+ Exemple du cours : 7 suppositoires purs = 20,51 g → E = 2,93 g. 11 suppositoires à 10 % = 33,528 g → 1 suppo = 3,048 g → M = 3,048 × 0,9 = 2,7432 g et S = 3,048 × 0,1 = 0,3048 g. f = (2,93 − 2,7432) ÷ 0,3048 = 0,61.
+
+## La masse d'excipient en pratique
+M = E − Σ (fi × Si)
+ Pour 1 suppositoire : on part de E (masse d'un suppositoire d'excipient pur) et on retire, pour chaque PA, sa masse déplacée f × S (S en grammes).
+ E = masse d'un suppositoire pur du moule (masse totale ÷ nombre) ou le poids indiqué « suppo de 1 g / de 2 g ».
+ En pratique : on multiplie par n + 1 suppositoires (dt + 1).
+ Exemple : 6 suppositoires de 2 g à 125 mg de paracétamol (f = 0,72) : M = 2 − 0,72 × 0,125 = 1,91 g → × 7 = 13,37 g.
+ Les PA eux-mêmes se pèsent aussi pour n + 1 : 200 mg × 7 = 1,4 g.
+
+## Fiches de révision (question → réponse)
+- Qu'est-ce qu'une trituration ? → Un excès de PA mélangé à un diluant ; on prélève la quantité de mélange contenant la dose
+- Pourquoi faire une trituration ? → La quantité de PA est trop petite pour être pesée avec précision
+- Trituration à 1 ‰ = ? → 1 mg de PA pour 1000 mg de trituration
+- Trituration à 1 % = ? → 1 g de PA pour 100 g (10 mg pour 1000 mg)
+- Trituration à 10 % = ? → 10 g de PA pour 100 g (100 mg pour 1000 mg)
+- Trituration 1 ‰ : facteur à appliquer à la masse de PA ? → × 1000
+- Trituration 2 ‰ : facteur ? → × 500
+- Trituration 1 % : facteur ? → × 100
+- Trituration 10 % : facteur ? → × 10
+- Les 2 étapes du calcul d'une trituration ? → 1) Quantité totale de PA (dose × nombre) · 2) Quantité de trituration qui contient ce PA
+- 0,4 mg de PA, trituration 1 ‰ → ? → 400 mg de trituration
+- 500 mg de trituration à 1 % pour 50 pilules : dose par pilule ? → 0,1 mg
+- 1 mg = ? µg → 1000 µg
+- dt VI → 6
+- dt XX → 20
+- dt XL → 40
+- dt XC → 90
+- L et C en chiffres romains ? → L = 50 · C = 100
+- « Cipramil® 10 mg (comprimés à 20 mg) dt 120 » : nb de comprimés ? → 60
+- « 5 mg (trituration à 10 %) dt 120 » : masse de trituration ? → 6 g
+- Question « par gélule » : multiplie-t-on par dt ? → Non
+- Fusion claire : principe ? → Chauffer 2-3 °C au-dessus de la T° de fusion, incorporer le PA avant la coulée (attention sédimentation)
+- Fusion crémeuse : principe ? → Fondre 2/3 de la masse, ajouter 1/3 froid, puis le PA ; coulée semi-solide
+- Avantages de la fusion crémeuse ? → Moins de sédimentation, durcissement plus rapide
+- Les 4 étapes de calcul des suppositoires ? → Étalonner le moule (E) · couler à 10 % de PA (M, S) · calculer f · masse d'excipient avec 1 suppo en plus
+- % de PA arbitraire de la 2e coulée ? → 10 %
+- Formule du facteur de déplacement ? → f = (E − M) ÷ S
+- E = ? → g d'excipient dans 1 suppositoire sans PA (1re coulée)
+- M = ? → g de masse dans 1 suppositoire avec PA (2e coulée)
+- S = ? → g de PA dans 1 suppositoire
+- Signification de f ? → Masse d'excipient déplacée par 1 g de PA
+- Suppo à 10 % de PA pesant 3,048 g : M et S ? → M = 2,7432 g · S = 0,3048 g
+- Formule de la masse d'excipient par suppositoire ? → M = E − Σ (fi × Si)
+- En pratique, on prépare combien de suppositoires ? → n + 1
+- Unité de S dans f × S ? → Grammes (convertir les mg)
+- 8 suppos de 1 g à 100 mg d'aspirine (f 0,67) : base en pratique ? → 0,933 × 9 = 8,397 g
+
+## Questions de quiz (bonne réponse et explication)
+- On réalise une trituration lorsque → la quantité de PA est trop petite pour être pesée avec précision. Une masse trop faible ne se pèse pas précisément : on la dilue dans un diluant.
+- Une trituration à 1 ‰ contient → 1 mg de PA pour 1000 mg. ‰ = pour mille.
+- Une trituration à 1 % contient pour 1000 mg → 10 mg de PA. 1 g/100 g = 10 mg/1000 mg.
+- Éthinylœstradiol 50 µg dt X, trituration à 2 ‰ : masse de trituration ? → 250 mg. 50 µg × 10 = 0,5 mg ; 2 ‰ → × 500 = 250 mg.
+- 30 pilules à 30 µg, trituration à 1 ‰ : masse de trituration ? → 900 mg. 900 µg = 0,9 mg × 1000 = 900 mg.
+- 50 pilules préparées avec 500 mg de trituration à 1 % : dose par pilule ? → 0,1 mg. 500 × 1 % = 5 mg ÷ 50 = 0,1 mg.
+- Dexaméthasone 0,25 mg dt 30, trituration à 1 % : masse à peser ? → 750 mg. 7,5 mg de PA × 100 = 750 mg.
+- Bétaméthasone 0,05 % (m/m) ad 200 g, trituration à 10 % : masse de trituration ? → 1 g. 0,1 g de PA × 10 = 1 g. 0,1 g est le piège (quantité de PA).
+- Pour une trituration à 2 ‰, la masse de trituration vaut → PA × 500. 2 mg pour 1000 mg → 1 mg pour 500 mg.
+- « dt XX » signifie → 20. X = 10 → XX = 20.
+- « dt XIV » signifie → 14. X + IV = 10 + 4.
+- 20 µg égale → 0,02 mg. ÷ 1000.
+- « dt XL » signifie → 40. X avant L : 50 − 10 = 40.
+- Cipramil® 10 mg (utiliser comprimés à 20 mg) pf 1 gél dt 120. Nombre de comprimés ? → 60. 1200 mg ÷ 20 = 60.
+- Métoclopramide 5 mg (trituration à 10 %) dt 120 : masse de trituration ? → 6 g. 600 mg de PA × 10 = 6000 mg = 6 g.
+- Extrait sec de fucus 10 ctg + extrait sec de cascara 80 mg : extrait sec par gélule ? → 0,18 g. 100 + 80 = 180 mg par gélule (pas × dt).
+- Metformine 400 mg dt 120 : masse à peser ? → 48 g. 400 × 120 = 48 000 mg.
+- La fusion crémeuse consiste à → fondre 2/3 de la masse et ajouter 1/3 froid avant le PA. 2/3 fondu + 1/3 froid, puis le PA ; coulée semi-solide.
+- Dans la fusion claire, on chauffe la masse → 2 à 3 °C au-dessus de sa T° de fusion. 2-3 °C au-dessus de la T° de fusion.
+- Le principal risque de la fusion claire est → la sédimentation du PA. La masse très fluide laisse le PA tomber au fond.
+- La 2e coulée se fait avec un pourcentage arbitraire de PA de → 10 %. 10 % de PA.
+- Pourquoi prépare-t-on un suppositoire de plus ? → Pour compenser les pertes de masse lors de la coulée. Une partie de la masse reste dans les ustensiles.
+- Le facteur de déplacement se calcule par → f = (E − M) ÷ S. f = (E − M) ÷ S.
+- E représente → la masse d'excipient dans 1 suppositoire sans PA. 1re coulée, sans PA.
+- Un suppositoire de la 2e coulée (10 % de PA) pèse 3,048 g. S vaut → 0,3048 g. 10 % de 3,048 g.
+- f = 0,61 signifie que 1 g de PA → déplace 0,61 g d'excipient. Masse d'excipient déplacée par 1 g de PA.
+- 7 suppositoires purs pèsent 20,50 g ; 9 suppositoires à 10 % pèsent 26,89 g. f ≈ → 0,81. E = 2,93 ; 1 suppo = 2,99 ; M = 2,689 ; S = 0,299 → f ≈ 0,81.
+- La masse d'excipient pour 1 suppositoire vaut → M = E − Σ f·S. M = E − Σ (fi × Si).
+- Rp … p.f. 1 suppositoire dt X. Combien de suppositoires calcule-t-on « en pratique » ? → 11. n + 1 = 11.
+- 8 suppositoires de 1 g à 100 mg d'aspirine (f = 0,67). Base en pratique ? → 8,397 g. M = 1 − 0,067 = 0,933 g × 9 = 8,397 g. 7,464 g = piège (8 suppos).
+- Bismuth sous-gallate 200 mg, pf 1 suppo dt 6. Quantité de bismuth en pratique ? → 1,4 g. 200 mg × 7 = 1,4 g.
+
+=== FICHES DE RAPPEL DU CHAPITRE I · Jongler avec les unités (séance 1) ===
+MPHAB287 · MÉTHODES DE CALCULS APPLIQUÉES AUX SCIENCES PHARMACEUTIQUES
+Chapitre I · Jongler avec les unités utilisées à l'officine
+
+Séance 1 · 2026-2027 · Exercices interactifs
+
+Exercices
+Fiches de rappel
+Exercice 1 / 26
+0 ✓
+UNITÉS DE PESÉE
+Exercice 1
+
+25 cg est égal à
+
+1
+0,025 mg
+2
+0,25 mg
+3
+2,5 mg
+4
+25 mg
+5
+250 mg
+← Précédent
+Suivant →
+1
+2
+3
+4
+5
+6
+7a
+7b
+8a
+8b
+8c
+9a
+9b
+10
+11
+12a
+12b
+12c
+12d
+13
+14
+15a
+15b
+15c
+15d
+15e
+
+Les corrections ont été calculées à partir des énoncés du cours ; compare-les avec la correction donnée en séance.
+
+Jouer
+
+=== FICHES DE RAPPEL DU CHAPITRE II (séance 2) ===
+MPHAB287 · MÉTHODES DE CALCULS APPLIQUÉES AUX SCIENCES PHARMACEUTIQUES
+Chapitre II · Les triturations et les suppositoires
+
+Séance 2 · 2026-2027 · Exercices interactifs
+
+Exercices
+Fiches de rappel
+Exercice 1 / 22
+0 ✓
+TRITURATIONS
+Exercice 1a
+Rp éthinylœstradiol 50 µg
+   acétate de cyprotérone 0,25 cg
+   pf. 1 gél. dt X
+
+a) Quelle quantité de trituration d'éthinylœstradiol à 2 ‰ doit-on peser ?
+
+1
+0,25 mg
+2
+2,5 mg
+3
+25,0 mg
+4
+250,0 mg
+5
+2,500 g
+← Précédent
+Suivant →
+1a
+1b
+2
+3
+4a
+4b
+5a
+5b
+5c
+5d
+5e
+6
+7
+8
+9
+10
+11
+12a
+12b
+12c
+13
+14
+
+Les corrections ont été calculées à partir des énoncés du cours ; compare-les avec la correction donnée en séance.
+
+Jouer
