@@ -303,10 +303,13 @@ function etapesUI(self) {
   const L = self.niv ? lvl(self.niv) : null, si = self.si || 0;
   const txt = self.steps ? self.steps[si][1] : self.legende || '';
   const et = self.steps ? `<div class="etapes">${self.steps.map((s, i) => `<button data-i="${i}" class="${s[2] ? 'aller' : i === si ? 'on' : ''}">${s[0]}${s[2] ? ' ' + IC.go : ''}</button>`).join('')}</div>` : '';
-  $('#bas').innerHTML = `${et}<div class="bulle${S.info ? ' on' : ''}" id="leg">${txt}</div>
+  const md = self.modes ? `<div class="modes">${self.modes.map(([k, t]) => `<button data-m="${k}" class="${(S[self.modeCle] || self.modes[0][0]) === k ? 'on' : ''}">${t}</button>`).join('')}</div>` : '';
+  $('#bas').innerHTML = `${md}${et}<div class="bulle${S.info ? ' on' : ''}" id="leg">${txt}</div>
     <div class="barre"><button class="b-info${S.info ? ' on' : ''}" id="bInfo" aria-label="Explication">${IC.info}<span>${S.info ? 'Masquer' : 'Explication'}</span></button>
     ${L ? `<span class="b-part">Partie ${NUM[L.id]} · ${L.t}</span><button class="b-lire" id="bFiche">${IC.book} Lire</button>` : ''}</div>`;
   if (L) $('#bFiche').onclick = () => ouvrirNiveau(L.id);
+  $('#bas').querySelectorAll('.modes button').forEach((b) => b.onclick = () => { if ((S[self.modeCle] || self.modes[0][0]) === b.dataset.m) return; S[self.modeCle] = b.dataset.m; save();
+    transition(() => { const n = SCENES[self.id](); n.si = self.si || 0; n.onStep && n.onStep(n.si); activer(n); }); });
   $('#bInfo').onclick = () => { S.info = !S.info; save(); etapesUI(self); };
   $('#leg').onclick = () => { S.info = 0; save(); etapesUI(self); };
   $('#bas').querySelectorAll('.etapes button').forEach((b) => b.onclick = () => { const st = self.steps[+b.dataset.i]; if (st[2]) { entrerScene(st[2]); return; } self.si = +b.dataset.i; self.onStep && self.onStep(self.si); etapesUI(self);
@@ -622,6 +625,8 @@ function sceneBilan() {
       ['Protéines', "Jeûne prolongé (24-48 h) : <b>protéolyse musculaire</b> → <b>alanine</b> vers le foie → <b>néoglucogenèse</b> (glucose). L'azote devient de l'<b>urée</b>, filtrée par le <b>rein</b> et stockée dans la <b>vessie</b>."],
       ['Cycle de Cori', "Effort intense : le muscle (et les GR) font du <b>lactate</b> (anaérobie). Il part au foie, redevient pyruvate puis <b>glucose</b> (néoglucogenèse), qui repart au muscle."],
     ] });
+  s.modes = [['ana', 'Vue anatomique'], ['simple', 'Schéma simple']]; s.modeCle = 'modeBilan';
+  if (S.modeBilan === 'simple') return bilanSimple(s);
   const S3 = s.scene;
   const poser = (o, p, nom, dy, det) => { o.position.copy(p); S3.add(o); if (nom) s.labels.push({ o, t: nom, dy, max: det ? 70 : undefined }); return o; };
   // organes à leur place (vue de face : le foie est à gauche de l'écran = à droite du patient)
@@ -701,7 +706,7 @@ function sceneBilan() {
     const etq = txt3d(nom, '#' + new THREE.Color(col).getHexString(), 1.2); etq.position.copy(c.getPointAt(.18 + (i % 3) * .06)).add(V3(0, 1.6, 2)); S3.add(etq);
     return { f, etq, st };
   });
-  let step = 0; s.onStep = (i) => { step = i; };
+  let step = s.si || 0; s.onStep = (i) => { step = i; };
   const un = V3(1, 1, 1);
   s.update = function (dt, t) {
     s.controls.update();
@@ -712,6 +717,54 @@ function sceneBilan() {
     musc.scale.lerp(un.clone().multiplyScalar(step === 4 ? .85 : 1), dt);
     coeur.scale.setScalar(1 + .04 * Math.max(0, Math.sin(t * 7)));
     hor.set(['Les organes et leurs vaisseaux', 'Insuline ↑ : on stocke', 'Glucagon ↑ : le foie relâche du glucose', 'Lipolyse : AG et corps cétoniques', 'Protéolyse : alanine → glucose', 'Cycle de Cori : lactate → glucose'][step], ['#ffffff', '#7fb8ff', '#ff8fe0', '#f5d020', '#5fd38d', '#ff9ab8'][step]);
+  };
+  return s;
+}
+
+
+// mode simple : les mêmes organes réalistes, écartés, avec des flèches directes (plus clair pour réviser le schéma)
+function bilanSimple(s) {
+  const S3 = s.scene; s.vue = [0, 4, 0, 30, 34]; s.titre = 'Repas et jeûne : le schéma';
+  s.echelle = 'Schéma simple · organes écartés, flèches directes';
+  const org = {};
+  const place = (k, nom, obj, p, dy = -7) => { obj.position.add(p); S3.add(obj); org[k] = p; s.labels.push({ o: new THREE.Object3D(), t: nom, dy: 0 }); const a = s.labels[s.labels.length - 1].o; a.position.copy(p).add(V3(0, dy, 0)); S3.add(a); return obj; };
+  const cer = cerveau(6); cer.rotation.y = -.85; place('cerveau', 'Cerveau', cer, V3(0, 32, 0), -7);
+  place('foie', 'Foie', foieMod(6.5), V3(-15, 8, 0), -5.5);
+  const pan = pancreasMod(); pan.position.set(-4, 2, 1); pan.scale.setScalar(.8); place('pancreas', 'Pancréas', pan, V3(6, 4, 0), -3.5);
+  const it = intestinMod(); it.position.set(0, 19, 0); it.scale.setScalar(.62); place('intestin', 'Intestin', it, V3(-2, -12, 0), -12);
+  const mu = muscleMod(14, 2.6); mu.rotation.z = Math.PI / 2 - .3; place('muscle', 'Muscle', mu, V3(21, -14, 0), -5);
+  const ad = adipeuxMod(); ad.scale.setScalar(.85); place('adipeux', 'Tissu adipeux', ad, V3(-22, -18, 0), -5);
+  place('rein', 'Rein', reinMod(1, 2.6), V3(21, 8, -2), -5);
+  const grs = new THREE.Group(); for (let i = 0; i < 6; i++) { const g2 = new THREE.Mesh(geoGR(), matGR()); g2.scale.setScalar(.45); g2.position.set(i * 1.5 - 3.7, Math.sin(i * 2) * 1, Math.cos(i) * .6); g2.rotation.set(1 + i, i, 0); grs.add(g2); } tag(grs, 'gr');
+  place('gr', 'Globules rouges', grs, V3(18, 24, 0), -3);
+  const granules = (n) => { const g2 = tag(new THREE.Group(), 'glycogene'); for (let i = 0; i < n; i++) { const b = new THREE.Mesh(new THREE.SphereGeometry(rnd(.3, .5), 8, 6), mat(0xfff0b0, { emissive: 0x806020, emissiveIntensity: .6 })); b.position.set(rnd(-1.8, 1.8), rnd(-1, 1), rnd(-1, 1)); g2.add(b); } return g2; };
+  const gF = granules(40); gF.position.set(-19, 11, 6); S3.add(gF); const gM = granules(30); gM.position.set(21, -9, 4); S3.add(gM);
+  s.labels.push({ o: gF, t: 'Glycogène', dy: 2.6 }, { o: gM, t: 'Glycogène', dy: 2.4 });
+  const hor = panneau3d(S3, V3(0, 44, 0), 1.7);
+  const F = [
+    ['intestin', 'foie', 0xffffff, 'glucose (veine porte)', [1], 'glucose'], ['foie', 'muscle', 0xffffff, 'glucose', [1, 5], 'glucose'], ['foie', 'adipeux', 0xf0a040, 'VLDL', [1], 'vldl'],
+    ['intestin', 'adipeux', 0xfff0d0, 'chylomicrons (lymphe)', [1], 'chylo'], ['pancreas', 'foie', 0x5fa8ff, 'insuline', [1], 'insuline'],
+    ['pancreas', 'foie', 0xff5fd0, 'glucagon', [2, 3, 4], 'glucagon'], ['foie', 'cerveau', 0xffffff, 'glucose', [2, 4], 'glucose'], ['foie', 'gr', 0xffffff, 'glucose', [2, 4], 'glucose'],
+    ['adipeux', 'muscle', 0xf5d020, 'acides gras', [3, 4], 'ag'], ['adipeux', 'foie', 0xf5d020, 'acides gras', [3, 4], 'ag'], ['foie', 'cerveau', 0xb070ff, 'corps cétoniques', [3, 4], 'cetone'], ['foie', 'muscle', 0xb070ff, 'corps cétoniques', [3], 'cetone'],
+    ['muscle', 'foie', 0x5fd38d, 'alanine', [4], 'alanine'], ['foie', 'rein', 0xc0c0c0, 'urée', [1, 4], 'uree'],
+    ['muscle', 'foie', 0xff7aa0, 'lactate', [5], 'lactate'], ['gr', 'foie', 0xff7aa0, 'lactate', [5], 'lactate'],
+  ];
+  const fx = F.map(([a, b, col, nom, st, k], i) => {
+    const pa = org[a], pb = org[b], mid = pa.clone().add(pb).multiplyScalar(.5); const n = V3(-(pb.y - pa.y), pb.x - pa.x, 0).normalize().multiplyScalar(3 + (i % 3) * 2); mid.add(n); mid.z += 6 + (i % 4) * 1.5;
+    const c = courbe([pa.clone().add(V3(0, 0, 3)), mid, pb.clone().add(V3(0, 0, 3))]); const tb = tube(c, .22, col, .4); S3.add(tb); const pt = pointe(c, col, .94, .8); S3.add(pt);
+    const f = flux(S3, c, 6, () => k === 'glucose' ? glucoseM() : boule(col, k === 'vldl' || k === 'chylo' ? .8 : .5, k), .12);
+    const etq = txt3d(nom, '#' + new THREE.Color(col).getHexString(), 1.1); etq.position.copy(c.getPointAt(.5)).add(V3(0, 1.5, 0)); S3.add(etq);
+    return { f, tb, pt, etq, st };
+  });
+  let step = s.si || 0; s.onStep = (i) => { step = i; };
+  const un = V3(1, 1, 1);
+  s.update = function (dt, t) {
+    s.controls.update();
+    fx.forEach((o) => { const on = o.st.includes(step); o.f.on = on; o.f.maj(t); o.tb.visible = o.pt.visible = o.etq.visible = on; });
+    const cible = [[1, 1], [1.3, 1.2], [.45, 1], [.3, .8], [.15, .55], [.3, .4]][step];
+    gF.scale.lerp(un.clone().multiplyScalar(cible[0]), dt * 2); gM.scale.lerp(un.clone().multiplyScalar(cible[1]), dt * 2);
+    ad.scale.lerp(un.clone().multiplyScalar(.85 * (step === 1 ? 1.08 : step >= 3 ? .85 : 1)), dt);
+    hor.set(['Les organes du schéma', 'Insuline ↑ : on stocke', 'Glucagon ↑ : le foie relâche du glucose', 'Lipolyse : AG et corps cétoniques', 'Protéolyse : alanine → glucose', 'Cycle de Cori : lactate → glucose'][step], ['#ffffff', '#7fb8ff', '#ff8fe0', '#f5d020', '#5fd38d', '#ff9ab8'][step]);
   };
   return s;
 }
