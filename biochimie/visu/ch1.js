@@ -384,39 +384,60 @@ function enzyme(nom, col, r = 1.4, seed = 1) {
   if (nom) { const tx = txt3d(nom, '#' + new THREE.Color(col).getHexString(), .9); tx.position.y = r + .9; g.add(tx); }
   g.userData.corps = m; return g;
 }
-// mitochondrie réaliste, ouverte face à la caméra (+z local) : membrane externe, espace intermembranaire,
-// membrane interne repliée en crêtes, ATP synthases (grains), ribosomes et ADN mitochondrial dans la matrice
+// mitochondrie en coupe à plat (comme les planches) : tranche ouverte face à +z local.
+// Membrane externe = rebord ; membrane interne = UNE paroi continue repliée en crêtes qui s'emboîtent ;
+// fond de matrice avec ribosomes, ADN mitochondrial et grains d'ATP synthase sur les crêtes.
 R.localClippingEnabled = true;
+function decaler2D(pts, d) { const n = pts.length; return pts.map((p, i) => { const a = pts[(i - 1 + n) % n], b = pts[(i + 1) % n]; const tx = b.x - a.x, ty = b.y - a.y, l = Math.hypot(tx, ty) || 1; return new THREE.Vector2(p.x + ty / l * d, p.y - tx / l * d); }); }
 function mitochondrie(L = 30, Rm = 9, o = {}) {
   const g = tag(new THREE.Group(), 'mito'), prof = o.prof || .8;
-  const plan0 = new THREE.Plane(V3(0, 0, -1), Rm * .06), plan = plan0.clone(), clip = [plan];
-  const Lx = L / 2 + Rm, Ri = .86;
-  const ell = (sc, col, rough, k) => { const geo = new THREE.SphereGeometry(1, 72, 44); geo.scale(Lx * sc, Rm * sc, Rm * sc * .92);
-    const m = new THREE.Mesh(geo, new THREE.MeshPhysicalMaterial({ color: col, roughness: rough, side: THREE.DoubleSide, clippingPlanes: clip, sheen: .7, sheenColor: new THREE.Color(0xffc8a0), clearcoat: .25 })); if (k) tag(m, k); return m; };
-  const ext = ell(1, 0xa8481f, .7); ext.onBeforeRender = () => { plan.copy(plan0).applyMatrix4(g.matrixWorld); }; g.add(ext);
-  g.add(ell(Ri, 0xe39a62, .45, 'mitoInterne'));
-  // bord de coupe : anneaux pour lire les deux membranes
-  for (const [sc, col] of [[1, 0x7a3014], [Ri, 0xf0b07a]]) { const c = new THREE.Mesh(new THREE.TorusGeometry(1, .035 / sc * 1.4, 6, 120), mat(col, { roughness: .5 })); c.scale.set(Lx * sc, Rm * sc, 1); c.position.z = Rm * .06; g.add(c); }
-  const mC = new THREE.MeshPhysicalMaterial({ color: 0xeaa070, roughness: .42, side: THREE.DoubleSide, clippingPlanes: clip, clearcoat: .35, sheen: .5, sheenColor: new THREE.Color(0xffd8b0) });
-  const n = Math.max(6, Math.round(L / 1.8)), billes = [];
-  for (let k = 0; k < n; k++) {
-    const x = -Lx * .8 + k * (1.6 * Lx / (n - 1)), e = Math.sqrt(Math.max(0, 1 - Math.pow(x / (Lx * Ri), 2))); if (e < .35) continue;
-    const sd = k % 2 ? 1 : -1, ry = Rm * Ri * e, h = ry * prof * (.75 + .25 * Math.sin(k * 2.3)), dz = Rm * Ri * .92 * e * 1.95;
-    const geo = new THREE.BoxGeometry(1.3, h, dz, 2, 12, 20), p = geo.attributes.position;
-    for (let v = 0; v < p.count; v++) { const yy = p.getY(v), zz = p.getZ(v), tip = sstepM(h * .2, h / 2, yy * -sd + 0) ; let xx = p.getX(v);
-      xx = xx * (1 - .5 * tip) + 1.1 * Math.sin(zz * .42 + k) + .5 * Math.sin(yy * .6 + k * 1.7); p.setX(v, xx); }
-    geo.computeVertexNormals(); const cr = new THREE.Mesh(geo, mC); tag(cr, 'crete'); cr.position.set(x, sd * (ry - h / 2), 0); g.add(cr);
-    for (let b = 0; b < 26; b++) billes.push(V3(x + (b % 2 ? .45 : -.45) + .7 * Math.sin(0), sd * (ry - rnd(.1, .95) * h), rnd(-dz / 2, 0)));
-  }
-  const bi = new THREE.InstancedMesh(new THREE.SphereGeometry(.17, 6, 5), new THREE.MeshStandardMaterial({ color: 0x8a2a1a, roughness: .4, clippingPlanes: clip }), billes.length); const dm = new THREE.Object3D();
-  billes.forEach((b, i) => { dm.position.copy(b); dm.updateMatrix(); bi.setMatrixAt(i, dm.matrix); }); bi.userData.kAt = () => 'atpsynthase'; g.add(bi);
-  // matrice : ribosomes et ADN mitochondrial circulaire
-  for (let i = 0; i < 26; i++) { const r = new THREE.Mesh(new THREE.SphereGeometry(rnd(.18, .3), 8, 6), mat(0xb070c0, { emissive: 0x301040 })); r.position.set(rnd(-Lx * .6, Lx * .6), rnd(-Rm * .25, Rm * .25), rnd(-Rm * .5, -.5)); tag(r, 'ribosome'); g.add(r); }
-  if (Rm > 6) { const adn = tag(new THREE.Group(), 'adnmt'); const rr = Math.min(2.4, Rm * .18);
-    for (const [ph, col] of [[0, 0xd83a3a], [Math.PI, 0x3a6ad8]]) { const pts = []; for (let i = 0; i <= 80; i++) { const a = i / 80 * 6.283; pts.push(V3(Math.cos(a) * (rr + .18 * Math.cos(a * 10 + ph)), Math.sin(a) * (rr + .18 * Math.cos(a * 10 + ph)), .25 * Math.sin(a * 10 + ph))); }
-      adn.add(new THREE.Mesh(new THREE.TubeGeometry(courbe(pts, true), 160, .07, 5, true), mat(col, { emissive: col, emissiveIntensity: .3 }))); }
-    adn.position.set(Lx * .35, -Rm * .05, -Rm * .25); g.add(adn); }
-  g.rotation.x = o.incl === undefined ? .5 : o.incl;
+  const A = L / 2 + Rm, B = Rm, H = Rm * .42, ep = Math.max(.16, Rm * .035), Ai = A - Rm * .16, Bi = B - Rm * .16;
+  // 1) le chemin de la membrane interne : ellipse intérieure + doigts (crêtes) alternés haut/bas
+  const pts = [], w = Math.max(.45, Rm * .13), pas = Math.max(w * 2.6, Rm * .3);
+  const yH = (x) => Bi * Math.sqrt(Math.max(0, 1 - Math.pow(x / Ai, 2)));
+  const doigts = []; for (let x = -Ai + pas * .9, k = 0; x < Ai - pas * .7; x += pas * (0.85 + .3 * ((k * 7) % 3) / 2), k++) doigts.push([x, k]);
+  const doigt = (xc, k, haut) => { const y0 = haut ? yH(xc) : -yH(xc), lim = Math.max(0, 2 * yH(xc) - w * 2.2), d = Math.min(lim, 2 * yH(xc) * prof * (.55 + .4 * ((k * 5) % 4) / 3)); if (d < w * 1.5) return [];
+    const sg = haut ? -1 : 1, r = w / 2, o2 = [], tc = y0 + sg * (d - r), wob = Math.sin(k * 2.1) * w * .5;
+    o2.push(new THREE.Vector2(xc - (haut ? r : -r), y0), new THREE.Vector2(xc - (haut ? r : -r) + wob * .5, y0 + sg * d * .5));
+    for (let a = 0; a <= 8; a++) { const t = Math.PI * a / 8; o2.push(new THREE.Vector2(xc + wob + (haut ? -1 : 1) * r * Math.cos(t), tc + sg * r * Math.sin(t))); }
+    o2.push(new THREE.Vector2(xc + (haut ? r : -r) + wob * .5, y0 + sg * d * .5), new THREE.Vector2(xc + (haut ? r : -r), y0)); return o2; };
+  const haut = doigts.filter((_, i) => i % 2 === 0), bas = doigts.filter((_, i) => i % 2 === 1);
+  // bord supérieur de gauche à droite, puis inférieur de droite à gauche
+  const arc = (x0, x1, h) => { const n = Math.max(2, Math.ceil(Math.abs(x1 - x0) / (w * .6))); for (let i = 0; i <= n; i++) { const x = x0 + (x1 - x0) * i / n; pts.push(new THREE.Vector2(x, h ? yH(x) : -yH(x))); } };
+  let xp = -Ai; for (const [xc, k] of haut) { arc(xp, xc - w / 2 - .01, true); pts.push(...doigt(xc, k, true)); xp = xc + w / 2 + .01; } arc(xp, Ai, true);
+  xp = Ai; for (const [xc, k] of [...bas].reverse()) { arc(xp, xc + w / 2 + .01, false); pts.push(...doigt(xc, k, false)); xp = xc - w / 2 - .01; } arc(xp, -Ai, false);
+  const lisse = courbe(pts.map((p) => V3(p.x, p.y, 0)), true).getSpacedPoints(900).slice(0, -1).map((p) => new THREE.Vector2(p.x, p.y));
+  const ext = { depth: H, bevelEnabled: true, bevelThickness: ep * .9, bevelSize: ep * .45, bevelSegments: 3, curveSegments: 6 };
+  const forme = (a, b) => { const sh = new THREE.Shape(a); sh.holes.push(new THREE.Path(b)); return sh; };
+  // membrane interne (paroi continue)
+  const mI = new THREE.MeshPhysicalMaterial({ color: 0xf2c49a, roughness: .38, clearcoat: .5, sheen: .8, sheenColor: new THREE.Color(0xffe8d0) });
+  const gi = new THREE.ExtrudeGeometry(forme(decaler2D(lisse, ep), decaler2D(lisse, -ep)), ext); gi.translate(0, 0, -H);
+  const memI = tag(new THREE.Mesh(gi, mI), 'crete'); g.add(memI);
+  // membrane externe (rebord) avec coque inférieure arrondie
+  const ell = (a, b, n = 160) => [...Array(n)].map((_, i) => { const t = i / n * 6.2832; return new THREE.Vector2(Math.cos(t) * a, Math.sin(t) * b); });
+  const mE = new THREE.MeshPhysicalMaterial({ color: 0xc8683a, roughness: .55, sheen: .7, sheenColor: new THREE.Color(0xffb890), clearcoat: .2 });
+  const ge = new THREE.ExtrudeGeometry(forme(ell(A, B), ell(A - ep * 2.4, B - ep * 2.4)), ext); ge.translate(0, 0, -H); g.add(tag(new THREE.Mesh(ge, mE), 'mito'));
+  const coque = new THREE.Mesh(new THREE.SphereGeometry(1, 72, 20, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), new THREE.MeshPhysicalMaterial({ color: 0xc8683a, roughness: .6, side: THREE.DoubleSide, sheen: .5, sheenColor: new THREE.Color(0xffb890) }));
+  coque.rotation.x = Math.PI / 2; coque.scale.set(A, H * .9, B); coque.position.z = -H; g.add(coque);
+  // fond : espace intermembranaire (clair) et matrice (granuleuse)
+  const fondIM = new THREE.Mesh(new THREE.ShapeGeometry(new THREE.Shape(ell(A - ep, B - ep)), 6), new THREE.MeshStandardMaterial({ color: 0xf0d8c0, roughness: .8 })); fondIM.position.z = -H + .02; g.add(fondIM);
+  const texM = canvasTex(256, 256, (x, w2, h2) => { x.fillStyle = '#f3dcc4'; x.fillRect(0, 0, w2, h2); for (let i = 0; i < 900; i++) { x.fillStyle = `rgba(${150 + Math.random() * 60},${90 + Math.random() * 40},${120 + Math.random() * 60},${Math.random() * .35})`; x.beginPath(); x.arc(Math.random() * w2, Math.random() * h2, Math.random() * 2.2, 0, 6.3); x.fill(); } });
+  texM.wrapS = texM.wrapT = THREE.RepeatWrapping; texM.repeat.set(A / 6, B / 6);
+  const gM = new THREE.ShapeGeometry(new THREE.Shape(decaler2D(lisse, -ep)), 4); { const p = gM.attributes.position, uv = gM.attributes.uv; for (let i = 0; i < p.count; i++) uv.setXY(i, p.getX(i) / 12, p.getY(i) / 12); }
+  const fondM = tag(new THREE.Mesh(gM, new THREE.MeshStandardMaterial({ map: texM, roughness: .7 })), 'matrice'); fondM.position.z = -H + .05; g.add(fondM);
+  // ATP synthases : grains sur la face matricielle des crêtes
+  const inn = decaler2D(lisse, -ep * 1.6), nb = Math.min(700, Math.round(inn.length * .7));
+  const bi = new THREE.InstancedMesh(new THREE.SphereGeometry(Math.max(.07, Rm * .016), 6, 5), new THREE.MeshStandardMaterial({ color: 0x9a4a8a, roughness: .4 }), nb); const dm = new THREE.Object3D();
+  for (let i = 0; i < nb; i++) { const p = inn[Math.floor(Math.random() * inn.length)]; dm.position.set(p.x, p.y, -H + rnd(.15, .95) * H); dm.updateMatrix(); bi.setMatrixAt(i, dm.matrix); } bi.userData.kAt = () => 'atpsynthase'; g.add(bi);
+  // ribosomes et granules de la matrice
+  const dedans = (x, y) => { let c = false; for (let i = 0, j = inn.length - 1; i < inn.length; j = i++) { const a = inn[i], b = inn[j]; if ((a.y > y) !== (b.y > y) && x < (b.x - a.x) * (y - a.y) / (b.y - a.y) + a.x) c = !c; } return c; };
+  const nR = Math.round(A * B * .5); const ri = new THREE.InstancedMesh(new THREE.SphereGeometry(Math.max(.1, Rm * .025), 8, 6), new THREE.MeshStandardMaterial({ color: 0x7a4ab8, roughness: .35, emissive: 0x200a40 }), nR); let nOk = 0;
+  for (let t = 0; t < nR * 6 && nOk < nR; t++) { const x = rnd(-A, A), y = rnd(-B, B); if (!dedans(x, y)) continue; dm.position.set(x, y, -H + .2 + rnd(0, H * .25)); dm.scale.setScalar(rnd(.6, 1.4)); dm.updateMatrix(); ri.setMatrixAt(nOk++, dm.matrix); }
+  ri.count = nOk; ri.userData.kAt = () => 'ribosome'; g.add(ri);
+  if (Rm > 5) for (let s2 = 0; s2 < 2; s2++) { const adn = tag(new THREE.Group(), 'adnmt'); let cx = 0, cy = 0; for (let t = 0; t < 400; t++) { cx = rnd(-A * .6, A * .6); cy = rnd(-B * .4, B * .4); if (dedans(cx, cy) && dedans(cx + 1.5, cy) && dedans(cx - 1.5, cy)) break; }
+    const rr = Math.min(1.8, Rm * .14); for (const [ph, col] of [[0, 0xc85a8a], [Math.PI, 0x8a5ac8]]) { const pp = []; for (let i = 0; i <= 90; i++) { const a = i / 90 * 6.283, rad = rr * (1 + .35 * Math.sin(a * 3 + s2)); pp.push(V3(cx + Math.cos(a) * rad + .12 * Math.cos(a * 14 + ph), cy + Math.sin(a) * rad * .7 + .12 * Math.sin(a * 14 + ph), -H + .35 + .1 * Math.sin(a * 14 + ph))); }
+      adn.add(new THREE.Mesh(new THREE.TubeGeometry(courbe(pp, true), 200, Math.max(.035, Rm * .008), 5, true), mat(col, { roughness: .35 }))); } g.add(adn); }
+  g.rotation.x = o.incl === undefined ? -.55 : -o.incl;
   return g;
 }
 const sstepM = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
@@ -650,7 +671,7 @@ function sceneCellule() {
   const re = tag(new THREE.Group(), 're'); for (let i = 0; i < 7; i++) { const r0 = 11 + i * 1.6; const c = courbe([...Array(9)].map((_, j) => { const a = -1.2 + j * .32; return [-4 + Math.cos(a) * r0, 4 + Math.sin(a) * r0 * .8, -6 + Math.sin(j * 1.3 + i) * 2]; }));
     re.add(new THREE.Mesh(new THREE.TubeGeometry(c, 50, .55, 6), mat(0x8aa8d8, { roughness: .45 }))); } S3.add(re);
   // mitochondries
-  const mitos = []; for (const [x, y, z, r] of [[18, -8, 4, .3], [-20, -12, 8, -.4], [14, 14, -10, .9], [-22, 10, 6, 1.4], [4, -18, -6, .1]]) { const m = mitochondrie(12, 3.6, { prof: .7 }); m.position.set(x, y, z + 6); m.rotation.set(.5 + r * .1, r * .3, r * 1.6); S3.add(m); mitos.push(m); }
+  const mitos = []; for (const [x, y, z, r] of [[18, -8, 4, .3], [-20, -12, 8, -.4], [14, 14, -10, .9], [-22, 10, 6, 1.4], [4, -18, -6, .1]]) { const m = mitochondrie(12, 3.6, { prof: .7 }); m.position.set(x, y, z + 6); m.rotation.set(-.5 - r * .1, r * .3, r * 1.6); S3.add(m); mitos.push(m); }
   // glycogène (rosettes) et gouttelettes lipidiques
   const gly = tag(new THREE.Group(), 'glycogene'); for (let i = 0; i < 60; i++) { const b = new THREE.Mesh(new THREE.SphereGeometry(rnd(.5, .9), 8, 6), mat(0xf2e6b0, { roughness: .6 })); const a = rnd(0, 6.28), r = rnd(0, 5); b.position.set(-14 + Math.cos(a) * r, -2 + Math.sin(a) * r * .6, 14 + rnd(-2, 2)); gly.add(b); } S3.add(gly);
   const gout = []; for (const [x, y, z, r] of [[10, -4, 16, 3.2], [22, 6, 8, 2.4], [6, -20, 8, 2]]) { const g = tag(new THREE.Mesh(new THREE.SphereGeometry(r, 24, 18), new THREE.MeshPhysicalMaterial({ color: 0xf2c84a, roughness: .2, clearcoat: 1 })), 'gouttelette'); g.position.set(x, y, z); S3.add(g); gout.push(g); }
@@ -1016,7 +1037,7 @@ function sceneKrebs() {
       ['Carrefour acétyl-CoA', "L'<b>acétyl-CoA</b> est le carrefour : il vient du <b>glucose</b>, des <b>acides gras</b> (β-oxydation) et des <b>acides aminés</b>. Il part dans <b>Krebs</b>, ou sert à fabriquer les <b>AG</b>, le <b>cholestérol</b> et les <b>corps cétoniques</b>. Le réflexe du prof : question de molécule → pense acétyl-CoA."],
     ] });
   const S3 = s.scene;
-  const mi = mitochondrie(56, 22, { prof: .32 }); mi.position.set(0, -2, -3); S3.add(mi);
+  const mi = mitochondrie(56, 22, { prof: .32, incl: .18 }); mi.position.set(0, -2, -2); S3.add(mi);
   const noms = ['Citrate', 'Isocitrate', 'α-Cétoglutarate', 'Succinyl-CoA', 'Succinate', 'Fumarate', 'Malate', 'Oxaloacétate'];
   const R0 = 11, cen = V3(0, -4, 0); const P = noms.map((_, i) => { const a = Math.PI / 2 - i / 8 * 6.283 - .39; return cen.clone().add(V3(Math.cos(a) * R0, Math.sin(a) * R0, 0)); });
   const cyc = courbe(P, true); S3.add(tube(cyc, .35, 0xffb060, .5));
@@ -1137,7 +1158,7 @@ function sceneUree() {
       ['Amines biogènes', "La <b>décarboxylation</b> d'AA donne des amines actives, dégradées par les <b>MAO</b> : <b>GABA</b> (glutamate), <b>histamine</b> (histidine), <b>dopamine</b> (L-DOPA) → noradrénaline → adrénaline, <b>sérotonine</b> (5-hydroxytryptophane) → mélatonine."],
     ] });
   const S3 = s.scene;
-  const mi = mitochondrie(18, 9); mi.position.set(-22, -2, -8); mi.rotation.set(.45, 0, Math.PI / 2, 'ZXY'); S3.add(mi); const tM = txt3d('Mitochondrie', '#ffb080', 1.2); tM.position.set(-18, 24, 0); S3.add(tM);
+  const mi = mitochondrie(18, 9); mi.position.set(-22, -2, -8); mi.rotation.set(-.45, 0, Math.PI / 2, 'ZXY'); S3.add(mi); const tM = txt3d('Mitochondrie', '#ffb080', 1.2); tM.position.set(-18, 24, 0); S3.add(tM);
   const tCy = txt3d('Cytosol', '#d0ffd0', 1.2); tCy.position.set(18, 24, 0); S3.add(tCy);
   // transamination
   const aa = tag(boule(0xe0e0e0, 1), 'aa'), akg = tag(boule(0xffb060, 1), 'akg'), nh2 = boule(0x4f8fd6, .5); S3.add(aa, akg, nh2);
