@@ -199,9 +199,10 @@ e = monde287.patch_ordo(e, rep)
 import etagere287
 head = head.replace('decor/officine-1920.jpg', 'decor/officine-1920-jour.jpg')
 e = etagere287.patch(e, rep, monde287.V)
-head = head[:head.rfind('</style>')] + etagere287.CSS + etagere287.CSS_JN + head[head.rfind('</style>'):]
+import outils287
+head = head[:head.rfind('</style>')] + etagere287.CSS + etagere287.CSS_JN + outils287.CSS + head[head.rfind('</style>'):]
 js_th = 'window.TH=[' + TH[0] + ',\n' + TH[1] + '];'
-html = head + '<script>window.DATA=' + json.dumps(DATA, ensure_ascii=False) + ';\nwindow.EXC=' + json.dumps(etagere287.EXC, ensure_ascii=False) + ';\n' + js_th + '</script>\n<script>' + e + '</script></body></html>'
+html = head + '<script>window.DATA=' + json.dumps(DATA, ensure_ascii=False) + ';\nwindow.EXC=' + json.dumps(etagere287.EXC, ensure_ascii=False) + ';\n' + js_th + '</script>\n<script>' + e + '</script>' + outils287.HTML + '<script>' + outils287.JS + '</script></body></html>'
 html = re.sub(r'icons/jeu-(180|192|512)\.png(?!\?)', r'icons/jeu-\1.png?v=2', html)
 open(OUT, 'w').write(html)
 print('ok', len(html), OUT)

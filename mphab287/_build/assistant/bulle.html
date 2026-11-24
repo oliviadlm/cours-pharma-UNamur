@@ -62,7 +62,7 @@ async function envoyer(q){q=(q||'').trim();if(!q||ctrl)return;ta.value='';ajuste
  try{var r=await sample(input,{cache:false,signal:ctrl.signal,onText:function(e){if(e&&e.text){rep.innerHTML=md(e.text);fil.scrollTop=fil.scrollHeight}}});
   rep.innerHTML=md(r.text||'');hist.push({role:'user',content:q},{role:'assistant',content:r.text||''})}
  catch(e){rep.className='qa-m a err';var c=e&&e.code;
-  rep.innerHTML=c==='not_granted'?"L'assistant n'a pas l'autorisation de répondre. Rouvre la bulle et accepte la demande d'accès à Claude.":c==='rate_limited'?"Trop de questions d'un coup : attends une minute puis réessaie.":"Je n'ai pas pu répondre ("+esc((e&&e.message)||'erreur')+"). Réessaie.";if(e&&e.text)rep.innerHTML=md(e.text)+'<p><i>(réponse interrompue)</i></p>'}
+  rep.innerHTML=c==='not_granted'?"L'assistant n'a pas l'autorisation de répondre. Rouvre la bulle et accepte la demande d'accès à Claude.":c==='rate_limited'?"Trop de questions d'un coup : attends une minute puis réessaie.":"Je n'ai pas pu répondre (code : "+esc(c||'?')+" · "+esc((e&&e.message)||'erreur')+"). Recharge complètement la page puis réessaie.";if(e&&e.text)rep.innerHTML=md(e.text)+'<p><i>(réponse interrompue)</i></p>'}
  finally{ctrl=null;go.disabled=false}}
 function ajuste(){ta.style.height='auto';ta.style.height=Math.min(120,ta.scrollHeight)+'px'}
 ta.addEventListener('input',ajuste);
