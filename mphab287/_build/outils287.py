@@ -12,13 +12,14 @@ HTML = r'''
  </div>
  <div class="ot-corps">
   <div class="ot-note">
-   <canvas id="ot-cv"></canvas>
+   <canvas id="ot-cv"></canvas><div class="ot-astuce" id="ot-ast" style="opacity:0"></div>
    <div class="ot-outils">
     <button type="button" class="ot-c on" data-c="#1b2233" aria-label="Encre noire"><i style="background:#1b2233"></i></button>
     <button type="button" class="ot-c" data-c="#1f5fd6" aria-label="Encre bleue"><i style="background:#1f5fd6"></i></button>
     <button type="button" class="ot-c" data-c="#d92d3a" aria-label="Encre rouge"><i style="background:#d92d3a"></i></button>
     <button type="button" class="ot-c" data-c="gomme" aria-label="Gomme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 21h10M5.5 14.5l7-7 6 6-7 7H8z"/><path d="M9 11l6 6"/></svg></button>
     <span class="ot-sep"></span>
+    <button type="button" id="ot-sty" aria-label="Stylet seul : la main est ignorée" title="Stylet seul"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l1.5-5L16 4.5a2.1 2.1 0 0 1 3 3L8.5 18z"/><path d="M14 6.5l3 3"/></svg></button>
     <button type="button" id="ot-undo" aria-label="Annuler"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></svg></button>
     <button type="button" id="ot-vide" aria-label="Nouvelle feuille"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></button>
    </div>
@@ -59,6 +60,9 @@ CSS = r'''
 .ot-outils button svg{width:19px;height:19px}
 .ot-outils .ot-c i{width:16px;height:16px;border-radius:50%;display:block}
 .ot-outils .ot-c.on{background:#ece5d8;outline:2px solid #2f8a84}
+.ot-outils #ot-sty{display:none}.ot-outils #ot-sty.vu{display:grid}.ot-outils #ot-sty.on{background:#e3f1ef;color:#1d5e59;outline:2px solid #2f8a84}
+#ot{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.ot-astuce{position:absolute;left:8px;bottom:8px;right:8px;font:600 12px/1.3 -apple-system,system-ui,sans-serif;color:#6b6460;background:rgba(255,255,255,.9);border-radius:10px;padding:6px 9px;pointer-events:none;transition:opacity .4s}
 .ot-sep{width:1px;height:22px;background:#ddd4c4;margin:0 2px}
 .ot-calc{flex:0 0 auto;display:flex;flex-direction:column;gap:6px}
 #ot[data-m="calc"] .ot-calc{flex:1;min-height:0}
@@ -86,7 +90,7 @@ CSS = r'''
 
 JS = r'''
 (function(){
-var K='mphab287-outils',st={m:'deux',h:0,haut:false,tr:[],hist:[]};
+var K='mphab287-outils',st={m:'deux',h:0,haut:false,tr:[],hist:[],stylet:false};
 try{var sv=JSON.parse(localStorage.getItem(K)||'null');if(sv)for(var k in st)if(k in sv)st[k]=sv[k]}catch(e){}
 function garde(){try{var n=0,tr=[];for(var i=st.tr.length-1;i>=0;i--){n+=(st.tr[i].p?st.tr[i].p.length:1);if(n>30000)break;tr.unshift(st.tr[i])}st.tr=tr;localStorage.setItem(K,JSON.stringify(st))}catch(e){}}
 var $=function(s){return document.querySelector(s)},ot=$('#ot'),btn=$('#ot-btn'),cv=$('#ot-cv'),cx=cv.getContext('2d');
@@ -116,12 +120,26 @@ function trait(t,de){var p=t.p;cx.save();cx.lineCap='round';cx.lineJoin='round';
 function texte(t){cx.save();cx.fillStyle=t.c||'#1f5fd6';cx.font='700 24px Caveat, "Comic Sans MS", cursive';cx.fillText(t.t,t.x,t.y);cx.restore()}
 function dessine(){cx.setTransform(1,0,0,1,0,0);cx.clearRect(0,0,cv.width,cv.height);cx.setTransform(dpr,0,0,dpr,0,0);st.tr.forEach(function(t){t.t!=null?texte(t):trait(t)})}
 function pos(e){var r=cv.getBoundingClientRect();return[Math.round((e.clientX-r.left)*10)/10,Math.round((e.clientY-r.top)*10)/10]}
-cv.addEventListener('pointerdown',function(e){if(e.button>0)return;try{cv.setPointerCapture(e.pointerId)}catch(_){}cur={c:coul==='gomme'?null:coul,g:coul==='gomme',p:[pos(e)]};st.tr.push(cur);trait(cur);e.preventDefault()});
-cv.addEventListener('pointermove',function(e){if(!cur)return;var ev=e.getCoalescedEvents?e.getCoalescedEvents():[e];if(!ev.length)ev=[e];var n=cur.p.length;ev.forEach(function(x){cur.p.push(pos(x))});
- var s={c:cur.c,g:cur.g,p:cur.p.slice(Math.max(0,n-2))};trait(s,1);e.preventDefault()});
-function fin(){if(cur){cur=null;dessine();garde()}}
+var curId=null,doigts={},tap2=null,avant='#1b2233';
+function choisit(c){coul=c;document.querySelectorAll('.ot-c').forEach(function(x){x.classList.toggle('on',x.dataset.c===c)})}
+function bascule(){if(coul==='gomme')choisit(avant);else{avant=coul;choisit('gomme')}astuce(coul==='gomme'?'Gomme':'Stylo')}
+var tAst;function astuce(t,ms){var a=$('#ot-ast');a.textContent=t;a.style.opacity=1;clearTimeout(tAst);tAst=setTimeout(function(){a.style.opacity=0},ms||1200)}
+function majSty(){var b=$('#ot-sty');b.classList.toggle('vu',!!st.vuStylet);b.classList.toggle('on',!!st.stylet)}
+$('#ot-sty').onclick=function(){st.stylet=!st.stylet;majSty();garde();astuce(st.stylet?'Stylet seul : ta main est ignorée. Tape à deux doigts pour passer stylo / gomme.':'Le doigt écrit aussi',2600)};
+cv.addEventListener('pointerdown',function(e){if(e.button>0)return;e.preventDefault();
+ if(e.pointerType==='pen'){if(!st.vuStylet){st.vuStylet=true;st.stylet=true;majSty();garde();astuce('Apple Pencil détecté : ta main est ignorée. Tape à deux doigts pour passer stylo / gomme.',3500)}
+  if(cur&&cur.doigt){st.tr.splice(st.tr.indexOf(cur),1);cur=null;dessine()}}
+ else if(e.pointerType==='touch'&&st.stylet){doigts[e.pointerId]={x:e.clientX,y:e.clientY,t:Date.now(),mv:0};var ids=Object.keys(doigts);
+  if(ids.length===2){var d0=doigts[ids[0]],d1=doigts[ids[1]];tap2=(Math.abs(d0.t-d1.t)<250)?{t:Math.min(d0.t,d1.t)}:null}else if(ids.length>2)tap2=null;return}
+ if(cur)return;
+ try{cv.setPointerCapture(e.pointerId)}catch(_){}curId=e.pointerId;cur={c:coul==='gomme'?null:coul,g:coul==='gomme',p:[pos(e)],doigt:e.pointerType==='touch'};st.tr.push(cur);trait(cur)});
+cv.addEventListener('pointermove',function(e){var d=doigts[e.pointerId];if(d){d.mv=Math.max(d.mv,Math.abs(e.clientX-d.x)+Math.abs(e.clientY-d.y));if(d.mv>14)tap2=null;return}
+ if(!cur||e.pointerId!==curId)return;var ev=e.getCoalescedEvents?e.getCoalescedEvents():[e];if(!ev.length)ev=[e];var n=cur.p.length;ev.forEach(function(x){cur.p.push(pos(x))});
+ var s2={c:cur.c,g:cur.g,p:cur.p.slice(Math.max(0,n-2))};trait(s2,1);e.preventDefault()});
+function fin(e){if(doigts[e.pointerId]){delete doigts[e.pointerId];if(!Object.keys(doigts).length){if(tap2&&Date.now()-tap2.t<400&&e.type==='pointerup')bascule();tap2=null}return}
+ if(cur&&e.pointerId===curId){if(cur.doigt&&cur.p.length<2&&st.stylet){}delete cur.doigt;cur=null;curId=null;dessine();garde()}}
 cv.addEventListener('pointerup',fin);cv.addEventListener('pointercancel',fin);
-document.querySelectorAll('.ot-c').forEach(function(b){b.onclick=function(){coul=b.dataset.c;document.querySelectorAll('.ot-c').forEach(function(x){x.classList.toggle('on',x===b)})}});
+document.querySelectorAll('.ot-c').forEach(function(b){b.onclick=function(){if(b.dataset.c!=='gomme')avant=b.dataset.c;choisit(b.dataset.c)}});
 $('#ot-undo').onclick=function(){st.tr.pop();dessine();garde()};
 var vide=$('#ot-vide'),armee=0;vide.onclick=function(){if(!st.tr.length)return;if(Date.now()-armee>2500){armee=Date.now();vide.style.background='#fde2e2';vide.setAttribute('aria-label','Touche encore pour effacer la feuille');setTimeout(function(){vide.style.background=''},2500);return}st.tr=[];armee=0;vide.style.background='';dessine();garde()};
 function ligneLibre(){var y=34;st.tr.forEach(function(t){if(t.t!=null)y=Math.max(y,t.y+30);else t.p.forEach(function(q){y=Math.max(y,q[1]+30)})});var hmax=cv.getBoundingClientRect().height-10;return Math.min(y,Math.max(34,hmax))}
@@ -155,7 +173,7 @@ $('#ot-versr').onclick=function(){var r=resultat();if(!r||!inp||!document.contai
 document.addEventListener('focusin',function(e){var t=e.target;if(t&&t.matches&&t.matches('input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea')&&!t.closest('#ot')){inp=t;maj()}},true);
 document.addEventListener('keydown',function(e){if(!ot.classList.contains('on')||st.m==='note')return;var a=document.activeElement;if(a&&a.matches&&a.matches('input,textarea'))return;
  var m={'*':'×','/':'÷','-':'−','.':',','Enter':'=','Backspace':'⌫','Escape':'C'};var k=m[e.key]||e.key;if(/^[\d+()%,]$/.test(k)||['×','÷','−','=','⌫','C'].indexOf(k)>=0){touche(k);e.preventDefault()}});
-ot.dataset.m=st.m;maj();
+ot.dataset.m=st.m;maj();majSty();
 if(window.ResizeObserver)new ResizeObserver(function(){if(ot.classList.contains('on'))dim()}).observe(cv);
 })();
 '''
