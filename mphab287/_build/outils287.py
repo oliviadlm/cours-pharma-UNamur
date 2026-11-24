@@ -62,7 +62,7 @@ CSS = r'''
 .ot-outils .ot-c i{width:16px;height:16px;border-radius:50%;display:block}
 .ot-outils .ot-c.on{background:#ece5d8;outline:2px solid #2f8a84}
 .ot-outils #ot-sty{display:none}.ot-outils #ot-sty.vu{display:grid}.ot-outils #ot-sty.on{background:#e3f1ef;color:#1d5e59;outline:2px solid #2f8a84}
-#ot{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+#ot,#ot *,#ot-btn{-webkit-user-select:none!important;user-select:none!important;-webkit-touch-callout:none!important;-webkit-tap-highlight-color:transparent}
 .ot-astuce{position:absolute;left:8px;bottom:8px;right:8px;font:600 12px/1.3 -apple-system,system-ui,sans-serif;color:#6b6460;background:rgba(255,255,255,.9);border-radius:10px;padding:6px 9px;pointer-events:none;transition:opacity .4s}
 .ot-sep{width:1px;height:22px;background:#ddd4c4;margin:0 2px}
 .ot-calc{flex:0 0 auto;display:flex;flex-direction:column;gap:6px}
@@ -97,6 +97,15 @@ function garde(){try{var n=0,tr=[];for(var i=st.tr.length-1;i>=0;i--){n+=(st.tr[
 var $=function(s){return document.querySelector(s)},ot=$('#ot'),btn=$('#ot-btn'),cv=$('#ot-cv'),cx=cv.getContext('2d');
 function stop(e){e.stopPropagation()}
 ['pointerdown','pointermove','pointerup','touchstart','touchmove','touchend','wheel','click','mousedown'].forEach(function(t){ot.addEventListener(t,stop);btn.addEventListener(t,stop)});
+/* ---------- pas de sélection de texte ni de menu « Copier / Chercher » dans le panneau ---------- */
+function dansOt(n){while(n&&n.nodeType!==1)n=n.parentNode;return !!(n&&n.closest&&(n.closest('#ot')||n.closest('#ot-btn')))}
+function sansSel(){try{var sel=getSelection();if(sel&&sel.rangeCount&&(dansOt(sel.anchorNode)||dansOt(sel.focusNode)||ot.classList.contains('on')&&sel.containsNode&&sel.containsNode(ot,true)))sel.removeAllRanges()}catch(_){}}
+document.addEventListener('selectstart',function(e){if(dansOt(e.target)||(ot.classList.contains('on')&&e.target&&dansOt(e.target)))e.preventDefault()},true);
+document.addEventListener('selectionchange',function(){if(ot.classList.contains('on'))sansSel()});
+ot.addEventListener('contextmenu',function(e){e.preventDefault()});
+cv.addEventListener('touchstart',function(e){e.preventDefault()},{passive:false});
+cv.addEventListener('touchmove',function(e){e.preventDefault()},{passive:false});
+ot.addEventListener('pointerdown',sansSel,true);
 /* ---------- panneau ---------- */
 function hDef(){var p=innerWidth<700;return st.m==='deux'?(p?.8:.62):st.m==='note'?.6:(p?.62:.6)}
 function taille(){var h=st.h||hDef();h=Math.max(.3,Math.min(.92,h));ot.style.setProperty('--oth',Math.round(h*innerHeight)+'px')}
