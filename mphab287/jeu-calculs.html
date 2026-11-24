@@ -559,7 +559,7 @@ body.figer .anim *,body.figer .anim{animation-play-state:paused!important}
 .ot-corps{flex:1;min-height:0;display:flex;flex-direction:column;gap:8px;padding:0 10px 10px}
 #ot[data-m="note"] .ot-calc,#ot[data-m="calc"] .ot-note{display:none}
 .ot-note{position:relative;flex:1;min-height:120px;border-radius:14px;overflow:hidden;border:1px solid #e3dccd;background:#fffdf8 repeating-linear-gradient(0deg,transparent 0 23px,#e7edf6 23px 24px),#fffdf8}
-.ot-note{background-image:linear-gradient(#e9eef6 1px,transparent 1px),linear-gradient(90deg,#e9eef6 1px,transparent 1px);background-size:24px 24px}
+.ot-note{background:#fffdf8;background-image:linear-gradient(#e9eef6 1px,transparent 1px),linear-gradient(90deg,#e9eef6 1px,transparent 1px);background-size:24px 24px}
 #ot-cv{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair}
 .ot-outils{position:absolute;left:8px;top:8px;display:flex;align-items:center;gap:4px;padding:4px;border-radius:12px;background:rgba(255,255,255,.92);box-shadow:0 2px 8px rgba(0,0,0,.12)}
 .ot-outils button{width:34px;height:34px;border:0;border-radius:9px;background:none;display:grid;place-items:center;color:#3d3a36;cursor:pointer}
@@ -1580,7 +1580,7 @@ function importer(){function appliquer(t){try{t=(t||'').trim();if(t.indexOf('CHI
  if(navigator.clipboard&&navigator.clipboard.readText)navigator.clipboard.readText().then(function(t){if(t&&t.indexOf('CHIPHA1:')===0)appliquer(t);else appliquer(window.prompt('Colle ici le code de progression :',''))},function(){appliquer(window.prompt('Colle ici le code de progression :',''))});else appliquer(window.prompt('Colle ici le code de progression :',''))}
 function haut(){var d=$('#defile');if(d)d.scrollTop=0}
 /* ---------- mise à jour automatique : l'app vérifie s'il existe une version plus récente ---------- */
-var VERSION='1795530028';
+var VERSION='1795530715';
 function verifierVersion(){try{fetch(location.pathname+'?nocache='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():''}).then(function(t){var m=/var VERSION='(\d+)'/.exec(t);if(m&&m[1]!==VERSION&&!G){location.replace(location.pathname+'?v='+m[1]+location.hash)}}).catch(function(){})}catch(e){}}
 setTimeout(verifierVersion,1500);
 document.addEventListener('visibilitychange',function(){if(!document.hidden)verifierVersion()});
@@ -2237,6 +2237,7 @@ lucioles();accueil();
     <span class="ot-sep"></span>
     <button type="button" id="ot-sty" aria-label="Stylet seul : la main est ignorée" title="Stylet seul"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l1.5-5L16 4.5a2.1 2.1 0 0 1 3 3L8.5 18z"/><path d="M14 6.5l3 3"/></svg></button>
     <button type="button" id="ot-undo" aria-label="Annuler"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></svg></button>
+    <button type="button" id="ot-home" aria-label="Revenir au début de la feuille"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></button>
     <button type="button" id="ot-vide" aria-label="Nouvelle feuille"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></button>
    </div>
   </div>
@@ -2249,7 +2250,7 @@ lucioles();accueil();
 </section>
 <script>
 (function(){
-var K='mphab287-outils',st={m:'deux',h:0,haut:false,tr:[],hist:[],stylet:false};
+var K='mphab287-outils',st={m:'deux',h:0,haut:false,tr:[],hist:[],stylet:false,vuStylet:false,v:null};
 try{var sv=JSON.parse(localStorage.getItem(K)||'null');if(sv)for(var k in st)if(k in sv)st[k]=sv[k]}catch(e){}
 function garde(){try{var n=0,tr=[];for(var i=st.tr.length-1;i>=0;i--){n+=(st.tr[i].p?st.tr[i].p.length:1);if(n>30000)break;tr.unshift(st.tr[i])}st.tr=tr;localStorage.setItem(K,JSON.stringify(st))}catch(e){}}
 var $=function(s){return document.querySelector(s)},ot=$('#ot'),btn=$('#ot-btn'),cv=$('#ot-cv'),cx=cv.getContext('2d');
@@ -2268,40 +2269,60 @@ document.querySelectorAll('.ot-seg button').forEach(function(b){b.onclick=functi
  poi.addEventListener('pointermove',function(e){if(y0==null)return;var d=(e.clientY-y0)*(st.haut?1:-1);st.h=Math.max(.3,Math.min(.92,(h0+d)/innerHeight));taille();dim()});
  poi.addEventListener('pointerup',function(){y0=null;garde()});poi.addEventListener('pointercancel',function(){y0=null})})();
 addEventListener('resize',function(){if(ot.classList.contains('on')){taille();dim()}});
-/* ---------- feuille ---------- */
-var coul='#1b2233',cur=null,dpr=1;
-function dim(){var r=cv.getBoundingClientRect();if(!r.width)return;dpr=Math.min(3,devicePixelRatio||1);cv.width=Math.round(r.width*dpr);cv.height=Math.round(r.height*dpr);dessine()}
+/* ---------- feuille infinie ---------- */
+var coul='#1b2233',cur=null,curId=null,dpr=1,W=0,H=0,note=document.querySelector('.ot-note');
+if(!st.v)st.v={x:0,y:0,z:1};var V=st.v;
+function dim(){var r=cv.getBoundingClientRect();if(!r.width)return;W=r.width;H=r.height;dpr=Math.min(3,devicePixelRatio||1);cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);dessine()}
+function grille(){var g=24*V.z;note.style.backgroundSize=g+'px '+g+'px';note.style.backgroundPosition=(-V.x*V.z%g)+'px '+(-V.y*V.z%g)+'px'}
 function trait(t,de){var p=t.p;cx.save();cx.lineCap='round';cx.lineJoin='round';
- if(t.g){cx.globalCompositeOperation='destination-out';cx.lineWidth=22}else{cx.strokeStyle=t.c;cx.lineWidth=2.6}
- cx.beginPath();if(p.length===1){cx.arc(p[0][0],p[0][1],cx.lineWidth/2,0,7);cx.fillStyle=t.c||'#000';if(!t.g)cx.fill();else{cx.fill()}}
+ if(t.g){cx.globalCompositeOperation='destination-out';cx.lineWidth=22;cx.fillStyle='#000';cx.strokeStyle='#000'}else{cx.strokeStyle=t.c;cx.fillStyle=t.c;cx.lineWidth=2.6}
+ cx.beginPath();if(p.length===1){cx.arc(p[0][0],p[0][1],cx.lineWidth/2,0,7);cx.fill()}
  else{var i=Math.max(1,de||1);cx.moveTo(p[i-1][0],p[i-1][1]);for(;i<p.length-1;i++){var mx=(p[i][0]+p[i+1][0])/2,my=(p[i][1]+p[i+1][1])/2;cx.quadraticCurveTo(p[i][0],p[i][1],mx,my)}cx.lineTo(p[p.length-1][0],p[p.length-1][1]);cx.stroke()}
  cx.restore()}
 function texte(t){cx.save();cx.fillStyle=t.c||'#1f5fd6';cx.font='700 24px Caveat, "Comic Sans MS", cursive';cx.fillText(t.t,t.x,t.y);cx.restore()}
-function dessine(){cx.setTransform(1,0,0,1,0,0);cx.clearRect(0,0,cv.width,cv.height);cx.setTransform(dpr,0,0,dpr,0,0);st.tr.forEach(function(t){t.t!=null?texte(t):trait(t)})}
-function pos(e){var r=cv.getBoundingClientRect();return[Math.round((e.clientX-r.left)*10)/10,Math.round((e.clientY-r.top)*10)/10]}
-var curId=null,doigts={},tap2=null,avant='#1b2233';
+function dessine(){cx.setTransform(1,0,0,1,0,0);cx.clearRect(0,0,cv.width,cv.height);var k=dpr*V.z;cx.setTransform(k,0,0,k,-V.x*k,-V.y*k);
+ var x0=V.x-40,y0=V.y-40,x1=V.x+W/V.z+40,y1=V.y+H/V.z+40;
+ st.tr.forEach(function(t){if(t.t!=null){if(t.y>y0&&t.y<y1+30)texte(t);return}var b=t.b;if(!b){b=[1e9,1e9,-1e9,-1e9];t.p.forEach(function(q){b[0]=Math.min(b[0],q[0]);b[1]=Math.min(b[1],q[1]);b[2]=Math.max(b[2],q[0]);b[3]=Math.max(b[3],q[1])})}
+  if(b[2]<x0||b[0]>x1||b[3]<y0||b[1]>y1)return;trait(t)});grille()}
+function ecran(e){var r=cv.getBoundingClientRect();return[e.clientX-r.left,e.clientY-r.top]}
+function pos(e){var q=ecran(e);return[Math.round((V.x+q[0]/V.z)*10)/10,Math.round((V.y+q[1]/V.z)*10)/10]}
+var doigts={},nav=null,navSeul=false,tap2=null,avant='#1b2233',tDessin=0;
 function choisit(c){coul=c;document.querySelectorAll('.ot-c').forEach(function(x){x.classList.toggle('on',x.dataset.c===c)})}
 function bascule(){if(coul==='gomme')choisit(avant);else{avant=coul;choisit('gomme')}astuce(coul==='gomme'?'Gomme':'Stylo')}
 var tAst;function astuce(t,ms){var a=$('#ot-ast');a.textContent=t;a.style.opacity=1;clearTimeout(tAst);tAst=setTimeout(function(){a.style.opacity=0},ms||1200)}
 function majSty(){var b=$('#ot-sty');b.classList.toggle('vu',!!st.vuStylet);b.classList.toggle('on',!!st.stylet)}
-$('#ot-sty').onclick=function(){st.stylet=!st.stylet;majSty();garde();astuce(st.stylet?'Stylet seul : ta main est ignorée. Tape à deux doigts pour passer stylo / gomme.':'Le doigt écrit aussi',2600)};
+$('#ot-sty').onclick=function(){st.stylet=!st.stylet;majSty();garde();astuce(st.stylet?'Stylet seul : ta main est ignorée. Un doigt pour te déplacer, deux pour zoomer, tape à deux doigts pour stylo / gomme.':'Le doigt écrit aussi : glisse à deux doigts pour te déplacer.',3000)};
+/* navigation : base = position des doigts au début du geste */
+function base(){var ids=Object.keys(doigts);if(!ids.length){nav=null;return}var cxm=0,cym=0;ids.forEach(function(i){cxm+=doigts[i].x;cym+=doigts[i].y});cxm/=ids.length;cym/=ids.length;
+ var d=ids.length>1?Math.hypot(doigts[ids[0]].x-doigts[ids[1]].x,doigts[ids[0]].y-doigts[ids[1]].y):0;var r=cv.getBoundingClientRect();
+ nav={cx:cxm-r.left,cy:cym-r.top,d:d,x:V.x,y:V.y,z:V.z,n:ids.length}}
+function bouge(){var ids=Object.keys(doigts);if(!nav||ids.length!==nav.n){base();return}var cxm=0,cym=0;ids.forEach(function(i){cxm+=doigts[i].x;cym+=doigts[i].y});cxm/=ids.length;cym/=ids.length;var r=cv.getBoundingClientRect();cxm-=r.left;cym-=r.top;
+ var z=nav.z;if(ids.length>1&&nav.d>20){var d=Math.hypot(doigts[ids[0]].x-doigts[ids[1]].x,doigts[ids[0]].y-doigts[ids[1]].y);z=Math.max(.4,Math.min(2.5,nav.z*d/nav.d))}
+ var wx=nav.x+nav.cx/nav.z,wy=nav.y+nav.cy/nav.z;V.z=z;V.x=wx-cxm/z;V.y=wy-cym/z;dessine()}
+function annuleTraitDoigt(){if(cur&&cur.doigt){if(cur.p.length<14||Date.now()-tDessin<250){st.tr.splice(st.tr.indexOf(cur),1)}else delete cur.doigt;cur=null;curId=null;dessine()}}
 cv.addEventListener('pointerdown',function(e){if(e.button>0)return;e.preventDefault();
- if(e.pointerType==='pen'){if(!st.vuStylet){st.vuStylet=true;st.stylet=true;majSty();garde();astuce('Apple Pencil détecté : ta main est ignorée. Tape à deux doigts pour passer stylo / gomme.',3500)}
+ if(e.pointerType==='touch'){doigts[e.pointerId]={x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,t:Date.now()};var n=Object.keys(doigts).length;
+  if(n===2){var ids=Object.keys(doigts),d0=doigts[ids[0]],d1=doigts[ids[1]];tap2=Math.abs(d0.t-d1.t)<250?{t:Math.min(d0.t,d1.t)}:null}else if(n>2)tap2=null;
+  if(st.stylet||n>1||navSeul){if(!st.stylet)annuleTraitDoigt();navSeul=true;base();return}}
+ if(e.pointerType==='pen'){if(!st.vuStylet){st.vuStylet=true;st.stylet=true;majSty();garde();astuce('Apple Pencil détecté : ta main est ignorée. Un doigt pour te déplacer, deux pour zoomer, tape à deux doigts pour stylo / gomme.',4000)}
   if(cur&&cur.doigt){st.tr.splice(st.tr.indexOf(cur),1);cur=null;dessine()}}
- else if(e.pointerType==='touch'&&st.stylet){doigts[e.pointerId]={x:e.clientX,y:e.clientY,t:Date.now(),mv:0};var ids=Object.keys(doigts);
-  if(ids.length===2){var d0=doigts[ids[0]],d1=doigts[ids[1]];tap2=(Math.abs(d0.t-d1.t)<250)?{t:Math.min(d0.t,d1.t)}:null}else if(ids.length>2)tap2=null;return}
  if(cur)return;
- try{cv.setPointerCapture(e.pointerId)}catch(_){}curId=e.pointerId;cur={c:coul==='gomme'?null:coul,g:coul==='gomme',p:[pos(e)],doigt:e.pointerType==='touch'};st.tr.push(cur);trait(cur)});
-cv.addEventListener('pointermove',function(e){var d=doigts[e.pointerId];if(d){d.mv=Math.max(d.mv,Math.abs(e.clientX-d.x)+Math.abs(e.clientY-d.y));if(d.mv>14)tap2=null;return}
+ try{cv.setPointerCapture(e.pointerId)}catch(_){}curId=e.pointerId;tDessin=Date.now();cur={c:coul==='gomme'?null:coul,g:coul==='gomme',p:[pos(e)],doigt:e.pointerType==='touch'};st.tr.push(cur);trait(cur)});
+cv.addEventListener('pointermove',function(e){var d=doigts[e.pointerId];
+ if(d){d.x=e.clientX;d.y=e.clientY;if(Math.abs(e.clientX-d.sx)+Math.abs(e.clientY-d.sy)>14)tap2=null;if(navSeul){bouge();return}if(!(cur&&e.pointerId===curId))return}
  if(!cur||e.pointerId!==curId)return;var ev=e.getCoalescedEvents?e.getCoalescedEvents():[e];if(!ev.length)ev=[e];var n=cur.p.length;ev.forEach(function(x){cur.p.push(pos(x))});
  var s2={c:cur.c,g:cur.g,p:cur.p.slice(Math.max(0,n-2))};trait(s2,1);e.preventDefault()});
-function fin(e){if(doigts[e.pointerId]){delete doigts[e.pointerId];if(!Object.keys(doigts).length){if(tap2&&Date.now()-tap2.t<400&&e.type==='pointerup')bascule();tap2=null}return}
- if(cur&&e.pointerId===curId){if(cur.doigt&&cur.p.length<2&&st.stylet){}delete cur.doigt;cur=null;curId=null;dessine();garde()}}
+function fin(e){if(doigts[e.pointerId]){delete doigts[e.pointerId];var n=Object.keys(doigts).length;
+  if(!n){if(tap2&&Date.now()-tap2.t<400&&e.type==='pointerup')bascule();tap2=null;if(navSeul){navSeul=false;nav=null;garde()}}else if(navSeul)base();
+  if(!(cur&&e.pointerId===curId))return}
+ if(cur&&e.pointerId===curId){delete cur.doigt;cur=null;curId=null;dessine();garde()}}
 cv.addEventListener('pointerup',fin);cv.addEventListener('pointercancel',fin);
+cv.addEventListener('wheel',function(e){e.preventDefault();if(e.ctrlKey){var q=ecran(e),wx=V.x+q[0]/V.z,wy=V.y+q[1]/V.z;V.z=Math.max(.4,Math.min(2.5,V.z*Math.exp(-e.deltaY/200)));V.x=wx-q[0]/V.z;V.y=wy-q[1]/V.z}else{V.x+=e.deltaX/V.z;V.y+=e.deltaY/V.z}dessine();clearTimeout(cv._w);cv._w=setTimeout(garde,400)},{passive:false});
 document.querySelectorAll('.ot-c').forEach(function(b){b.onclick=function(){if(b.dataset.c!=='gomme')avant=b.dataset.c;choisit(b.dataset.c)}});
 $('#ot-undo').onclick=function(){st.tr.pop();dessine();garde()};
-var vide=$('#ot-vide'),armee=0;vide.onclick=function(){if(!st.tr.length)return;if(Date.now()-armee>2500){armee=Date.now();vide.style.background='#fde2e2';vide.setAttribute('aria-label','Touche encore pour effacer la feuille');setTimeout(function(){vide.style.background=''},2500);return}st.tr=[];armee=0;vide.style.background='';dessine();garde()};
-function ligneLibre(){var y=34;st.tr.forEach(function(t){if(t.t!=null)y=Math.max(y,t.y+30);else t.p.forEach(function(q){y=Math.max(y,q[1]+30)})});var hmax=cv.getBoundingClientRect().height-10;return Math.min(y,Math.max(34,hmax))}
+$('#ot-home').onclick=function(){V.x=0;V.y=0;V.z=1;dessine();garde()};
+var vide=$('#ot-vide'),armee=0;vide.onclick=function(){if(!st.tr.length)return;if(Date.now()-armee>2500){armee=Date.now();vide.style.background='#fde2e2';astuce('Touche encore la poubelle pour effacer toute la feuille');setTimeout(function(){vide.style.background=''},2500);return}st.tr=[];armee=0;vide.style.background='';V.x=0;V.y=0;V.z=1;dessine();garde()};
+function ligneLibre(){var y=34;st.tr.forEach(function(t){if(t.t!=null)y=Math.max(y,t.y+30);else t.p.forEach(function(q){y=Math.max(y,q[1]+30)})});return Math.max(y,70)}
 /* ---------- calculatrice ---------- */
 var ex='',ans=null,dern=null,inp=null;
 var T=[['C','fn'],['⌫','fn'],['(','fn'],[')','fn'],['÷','op'],['7'],['8'],['9'],['×','op'],['√','fn'],['4'],['5'],['6'],['−','op'],['x²','fn'],['1'],['2'],['3'],['+','op'],['%','fn'],['0'],[','],['Ans','fn'],['=','eg']];
@@ -2325,7 +2346,7 @@ function touche(k){if(k==='C'){ex='';dern=null}else if(k==='⌫'){ex=ex.replace(
 $('#ot-touches').addEventListener('click',function(e){var b=e.target.closest('button');if(b)touche(b.dataset.k)});
 $('#ot-hist').addEventListener('click',function(e){var b=e.target.closest('button');if(b){ex+=(ex&&/[\d)²%]$/.test(ex)?'×':'')+fmt(+b.dataset.v);maj()}});
 function resultat(){if(ex){try{var v=calcule(ex);return{e:dern&&ex===fmt(dern.v)?dern.e:ex,v:v}}catch(e){}}return dern}
-$('#ot-versf').onclick=function(){var r=resultat();if(!r)return;if(st.m==='calc')mode('deux');var t={t:(r.e===fmt(r.v)?'':r.e+' = ')+fmt(r.v),x:14,y:ligneLibre(),c:'#1f5fd6'};if(t.y<60&&t.x<200)t.y=Math.max(t.y,70);st.tr.push(t);setTimeout(function(){dim()},40);garde()};
+$('#ot-versf').onclick=function(){var r=resultat();if(!r)return;if(st.m==='calc')mode('deux');var t={t:(r.e===fmt(r.v)?'':r.e+' = ')+fmt(r.v),x:Math.round(V.x+14/V.z),y:ligneLibre(),c:'#1f5fd6'};st.tr.push(t);setTimeout(function(){dim();if(t.y>V.y+(H-20)/V.z||t.y<V.y+60/V.z){V.y=t.y-(H-50)/V.z;dessine()}garde()},40)};
 $('#ot-versr').onclick=function(){var r=resultat();if(!r||!inp||!document.contains(inp))return;var v=fmt(r.v);
  var set=Object.getOwnPropertyDescriptor(Object.getPrototypeOf(inp),'value');if(set&&set.set)set.set.call(inp,v);else inp.value=v;inp.dispatchEvent(new Event('input',{bubbles:true}));inp.dispatchEvent(new Event('change',{bubbles:true}));
  var b=$('#ot-versr'),o=b.textContent;b.textContent='Réponse remplie';setTimeout(function(){b.textContent=o},1400)};
