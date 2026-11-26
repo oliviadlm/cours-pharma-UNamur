@@ -2,6 +2,13 @@
 <html lang="fr"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <title>Phytochimie — le jeu</title>
+<meta property="og:type" content="website">
+<meta property="og:title" content="Phytochimie · le jeu">
+<meta property="og:description" content="Explore la forêt et révise la pharmacognosie : plantes, molécules, gardiens à battre. Glucides en accès libre.">
+<meta property="og:image" content="https://pharma-unamur.ayeleartstudio.com/mphab310/decor/foret.jpg">
+<meta property="og:url" content="https://pharma-unamur.ayeleartstudio.com/mphab310/jeu-phyto">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="description" content="Explore la forêt et révise la pharmacognosie : plantes, molécules, gardiens à battre. Glucides en accès libre.">
 <link rel="manifest" href="jeu-phyto.webmanifest">
 <link rel="apple-touch-icon" href="icons/jeu-180.png">
 <link rel="icon" type="image/png" href="icons/jeu-192.png">
@@ -840,7 +847,7 @@ function entete(mini){
  var hr=new Date().getHours(), salut=(hr>=18||hr<5)?'Bonsoir':'Bonjour';
  return '<header class="hero'+(mini?' mini':'')+'"><video class="hero-v" autoplay muted loop playsinline preload="auto" poster="decor/foret.jpg?v=hd"><source src="decor/foret.mp4?v=hd" type="video/mp4"></video>'+
  '<div class="hero-haut">'+(mini?'<button class="rond-btn" id="retour" aria-label="Retour à la forêt">'+ic('back')+'</button><div class="hero-t"><small>'+salut+(window.ACCES&&ACCES.nom?' '+ACCES.nom:'')+'</small><b>Retour à la forêt</b></div>':'<img class="logo" src="icons/jeu-180.png" alt=""><div class="hero-t"><small>'+salut+(window.ACCES&&ACCES.nom?' '+ACCES.nom:'')+'</small><b>Phytochimie</b></div>')+
- ''+'<div class="btns-col"><button class="rond-btn" id="son" aria-label="Son">'+ic(S.son===false?'mute':'vol')+'</button><button class="rond-btn" id="lecture" aria-label="Lecture ou pause de l\'animation">'+ic(S.pause?'play':'pause')+'</button></div>'+'</div>'+(mini?'':'%GUIR%')+'</header>'}
+ ''+'<div class="btns-col"><a class="rond-btn" href="'+(window.ACCES?ACCES.accueil:'../index.html')+'" aria-label="Tous les jeux" style="text-decoration:none;display:grid;place-items:center;color:inherit"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2"/></svg></a><button class="rond-btn" id="son" aria-label="Son">'+ic(S.son===false?'mute':'vol')+'</button><button class="rond-btn" id="lecture" aria-label="Lecture ou pause de l\'animation">'+ic(S.pause?'play':'pause')+'</button></div>'+'</div>'+(mini?'':'%GUIR%')+'</header>'}
 function statsHTML(){
  var R=rang(), pct=R.n?Math.round(100*(S.xp-R.r[0])/(R.n[0]-R.r[0])):100, od=Math.min(S.todayXp,OBJ), C=2*Math.PI*24, tot=0;
  CHAPS.forEach(function(_,ci){tot+=etoilesChap(ci)});
@@ -887,7 +894,7 @@ function salonHTML(){
  var hr=new Date().getHours(), salut=(hr>=18||hr<5)?'Bonsoir':'Bonjour', fg='';
  for(var i=0;i<16;i++){var r=10+Math.random()*26;fg+='<i style="left:'+(Math.random()*100).toFixed(1)+'%;top:'+(Math.random()*100).toFixed(1)+'%;width:'+r.toFixed(0)+'px;height:'+r.toFixed(0)+'px;animation-delay:'+(-Math.random()*7).toFixed(1)+'s"></i>'}
  return '<section class="salon" id="salon"><div class="cam" id="cam"><div class="tilt" id="tilt"><div class="piece" id="piece"><video autoplay muted loop playsinline preload="auto" poster="decor/foret.jpg?v=hd"><source src="decor/foret.mp4?v=hd" type="video/mp4"></video><div id="lieux"></div></div></div></div><div class="fg" id="fg">'+fg+'</div>'+
- '<div class="hero-haut"><img class="logo" src="icons/jeu-180.png" alt=""><div class="hero-t"><small>'+salut+(window.ACCES&&ACCES.nom?' '+ACCES.nom:'')+'</small><b>Phytochimie</b></div>'+'<div class="btns-col"><button class="rond-btn" id="son" aria-label="Son">'+ic(S.son===false?'mute':'vol')+'</button><button class="rond-btn" id="lecture" aria-label="Lecture ou pause de l\'animation">'+ic(S.pause?'play':'pause')+'</button></div>'+'</div>'+
+ '<div class="hero-haut"><img class="logo" src="icons/jeu-180.png" alt=""><div class="hero-t"><small>'+salut+(window.ACCES&&ACCES.nom?' '+ACCES.nom:'')+'</small><b>Phytochimie</b></div>'+'<div class="btns-col"><a class="rond-btn" href="'+(window.ACCES?ACCES.accueil:'../index.html')+'" aria-label="Tous les jeux" style="text-decoration:none;display:grid;place-items:center;color:inherit"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2"/></svg></a><button class="rond-btn" id="son" aria-label="Son">'+ic(S.son===false?'mute':'vol')+'</button><button class="rond-btn" id="lecture" aria-label="Lecture ou pause de l\'animation">'+ic(S.pause?'play':'pause')+'</button></div>'+'</div>'+
  '<div class="salon-bas"><div class="astuce" id="astuce"><span>'+ic('eye')+' Glisse dans tous les sens, pince pour voir toute la forêt</span></div><button class="rond-btn" id="gyro" aria-label="Bouger avec le téléphone" style="display:none">'+ic('move')+'</button><button class="rond-btn" id="recentrer" aria-label="Revenir au chapitre en cours">'+ic('target')+'</button></div></section>'}
 function salon(){
  var el=$('#salon'); if(!el)return; if(SAL&&SAL.stop)SAL.stop();

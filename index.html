@@ -2,66 +2,175 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cours pharma · Exercices interactifs</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Jeux de révision · Pharma UNamur</title>
+<meta name="description" content="Des jeux pour réviser la pharmacie à l'UNamur : chimie pharma, phytochimie, biochimie, calculs, stage en officine. Le chapitre 1 de chaque jeu est offert.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Jeux de révision · Pharma UNamur">
+<meta property="og:description" content="Chimie pharma, phytochimie, biochimie, calculs, stage en officine : révise en jouant. Le chapitre 1 de chaque jeu est offert.">
+<meta property="og:image" content="https://pharma-unamur.ayeleartstudio.com/chimie-pharma/revision/decor/chambre.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Jeux pharma">
+<link rel="apple-touch-icon" href="chimie-pharma/revision/icons/jeu-180.png">
 <style>
-  body{margin:0;background:#f7f5f0;color:#1f2a2e;font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
-  .wrap{max-width:760px;margin:0 auto;padding:32px 16px}
-  h1{font-size:24px;margin:0 0 4px} p{color:#6b7478;margin:0 0 20px}
-  h2{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:#2f6f62;margin:24px 0 8px}
-  a.item{display:block;background:#fff;border:1px solid #e4e0d8;border-radius:12px;padding:14px 16px;color:inherit;text-decoration:none;margin-bottom:8px}
-  a.item:hover{border-color:#2f6f62} a.item span{display:block;font-size:14px;color:#6b7478}
-  .acces-note{background:#e8f1ee;color:#2f6f62;border-radius:12px;padding:10px 14px;font-size:14px}
+  :root{--fond:#000;--carte:#1c1c1e;--carte2:#2c2c2e;--texte:#f5f5f7;--doux:#98989f;--trait:rgba(255,255,255,.08);--bleu:#0a84ff}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html{background:var(--fond)}
+  body{margin:0;background:var(--fond);color:var(--texte);font:17px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1080px;margin:0 auto;padding:max(20px,env(safe-area-inset-top)) max(18px,env(safe-area-inset-right)) 56px max(18px,env(safe-area-inset-left))}
+
+  header{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding:18px 2px 22px}
+  .sur{font-size:13px;font-weight:600;letter-spacing:.02em;color:var(--doux);text-transform:uppercase;margin:0 0 2px}
+  h1{font-size:34px;line-height:1.1;font-weight:800;letter-spacing:-.02em;margin:0}
+  .moi{flex:none;height:40px;padding:0 16px;border-radius:999px;border:0;background:var(--carte2);color:var(--texte);font:600 15px/40px inherit;font-family:inherit;cursor:pointer;display:flex;align-items:center;gap:7px}
+  .moi svg{width:17px;height:17px}
+  .moi.ok{background:rgba(48,209,88,.16);color:#30d158}
+
+  /* ----- à la une ----- */
+  .une{position:relative;display:block;border-radius:24px;overflow:hidden;aspect-ratio:4/5;max-height:640px;width:100%;background:#111;isolation:isolate}
+  @media(min-width:720px){.une{aspect-ratio:16/8}}
+  .une img,.une video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}
+  .une::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(0,0,0,.25) 0%,rgba(0,0,0,0) 28%,rgba(0,0,0,0) 45%,rgba(0,0,0,.88) 100%)}
+  .une .etiq{position:absolute;top:18px;left:20px;font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:rgba(255,255,255,.9)}
+  .une .bas{position:absolute;left:0;right:0;bottom:0;padding:22px 20px 20px}
+  .une h2{font-size:30px;line-height:1.1;font-weight:800;letter-spacing:-.02em;margin:0 0 6px;max-width:16ch}
+  .une p{margin:0 0 16px;color:rgba(255,255,255,.82);font-size:16px;max-width:42ch}
+
+  .ligne-jeu{display:flex;align-items:center;gap:12px}
+  .ico{width:56px;height:56px;border-radius:13px;flex:none;object-fit:cover;background:#333;box-shadow:0 0 0 .5px rgba(255,255,255,.18)}
+  .ligne-jeu .txt{flex:1;min-width:0}
+  .ligne-jeu b{display:block;font-size:16px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ligne-jeu small{display:block;font-size:13px;color:rgba(255,255,255,.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .jouer{flex:none;min-width:76px;height:32px;padding:0 16px;border-radius:999px;background:rgba(255,255,255,.92);color:#000;font:700 15px/32px inherit;font-family:inherit;text-align:center}
+  .jouer.bleu{background:var(--bleu);color:#fff}
+
+  /* ----- sections ----- */
+  .sec{margin:38px 0 14px;display:flex;align-items:baseline;justify-content:space-between}
+  .sec h3{font-size:22px;font-weight:700;letter-spacing:-.01em;margin:0}
+  .sec span{font-size:15px;color:var(--doux)}
+
+  .grille{display:grid;grid-template-columns:1fr;gap:16px}
+  @media(min-width:720px){.grille{grid-template-columns:1fr 1fr}}
+  .carte{display:block;border-radius:20px;overflow:hidden;background:var(--carte);transition:transform .2s ease}
+  .carte:active{transform:scale(.98)}
+  .carte .ban{position:relative;aspect-ratio:16/9;overflow:hidden;background:#222}
+  .carte .ban img{width:100%;height:100%;object-fit:cover;display:block}
+  .carte .ban .gratuit{position:absolute;left:12px;top:12px;font-size:12px;font-weight:700;padding:5px 10px;border-radius:999px;background:rgba(0,0,0,.55);color:#fff;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+  .carte .pied{padding:14px 14px 16px}
+  .carte .accroche{font-size:15px;color:var(--doux);margin:12px 2px 0}
+  .carte .ligne-jeu small{color:var(--doux)}
+  .carte .jouer{background:var(--carte2);color:var(--bleu)}
+
+  /* ----- cours ----- */
+  .liste{background:var(--carte);border-radius:18px;overflow:hidden}
+  .cours{display:flex;align-items:center;gap:14px;padding:13px 16px;border-top:.5px solid var(--trait)}
+  .cours:first-child{border-top:0}
+  .pastille{width:40px;height:40px;border-radius:10px;flex:none;display:grid;place-items:center;font-weight:800;font-size:13px;color:#fff}
+  .cours .txt{flex:1;min-width:0}
+  .cours b{display:block;font-size:16px;font-weight:600}
+  .cours small{display:block;font-size:13px;color:var(--doux);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cadenas{flex:none;color:var(--doux);display:flex;align-items:center;gap:4px;font-size:13px}
+  .cadenas svg{width:15px;height:15px}
+  body.complet .cadenas{display:none}
+  .chev{flex:none;color:#48484a}
+  .note{color:var(--doux);font-size:13px;text-align:center;margin:30px 0 0}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>Cours pharma</h1>
-  <p>Exercices interactifs · Bachelier en sciences pharmaceutiques, UNamur</p>
-  <p class="acces-note">Les jeux sont en accès libre pour le chapitre 1. Le reste (autres chapitres, cours, fiches) s'ouvre avec un code d'accès personnel.</p>
-  <h2>Stage en officine · tous les cours ensemble</h2>
-  <a class="item" href="stage-officine/index.html">Le jeu 3D : stagiaire à la Pharmacie du Confluent<span>Sur ordinateur · Journée 1 : 7 patients, 30 questions qui mélangent biochimie, physio, chimie pharma, calculs, galénique, phyto et pratique officinale</span></a>
-  <h2>MPHAB287 · Méthodes de calculs</h2>
-  <a class="item" href="mphab287/theorie-seance-1.html">Séance 1 · Théorie interactive<span>Leçon active, flashcards espacées, quiz avec certitude, exemples guidés, sprints, problèmes mélangés</span></a>
-  <a class="item" href="mphab287/theorie-seance-2.html">Séance 2 · Théorie interactive<span>Triturations, suppositoires, facteur de déplacement : mêmes méthodes d'apprentissage</span></a>
-  <a class="item" href="mphab287/chapitre-1.html">Chapitre I · Jongler avec les unités utilisées à l'officine<span>26 exercices · unités, préparations magistrales, %, densités</span></a>
-  <a class="item" href="mphab287/chapitre-2.html">Chapitre II · Les triturations et les suppositoires<span>22 exercices · triturations, facteur de déplacement, masse d'excipient</span></a>
-  <a class="item" href="mphab287/jeu-calculs.html">Le jeu · Méthodes de calculs<span>Tous les chapitres à débloquer · calculs, problèmes guidés, atelier calcul, tableaux</span></a>
-  <a class="item" href="mphab287/seance-1-ansel.html">Séance 1 · Exercices du livre (Ansel)<span>217 exercices · pages de l'énoncé, du cours et des réponses, suivi juste / faux</span></a>
-  <a class="item" href="mphab287/seance-2-ansel.html">Séance 2 · Exercices du livre (Ansel)<span>43 exercices · aliquotes, dilution de pommades et poudres, formules, gélules et suppositoires</span></a>
-  <h2>MPHAB311 · Introduction à la galénique</h2>
-  <a class="item" href="galenique/index.html">Page générale du cours<span>Méthode, plan jusqu'à l'examen du 22/01/2027, séance mélangée, examen blanc</span></a>
-  <a class="item" href="galenique/calc.html">⚠️ Calculs (partie éliminatoire)<span>Triturations, isotonie (3 méthodes), suppositoires, alcoométrie</span></a>
-  <a class="item" href="galenique/ch1.html">Ch. 1 · Le médicament</a>
-  <a class="item" href="galenique/ch2.html">Ch. 2 · Les propriétés de l'état solide</a>
-  <a class="item" href="galenique/ch3.html">Ch. 3 · Les substances actives en solution</a>
-  <a class="item" href="galenique/ch4.html">Ch. 4 · La rhéologie des fluides</a>
-  <a class="item" href="galenique/ch5.html">Ch. 5 · Les systèmes dispersés</a>
-  <a class="item" href="galenique/ch7.html">Ch. 7 · Quelques opérations pharmaceutiques</a>
-  <a class="item" href="galenique/ch8.html">Ch. 8 · Les préparations à usage rectal</a>
-  <a class="item" href="galenique/ch9.html">Ch. 9 · Quelques excipients à retenir</a>
-  <a class="item" href="galenique/examens.html">📝 Anciens examens et tuyaux<span>Exercices, QCM, questions ouvertes corrigés + examen blanc</span></a>
-  <a class="item" href="galenique/livre-le-hir.html">📚 Livre Le Hir (9ᵉ éd.)<span>Pages à lire par chapitre, différences avec le cours, exercices</span></a>
-  <a class="item" href="galenique/livre-aulton.html">📚 Livre Aulton's Pharmaceutics (6ᵉ éd.)<span>Chapitres à lire (en anglais), rhéologie, exercices</span></a>
-  <h2>MMEDB331 · Physiologie humaine</h2>
-  <a class="item" href="physio/index.html">Page générale du cours<span>Examen oral : plan de révision, séance mélangée, oral blanc multi-chapitres, tous les schémas</span></a>
-  <a class="item" href="physio/ch1.html">Ch. 1 · Le système cardio-vasculaire et le sang</a>
-  <a class="item" href="physio/ch2.html">Ch. 2 · Le système respiratoire</a>
-  <a class="item" href="physio/ch3.html">Ch. 3 · Le système endocrinien</a>
-  <a class="item" href="physio/ch4.html">Ch. 4 · Le système digestif</a>
-  <a class="item" href="physio/ch5.html">Ch. 5 · Le système excréteur</a>
-  <a class="item" href="physio/ch6.html">Ch. 6 · Le système nerveux</a>
-  <a class="item" href="physio/ch7.html">Ch. 7 · Le système reproducteur</a>
-  <a class="item" href="physio/ch8.html">Ch. 8 · Réponses physiologiques intégrées</a>
-  <a class="item" href="physio/examens.html">📝 Anciens examens, tuyaux et format de l'oral<span>QCM, QROC, questions ouvertes 2018-2019 corrigés + priorités</span></a>
-  <h2>MPHAB310 · Pharmacognosie – Phytochimie</h2>
-  <a class="item" href="mphab310/">Phyto CCM · Révision complète (chapitres 0 à 11)<span>Cartes de révision espacée, 260 molécules, plantes, 7 jeux, examen blanc</span></a>
-  <h2>Chimie pharmaceutique systématique · Tome 1</h2>
-  <a class="item" href="chimie-pharma/">Officine de révision<span>Séance du jour en répétition espacée, molécules à dessiner, boîtes, 5 jeux, quiz</span></a>
-  <h2>MPHAB306 · Biochimie humaine</h2>
-  <a class="item" href="biochimie/">Biochimie humaine · Accueil<span>12 pages de cours, 90 questions du prof, 51 molécules, format de l'examen du 8 janvier</span></a>
-  <a class="item" href="biochimie/molecules.html">Les 51 molécules à reconnaître et dessiner</a>
-  <a class="item" href="biochimie/questions.html">Toutes les questions du prof</a>
+  <header>
+    <div>
+      <p class="sur">Pharmacie · UNamur</p>
+      <h1>Jeux de révision</h1>
+    </div>
+    <button class="moi" id="moi" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg>
+      <span>J'ai un code</span>
+    </button>
+  </header>
+
+  <a class="une" href="chimie-pharma/revision/jeu-chipha.html">
+    <video src="chimie-pharma/revision/decor/chambre.mp4" poster="chimie-pharma/revision/decor/chambre.jpg" autoplay muted loop playsinline preload="metadata" aria-hidden="true"></video>
+    <span class="etiq">À la une</span>
+    <div class="bas">
+      <h2>Ta chambre devient une officine</h2>
+      <p>Antibactériens, antiviraux, antitumoraux… reconnais les molécules et bats le boss de chaque chapitre.</p>
+      <div class="ligne-jeu">
+        <img class="ico" src="chimie-pharma/revision/icons/jeu-180.png" alt="">
+        <div class="txt"><b>Chimie pharma</b><small>10 chapitres · le 1er est offert</small></div>
+        <span class="jouer">Jouer</span>
+      </div>
+    </div>
+  </a>
+
+  <div class="sec"><h3>Tous les jeux</h3><span>Chapitre 1 offert</span></div>
+  <div class="grille">
+    <a class="carte" href="mphab310/jeu-phyto.html">
+      <div class="ban"><img src="mphab310/decor/foret.jpg" alt="" loading="lazy"><span class="gratuit">Glucides offert</span></div>
+      <div class="pied">
+        <div class="ligne-jeu"><img class="ico" src="mphab310/icons/jeu-180.png" alt="" loading="lazy"><div class="txt"><b>Phytochimie</b><small>Pharmacognosie · 22 lieux à explorer</small></div><span class="jouer">Jouer</span></div>
+        <p class="accroche">Une forêt à explorer, des plantes à reconnaître et un gardien à battre à chaque chapitre.</p>
+      </div>
+    </a>
+    <a class="carte" href="biochimie/jeu-biochimie.html">
+      <div class="ban"><img src="biochimie/decor/corps.jpg" alt="" loading="lazy"><span class="gratuit">Chapitre 1 offert</span></div>
+      <div class="pied">
+        <div class="ligne-jeu"><img class="ico" src="biochimie/icons/jeu-bioch-180.png" alt="" loading="lazy"><div class="txt"><b>Biochimie humaine</b><small>12 mondes dans le corps humain</small></div><span class="jouer">Jouer</span></div>
+        <p class="accroche">Entre dans le foie, le sang, les hormones : chaque organe est un monde à part.</p>
+      </div>
+    </a>
+    <a class="carte" href="mphab287/jeu-calculs.html">
+      <div class="ban"><img src="mphab287/decor/officine-1920-nuit.jpg" alt="" loading="lazy"><span class="gratuit">Chapitre 1 offert</span></div>
+      <div class="pied">
+        <div class="ligne-jeu"><img class="ico" src="mphab287/icons/jeu-180.png?v=2" alt="" loading="lazy"><div class="txt"><b>Méthodes de calculs</b><small>Préparations officinales</small></div><span class="jouer">Jouer</span></div>
+        <p class="accroche">Ton officine, de nuit, une ordonnance à préparer : unités, triturations, suppositoires.</p>
+      </div>
+    </a>
+    <a class="carte" href="stage-officine/">
+      <div class="ban"><img src="acces/bannieres/officine-3d.jpg" alt="" loading="lazy"><span class="gratuit">Gratuit · sur ordinateur</span></div>
+      <div class="pied">
+        <div class="ligne-jeu"><img class="ico" src="stage-officine/icons/jeu-180.png" alt="" loading="lazy"><div class="txt"><b>Stage en officine</b><small>Jeu 3D · tous les cours mélangés</small></div><span class="jouer">Jouer</span></div>
+        <p class="accroche">Une journée de stage à la Pharmacie du Confluent : 7 patients à servir, 30 questions.</p>
+      </div>
+    </a>
+    <a class="carte" href="chimie-pharma/revision/jeu-chipha.html">
+      <div class="ban"><img src="chimie-pharma/revision/decor/chambre.jpg" alt="" loading="lazy"><span class="gratuit">Antibactériens offert</span></div>
+      <div class="pied">
+        <div class="ligne-jeu"><img class="ico" src="chimie-pharma/revision/icons/jeu-180.png" alt="" loading="lazy"><div class="txt"><b>Chimie pharma</b><small>Pr Dogné · Tome 1</small></div><span class="jouer">Jouer</span></div>
+        <p class="accroche">Molécules à dessiner, noms commerciaux, classes : tout le tome 1 en 10 chapitres.</p>
+      </div>
+    </a>
+  </div>
+
+  <div class="sec"><h3>Cours interactifs</h3><span>Avec un code</span></div>
+  <div class="liste">
+    <a class="cours" href="galenique/index.html"><span class="pastille" style="background:#5e5ce6">GAL</span><div class="txt"><b>Introduction à la galénique</b><small>MPHAB311 · 8 chapitres, calculs, anciens examens</small></div><span class="cadenas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg></span><span class="chev">›</span></a>
+    <a class="cours" href="physio/index.html"><span class="pastille" style="background:#ff375f">PHY</span><div class="txt"><b>Physiologie humaine</b><small>MMEDB331 · 8 systèmes, préparation à l'oral</small></div><span class="cadenas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg></span><span class="chev">›</span></a>
+    <a class="cours" href="chimie-pharma/revision/index.html"><span class="pastille" style="background:#0a84ff">CHI</span><div class="txt"><b>Chimie pharma · fiches</b><small>Cours par chapitre, questions du prof</small></div><span class="cadenas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg></span><span class="chev">›</span></a>
+    <a class="cours" href="chimie-pharma/"><span class="pastille" style="background:#64d2ff;color:#003">OFF</span><div class="txt"><b>Officine de révision</b><small>Chimie pharma · répétition espacée, quiz</small></div><span class="cadenas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg></span><span class="chev">›</span></a>
+    <a class="cours" href="mphab310/"><span class="pastille" style="background:#30d158">CCM</span><div class="txt"><b>Phyto · révision complète</b><small>MPHAB310 · cartes, 260 molécules, examen blanc</small></div><span class="cadenas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg></span><span class="chev">›</span></a>
+    <a class="cours" href="biochimie/"><span class="pastille" style="background:#ff9f0a">BIO</span><div class="txt"><b>Biochimie humaine · cours</b><small>MPHAB306 · 12 pages, 90 questions du prof</small></div><span class="cadenas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg></span><span class="chev">›</span></a>
+    <a class="cours" href="mphab287/theorie-seance-1.html"><span class="pastille" style="background:#bf5af2">CAL</span><div class="txt"><b>Méthodes de calculs · théorie</b><small>MPHAB287 · séances, exercices, livre Ansel</small></div><span class="cadenas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg></span><span class="chev">›</span></a>
+  </div>
+
+  <p class="note">Fait par Olivia · Bachelier en sciences pharmaceutiques, UNamur</p>
 </div>
+<script src="acces/acces.js"></script>
+<script>
+(function(){
+  var b=document.getElementById('moi');
+  function complet(nom){document.body.classList.add('complet');b.classList.add('ok');b.querySelector('span').textContent=nom?'Bonjour '+nom:'Accès complet'}
+  try{var n=localStorage.getItem('acces-nom');}catch(e){}
+  b.onclick=function(){if(!b.classList.contains('ok')&&window.ACCES)ACCES.demander('')};
+  if(location.hostname.indexOf('github.io')>=0){complet('Olivia');return}
+  fetch('acces/api/etat',{cache:'no-store'}).then(function(r){return r.json()}).then(function(j){if(j.ok)complet(j.nom||n)}).catch(function(){});
+  var v=document.querySelector('.une video');
+  if(v&&window.matchMedia('(prefers-reduced-motion: reduce)').matches){v.removeAttribute('autoplay');v.pause()}
+})();
+</script>
 </body>
 </html>

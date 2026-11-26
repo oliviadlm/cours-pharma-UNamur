@@ -45,6 +45,15 @@ const INTERDIT = [
   /^\/\.git/,
 ];
 
+// Liens courts à partager (ex. pharma-unamur.ayeleartstudio.com/chimie)
+const LIENS_COURTS = {
+  "/chimie": "/chimie-pharma/revision/jeu-chipha",
+  "/phyto": "/mphab310/jeu-phyto",
+  "/biochimie-jeu": "/biochimie/jeu-biochimie",
+  "/calculs": "/mphab287/jeu-calculs",
+  "/officine": "/stage-officine/",
+};
+
 const COOKIE = "acces";
 const DUREE = 60 * 60 * 24 * 180; // 6 mois
 const cache = new Map(); // code -> {ok, nom, t}
@@ -243,6 +252,8 @@ export async function onRequest(ctx) {
   const path = url.pathname;
 
   if (INTERDIT.some((r) => r.test(path))) return new Response("Introuvable", { status: 404 });
+  const court = LIENS_COURTS[path.replace(/\/$/, "").toLowerCase()];
+  if (court) return Response.redirect(new URL(court + url.search, url), 302);
   if (path.startsWith("/acces/api/")) return api(req, env, url);
   if (cle(path) === "/admin") return env.ASSETS.fetch(new URL("/acces/admin.html", url));
   if (path.startsWith("/acces/")) return next();

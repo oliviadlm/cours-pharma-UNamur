@@ -4,6 +4,7 @@
   var NOUVEAU = 'https://pharma-unamur.ayeleartstudio.com';
   var ici = document.currentScript ? document.currentScript.src.replace(/acces\.js.*$/, '') : '/acces/';
   var A = (window.ACCES = {});
+  A.accueil = ici.replace(/acces\/$/, '');
   var D = window.DATA || {};
   try { A.nom = localStorage.getItem('acces-nom') || (location.hostname.indexOf('github.io') >= 0 ? 'Olivia' : ''); } catch (e) { A.nom = ''; }
 
@@ -112,6 +113,6 @@
     setTimeout(function () { m.remove(); }, 5000);
   }
 
-  function pret() { pastille(); demenagement(); apresTransfert(); }
+  function pret() { demenagement(); apresTransfert(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', pret); else pret();
 })();

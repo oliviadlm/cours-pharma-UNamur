@@ -9,7 +9,9 @@ Site de révision d'Olivia, hébergé sur Cloudflare Pages (pharma-unamur.ayelea
   - Jeux : la même adresse `donnees-*.js` renvoie les données complètes avec un code valide, sinon `donnees-*.apercu.js` (chapitre 1 seulement).
   - Tout autre `.html` (cours, fiches, examens) : page « Contenu réservé » sans code.
 - Les codes sont dans le KV `CODES` (clé `code:XXXX`, valeur `{nom, cree, vu}`), gérés sur `/admin` (mot de passe = variable `ADMIN_CODE`).
-- `acces/acces.js` : fenêtre du code dans les jeux, pastille « Aperçu gratuit », prénom dans « Bonjour … », transfert de progression depuis l'ancien site GitHub Pages.
+- `index.html` : accueil façon Game Center (bannières des jeux, cours verrouillés, bouton « J'ai un code »). Chaque jeu a un bouton « Tous les jeux » qui y renvoie.
+- Liens courts à partager : /chimie, /phyto, /biochimie-jeu, /calculs, /officine (dans `functions/_middleware.js`).
+- `acces/acces.js` : fenêtre du code dans les jeux, prénom dans « Bonjour … », transfert de progression depuis l'ancien site GitHub Pages.
 - `_routes.json` : dossiers d'images servis sans passer par la fonction (ne pas y mettre de contenu de cours texte).
 
 ## Après toute modification d'un jeu

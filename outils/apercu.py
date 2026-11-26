@@ -26,6 +26,38 @@ JEUX = [
     ("mphab287/jeu-calculs.html", "mphab287/donnees-calculs.js", 1),
 ]
 
+SITE = "https://pharma-unamur.ayeleartstudio.com"
+# aperçu des liens partagés (WhatsApp, iMessage...) : titre, description, image
+PARTAGE = {
+    "chimie-pharma/revision/jeu-chipha.html": ("Chimie pharma · le jeu", "Révise la chimie pharmaceutique en jouant : molécules, noms commerciaux, boss par chapitre. Le chapitre 1 est offert.", "chimie-pharma/revision/decor/chambre.jpg"),
+    "mphab310/jeu-phyto.html": ("Phytochimie · le jeu", "Explore la forêt et révise la pharmacognosie : plantes, molécules, gardiens à battre. Glucides en accès libre.", "mphab310/decor/foret.jpg"),
+    "biochimie/jeu-biochimie.html": ("Biochimie humaine · le jeu", "Voyage dans le corps humain, organe par organe, pour réviser la biochimie. Le chapitre 1 est offert.", "biochimie/decor/corps.jpg"),
+    "mphab287/jeu-calculs.html": ("Méthodes de calculs · le jeu", "Prépare des ordonnances dans ton officine et maîtrise les calculs pharmaceutiques. Le chapitre 1 est offert.", "mphab287/decor/officine-1920-nuit.jpg"),
+    "stage-officine/index.html": ("Stage en officine · le jeu 3D", "Une journée de stage à la Pharmacie du Confluent : 7 patients, tous les cours mélangés.", "acces/bannieres/officine-3d.jpg"),
+}
+
+ICONE_ACCUEIL = ('<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" '
+                 'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="2"/>'
+                 '<rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/>'
+                 '<rect x="13.5" y="13.5" width="7" height="7" rx="2"/></svg>')
+PATCH_BTNS = '<div class="btns-col"><button class="rond-btn" id="son"'
+PATCH_BTNS_NEW = ('<div class="btns-col"><a class="rond-btn" href="\'+(window.ACCES?ACCES.accueil:\'../index.html\')+\'" '
+                  'aria-label="Tous les jeux" style="text-decoration:none;display:grid;place-items:center;color:inherit">' + ICONE_ACCUEIL +
+                  '</a><button class="rond-btn" id="son"')
+
+
+def balises_partage(html, page):
+    if page not in PARTAGE or 'property="og:title"' in html:
+        return html
+    t, d, img = PARTAGE[page]
+    url = SITE + "/" + page.replace("index.html", "").replace(".html", "")
+    m = ('<meta property="og:type" content="website">\n<meta property="og:title" content="%s">\n'
+         '<meta property="og:description" content="%s">\n<meta property="og:image" content="%s/%s">\n'
+         '<meta property="og:url" content="%s">\n<meta name="twitter:card" content="summary_large_image">\n'
+         '<meta name="description" content="%s">\n') % (t, d, SITE, img, url, d)
+    return html.replace("</title>\n", "</title>\n" + m, 1)
+
+
 GARDER_CHAP = {"id", "num", "t", "court", "img", "sym", "fam"}
 GARDER_NIV = {"t", "s", "type", "lv"}
 
@@ -160,6 +192,10 @@ def traiter(page, donnees, n_pub):
             raise SystemExit("Moteur inattendu dans %s : adapter le verrou à la main." % page)
         html = html.replace(PATCH_OUVERT, PATCH_OUVERT_NEW).replace(PATCH_BORNE, PATCH_BORNE_NEW)
         print("  verrou ajouté au moteur")
+    if PATCH_BTNS in html and 'aria-label="Tous les jeux"' not in html:
+        html = html.replace(PATCH_BTNS, PATCH_BTNS_NEW)
+        print("  bouton « Tous les jeux » ajouté")
+    html = balises_partage(html, page)
     if PATCH_NOM in html:
         html = html.replace(PATCH_NOM, PATCH_NOM_NEW)
         print("  « Bonjour » + prénom de la personne connectée")
@@ -178,3 +214,6 @@ if __name__ == "__main__":
     for page, donnees, n in JEUX:
         print(page)
         traiter(page, donnees, n)
+    for page in PARTAGE:
+        if page not in [j[0] for j in JEUX]:
+            ecrire(page, balises_partage(lire(page), page))
