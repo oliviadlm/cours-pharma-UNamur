@@ -102,6 +102,10 @@ def chaines(x, out):
     return out
 
 
+# Parties réservées aux codes dans les autres variables (vidées dans l'aperçu)
+VIDER = {"EXC": ["quiz", "open"]}  # calculs : quiz de l'étagère des excipients
+
+
 def reste_apercu(reste, n_chap, n_pub):
     """Autres variables (window.EXC, window.TH...) : une liste avec un élément par chapitre est coupée."""
     out, dec, i = [], json.JSONDecoder(), 0
@@ -129,6 +133,10 @@ def reste_apercu(reste, n_chap, n_pub):
         i = re.compile(r"\s*;?").match(reste, i).end()
         if isinstance(obj, list) and len(obj) == n_chap:
             obj = obj[:n_pub]
+        if isinstance(obj, dict):
+            for k in VIDER.get(m.group(1), []):
+                if k in obj:
+                    obj[k] = []
         out.append("window.%s=%s;" % (m.group(1), json.dumps(obj, ensure_ascii=False, separators=(",", ":"))))
     if reste[i:].strip():
         raise SystemExit("Contenu inattendu après les données : à vérifier à la main.")
@@ -178,6 +186,9 @@ PATCH_NIV = "function nivOuvert(ci,n){var L=CHAPS[ci].niveaux;if(!chapOuvert(ci)
 PATCH_NIV_NEW = PATCH_NIV + "if(toutOuvert())return true;"
 PATCH_TOAST = " pour ouvrir ce lieu'"
 PATCH_TOAST_NEW = " ou atteins %d XP pour ouvrir ce lieu'" % SEUIL_XP
+PATCH_ETQUIZ = "if(m==='quiz'){o.classList.remove('on');etQuiz();return}"
+PATCH_ETQUIZ_NEW = ("if(m==='quiz'){if(D.apercu&&window.ACCES){ACCES.demander('Quiz des excipients');return}"
+                    "o.classList.remove('on');etQuiz();return}")
 PATCH_NOM = "'+salut+' Olivia</small>"
 PATCH_NOM_NEW = "'+salut+(window.ACCES&&ACCES.nom?' '+ACCES.nom:'')+'</small>"
 PATCH_BORNE = "var ci=+b.dataset.c;if(!chapOuvert(ci)){"
@@ -199,7 +210,7 @@ def traiter(page, donnees, n_pub):
         print("  données déplacées dans", donnees)
     else:
         D, reste = lire_donnees(donnees)
-    if PATCH_OUVERT_NEW not in html:
+    if PATCH_OUVERT_NEW not in html and "function chapBoss(ci){if(CHAPS[ci].verrou)" not in html:
         if html.count(PATCH_OUVERT) != 1 or html.count(PATCH_BORNE) != 1:
             raise SystemExit("Moteur inattendu dans %s : adapter le verrou à la main." % page)
         html = html.replace(PATCH_OUVERT, PATCH_OUVERT_NEW).replace(PATCH_BORNE, PATCH_BORNE_NEW)
@@ -209,6 +220,9 @@ def traiter(page, donnees, n_pub):
         html = (html.replace(PATCH_LIBRE, PATCH_LIBRE_NEW).replace(PATCH_LIBRE_SUITE, PATCH_LIBRE_SUITE_NEW)
                 .replace(PATCH_NIV, PATCH_NIV_NEW).replace(PATCH_TOAST, PATCH_TOAST_NEW))
         print("  tout s'ouvre à %d XP (avec un code)" % SEUIL_XP)
+    if PATCH_ETQUIZ in html:
+        html = html.replace(PATCH_ETQUIZ, PATCH_ETQUIZ_NEW)
+        print("  quiz de l'étagère réservé aux codes")
     if PATCH_BTNS in html and 'aria-label="Tous les jeux"' not in html:
         html = html.replace(PATCH_BTNS, PATCH_BTNS_NEW)
         print("  bouton « Tous les jeux » ajouté")

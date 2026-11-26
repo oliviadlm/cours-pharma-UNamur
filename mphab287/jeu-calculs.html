@@ -1150,7 +1150,7 @@ function etagere(){var o=$('#etag');if(!o){o=document.createElement('div');o.id=
  o.innerHTML=h;o.classList.add('on');ETQ=null;etCorps(false);
  $('#et-ret').onclick=function(){son('clic');o.classList.remove('on');accueil()};
  $$('#etag .et-modes button').forEach(function(b){b.onclick=function(){son('clic');var m=b.dataset.em;
-  if(m==='ranger'){o.classList.remove('on');etRanger();return}if(m==='quiz'){o.classList.remove('on');etQuiz();return}
+  if(m==='ranger'){o.classList.remove('on');etRanger();return}if(m==='quiz'){if(D.apercu&&window.ACCES){ACCES.demander('Quiz des excipients');return}o.classList.remove('on');etQuiz();return}
   $$('#etag .et-modes button').forEach(function(x){x.classList.toggle('on',x===b)});if(m==='commande'){etCorps(true);etCommande()}else{ETQ=null;$('#et-dem').classList.remove('on');etCorps(false)}}});
 }
 function potBtn(e){return '<button class="pot" data-x="'+e.id+'" aria-label="'+esc(e.n)+'">'+potHTML(e,exM(e.id))+'</button>'}
