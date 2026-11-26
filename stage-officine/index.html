@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stage en officine · le jeu</title>
+<link rel="manifest" href="jeu.webmanifest"><link rel="apple-touch-icon" href="icons/jeu-180.png"><link rel="icon" type="image/png" href="icons/jeu-192.png">
+<meta name="theme-color" content="#0d2a24">
+<style>
+:root{--fond:#0d2a24;--panneau:rgba(12,32,28,.94);--trait:rgba(150,230,200,.22);--texte:#eef7f3;--doux:#a9c7bc;--vert:#3ddc97;--or:#f5c451;--rouge:#ef5b5b;--bleu:#7fb3ff}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--fond);color:var(--texte);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;user-select:none;-webkit-user-select:none}
+button{font:inherit;color:inherit;cursor:pointer;border:0}
+canvas#scene{position:fixed;inset:0;width:100%;height:100%;display:block}
+.ecran{position:fixed;inset:0;display:none;z-index:20}
+.ecran.on{display:flex}
+/* Accueil */
+#accueil{align-items:center;justify-content:center;background:radial-gradient(ellipse at center,rgba(13,42,36,.35),rgba(6,20,17,.88))}
+.carte-titre{max-width:560px;text-align:center;padding:32px}
+.croix{width:70px;height:70px;margin:0 auto 16px;position:relative;filter:drop-shadow(0 0 18px #3ddc97)}
+.croix:before,.croix:after{content:"";position:absolute;background:var(--vert);border-radius:6px}
+.croix:before{left:24px;top:0;width:22px;height:70px}.croix:after{top:24px;left:0;height:22px;width:70px}
+h1{font-size:40px;margin:0 0 6px;letter-spacing:-.02em}
+.sous{color:var(--doux);margin:0 0 22px}
+.stats-accueil{display:flex;gap:10px;justify-content:center;margin:0 0 22px;flex-wrap:wrap}
+.pastille{background:rgba(255,255,255,.07);border:1px solid var(--trait);border-radius:999px;padding:6px 14px;font-size:14px}
+.btn{display:inline-flex;align-items:center;gap:8px;background:var(--vert);color:#06241b;font-weight:700;border-radius:12px;padding:12px 22px;margin:5px}
+.btn.sec{background:rgba(255,255,255,.08);color:var(--texte);border:1px solid var(--trait);font-weight:600}
+.btn:hover{filter:brightness(1.08)}
+.btn:disabled{opacity:.45;cursor:default}
+.aide{color:var(--doux);font-size:13px;margin-top:18px}
+kbd{background:rgba(255,255,255,.1);border:1px solid var(--trait);border-radius:5px;padding:1px 6px;font-size:12px}
+/* HUD */
+#hud{position:fixed;inset:0;pointer-events:none;z-index:10;display:none}
+#hud.on{display:block}
+.barre{position:absolute;top:14px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.bloc{background:var(--panneau);border:1px solid var(--trait);border-radius:12px;padding:8px 14px;backdrop-filter:blur(6px)}
+.objectif b{color:var(--or)}
+.compteurs{display:flex;gap:8px}
+.compteurs .bloc{text-align:center;min-width:86px}
+.compteurs small{display:block;color:var(--doux);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+.jauge{height:6px;background:rgba(255,255,255,.1);border-radius:9px;margin-top:4px;overflow:hidden}
+.jauge i{display:block;height:100%;background:var(--vert);border-radius:9px;transition:width .4s}
+#viseur{position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px;border-radius:50%;background:rgba(255,255,255,.8)}
+#invite{position:absolute;left:50%;bottom:90px;transform:translateX(-50%);display:none}
+#invite.on{display:block}
+#bas{position:absolute;left:14px;bottom:14px;color:var(--doux);font-size:13px}
+#bulle{position:absolute;left:50%;bottom:140px;transform:translateX(-50%);max-width:560px;display:none;text-align:center}
+#bulle.on{display:block}
+#pause{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;display:none;pointer-events:auto}
+#pause.on{display:block}
+/* Panneau questions */
+#panneau{align-items:center;justify-content:center;background:rgba(4,14,12,.55)}
+.fiche{width:min(680px,94vw);max-height:90vh;overflow:auto;background:var(--panneau);border:1px solid var(--trait);border-radius:18px;padding:22px 24px;box-shadow:0 20px 60px rgba(0,0,0,.5);user-select:text;-webkit-user-select:text}
+.tete{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.avatar{width:44px;height:44px;border-radius:50%;flex:none;border:2px solid var(--trait)}
+.tete h3{margin:0;font-size:17px}.tete small{color:var(--doux)}
+.parole{background:rgba(255,255,255,.05);border-left:3px solid var(--vert);padding:10px 14px;border-radius:8px;margin:0 0 10px}
+.contexte{font-size:14px;color:var(--doux);margin:0 0 14px}
+.tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;border-radius:6px;padding:2px 8px;margin-bottom:8px}
+.q{font-size:17px;font-weight:600;margin:4px 0 14px}
+.opts{display:grid;gap:8px}
+.opt{text-align:left;background:rgba(255,255,255,.06);border:1px solid var(--trait);border-radius:10px;padding:11px 14px}
+.opt:hover:not(:disabled){border-color:var(--vert)}
+.opt.bon{background:rgba(61,220,151,.18);border-color:var(--vert)}
+.opt.faux{background:rgba(239,91,91,.18);border-color:var(--rouge)}
+.calc{display:flex;gap:8px;align-items:center}
+.calc input{flex:1;font:inherit;font-size:18px;padding:10px 12px;border-radius:10px;border:1px solid var(--trait);background:rgba(255,255,255,.06);color:var(--texte)}
+.retour{margin-top:14px;padding:12px 14px;border-radius:10px;font-size:14px}
+.retour.bon{background:rgba(61,220,151,.12)}.retour.faux{background:rgba(239,91,91,.12)}
+.retour .src{display:block;color:var(--doux);font-size:12px;margin-top:6px}
+.pied{display:flex;justify-content:space-between;align-items:center;margin-top:16px}
+.pied small{color:var(--doux)}
+/* Carnet et bilan */
+.ligne-cours{display:grid;grid-template-columns:1fr 120px 50px;gap:10px;align-items:center;margin:8px 0;font-size:14px}
+.etoiles{font-size:34px;letter-spacing:6px;margin:6px 0 10px;color:var(--or)}
+.etoiles .off{color:rgba(255,255,255,.15)}
+#mobile{align-items:center;justify-content:center;background:var(--fond);z-index:40;text-align:center;padding:30px}
+</style></head>
+<body>
+<canvas id="scene"></canvas>
+
+<div id="accueil" class="ecran on"><div class="carte-titre">
+  <div class="croix"></div>
+  <h1>Stage en officine</h1>
+  <p class="sous">Tu es stagiaire à la Pharmacie du Confluent. Reçois les patients et mobilise tous tes cours ensemble.</p>
+  <div class="stats-accueil" id="stats-accueil"></div>
+  <div><button class="btn" id="b-jouer">Commencer la journée 1</button></div>
+  <div><button class="btn sec" id="b-carnet">Carnet de stage</button><button class="btn sec" id="b-fautes">Refaire mes fautes</button></div>
+  <p class="aide">Clique dans la pharmacie pour regarder autour de toi · <kbd>Z</kbd><kbd>Q</kbd><kbd>S</kbd><kbd>D</kbd> ou les flèches pour te déplacer · <kbd>E</kbd> pour parler ou agir · <kbd>Échap</kbd> pour faire une pause</p>
+  <p class="aide"><a href="../index.html" style="color:var(--doux)">← Tous mes cours</a></p>
+</div></div>
+
+<div id="hud">
+  <div class="barre">
+    <div class="bloc objectif" id="objectif">…</div>
+    <div class="compteurs">
+      <div class="bloc"><small>Patients</small><span id="h-pat">0/7</span></div>
+      <div class="bloc"><small>XP</small><span id="h-xp">0</span></div>
+      <div class="bloc"><small>Réputation</small><span id="h-rep">50</span><div class="jauge"><i id="h-repj" style="width:50%"></i></div></div>
+    </div>
+  </div>
+  <div id="viseur"></div>
+  <div class="bloc" id="bulle"></div>
+  <div class="bloc" id="invite"><kbd>E</kbd> <span id="invite-txt">Parler</span></div>
+  <div id="bas">Échap : pause · Clique pour reprendre le contrôle de la vue</div>
+  <div class="bloc" id="pause"><p style="margin:4px 0 12px">Pause</p><button class="btn" id="b-reprendre">Reprendre</button><button class="btn sec" id="b-quitter">Retour à l'accueil</button></div>
+</div>
+
+<div id="panneau" class="ecran"><div class="fiche" id="fiche"></div></div>
+
+<div id="mobile" class="ecran"><div>
+  <div class="croix"></div>
+  <h2>Ce jeu se joue sur ordinateur</h2>
+  <p class="sous">La pharmacie en 3D se parcourt au clavier et à la souris. Une version iPhone illustrée arrivera plus tard.</p>
+  <button class="btn sec" id="b-forcer">Continuer quand même</button>
+</div></div>
+
+<script type="module" src="jeu.js"></script>
+</body></html>
