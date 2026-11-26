@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Transférer ma progression</title>
+<link rel="stylesheet" href="/acces/acces.css">
+<style>textarea{width:100%;box-sizing:border-box;min-height:120px;font:13px ui-monospace,Menlo,monospace;border:1.5px solid #e4e0d8;border-radius:12px;padding:10px;margin:4px 0 10px}
+.acces-carte .go{font:600 15px/1 inherit;font-family:inherit;padding:12px 16px;border:0;border-radius:12px;background:#2f6f62;color:#fff;cursor:pointer;width:100%}</style>
+</head>
+<body class="acces-page">
+<main class="acces-carte">
+  <h1>Transférer ma progression</h1>
+  <p>Sur l'ancien site, appuie sur « Copier » dans la bannière verte, puis colle le texte ici.</p>
+  <textarea id="t" placeholder="Colle ici"></textarea>
+  <button class="go" id="b">Importer</button>
+  <p class="acces-err" id="e"></p>
+  <p class="acces-petit"><a href="/">Retour à l'accueil</a></p>
+</main>
+<script>
+document.getElementById('b').onclick=function(){
+  var t=document.getElementById('t').value.trim();
+  try{var o=JSON.parse(decodeURIComponent(escape(atob(t.replace(/-/g,'+').replace(/_/g,'/')))));var n=0;
+    Object.keys(o).forEach(function(k){localStorage.setItem(k,o[k]);n++});
+    document.querySelector('main').innerHTML='<h1>C\'est fait</h1><p>'+n+' sauvegardes importées. Tes jeux reprennent là où tu t\'étais arrêtée.</p><p class="acces-petit"><a href="/">Aller à l\'accueil</a></p>';
+  }catch(x){document.getElementById('e').textContent='Ce texte n\'est pas reconnu. Recopie-le en entier.'}
+};
+</script>
+</body>
+</html>

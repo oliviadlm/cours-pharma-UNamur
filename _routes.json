@@ -1,0 +1,29 @@
+{
+ "version": 1,
+ "description": "Images, icônes, décors : servis sans passer par la fonction d'accès (contenu public, économise le quota).",
+ "include": [
+  "/*"
+ ],
+ "exclude": [
+  "/acces/acces.css",
+  "/acces/acces.js",
+  "/biochimie/decor/*",
+  "/biochimie/icons/*",
+  "/biochimie/img/*",
+  "/biochimie/mol/*",
+  "/chimie-pharma/assets/*",
+  "/chimie-pharma/photos/*",
+  "/chimie-pharma/revision/decor/*",
+  "/chimie-pharma/revision/icons/*",
+  "/mphab287/decor/*",
+  "/mphab287/fonts/*",
+  "/mphab287/icons/*",
+  "/mphab287/lib/*",
+  "/mphab310/css/*",
+  "/mphab310/decor/*",
+  "/mphab310/icons/*",
+  "/mphab310/img/*",
+  "/mphab310/mol/*",
+  "/stage-officine/icons/*"
+ ]
+}

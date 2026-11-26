@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Codes d'accès</title>
+<link rel="stylesheet" href="/acces/acces.css">
+<style>
+  body{margin:0;background:#f7f5f0;color:#1f2a2e;font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:640px;margin:0 auto;padding:28px 16px 60px}
+  h1{font-size:24px;margin:0 0 4px} .sous{color:#6b7478;margin:0 0 22px}
+  .bloc{background:#fff;border:1px solid #e4e0d8;border-radius:14px;padding:16px;margin-bottom:16px}
+  .bloc h2{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:#2f6f62;margin:0 0 10px}
+  form{display:flex;gap:8px} input{flex:1;min-width:0;font:16px/1 inherit;font-family:inherit;padding:11px 12px;border:1.5px solid #e4e0d8;border-radius:10px;background:#fbfaf7}
+  input:focus{outline:none;border-color:#2f6f62}
+  button{font:600 14px/1 inherit;font-family:inherit;padding:11px 14px;border:0;border-radius:10px;background:#2f6f62;color:#fff;cursor:pointer}
+  button.sec{background:#eef3f1;color:#2f6f62} button.dang{background:#fbeceb;color:#b3261e} button.dang.sur{background:#b3261e;color:#fff}
+  .msg{white-space:pre-wrap;background:#f3f7f5;border-radius:10px;padding:12px;margin:12px 0 8px;font-size:15px}
+  .ligne{display:flex;align-items:center;gap:10px;padding:12px 0;border-top:1px solid #efece6}
+  .ligne:first-child{border-top:0}
+  .ligne .qui{flex:1;min-width:0} .ligne b{display:block} .ligne code{font:600 14px ui-monospace,Menlo,monospace;letter-spacing:.04em;color:#2f6f62}
+  .ligne small{display:block;color:#6b7478;font-size:13px} .ligne .bts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+  .vide{color:#6b7478;margin:0} .err{color:#b3261e;margin:8px 0 0;min-height:1.2em}
+  [hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Codes d'accès</h1>
+  <p class="sous">Un code par personne. Supprimer un code coupe l'accès à cette personne seulement.</p>
+
+  <div class="bloc" id="connexion" hidden>
+    <h2>Connexion</h2>
+    <form id="fc"><input id="mdp" type="password" placeholder="Mot de passe administrateur" autocomplete="current-password" required><button>Entrer</button></form>
+    <p class="err" id="ec"></p>
+  </div>
+
+  <div id="gestion" hidden>
+    <div class="bloc">
+      <h2>Nouveau code</h2>
+      <form id="fn"><input id="nom" placeholder="Prénom (ex. Léa)" required autocomplete="off"><button>Créer</button></form>
+      <p class="err" id="en"></p>
+      <div id="cree" hidden>
+        <div class="msg" id="texte"></div>
+        <button class="sec" id="copier">Copier le message</button>
+      </div>
+    </div>
+    <div class="bloc">
+      <h2>Codes actifs <span id="nb"></span></h2>
+      <div id="liste"></div>
+    </div>
+  </div>
+</div>
+<script>
+var SITE=location.origin;
+function $(s){return document.querySelector(s)}
+function esc(s){return String(s||'').replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function api(p,corps){return fetch('/acces/api/admin/'+p,corps?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(corps)}:{}).then(function(r){return r.json()})}
+function message(nom,code){return 'Coucou '+nom+' ! Voici ton code perso pour débloquer tous les chapitres des jeux de révision : '+code+'\n\nLe lien : '+SITE+'\n\nLe code est personnel, merci de ne pas le faire tourner.'}
+function copier(t,bt){(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){var o=bt.textContent;bt.textContent='Copié';setTimeout(function(){bt.textContent=o},1500)},function(){prompt('Copie ce texte :',t)})}
+
+function charger(){
+  api('codes').then(function(j){
+    if(!j.ok){$('#connexion').hidden=false;$('#gestion').hidden=true;return}
+    $('#connexion').hidden=true;$('#gestion').hidden=false;
+    $('#nb').textContent='('+j.codes.length+')';
+    var L=$('#liste');
+    if(!j.codes.length){L.innerHTML='<p class="vide">Aucun code pour l\'instant.</p>';return}
+    L.innerHTML=j.codes.map(function(c){return '<div class="ligne"><div class="qui"><b>'+esc(c.nom)+'</b><code>'+esc(c.code)+'</code><small>Créé le '+esc(c.cree||'?')+(c.vu?' · utilisé le '+esc(c.vu):' · pas encore utilisé')+'</small></div><div class="bts"><button class="sec" data-m="'+esc(c.code)+'" data-n="'+esc(c.nom)+'">Message</button><button class="dang" data-s="'+esc(c.code)+'">Supprimer</button></div></div>'}).join('');
+    L.querySelectorAll('[data-m]').forEach(function(b){b.onclick=function(){copier(message(b.dataset.n,b.dataset.m),b)}});
+    L.querySelectorAll('[data-s]').forEach(function(b){b.onclick=function(){
+      if(!b.classList.contains('sur')){b.classList.add('sur');b.textContent='Confirmer';setTimeout(function(){b.classList.remove('sur');b.textContent='Supprimer'},3000);return}
+      api('supprimer',{code:b.dataset.s}).then(charger)}});
+  });
+}
+$('#fc').onsubmit=function(e){e.preventDefault();api('entrer',{mdp:$('#mdp').value}).then(function(j){if(j.ok)charger();else $('#ec').textContent=j.erreur})};
+$('#fn').onsubmit=function(e){e.preventDefault();$('#en').textContent='';api('codes',{nom:$('#nom').value}).then(function(j){
+  if(!j.ok){$('#en').textContent=j.erreur;return}
+  $('#nom').value='';$('#texte').textContent=message(j.nom,j.code);$('#cree').hidden=false;charger()})};
+$('#copier').onclick=function(){copier($('#texte').textContent,this)};
+charger();
+</script>
+</body>
+</html>

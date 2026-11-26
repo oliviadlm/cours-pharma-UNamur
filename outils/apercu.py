@@ -1,0 +1,180 @@
+#!/usr/bin/env python3
+"""
+Aperçu gratuit des jeux : sépare le contenu complet (réservé aux codes) et l'aperçu (chapitre 1).
+
+Pour chaque jeu de JEUX :
+  - si la page HTML contient encore les données en ligne (<script>window.DATA={...}</script>),
+    elles sont déplacées dans le fichier de données (ex. donnees-chipha.js) et la page charge ce fichier ;
+  - le moteur du jeu est adapté (une fois) : un chapitre marqué « verrou » ouvre la fenêtre du code ;
+  - le fichier d'aperçu (ex. donnees-chipha.apercu.js) est régénéré : chapitres publics complets,
+    autres chapitres = titres seulement.
+
+À relancer après chaque modification du contenu d'un jeu :
+    python3 outils/apercu.py
+Le serveur (functions/_middleware.js) envoie le fichier complet aux personnes qui ont un code,
+et le fichier d'aperçu à tout le monde d'autre, à la même adresse.
+"""
+import json, os, re, sys
+
+RACINE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# page du jeu, fichier de données complet, nombre de chapitres publics
+JEUX = [
+    ("chimie-pharma/revision/jeu-chipha.html", "chimie-pharma/revision/donnees-chipha.js", 1),
+    ("mphab310/jeu-phyto.html", "mphab310/donnees-phyto.js", 2),          # 0. Introduction + 1. Glucides
+    ("biochimie/jeu-biochimie.html", "biochimie/donnees-biochimie.js", 1),
+    ("mphab287/jeu-calculs.html", "mphab287/donnees-calculs.js", 1),
+]
+
+GARDER_CHAP = {"id", "num", "t", "court", "img", "sym", "fam"}
+GARDER_NIV = {"t", "s", "type", "lv"}
+
+
+def lire(p):
+    with open(os.path.join(RACINE, p), encoding="utf-8") as f:
+        return f.read()
+
+
+def ecrire(p, s):
+    with open(os.path.join(RACINE, p), "w", encoding="utf-8") as f:
+        f.write(s)
+
+
+def extraire_inline(html):
+    """Renvoie (debut_balise, fin_balise, objet) du <script>window.DATA={...}</script> en ligne."""
+    m = re.search(r"<script>\s*window\.DATA\s*=\s*", html)
+    if not m:
+        return None
+    obj, fin = json.JSONDecoder().raw_decode(html, m.end())
+    f = html.index("</script>", fin)
+    reste = re.sub(r"^\s*;?\s*", "", html[fin:f]).strip()  # ex. window.EXC=... (calculs)
+    return m.start(), f + len("</script>"), obj, reste
+
+
+def lire_donnees(p):
+    s = lire(p)
+    m = re.match(r"\s*window\.DATA\s*=\s*", s)
+    obj, fin = json.JSONDecoder().raw_decode(s, m.end())
+    return obj, re.sub(r"^\s*;?\s*", "", s[fin:]).strip()
+
+
+def chaines(x, out):
+    if isinstance(x, str):
+        out.add(x)
+    elif isinstance(x, list):
+        for v in x:
+            chaines(v, out)
+    elif isinstance(x, dict):
+        for v in x.values():
+            chaines(v, out)
+    return out
+
+
+def reste_apercu(reste, n_chap, n_pub):
+    """Autres variables (window.EXC, window.TH...) : une liste avec un élément par chapitre est coupée."""
+    out, dec, i = [], json.JSONDecoder(), 0
+    while True:
+        m = re.compile(r"\s*window\.(\w+)\s*=\s*").match(reste, i)
+        if not m:
+            break
+        try:
+            obj, i = dec.raw_decode(reste, m.end())
+        except json.JSONDecodeError:
+            # code JS (ex. window.TH=[(function(){...})(),(function(){...})()]) : un bloc par chapitre
+            j = reste.find("\nwindow.", m.end())
+            j = len(reste) if j < 0 else j
+            code = reste[m.end():j].strip()
+            SEP = "})(),\n(function(){"
+            parts = code.split(SEP)
+            if not (code.startswith("[(function(){") and code.endswith("})()];") and len(parts) == n_chap):
+                raise SystemExit("window.%s : format inattendu, à vérifier à la main." % m.group(1))
+            code = SEP.join(parts[:n_pub])
+            if not code.endswith("})()];"):
+                code += "})()];"
+            out.append("window.%s=%s" % (m.group(1), code))
+            i = j
+            continue
+        i = re.compile(r"\s*;?").match(reste, i).end()
+        if isinstance(obj, list) and len(obj) == n_chap:
+            obj = obj[:n_pub]
+        out.append("window.%s=%s;" % (m.group(1), json.dumps(obj, ensure_ascii=False, separators=(",", ":"))))
+    if reste[i:].strip():
+        raise SystemExit("Contenu inattendu après les données : à vérifier à la main.")
+    return "\n".join(out)
+
+
+def apercu(D, n_pub):
+    pub = D["chap"][:n_pub]
+    ids_pub = {c["id"] for c in pub}
+    refs = chaines(pub, set())
+    A = {}
+    for k, v in D.items():
+        if k == "chap":
+            continue
+        if isinstance(v, list) and v and isinstance(v[0], dict) and "id" in v[0]:
+            A[k] = [x for x in v if x["id"] in refs or x.get("cp") in ids_pub or x.get("chap") in ids_pub]
+        else:
+            A[k] = v  # tableaux généraux, mini-jeux du chapitre 1
+    chap = list(pub)
+    for c in D["chap"][n_pub:]:
+        v = {k: c[k] for k in c if k in GARDER_CHAP}
+        for k, x in c.items():
+            if k not in GARDER_CHAP and isinstance(x, list):
+                v[k] = []
+        v["niveaux"] = [
+            dict({k: L[k] for k in L if k in GARDER_NIV}, **{k: [] for k, x in L.items() if isinstance(x, list)})
+            for L in c["niveaux"]
+        ]
+        v["verrou"] = 1
+        chap.append(v)
+    A["chap"] = chap
+    A["apercu"] = 1
+    return A
+
+
+PATCH_OUVERT = "function chapOuvert(ci){"
+PATCH_OUVERT_NEW = "function chapOuvert(ci){if(CHAPS[ci].verrou)return false;"
+PATCH_NOM = "'+salut+' Olivia</small>"
+PATCH_NOM_NEW = "'+salut+(window.ACCES&&ACCES.nom?' '+ACCES.nom:'')+'</small>"
+PATCH_BORNE = "var ci=+b.dataset.c;if(!chapOuvert(ci)){"
+PATCH_BORNE_NEW = ("var ci=+b.dataset.c;if(CHAPS[ci].verrou&&window.ACCES){son('clic');ACCES.demander(CHAPS[ci].court);return}"
+                   "if(!chapOuvert(ci)){")
+
+
+def traiter(page, donnees, n_pub):
+    html = lire(page)
+    nom = os.path.basename(donnees)
+    inl = extraire_inline(html)
+    if inl:
+        a, b, D, reste = inl
+        ecrire(donnees, "window.DATA=" + json.dumps(D, ensure_ascii=False, separators=(",", ":")) + ";\n"
+               + (reste + "\n" if reste else ""))
+        rel = os.path.relpath(os.path.join(RACINE, "acces", "acces.js"), os.path.dirname(os.path.join(RACINE, page)))
+        balise = ('<script src="%s"></script>\n<script src="%s"></script>' % (nom, rel))
+        html = html[:a] + balise + html[b:]
+        print("  données déplacées dans", donnees)
+    else:
+        D, reste = lire_donnees(donnees)
+    if PATCH_OUVERT_NEW not in html:
+        if html.count(PATCH_OUVERT) != 1 or html.count(PATCH_BORNE) != 1:
+            raise SystemExit("Moteur inattendu dans %s : adapter le verrou à la main." % page)
+        html = html.replace(PATCH_OUVERT, PATCH_OUVERT_NEW).replace(PATCH_BORNE, PATCH_BORNE_NEW)
+        print("  verrou ajouté au moteur")
+    if PATCH_NOM in html:
+        html = html.replace(PATCH_NOM, PATCH_NOM_NEW)
+        print("  « Bonjour » + prénom de la personne connectée")
+    ecrire(page, html)
+    A = apercu(D, n_pub)
+    ecrire(donnees[:-3] + ".apercu.js",
+           "window.DATA=" + json.dumps(A, ensure_ascii=False, separators=(",", ":")) + ";\n"
+           + (reste_apercu(reste, len(D["chap"]), n_pub) + "\n" if reste else ""))
+    tot = sum(len(v) for v in D.values() if isinstance(v, list))
+    vu = sum(len(v) for k, v in A.items() if isinstance(v, list) and k != "chap")
+    print("  aperçu : %d chapitre(s) public(s) sur %d, %d éléments sur %d"
+          % (n_pub, len(D["chap"]), vu, tot - len(D["chap"])))
+
+
+if __name__ == "__main__":
+    for page, donnees, n in JEUX:
+        print(page)
+        traiter(page, donnees, n)
