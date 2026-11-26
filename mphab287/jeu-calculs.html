@@ -1110,10 +1110,10 @@ function ordoJour(){if(!S.ordoJ||S.ordoJ.d!==dayNum())S.ordoJ={d:dayNum(),n:0};r
 function ordoRestantes(){return Math.max(0,ORDO_J-ordoJour().n)}
 function enG(v,u){u=(u||'').trim();if(u==='g')return v;if(u==='mg')return v/1000;if(u==='µg')return v/1e6;return null}
 function qOrdo(src){var x=qWorked(src[0],src[1]);x.ordo=1;x.type=['book','Ordonnance'];x.med=pick(MEDECINS,1)[0];x.pat=pick(PATIENTS,1)[0];return x}
-var __ordoDef=function(){var srcs=[];CHAPS.forEach(function(c,ci){if(chapOuvert(ci))c.niveaux.forEach(function(L){(L.w||[]).forEach(function(w){if(L.type==='n')srcs.push(w)})})});
+var __ordoDef=function(){if(D.apercu&&(S.ordoTot||0)>=4&&window.ACCES){ACCES.demander('Ordonnances du jour');return}var srcs=[];CHAPS.forEach(function(c,ci){if(chapOuvert(ci))c.niveaux.forEach(function(L){(L.w||[]).forEach(function(w){if(L.type==='n')srcs.push(w)})})});
  if(!srcs.length){toast(ic('lock')+' Ouvre un chapitre pour recevoir des ordonnances');return}
  var d=dayNum();srcs.sort(function(a,b){return boxOf('w:'+a[0]+':'+a[1]).d-boxOf('w:'+b[0]+':'+b[1]).d});
- var n=Math.max(1,ordoRestantes())||2, it=mel(srcs.slice(0,Math.max(n+2,4))).slice(0,ordoRestantes()||3).map(qOrdo);
+ var n=Math.max(1,ordoRestantes())||2, it=mel(srcs.slice(0,Math.max(n+2,4))).slice(0,Math.min(ordoRestantes()||3,D.apercu?Math.max(1,4-(S.ordoTot||0)):99)).map(qOrdo);
  lancer({items:it,nom:'Ordonnances du jour',mode:'ordo',coeurs:99})};
 function papierHTML(x){var dt=new Date(),date=('0'+dt.getDate()).slice(-2)+'/'+('0'+(dt.getMonth()+1)).slice(-2)+'/'+dt.getFullYear();
  return '<div class="papier"><div class="ent"><b>'+esc(x.med)+'</b><small>Médecin généraliste · Namur</small></div><div class="pat">Pour : '+esc(x.pat)+'</div><div class="rp">'+esc(x.ctx||'')+'</div><div class="bas"><span>Le '+date+'</span><svg class="sig" viewBox="0 0 110 34"><path d="M4 26 q12 -26 26 0 t26 -4 t24 -8 q-10 14 26 4" stroke="#1f3a8a" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></div><div class="tampon" id="tampon">PRÉPARÉ</div>'+'</div>'}

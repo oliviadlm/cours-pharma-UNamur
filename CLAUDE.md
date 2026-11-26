@@ -22,6 +22,7 @@ Les données des 4 jeux (chimie pharma, phyto, biochimie, calculs) ne sont plus 
 2. Lancer `python3 outils/apercu.py` : régénère les fichiers `.apercu.js` et réapplique le verrou au moteur.
 3. Nouveau jeu : l'ajouter à `JEUX` dans `outils/apercu.py`, à `PAGES_PUBLIQUES` et `DONNEES_JEUX` dans `functions/_middleware.js`.
 
+Calculs : sans code, 4 ordonnances en tout (`ORDO_APERCU`), puis le code est demandé.
 Calculs : le Quiz de l'étagère des excipients est réservé aux codes (`VIDER` dans `outils/apercu.py`).
 
 Avec un code, les chapitres s'ouvrent boss après boss, ou tous d'un coup dès `SEUIL_XP` (300 XP, dans `outils/apercu.py`).

@@ -189,6 +189,14 @@ PATCH_TOAST_NEW = " ou atteins %d XP pour ouvrir ce lieu'" % SEUIL_XP
 PATCH_ETQUIZ = "if(m==='quiz'){o.classList.remove('on');etQuiz();return}"
 PATCH_ETQUIZ_NEW = ("if(m==='quiz'){if(D.apercu&&window.ACCES){ACCES.demander('Quiz des excipients');return}"
                     "o.classList.remove('on');etQuiz();return}")
+# Calculs : sans code, 4 ordonnances en tout, puis le code est demandé
+ORDO_APERCU = 4
+PATCH_ORDO = "var __ordoDef=function(){"
+PATCH_ORDO_NEW = ("var __ordoDef=function(){if(D.apercu&&(S.ordoTot||0)>=%d&&window.ACCES){ACCES.demander('Ordonnances du jour');return}"
+                  % ORDO_APERCU)
+PATCH_ORDO_N = ".slice(0,ordoRestantes()||3).map(qOrdo)"
+PATCH_ORDO_N_NEW = (".slice(0,Math.min(ordoRestantes()||3,D.apercu?Math.max(1,%d-(S.ordoTot||0)):99)).map(qOrdo)"
+                    % ORDO_APERCU)
 PATCH_NOM = "'+salut+' Olivia</small>"
 PATCH_NOM_NEW = "'+salut+(window.ACCES&&ACCES.nom?' '+ACCES.nom:'')+'</small>"
 PATCH_BORNE = "var ci=+b.dataset.c;if(!chapOuvert(ci)){"
@@ -220,6 +228,10 @@ def traiter(page, donnees, n_pub):
         html = (html.replace(PATCH_LIBRE, PATCH_LIBRE_NEW).replace(PATCH_LIBRE_SUITE, PATCH_LIBRE_SUITE_NEW)
                 .replace(PATCH_NIV, PATCH_NIV_NEW).replace(PATCH_TOAST, PATCH_TOAST_NEW))
         print("  tout s'ouvre à %d XP (avec un code)" % SEUIL_XP)
+    if PATCH_ORDO in html and PATCH_ORDO_NEW not in html:
+        assert html.count(PATCH_ORDO_N) == 1, page
+        html = html.replace(PATCH_ORDO, PATCH_ORDO_NEW).replace(PATCH_ORDO_N, PATCH_ORDO_N_NEW)
+        print("  ordonnances : %d sans code" % ORDO_APERCU)
     if PATCH_ETQUIZ in html:
         html = html.replace(PATCH_ETQUIZ, PATCH_ETQUIZ_NEW)
         print("  quiz de l'étagère réservé aux codes")
