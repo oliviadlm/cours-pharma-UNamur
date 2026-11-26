@@ -139,7 +139,7 @@ async function api(req, env, url) {
     const v = await verifier(env, corps.code);
     if (!v) {
       await attendre(700);
-      return json({ ok: false, erreur: "Ce code ne fonctionne pas. Vérifie-le ou demande-le à Olivia." }, 401);
+      return json({ ok: false, erreur: "Ce code ne fonctionne pas. Vérifie-le ou demande-le à l’hôte." }, 401);
     }
     const k = "code:" + v.code;
     const fiche = (await env.CODES.get(k, "json")) || {};
@@ -210,7 +210,7 @@ function pageVerrou(url) {
 <p>Cette page s'ouvre avec ton code d'accès personnel.</p>
 <form id="f"><input id="c" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Ton code" required>
 <button>Débloquer</button></form><p id="e" class="acces-err" role="alert"></p>
-<p class="acces-petit">Pas encore de code ? Demande-le à Olivia.<br><a href="/">Retour aux jeux</a></p>
+<p class="acces-petit">Pas encore de code ? Demande-le à l’hôte.<br><a href="/">Retour aux jeux</a></p>
 </main><script>
 document.getElementById('f').onsubmit=async function(ev){ev.preventDefault();var b=this.querySelector('button');b.disabled=true;
 var code=document.getElementById('c').value;

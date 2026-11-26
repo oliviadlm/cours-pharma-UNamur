@@ -43,7 +43,7 @@
       '<p>Le chapitre 1, c\'était pour tester. Pour continuer l\'aventure, entre ton code d\'accès : tous les chapitres s\'ouvrent.</p>' +
       '<form><input autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Ton code" required>' +
       '<button>Débloquer</button></form><p class="acces-err" role="alert"></p>' +
-      '<p class="acces-petit">Pas encore de code ? Demande-le à Olivia.</p>';
+      '<p class="acces-petit">Pas encore de code ? Demande-le à l’hôte.</p>';
     fond.appendChild(carte); document.body.appendChild(fond);
     var inp = carte.querySelector('input'), err = carte.querySelector('.acces-err'), btn = carte.querySelector('form button');
     function fermer() { fond.remove(); }
