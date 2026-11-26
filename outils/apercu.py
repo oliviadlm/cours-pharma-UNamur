@@ -166,6 +166,18 @@ def apercu(D, n_pub):
 
 PATCH_OUVERT = "function chapOuvert(ci){"
 PATCH_OUVERT_NEW = "function chapOuvert(ci){if(CHAPS[ci].verrou)return false;"
+# Avec un code : tout s'ouvre dès SEUIL_XP points (pour tout réviser avant l'examen)
+SEUIL_XP = 300
+PATCH_LIBRE = "function chapOuvert(ci){if(CHAPS[ci].verrou)return false;return "
+PATCH_LIBRE_NEW = ("function toutOuvert(){return !D.apercu&&S&&(S.xp||0)>=%d}"
+                   "function chapBoss(ci){if(CHAPS[ci].verrou)return false;return " % SEUIL_XP)
+PATCH_LIBRE_SUITE = "function chapActuel(){var a=0;for(var i=0;i<CHAPS.length;i++)if(chapOuvert(i))a=i;return a}"
+PATCH_LIBRE_SUITE_NEW = ("function chapOuvert(ci){return !CHAPS[ci].verrou&&(toutOuvert()||chapBoss(ci))}"
+                         "function chapActuel(){var a=0;for(var i=0;i<CHAPS.length;i++)if(chapBoss(i))a=i;return a}")
+PATCH_NIV = "function nivOuvert(ci,n){var L=CHAPS[ci].niveaux;if(!chapOuvert(ci))return false;"
+PATCH_NIV_NEW = PATCH_NIV + "if(toutOuvert())return true;"
+PATCH_TOAST = " pour ouvrir ce lieu'"
+PATCH_TOAST_NEW = " ou atteins %d XP pour ouvrir ce lieu'" % SEUIL_XP
 PATCH_NOM = "'+salut+' Olivia</small>"
 PATCH_NOM_NEW = "'+salut+(window.ACCES&&ACCES.nom?' '+ACCES.nom:'')+'</small>"
 PATCH_BORNE = "var ci=+b.dataset.c;if(!chapOuvert(ci)){"
@@ -192,6 +204,11 @@ def traiter(page, donnees, n_pub):
             raise SystemExit("Moteur inattendu dans %s : adapter le verrou à la main." % page)
         html = html.replace(PATCH_OUVERT, PATCH_OUVERT_NEW).replace(PATCH_BORNE, PATCH_BORNE_NEW)
         print("  verrou ajouté au moteur")
+    if "function toutOuvert()" not in html:
+        assert html.count(PATCH_LIBRE) == 1 and html.count(PATCH_LIBRE_SUITE) == 1 and html.count(PATCH_NIV) == 1, page
+        html = (html.replace(PATCH_LIBRE, PATCH_LIBRE_NEW).replace(PATCH_LIBRE_SUITE, PATCH_LIBRE_SUITE_NEW)
+                .replace(PATCH_NIV, PATCH_NIV_NEW).replace(PATCH_TOAST, PATCH_TOAST_NEW))
+        print("  tout s'ouvre à %d XP (avec un code)" % SEUIL_XP)
     if PATCH_BTNS in html and 'aria-label="Tous les jeux"' not in html:
         html = html.replace(PATCH_BTNS, PATCH_BTNS_NEW)
         print("  bouton « Tous les jeux » ajouté")

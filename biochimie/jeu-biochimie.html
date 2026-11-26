@@ -519,11 +519,11 @@ function bkey(ci,n){return CHAPS[ci].id+':'+n}
 function bestOf(ci,n){return S.best[bkey(ci,n)]||0}
 function nbN(ci){return CHAPS[ci].niveaux.length}
 function bossI(ci){return nbN(ci)-1}
-function chapOuvert(ci){if(CHAPS[ci].verrou)return false;return ci===0||bestOf(ci-1,bossI(ci-1))>=1}
+function toutOuvert(){return !D.apercu&&S&&(S.xp||0)>=300}function chapBoss(ci){if(CHAPS[ci].verrou)return false;return ci===0||bestOf(ci-1,bossI(ci-1))>=1}
 function chapFini(ci){return bestOf(ci,bossI(ci))>=1}
-function nivOuvert(ci,n){var L=CHAPS[ci].niveaux;if(!chapOuvert(ci))return false;if(L[n].type==='boss')return L.slice(0,-1).every(function(_,k){return bestOf(ci,k)>=1});return n===0||bestOf(ci,n-1)>=1}
+function nivOuvert(ci,n){var L=CHAPS[ci].niveaux;if(!chapOuvert(ci))return false;if(toutOuvert())return true;if(L[n].type==='boss')return L.slice(0,-1).every(function(_,k){return bestOf(ci,k)>=1});return n===0||bestOf(ci,n-1)>=1}
 function nivActuel(ci){var L=CHAPS[ci].niveaux;for(var n=0;n<L.length;n++){if(nivOuvert(ci,n)&&(bestOf(ci,n)<3||L[n].type==='boss'))return n}return L.length-1}
-function chapActuel(){var a=0;for(var i=0;i<CHAPS.length;i++)if(chapOuvert(i))a=i;return a}
+function chapOuvert(ci){return !CHAPS[ci].verrou&&(toutOuvert()||chapBoss(ci))}function chapActuel(){var a=0;for(var i=0;i<CHAPS.length;i++)if(chapBoss(i))a=i;return a}
 function etoilesChap(ci){var t=0;for(var n=0;n<nbN(ci);n++)t+=bestOf(ci,n);return t}
 function chapIc(ci){var c=CHAPS[ci];return c.img?'<img src="'+c.img+'" alt="">':ic(c.sym)}
 function molsChap(ci){var o=[];CHAPS[ci].niveaux.forEach(function(L){if(L.m)L.m.forEach(function(id){o.push(BYID[id])})});return o}
@@ -819,7 +819,7 @@ function salon(){
  $('#recentrer').onclick=function(){son('clic');viser(pos[0],pos[1],true,1)};
  setTimeout(function(){var a=$('#astuce');if(a)a.style.opacity=0},5000);
  function bulle(txt){var o=$('.bulle2',piece);if(o)o.remove();var b=document.createElement('div');b.className='bulle2';b.style.left=pos[0]+'px';b.style.top=(pos[1]-PH*.19*prof(pos[1])-62)+'px';b.textContent=txt;piece.appendChild(b);setTimeout(function(){b.remove()},2400)}
- $$('.borne').forEach(function(b){b.onclick=function(){var ci=+b.dataset.c;if(CHAPS[ci].verrou&&window.ACCES){son('clic');ACCES.demander(CHAPS[ci].court);return}if(!chapOuvert(ci)){son('mal');toast(ic('lock')+' Bats le boss de « '+CHAPS[ci-1].court+' » pour ouvrir ce lieu');return}son('clic');CI=ci;VUE='chap';accueil();haut()}});
+ $$('.borne').forEach(function(b){b.onclick=function(){var ci=+b.dataset.c;if(CHAPS[ci].verrou&&window.ACCES){son('clic');ACCES.demander(CHAPS[ci].court);return}if(!chapOuvert(ci)){son('mal');toast(ic('lock')+' Bats le boss de « '+CHAPS[ci-1].court+' » ou atteins 300 XP pour ouvrir ce lieu');return}son('clic');CI=ci;VUE='chap';accueil();haut()}});
  // nouveau chapitre ouvert : la gélule traverse la pièce jusqu'au lieu suivant
  if(ca>dep){haut();setTimeout(function(){var p=P(ca);pos=p;viser(p[0],p[1],true,1);setTimeout(function(){if(!vivant)return;S.pionAt=ca;save();bulle('Nouveau lieu ouvert : '+SPOTS[ca][2]);son('fete');confetti()},950)},900)}
  SAL={stop:function(){vivant=false;if(window.__orientSalon===orient)window.__orientSalon=null}};

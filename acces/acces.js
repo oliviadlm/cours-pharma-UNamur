@@ -40,7 +40,7 @@
       '<button class="acces-x" aria-label="Fermer">×</button>' +
       '<div class="acces-ic">' + CADENAS + '</div>' +
       '<h2>' + (quoi ? 'Prochaine étape : « ' + String(quoi).replace(/</g, '&lt;') + ' »' : 'Entre ton code') + '</h2>' +
-      '<p>Le chapitre 1, c\'était pour tester. Pour continuer l\'aventure, entre ton code d\'accès : tous les chapitres s\'ouvrent.</p>' +
+      '<p>Le chapitre 1, c\'était pour tester. Avec ton code d\'accès, l\'aventure continue : bats le boss de chaque chapitre, et dès 300 XP tout s\'ouvre pour réviser comme tu veux.</p>' +
       '<form><input autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Ton code" required>' +
       '<button>Débloquer</button></form><p class="acces-err" role="alert"></p>' +
       '<p class="acces-petit">Pas encore de code ? Demande-le à l’hôte.</p>';
