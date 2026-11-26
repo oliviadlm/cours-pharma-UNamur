@@ -75,7 +75,7 @@ async function verifier(env, code) {
   const c = cache.get(code);
   if (c && Date.now() - c.t < 120000) return c.ok ? c : null;
   const v = await env.CODES.get("code:" + code, "json");
-  const r = { ok: !!v, nom: v ? v.nom : "", vu: v ? v.vu || "" : "", code, t: Date.now() };
+  const r = { ok: !!v, nom: v ? v.nom : "", vu: v ? v.vu || "" : "", cours: !!(v && v.cours), code, t: Date.now() };
   cache.set(code, r);
   return r.ok ? r : null;
 }
@@ -167,7 +167,7 @@ async function api(req, env, url) {
   }
   if (p === "/acces/api/etat") {
     const v = await acces(req, env, url);
-    return json({ ok: !!v, nom: v ? v.nom : "" });
+    return json({ ok: !!v, nom: v ? v.nom : "", cours: !!(v && v.cours) });
   }
 
   // --- admin ---
@@ -188,7 +188,7 @@ async function api(req, env, url) {
       const l = await env.CODES.list({ prefix: "code:", cursor });
       for (const k of l.keys) {
         const v = (await env.CODES.get(k.name, "json")) || {};
-        out.push({ code: k.name.slice(5), nom: v.nom || "", cree: v.cree || "", vu: v.vu || "", jours: v.jours || 0 });
+        out.push({ code: k.name.slice(5), nom: v.nom || "", cree: v.cree || "", vu: v.vu || "", jours: v.jours || 0, cours: !!v.cours });
       }
       cursor = l.list_complete ? null : l.cursor;
     } while (cursor);
@@ -200,8 +200,17 @@ async function api(req, env, url) {
     if (!nom) return json({ ok: false, erreur: "Indique un prénom." }, 400);
     let code = normCode(corps.code) || nouveauCode(nom);
     if (await env.CODES.get("code:" + code)) code = nouveauCode(nom);
-    await env.CODES.put("code:" + code, JSON.stringify({ nom, cree: new Date().toISOString().slice(0, 10) }));
+    await env.CODES.put("code:" + code, JSON.stringify({ nom, cree: new Date().toISOString().slice(0, 10), cours: !!corps.cours }));
     return json({ ok: true, code, nom });
+  }
+  if (p === "/acces/api/admin/cours" && req.method === "POST") {
+    const code = normCode(corps.code);
+    const f = await env.CODES.get("code:" + code, "json");
+    if (!f) return json({ ok: false, erreur: "Code inconnu." }, 404);
+    f.cours = !!corps.cours;
+    await env.CODES.put("code:" + code, JSON.stringify(f));
+    cache.delete(code);
+    return json({ ok: true });
   }
   if (p === "/acces/api/admin/supprimer" && req.method === "POST") {
     const code = normCode(corps.code);
@@ -214,18 +223,18 @@ async function api(req, env, url) {
 
 /* ---------------- page « contenu réservé » ---------------- */
 
-function pageVerrou(url) {
+function pageVerrou(url, pasPartage) {
   const html = `<!doctype html><html lang="fr"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex"><title>Contenu réservé · Cours pharma</title>
 <link rel="stylesheet" href="/acces/acces.css"></head>
-<body class="acces-page"><main class="acces-carte">
+<body class="acces-page${pasPartage ? " pp" : ""}"><style>.pp form,.pp #e,.pp .sans{display:none}</style><main class="acces-carte">
 <div class="acces-ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg></div>
-<h1>Entre ton code</h1>
-<p>Cette page s'ouvre avec ton code d'accès personnel.</p>
+<h1>${pasPartage ? "Pas encore partagé" : "Entre ton code"}</h1>
+<p>${pasPartage ? "Cette partie n'est pas encore ouverte. Tes jeux, eux, sont tous accessibles avec ton code." : "Cette page s'ouvre avec ton code d'accès personnel."}</p>
 <form id="f"><input id="c" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Ton code" required>
 <button>Débloquer</button></form><p id="e" class="acces-err" role="alert"></p>
-<p class="acces-petit">Pas encore de code ? Demande-le à l’hôte.<br><a href="/">Retour aux jeux</a></p>
+<p class="acces-petit"><span class="sans">Pas encore de code ? Demande-le à l’hôte.<br></span><a href="/">Retour aux jeux</a></p>
 </main><script>
 document.getElementById('f').onsubmit=async function(ev){ev.preventDefault();var b=this.querySelector('button');b.disabled=true;
 var code=document.getElementById('c').value;
@@ -294,6 +303,8 @@ export async function onRequest(ctx) {
 
   const v = await acces(req, env, url);
   if (!v) return estPage(path) ? pageVerrou(url) : new Response("Code d'accès requis", { status: 401 });
+  // Cours interactifs (et jeux pas terminés) : seulement les codes avec l'option « cours »
+  if (!v.cours) return estPage(path) ? pageVerrou(url, true) : new Response("Pas encore partagé", { status: 403 });
   noterVisite(ctx, v);
   const rep = prive(await next());
   // ?code= dans l'adresse (embed Notion, lien envoyé) : on retient le code

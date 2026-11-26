@@ -17,12 +17,19 @@
   button{font:600 14px/1 inherit;font-family:inherit;padding:11px 14px;border:0;border-radius:10px;background:#2f6f62;color:#fff;cursor:pointer}
   button.sec{background:#eef3f1;color:#2f6f62} button.dang{background:#fbeceb;color:#b3261e} button.dang.sur{background:#b3261e;color:#fff}
   .msg{white-space:pre-wrap;background:#f3f7f5;border-radius:10px;padding:12px;margin:12px 0 8px;font-size:15px}
-  .ligne{display:flex;align-items:center;gap:10px;padding:12px 0;border-top:1px solid #efece6}
+  .ligne{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:12px 0;border-top:1px solid #efece6}
+  .ligne .qui{flex:1 1 220px}
+  .ligne .bts button{padding:9px 12px}
   .ligne:first-child{border-top:0}
   .ligne .qui{flex:1;min-width:0} .ligne b{display:block} .ligne code{font:600 14px ui-monospace,Menlo,monospace;letter-spacing:.04em;color:#2f6f62}
   .ligne small{display:block;color:#6b7478;font-size:13px} .ligne .bts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
-  .vide{color:#6b7478;margin:0} .err{color:#b3261e;margin:8px 0 0;min-height:1.2em}
+  .vide{color:#6b7478;margin:0}
+  .opt{display:flex;align-items:center;gap:8px;margin:10px 2px 0;font-size:14px;color:#6b7478}
+  .opt input{width:18px;height:18px;flex:none}
+  .badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px;background:#e8f1ee;color:#2f6f62;margin-left:6px;vertical-align:2px} .err{color:#b3261e;margin:8px 0 0;min-height:1.2em}
   [hidden]{display:none!important}
+  .ligne>.qui{flex:1 1 100%!important}
+  .ligne>.bts{justify-content:flex-start!important}
 </style>
 </head>
 <body>
@@ -41,6 +48,7 @@
     <div class="bloc">
       <h2>Nouveau code</h2>
       <form id="fn"><input id="nom" placeholder="Prénom (ex. Léa)" required autocomplete="off"><button>Créer</button></form>
+      <label class="opt"><input type="checkbox" id="cours"> Accès aussi aux cours interactifs (pas encore partagés)</label>
       <p class="err" id="en"></p>
       <div id="cree" hidden>
         <div class="msg" id="texte"></div>
@@ -68,17 +76,18 @@ function charger(){
     $('#nb').textContent='('+j.codes.length+')';
     var L=$('#liste');
     if(!j.codes.length){L.innerHTML='<p class="vide">Aucun code pour l\'instant.</p>';return}
-    L.innerHTML=j.codes.map(function(c){return '<div class="ligne"><div class="qui"><b>'+esc(c.nom)+'</b><code>'+esc(c.code)+'</code><small>Créé le '+esc(c.cree||'?')+(c.vu?' · dernière visite le '+esc(c.vu)+(c.jours?' · venue '+c.jours+' jour'+(c.jours>1?'s':''):''):' · pas encore utilisé')+'</small></div><div class="bts"><button class="sec" data-m="'+esc(c.code)+'" data-n="'+esc(c.nom)+'">Message</button><button class="dang" data-s="'+esc(c.code)+'">Supprimer</button></div></div>'}).join('');
+    L.innerHTML=j.codes.map(function(c){return '<div class="ligne"><div class="qui"><b>'+esc(c.nom)+(c.cours?'<span class="badge">+ cours</span>':'')+'</b><code>'+esc(c.code)+'</code><small>Créé le '+esc(c.cree||'?')+(c.vu?' · dernière visite le '+esc(c.vu)+(c.jours?' · venue '+c.jours+' jour'+(c.jours>1?'s':''):''):' · pas encore utilisé')+'</small></div><div class="bts"><button class="sec" data-m="'+esc(c.code)+'" data-n="'+esc(c.nom)+'">Message</button><button class="sec" data-c="'+esc(c.code)+'" data-v="'+(c.cours?'0':'1')+'">'+(c.cours?'Retirer cours':'+ Cours')+'</button><button class="dang" data-s="'+esc(c.code)+'">Supprimer</button></div></div>'}).join('');
     L.querySelectorAll('[data-m]').forEach(function(b){b.onclick=function(){copier(message(b.dataset.n,b.dataset.m),b)}});
+    L.querySelectorAll('[data-c]').forEach(function(b){b.onclick=function(){api('cours',{code:b.dataset.c,cours:b.dataset.v==='1'}).then(charger)}});
     L.querySelectorAll('[data-s]').forEach(function(b){b.onclick=function(){
       if(!b.classList.contains('sur')){b.classList.add('sur');b.textContent='Confirmer';setTimeout(function(){b.classList.remove('sur');b.textContent='Supprimer'},3000);return}
       api('supprimer',{code:b.dataset.s}).then(charger)}});
   });
 }
 $('#fc').onsubmit=function(e){e.preventDefault();api('entrer',{mdp:$('#mdp').value}).then(function(j){if(j.ok)charger();else $('#ec').textContent=j.erreur})};
-$('#fn').onsubmit=function(e){e.preventDefault();$('#en').textContent='';api('codes',{nom:$('#nom').value}).then(function(j){
+$('#fn').onsubmit=function(e){e.preventDefault();$('#en').textContent='';api('codes',{nom:$('#nom').value,cours:$('#cours').checked}).then(function(j){
   if(!j.ok){$('#en').textContent=j.erreur;return}
-  $('#nom').value='';$('#texte').textContent=message(j.nom,j.code);$('#cree').hidden=false;charger()})};
+  $('#nom').value='';$('#cours').checked=false;$('#texte').textContent=message(j.nom,j.code);$('#cree').hidden=false;charger()})};
 $('#copier').onclick=function(){copier($('#texte').textContent,this)};
 charger();
 </script>

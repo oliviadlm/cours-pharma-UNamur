@@ -7,7 +7,7 @@ Site de révision d'Olivia, hébergé sur Cloudflare Pages (pharma-unamur.ayelea
 - `functions/_middleware.js` décide qui voit quoi. Tout ce qui n'est pas listé comme public demande un code.
   - Public : l'accueil, les pages des jeux, les images/icônes/décors.
   - Jeux : la même adresse `donnees-*.js` renvoie les données complètes avec un code valide, sinon `donnees-*.apercu.js` (chapitre 1 seulement).
-  - Tout autre `.html` (cours, fiches, examens) : page « Contenu réservé » sans code.
+  - Tout autre `.html` (cours, fiches, examens) : page « Contenu réservé » sans code, et « Pas encore partagé » pour un code sans l'option `cours` (cours interactifs pas encore partagés : seuls les codes avec `cours: true` y ont accès, case à cocher sur /admin). La section « Cours interactifs » de l'accueil ne s'affiche que pour ces codes.
 - Les codes sont dans le KV `CODES` (clé `code:XXXX`, valeur `{nom, cree, vu}`), gérés sur `/admin` (mot de passe = variable `ADMIN_CODE`).
 - `index.html` : accueil façon Game Center (bannières des jeux, cours verrouillés, bouton « J'ai un code »). Chaque jeu a un bouton « Tous les jeux » qui y renvoie.
 - Liens courts à partager : /chimie, /phyto, /biochimie-jeu, /calculs (dans `functions/_middleware.js`).

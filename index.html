@@ -192,7 +192,8 @@
     </a>
   </div>
 
-  <div class="sec"><h3>Cours interactifs</h3><span>Avec un code</span></div>
+  <div id="blocCours" hidden>
+  <div class="sec"><h3>Cours interactifs</h3></div>
   <div class="liste">
     <a class="cours" href="galenique/index.html"><span class="pastille" style="background:#5e5ce6">GAL</span><div class="txt"><b>Introduction à la galénique</b><small>MPHAB311 · 8 chapitres, calculs, anciens examens</small></div><span class="cadenas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg></span><span class="chev">›</span></a>
     <a class="cours" href="physio/index.html"><span class="pastille" style="background:#ff375f">PHY</span><div class="txt"><b>Physiologie humaine</b><small>MMEDB331 · 8 systèmes, préparation à l'oral</small></div><span class="cadenas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg></span><span class="chev">›</span></a>
@@ -201,6 +202,7 @@
     <a class="cours" href="mphab310/"><span class="pastille" style="background:#30d158">CCM</span><div class="txt"><b>Phyto · révision complète</b><small>MPHAB310 · cartes, 260 molécules, examen blanc</small></div><span class="cadenas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg></span><span class="chev">›</span></a>
     <a class="cours" href="biochimie/"><span class="pastille" style="background:#ff9f0a">BIO</span><div class="txt"><b>Biochimie humaine · cours</b><small>MPHAB306 · 12 pages, 90 questions du prof</small></div><span class="cadenas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg></span><span class="chev">›</span></a>
     <a class="cours" href="mphab287/theorie-seance-1.html"><span class="pastille" style="background:#bf5af2">CAL</span><div class="txt"><b>Méthodes de calculs · théorie</b><small>MPHAB287 · séances, exercices, livre Ansel</small></div><span class="cadenas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg></span><span class="chev">›</span></a>
+  </div>
   </div>
 
   <p class="note">Fait par Ayélé · Bachelier en sciences pharmaceutiques, UNamur</p>
@@ -212,8 +214,8 @@
   function complet(nom){document.body.classList.add('complet');b.classList.add('ok');b.querySelector('span').textContent=nom?'Bonjour '+nom:'Accès complet'}
   try{var n=localStorage.getItem('acces-nom');}catch(e){}
   b.onclick=function(){if(!b.classList.contains('ok')&&window.ACCES)ACCES.demander('')};
-  if(location.hostname.indexOf('github.io')>=0){complet('Olivia');return}
-  fetch('acces/api/etat',{cache:'no-store'}).then(function(r){return r.json()}).then(function(j){if(j.ok)complet(j.nom||n)}).catch(function(){});
+  if(location.hostname.indexOf('github.io')>=0){complet('Olivia');document.getElementById('blocCours').hidden=false;return}
+  fetch('acces/api/etat',{cache:'no-store'}).then(function(r){return r.json()}).then(function(j){if(j.ok)complet(j.nom||n);if(j.cours)document.getElementById('blocCours').hidden=false}).catch(function(){});
   document.querySelectorAll('.onglets button').forEach(function(t){t.onclick=function(){
     document.querySelectorAll('.onglets button').forEach(function(x){x.setAttribute('aria-selected',x===t)});
     document.querySelectorAll('.etapes').forEach(function(o){o.hidden=o.dataset.p!==t.dataset.o})}});
