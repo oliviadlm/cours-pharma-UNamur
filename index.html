@@ -43,6 +43,7 @@
   .installer{border-radius:16px;background:rgba(0,0,0,.35);padding:14px}
   .installer h4{margin:0 0 10px;font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
   .installer h4 svg{width:18px;height:18px}
+  .appareils{margin:-4px 0 10px!important;font-size:14px!important;color:var(--doux)!important}
   .onglets{display:inline-flex;background:rgba(255,255,255,.08);border-radius:10px;padding:3px;margin:0 0 10px}
   .onglets button{border:0;background:none;color:var(--doux);font:600 14px/1 inherit;font-family:inherit;padding:8px 14px;border-radius:8px;cursor:pointer}
   .onglets button[aria-selected="true"]{background:#3a3a3c;color:#fff}
@@ -126,17 +127,18 @@
     </div>
     <div class="installer">
       <h4><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg>Installe chaque jeu comme une vraie app</h4>
+      <p class="appareils">Ça se joue sur téléphone, iPad, tablette Android et ordinateur.</p>
       <div class="onglets" role="tablist">
-        <button type="button" role="tab" aria-selected="true" data-o="ios">iPhone</button>
+        <button type="button" role="tab" aria-selected="true" data-o="ios">iPhone et iPad</button>
         <button type="button" role="tab" aria-selected="false" data-o="android">Android</button>
       </div>
       <ol class="etapes" data-p="ios">
         <li>Ouvre le jeu dans <b>Safari</b>.</li>
-        <li>Touche le bouton <b>Partager</b> (le carré avec la flèche vers le haut).</li>
+        <li>Touche le bouton <b>Partager</b> (le carré avec la flèche vers le haut, en haut à droite sur iPad).</li>
         <li>Choisis <b>Sur l'écran d'accueil</b>, puis <b>Ajouter</b>.</li>
       </ol>
       <ol class="etapes" data-p="android" hidden>
-        <li>Ouvre le jeu dans <b>Chrome</b>.</li>
+        <li>Ouvre le jeu dans <b>Chrome</b>, sur ton téléphone ou ta tablette.</li>
         <li>Touche le menu <b>⋮</b> en haut à droite.</li>
         <li>Choisis <b>Ajouter à l'écran d'accueil</b> (ou <b>Installer l'application</b>).</li>
       </ol>
