@@ -19,7 +19,6 @@ const PAGES_PUBLIQUES = new Set([
   "/mphab310/jeu-glucides",
   "/biochimie/jeu-biochimie",
   "/mphab287/jeu-calculs",
-  "/stage-officine/",
 ]);
 
 // Données complètes des jeux : remplacées par l'aperçu sans code valide
@@ -51,7 +50,6 @@ const LIENS_COURTS = {
   "/phyto": "/mphab310/jeu-phyto",
   "/biochimie-jeu": "/biochimie/jeu-biochimie",
   "/calculs": "/mphab287/jeu-calculs",
-  "/officine": "/stage-officine/",
 };
 
 const COOKIE = "acces";

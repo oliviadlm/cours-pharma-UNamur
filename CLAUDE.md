@@ -5,12 +5,12 @@ Site de révision d'Olivia, hébergé sur Cloudflare Pages (pharma-unamur.ayelea
 ## Accès : aperçu gratuit + codes personnels
 
 - `functions/_middleware.js` décide qui voit quoi. Tout ce qui n'est pas listé comme public demande un code.
-  - Public : l'accueil, les pages des jeux, `stage-officine/`, les images/icônes/décors.
+  - Public : l'accueil, les pages des jeux, les images/icônes/décors.
   - Jeux : la même adresse `donnees-*.js` renvoie les données complètes avec un code valide, sinon `donnees-*.apercu.js` (chapitre 1 seulement).
   - Tout autre `.html` (cours, fiches, examens) : page « Contenu réservé » sans code.
 - Les codes sont dans le KV `CODES` (clé `code:XXXX`, valeur `{nom, cree, vu}`), gérés sur `/admin` (mot de passe = variable `ADMIN_CODE`).
 - `index.html` : accueil façon Game Center (bannières des jeux, cours verrouillés, bouton « J'ai un code »). Chaque jeu a un bouton « Tous les jeux » qui y renvoie.
-- Liens courts à partager : /chimie, /phyto, /biochimie-jeu, /calculs, /officine (dans `functions/_middleware.js`).
+- Liens courts à partager : /chimie, /phyto, /biochimie-jeu, /calculs (dans `functions/_middleware.js`).
 - `acces/acces.js` : fenêtre du code dans les jeux, prénom dans « Bonjour … », transfert de progression depuis l'ancien site GitHub Pages.
 - `_routes.json` : dossiers d'images servis sans passer par la fonction (ne pas y mettre de contenu de cours texte).
 
@@ -23,3 +23,7 @@ Les données des 4 jeux (chimie pharma, phyto, biochimie, calculs) ne sont plus 
 3. Nouveau jeu : l'ajouter à `JEUX` dans `outils/apercu.py`, à `PAGES_PUBLIQUES` et `DONNEES_JEUX` dans `functions/_middleware.js`.
 
 Ne jamais remettre de contenu de cours dans un fichier public (`.apercu.js`, `_routes.json`, `acces/`).
+
+## Stage en officine
+
+Jeu 3D pas terminé : caché de l'accueil et réservé aux codes. Quand il sera prêt, remettre sa carte dans `index.html`, `/stage-officine/` dans `PAGES_PUBLIQUES` et le lien court `/officine`.
