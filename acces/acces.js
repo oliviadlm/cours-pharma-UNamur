@@ -1,7 +1,7 @@
 /* Accès aux jeux : aperçu gratuit (chapitre 1), fenêtre du code, transfert de progression.
    Chargé par chaque jeu juste après ses données, avant le moteur du jeu. */
 (function () {
-  var NOUVEAU = 'https://pharma.ayeleartstudio.com';
+  var NOUVEAU = 'https://pharma-unamur.ayeleartstudio.com';
   var ici = document.currentScript ? document.currentScript.src.replace(/acces\.js.*$/, '') : '/acces/';
   var A = (window.ACCES = {});
   var D = window.DATA || {};

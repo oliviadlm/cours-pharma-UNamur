@@ -1,6 +1,6 @@
 # cours-pharma-UNamur
 
-Site de révision d'Olivia, hébergé sur Cloudflare Pages (pharma.ayeleartstudio.com), dépôt privé.
+Site de révision d'Olivia, hébergé sur Cloudflare Pages (pharma-unamur.ayeleartstudio.com), dépôt privé.
 
 ## Accès : aperçu gratuit + codes personnels
 
