@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Jeux de révision · Pharma UNamur</title>
-<meta name="description" content="Des jeux pour réviser la pharmacie à l'UNamur : chimie pharma, phytochimie, biochimie, calculs, stage en officine. Le chapitre 1 de chaque jeu est offert.">
+<meta name="description" content="La façon la plus fun de réviser la pharmacie à l'UNamur : des jeux construits à partir des cours des profs et des anciens examens.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Jeux de révision · Pharma UNamur">
-<meta property="og:description" content="Chimie pharma, phytochimie, biochimie, calculs, stage en officine : révise en jouant. Le chapitre 1 de chaque jeu est offert.">
+<meta property="og:description" content="Chimie pharma, phytochimie, biochimie, calculs : révise en jouant, à partir des cours des profs et des anciens examens.">
 <meta property="og:image" content="https://pharma-unamur.ayeleartstudio.com/chimie-pharma/revision/decor/chambre.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#000000">
@@ -30,10 +30,32 @@
   .moi svg{width:17px;height:17px}
   .moi.ok{background:rgba(48,209,88,.16);color:#30d158}
 
+
+  /* ----- bienvenue ----- */
+  .bienvenue{position:relative;border-radius:24px;padding:24px 20px 20px;margin:0 0 22px;overflow:hidden;background:radial-gradient(120% 90% at 0% 0%,#3a2a8c 0%,rgba(58,42,140,0) 60%),radial-gradient(120% 90% at 100% 100%,#0f6b5c 0%,rgba(15,107,92,0) 60%),#141416}
+  .bienvenue .hello{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#c7bfff;margin:0 0 6px}
+  .bienvenue h2{font-size:26px;line-height:1.15;font-weight:800;letter-spacing:-.02em;margin:0 0 10px;max-width:22ch}
+  .bienvenue p{margin:0 0 16px;color:rgba(255,255,255,.82);font-size:16px;max-width:56ch}
+  .sources{display:grid;grid-template-columns:1fr;gap:8px;margin:0 0 18px}
+  @media(min-width:640px){.sources{grid-template-columns:repeat(3,1fr)}}
+  .src{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:14px;background:rgba(255,255,255,.07);font-size:14px;font-weight:600}
+  .src svg{width:22px;height:22px;flex:none;color:#9fe6d4}
+  .installer{border-radius:16px;background:rgba(0,0,0,.35);padding:14px}
+  .installer h4{margin:0 0 10px;font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
+  .installer h4 svg{width:18px;height:18px}
+  .onglets{display:inline-flex;background:rgba(255,255,255,.08);border-radius:10px;padding:3px;margin:0 0 10px}
+  .onglets button{border:0;background:none;color:var(--doux);font:600 14px/1 inherit;font-family:inherit;padding:8px 14px;border-radius:8px;cursor:pointer}
+  .onglets button[aria-selected="true"]{background:#3a3a3c;color:#fff}
+  .etapes{margin:0;padding:0 0 0 20px;color:rgba(255,255,255,.86);font-size:15px}
+  .etapes li{margin:4px 0}
+  .etapes b{color:#fff}
+  .fun{margin:16px 0 0;font-size:18px;font-weight:800;letter-spacing:-.01em}
+  .fun span{display:block;font-size:15px;font-weight:600;color:#9fe6d4;margin-top:2px}
+
   /* ----- à la une ----- */
   .une{position:relative;display:block;border-radius:24px;overflow:hidden;aspect-ratio:4/5;max-height:640px;width:100%;background:#111;isolation:isolate}
   @media(min-width:720px){.une{aspect-ratio:16/8}}
-  .une img,.une video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}
+  .une>img,.une>video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}
   .une::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(0,0,0,.25) 0%,rgba(0,0,0,0) 28%,rgba(0,0,0,0) 45%,rgba(0,0,0,.88) 100%)}
   .une .etiq{position:absolute;top:18px;left:20px;font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:rgba(255,255,255,.9)}
   .une .bas{position:absolute;left:0;right:0;bottom:0;padding:22px 20px 20px}
@@ -93,45 +115,74 @@
     </button>
   </header>
 
+  <section class="bienvenue">
+    <p class="hello">Bienvenue</p>
+    <h2>La façon la plus fun de réviser la pharma</h2>
+    <p>Ici, tu révises en jouant. Chaque jeu est construit à partir de ce qu'on voit vraiment en cours : rien d'inventé, tout ce qui peut tomber à l'examen, en version interactive.</p>
+    <div class="sources">
+      <div class="src"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/></svg>Les cours des profs</div>
+      <div class="src"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2.5" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Les transcriptions des cours</div>
+      <div class="src"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l2.5 2.5L16 9"/><rect x="4" y="3" width="16" height="18" rx="2.5"/></svg>Les anciens examens et tuyaux</div>
+    </div>
+    <div class="installer">
+      <h4><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg>Installe chaque jeu comme une vraie app</h4>
+      <div class="onglets" role="tablist">
+        <button type="button" role="tab" aria-selected="true" data-o="ios">iPhone</button>
+        <button type="button" role="tab" aria-selected="false" data-o="android">Android</button>
+      </div>
+      <ol class="etapes" data-p="ios">
+        <li>Ouvre le jeu dans <b>Safari</b>.</li>
+        <li>Touche le bouton <b>Partager</b> (le carré avec la flèche vers le haut).</li>
+        <li>Choisis <b>Sur l'écran d'accueil</b>, puis <b>Ajouter</b>.</li>
+      </ol>
+      <ol class="etapes" data-p="android" hidden>
+        <li>Ouvre le jeu dans <b>Chrome</b>.</li>
+        <li>Touche le menu <b>⋮</b> en haut à droite.</li>
+        <li>Choisis <b>Ajouter à l'écran d'accueil</b> (ou <b>Installer l'application</b>).</li>
+      </ol>
+    </div>
+    <p class="fun">Have fun !!<span>Courage pour les examens !</span></p>
+  </section>
+
   <a class="une" href="chimie-pharma/revision/jeu-chipha.html">
     <video src="chimie-pharma/revision/decor/chambre.mp4" poster="chimie-pharma/revision/decor/chambre.jpg" autoplay muted loop playsinline preload="metadata" aria-hidden="true"></video>
     <span class="etiq">À la une</span>
     <div class="bas">
-      <h2>Ta chambre devient une officine</h2>
-      <p>Antibactériens, antiviraux, antitumoraux… reconnais les molécules et bats le boss de chaque chapitre.</p>
+      <h2>Chimie pharmaceutique</h2>
+      <p>Molécules, noms commerciaux, classes : révise tout le tome 1, chapitre par chapitre, et bats le boss de chaque chapitre.</p>
       <div class="ligne-jeu">
         <img class="ico" src="chimie-pharma/revision/icons/jeu-180.png" alt="">
-        <div class="txt"><b>Chimie pharma</b><small>10 chapitres · le 1er est offert</small></div>
+        <div class="txt"><b>Chimie pharma</b><small>Pr Dogné · 10 chapitres</small></div>
         <span class="jouer">Jouer</span>
       </div>
     </div>
   </a>
 
-  <div class="sec"><h3>Tous les jeux</h3><span>Chapitre 1 offert</span></div>
+  <div class="sec"><h3>Tous les jeux</h3></div>
   <div class="grille">
     <a class="carte" href="mphab310/jeu-phyto.html">
-      <div class="ban"><img src="mphab310/decor/foret.jpg" alt="" loading="lazy"><span class="gratuit">Glucides offert</span></div>
+      <div class="ban"><img src="mphab310/decor/foret.jpg" alt="" loading="lazy"><span class="gratuit">Teste le chapitre 1</span></div>
       <div class="pied">
         <div class="ligne-jeu"><img class="ico" src="mphab310/icons/jeu-180.png" alt="" loading="lazy"><div class="txt"><b>Phytochimie</b><small>Pharmacognosie · 22 lieux à explorer</small></div><span class="jouer">Jouer</span></div>
         <p class="accroche">Une forêt à explorer, des plantes à reconnaître et un gardien à battre à chaque chapitre.</p>
       </div>
     </a>
     <a class="carte" href="biochimie/jeu-biochimie.html">
-      <div class="ban"><img src="biochimie/decor/corps.jpg" alt="" loading="lazy"><span class="gratuit">Chapitre 1 offert</span></div>
+      <div class="ban"><img src="biochimie/decor/corps-visu.jpg" alt="" loading="lazy" style="object-position:50% 22%"><span class="gratuit">Teste le chapitre 1</span></div>
       <div class="pied">
         <div class="ligne-jeu"><img class="ico" src="biochimie/icons/jeu-bioch-180.png" alt="" loading="lazy"><div class="txt"><b>Biochimie humaine</b><small>12 mondes dans le corps humain</small></div><span class="jouer">Jouer</span></div>
         <p class="accroche">Entre dans le foie, le sang, les hormones : chaque organe est un monde à part.</p>
       </div>
     </a>
     <a class="carte" href="mphab287/jeu-calculs.html">
-      <div class="ban"><img src="mphab287/decor/officine-1920-nuit.jpg" alt="" loading="lazy"><span class="gratuit">Chapitre 1 offert</span></div>
+      <div class="ban"><img src="mphab287/decor/officine-1920-nuit.jpg" alt="" loading="lazy"><span class="gratuit">Teste le chapitre 1</span></div>
       <div class="pied">
         <div class="ligne-jeu"><img class="ico" src="mphab287/icons/jeu-180.png?v=2" alt="" loading="lazy"><div class="txt"><b>Méthodes de calculs</b><small>Préparations officinales</small></div><span class="jouer">Jouer</span></div>
         <p class="accroche">Ton officine, de nuit, une ordonnance à préparer : unités, triturations, suppositoires.</p>
       </div>
     </a>
     <a class="carte" href="chimie-pharma/revision/jeu-chipha.html">
-      <div class="ban"><img src="chimie-pharma/revision/decor/chambre.jpg" alt="" loading="lazy"><span class="gratuit">Antibactériens offert</span></div>
+      <div class="ban"><img src="chimie-pharma/revision/decor/chambre.jpg" alt="" loading="lazy"><span class="gratuit">Teste le chapitre 1</span></div>
       <div class="pied">
         <div class="ligne-jeu"><img class="ico" src="chimie-pharma/revision/icons/jeu-180.png" alt="" loading="lazy"><div class="txt"><b>Chimie pharma</b><small>Pr Dogné · Tome 1</small></div><span class="jouer">Jouer</span></div>
         <p class="accroche">Molécules à dessiner, noms commerciaux, classes : tout le tome 1 en 10 chapitres.</p>
@@ -150,7 +201,7 @@
     <a class="cours" href="mphab287/theorie-seance-1.html"><span class="pastille" style="background:#bf5af2">CAL</span><div class="txt"><b>Méthodes de calculs · théorie</b><small>MPHAB287 · séances, exercices, livre Ansel</small></div><span class="cadenas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg></span><span class="chev">›</span></a>
   </div>
 
-  <p class="note">Fait par Olivia · Bachelier en sciences pharmaceutiques, UNamur</p>
+  <p class="note">Fait par Ayélé · Bachelier en sciences pharmaceutiques, UNamur</p>
 </div>
 <script src="acces/acces.js"></script>
 <script>
@@ -161,6 +212,10 @@
   b.onclick=function(){if(!b.classList.contains('ok')&&window.ACCES)ACCES.demander('')};
   if(location.hostname.indexOf('github.io')>=0){complet('Olivia');return}
   fetch('acces/api/etat',{cache:'no-store'}).then(function(r){return r.json()}).then(function(j){if(j.ok)complet(j.nom||n)}).catch(function(){});
+  document.querySelectorAll('.onglets button').forEach(function(t){t.onclick=function(){
+    document.querySelectorAll('.onglets button').forEach(function(x){x.setAttribute('aria-selected',x===t)});
+    document.querySelectorAll('.etapes').forEach(function(o){o.hidden=o.dataset.p!==t.dataset.o})}});
+  if(/android/i.test(navigator.userAgent)){var a=document.querySelector('[data-o="android"]');a&&a.click()}
   var v=document.querySelector('.une video');
   if(v&&window.matchMedia('(prefers-reduced-motion: reduce)').matches){v.removeAttribute('autoplay');v.pause()}
 })();

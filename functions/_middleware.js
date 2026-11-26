@@ -1,7 +1,7 @@
 /*
  * Accès au site de révision (Cloudflare Pages Functions)
  *
- * - Les jeux sont en aperçu gratuit : le chapitre 1 de chaque jeu est ouvert à tout le monde.
+ * - Le chapitre 1 de chaque jeu sert de test : il de chaque jeu est ouvert à tout le monde.
  * - Le reste (autres chapitres, cours, fiches) demande un code d'accès personnel.
  * - Les codes sont rangés dans le KV « CODES » (clé « code:XXXX ») et se gèrent sur /admin.
  *
@@ -206,11 +206,11 @@ function pageVerrou(url) {
 <link rel="stylesheet" href="/acces/acces.css"></head>
 <body class="acces-page"><main class="acces-carte">
 <div class="acces-ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg></div>
-<h1>Contenu réservé</h1>
-<p>Cette page fait partie de la version complète. Entre ton code d'accès personnel pour l'ouvrir.</p>
+<h1>Entre ton code</h1>
+<p>Cette page s'ouvre avec ton code d'accès personnel.</p>
 <form id="f"><input id="c" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Ton code" required>
 <button>Débloquer</button></form><p id="e" class="acces-err" role="alert"></p>
-<p class="acces-petit">Pas encore de code ? Demande-le à Olivia.<br><a href="/">Voir les jeux en accès libre</a></p>
+<p class="acces-petit">Pas encore de code ? Demande-le à Olivia.<br><a href="/">Retour aux jeux</a></p>
 </main><script>
 document.getElementById('f').onsubmit=async function(ev){ev.preventDefault();var b=this.querySelector('button');b.disabled=true;
 var code=document.getElementById('c').value;

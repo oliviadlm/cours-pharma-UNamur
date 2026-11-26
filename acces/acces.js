@@ -39,8 +39,8 @@
     carte.innerHTML =
       '<button class="acces-x" aria-label="Fermer">×</button>' +
       '<div class="acces-ic">' + CADENAS + '</div>' +
-      '<h2>' + (quoi ? '« ' + String(quoi).replace(/</g, '&lt;') + ' » est réservé' : 'Version complète') + '</h2>' +
-      '<p>Tu joues à l\'aperçu gratuit : le chapitre 1 est ouvert. Entre ton code d\'accès pour débloquer tous les chapitres.</p>' +
+      '<h2>' + (quoi ? 'Prochaine étape : « ' + String(quoi).replace(/</g, '&lt;') + ' »' : 'Entre ton code') + '</h2>' +
+      '<p>Le chapitre 1, c\'était pour tester. Pour continuer l\'aventure, entre ton code d\'accès : tous les chapitres s\'ouvrent.</p>' +
       '<form><input autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Ton code" required>' +
       '<button>Débloquer</button></form><p class="acces-err" role="alert"></p>' +
       '<p class="acces-petit">Pas encore de code ? Demande-le à Olivia.</p>';

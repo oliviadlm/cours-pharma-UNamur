@@ -29,10 +29,10 @@ JEUX = [
 SITE = "https://pharma-unamur.ayeleartstudio.com"
 # aperçu des liens partagés (WhatsApp, iMessage...) : titre, description, image
 PARTAGE = {
-    "chimie-pharma/revision/jeu-chipha.html": ("Chimie pharma · le jeu", "Révise la chimie pharmaceutique en jouant : molécules, noms commerciaux, boss par chapitre. Le chapitre 1 est offert.", "chimie-pharma/revision/decor/chambre.jpg"),
-    "mphab310/jeu-phyto.html": ("Phytochimie · le jeu", "Explore la forêt et révise la pharmacognosie : plantes, molécules, gardiens à battre. Glucides en accès libre.", "mphab310/decor/foret.jpg"),
-    "biochimie/jeu-biochimie.html": ("Biochimie humaine · le jeu", "Voyage dans le corps humain, organe par organe, pour réviser la biochimie. Le chapitre 1 est offert.", "biochimie/decor/corps.jpg"),
-    "mphab287/jeu-calculs.html": ("Méthodes de calculs · le jeu", "Prépare des ordonnances dans ton officine et maîtrise les calculs pharmaceutiques. Le chapitre 1 est offert.", "mphab287/decor/officine-1920-nuit.jpg"),
+    "chimie-pharma/revision/jeu-chipha.html": ("Chimie pharma · le jeu", "Révise la chimie pharmaceutique en jouant : molécules, noms commerciaux, boss par chapitre.", "chimie-pharma/revision/decor/chambre.jpg"),
+    "mphab310/jeu-phyto.html": ("Phytochimie · le jeu", "Explore la forêt et révise la pharmacognosie : plantes, molécules, gardiens à battre.", "mphab310/decor/foret.jpg"),
+    "biochimie/jeu-biochimie.html": ("Biochimie humaine · le jeu", "Voyage dans le corps humain, organe par organe, pour réviser la biochimie.", "biochimie/decor/corps-visu.jpg"),
+    "mphab287/jeu-calculs.html": ("Méthodes de calculs · le jeu", "Prépare des ordonnances dans ton officine et maîtrise les calculs pharmaceutiques.", "mphab287/decor/officine-1920-nuit.jpg"),
     "stage-officine/index.html": ("Stage en officine · le jeu 3D", "Une journée de stage à la Pharmacie du Confluent : 7 patients, tous les cours mélangés.", "acces/bannieres/officine-3d.jpg"),
 }
 
