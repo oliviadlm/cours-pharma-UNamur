@@ -75,7 +75,7 @@ async function verifier(env, code) {
   const c = cache.get(code);
   if (c && Date.now() - c.t < 120000) return c.ok ? c : null;
   const v = await env.CODES.get("code:" + code, "json");
-  const r = { ok: !!v, nom: v ? v.nom : "", code, t: Date.now() };
+  const r = { ok: !!v, nom: v ? v.nom : "", vu: v ? v.vu || "" : "", code, t: Date.now() };
   cache.set(code, r);
   return r.ok ? r : null;
 }
@@ -96,6 +96,21 @@ async function acces(req, env, url) {
     if (v) return v;
   }
   return null;
+}
+
+// Dernière visite d'une personne (une écriture par jour au plus, pour la page /admin)
+function noterVisite(ctx, v) {
+  const jour = new Date().toISOString().slice(0, 10);
+  if (!v || v.vu === jour || !ctx.env.CODES) return;
+  v.vu = jour;
+  ctx.waitUntil((async () => {
+    const k = "code:" + v.code;
+    const f = (await ctx.env.CODES.get(k, "json")) || {};
+    if (f.vu === jour) return;
+    f.vu = jour;
+    f.jours = (f.jours || 0) + 1;
+    await ctx.env.CODES.put(k, JSON.stringify(f));
+  })());
 }
 
 function cookieAcces(code, duree = DUREE) {
@@ -173,7 +188,7 @@ async function api(req, env, url) {
       const l = await env.CODES.list({ prefix: "code:", cursor });
       for (const k of l.keys) {
         const v = (await env.CODES.get(k.name, "json")) || {};
-        out.push({ code: k.name.slice(5), nom: v.nom || "", cree: v.cree || "", vu: v.vu || "" });
+        out.push({ code: k.name.slice(5), nom: v.nom || "", cree: v.cree || "", vu: v.vu || "", jours: v.jours || 0 });
       }
       cursor = l.list_complete ? null : l.cursor;
     } while (cursor);
@@ -259,7 +274,7 @@ export async function onRequest(ctx) {
   // Données des jeux : complètes avec un code, aperçu sinon (même adresse)
   if (DONNEES_JEUX.has(path)) {
     const v = await acces(req, env, url);
-    if (v) return prive(await next());
+    if (v) { noterVisite(ctx, v); return prive(await next()); }
     const a = new URL(path.replace(/\.js$/, ".apercu.js"), url);
     return prive(await env.ASSETS.fetch(new Request(a, req)));
   }
@@ -279,6 +294,7 @@ export async function onRequest(ctx) {
 
   const v = await acces(req, env, url);
   if (!v) return estPage(path) ? pageVerrou(url) : new Response("Code d'accès requis", { status: 401 });
+  noterVisite(ctx, v);
   const rep = prive(await next());
   // ?code= dans l'adresse (embed Notion, lien envoyé) : on retient le code
   const q = url.searchParams.get("code");
